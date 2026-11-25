@@ -5,9 +5,9 @@ import { Header, Button, Panel, Table, Confirm, Facts, Choices, Progress } from 
 import { eur, type Person } from '../game'
 import { seriesNames } from '../ui/labels'
 
-function Portrait({ person: p }: { person: Person }) {
+function Portrait({ person: p, large = false }: { person: Person; large?: boolean }) {
   return (
-    <div className="people-avatar people-avatar-large">
+    <div className={large ? 'people-avatar people-avatar-large' : 'people-avatar'}>
       <span className="people-initials">
         {p.name
           .split(' ')
@@ -252,7 +252,7 @@ function PersonCard({ p, select, profile }: { p: Person; select: ReactNode; prof
     <article className="people-person-card panel">
       <div className="people-person-top">
         <div className="people-person-photo">
-          <Portrait person={p} />
+          <Portrait person={p} large />
           {p.number && <span className="people-car-number">{p.number}</span>}
         </div>
         <div className="people-person-info">

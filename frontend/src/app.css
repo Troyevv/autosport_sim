@@ -580,3 +580,18 @@ button.result:hover {
 .compact .market-candidate {
   padding-block: 12px;
 }
+
+@media (max-width: 600px) {
+  .people-toolbar {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .people-toolbar .people-search,
+  .people-toolbar .btn {
+    grid-column: 1 / -1;
+  }
+  .people-toolbar select {
+    width: 100%;
+    font-size: 12px;
+  }
+}
