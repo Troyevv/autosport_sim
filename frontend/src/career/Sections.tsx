@@ -27,7 +27,7 @@ export function Overview({ world, c, media }: SectionProps) {
       <Header
         section={org.name + ' / Центр управления'}
         title={labels[c.role]}
-        sub={[series.name, org.name, ...org.lines.map(line=>world.products[line].name)].join(' · ')}
+        sub={[series.name, org.name, ...org.lines.map((line) => world.products[line].name)].join(' · ')}
       />
       <section className="dashboard-hero program-hero career-hero">
         {photo ? (
@@ -186,10 +186,15 @@ export function Championships({ world, c, media }: SectionProps) {
         <Facts
           items={[
             ['Классы', r.classes.join(' · ')],
-            ...Object.entries(r.tyre_market).map(([category,policy]):[string,string]=>[
-              'Шины · '+category,
-              ({sole:'Единый поставщик',approved:'Допущенные поставщики',open:'Открытая конкуренция'}[policy.mode]||policy.mode)+' · '+policy.approved_suppliers.map(id=>world.organizations[id].name).join(', ')
-            ]),
+            ...Object.entries(r.tyre_market).map(([category, policy]): [string, string] => {
+              const modes = {
+                sole: 'Единый поставщик',
+                approved: 'Допущенные поставщики',
+                open: 'Открытая конкуренция',
+              }
+              const suppliers = (policy.approved_suppliers ?? []).map((id) => world.organizations[id].name)
+              return ['Шины · ' + category, [modes[policy.mode], ...suppliers].join(' · ')]
+            }),
             ['Экипаж', r.crew[0] === r.crew[1] ? r.crew[0] : r.crew.join('–')],
             ['Сессии', Object.values(r.sessions)[0].join(' · ')],
             ['Очки за гонку', (r.points.race || r.points['6h']).toString().replaceAll(',', ' · ')],

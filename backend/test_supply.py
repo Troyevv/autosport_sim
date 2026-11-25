@@ -1,3 +1,5 @@
+from dataclasses import replace
+
 import pytest
 from backend import service
 from backend.catalog import WORLD
@@ -69,11 +71,23 @@ def test_session_scope_excludes_competitors_other_clients_and_truth():
         o = ObservationScope(
             "team", "car", kind + "-session", kind, "maker", "tyre", "spec-v1", "set-1"
         )
+        assert not visible_channels(
+            a, replace(o, car=""), "2025-02-01", "maker", ["wear"]
+        )
         assert visible_channels(
             a, o, "2025-02-01", "maker", ["temperature", "strategy", "failure_truth"]
         ) == {"temperature"}
         assert not visible_channels(a, o, "2025-09-01", "maker", ["temperature"])
         assert not visible_channels(a, o, "2025-02-01", "competitor", ["temperature"])
+    for invalid in (
+        {"end_exclusive": a.start},
+        {"client": a.employer},
+        {"salary_cents": -1},
+        {"allocation_percent": 101},
+        {"agreement": ""},
+    ):
+        with pytest.raises(ValueError):
+            replace(a, **invalid)
     other = ObservationScope(
         "other", "car", "s", "race", "maker", "tyre", "spec-v1", "set-2"
     )

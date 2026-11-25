@@ -1,6 +1,7 @@
 """Eligibility and client observation boundaries for future session/contract producers."""
 
 from dataclasses import dataclass
+from datetime import date
 from enum import Enum
 
 
@@ -12,7 +13,7 @@ class TyreMarket(str, Enum):
 
 def tyre_eligible(policy, supplier, *, homologated):
     mode = TyreMarket(policy["mode"])
-    if not homologated:
+    if not homologated or not supplier:
         return False
     if mode is TyreMarket.OPEN:
         return True
@@ -38,6 +39,31 @@ class SupportAssignment:
     salary_cents: int
     allocation_percent: int
 
+    def __post_init__(self):
+        if not all(
+            (
+                self.id,
+                self.advisor,
+                self.employer,
+                self.client,
+                self.agreement,
+                self.product,
+            )
+        ):
+            raise ValueError(
+                "Назначение должно указывать сотрудника, стороны, договор и продукт."
+            )
+        if (
+            self.employer == self.client
+            or self.salary_cents < 0
+            or not 0 < self.allocation_percent <= 100
+        ):
+            raise ValueError("Недопустимые условия назначения консультанта.")
+        if date.fromisoformat(self.start) >= date.fromisoformat(self.end_exclusive):
+            raise ValueError(
+                "Период назначения должен иметь положительную длительность."
+            )
+
 
 @dataclass(frozen=True)
 class ObservationScope:
@@ -54,7 +80,10 @@ class ObservationScope:
 def visible_channels(assignment, scope, day, employer, channels):
     """Allowlist for observations, with no access granted by a global supplier role."""
     if assignment is None or not (
-        assignment.agreement
+        scope.car
+        and scope.session
+        and scope.spec_version
+        and scope.instance
         and assignment.employer == employer == scope.supplier
         and assignment.client == scope.client
         and assignment.product == scope.product

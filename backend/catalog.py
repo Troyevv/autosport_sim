@@ -54,6 +54,8 @@ def load_catalog():
                 ],
             )
         )
+        if org not in organizations or position not in positions:
+            raise ValueError(f"Неизвестная организация или должность: {key}")
         assignments[key] = dict(
             id=key,
             org=org,
@@ -134,8 +136,7 @@ def load_catalog():
     for row in rows("staff.csv"):
         eid = row["entry"]
         seat(
-            ("supplier-" if row["position"] == "manufacturer" else "team-")
-            + slug(row["entrant"]),
+            row["org"],
             row["position"],
             identify(row["name"]),
             entries[eid]["championship"] if eid else None,

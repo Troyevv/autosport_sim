@@ -1,17 +1,17 @@
-entrant,position,name,entry
-McLaren Formula 1 Team,manager,Andrea Stella,
-Scuderia Ferrari,manager,Frédéric Vasseur,
-Oracle Red Bull Racing,manager,Christian Horner,
-Mercedes AMG PETRONAS F1 Team,manager,Toto Wolff,
-Aston Martin Aramco F1 Team,manager,Andy Cowell,
-BWT Alpine F1 Team,manager,Oliver Oakes,
-MoneyGram Haas F1 Team,manager,Ayao Komatsu,
-Visa Cash App Racing Bulls,manager,Laurent Mekies,
-Williams Racing,manager,James Vowles,
-McLaren Formula 1 Team,race-engineer,Will Joseph,f1-4
-McLaren Formula 1 Team,race-engineer,Tom Stallard,f1-81
-Oracle Red Bull Racing,race-engineer,Gianpiero Lambiase,f1-1
-Toyota Gazoo Racing,manager,Kamui Kobayashi,
-PREMA Racing,manager,René Rosin,
-TGI Team Lamborghini by GRT,manager,Gottfried Grasser,
-Mercedes,manufacturer,Hywel Thomas,
+org,position,name,entry
+team-mclaren-formula-1-team,manager,Andrea Stella,
+team-scuderia-ferrari,manager,Frédéric Vasseur,
+team-oracle-red-bull-racing,manager,Christian Horner,
+team-mercedes-amg-petronas-f1-team,manager,Toto Wolff,
+team-aston-martin-aramco-f1-team,manager,Andy Cowell,
+team-bwt-alpine-f1-team,manager,Oliver Oakes,
+team-moneygram-haas-f1-team,manager,Ayao Komatsu,
+team-visa-cash-app-racing-bulls,manager,Laurent Mekies,
+team-williams-racing,manager,James Vowles,
+team-mclaren-formula-1-team,race-engineer,Will Joseph,f1-4
+team-mclaren-formula-1-team,race-engineer,Tom Stallard,f1-81
+team-oracle-red-bull-racing,race-engineer,Gianpiero Lambiase,f1-1
+team-toyota-gazoo-racing,manager,Kamui Kobayashi,
+team-prema-racing,manager,René Rosin,
+team-tgi-team-lamborghini-by-grt,manager,Gottfried Grasser,
+supplier-mercedes,manufacturer,Hywel Thomas,

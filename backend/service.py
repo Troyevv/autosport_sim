@@ -53,11 +53,11 @@ def list_careers():
 def project(db, cid, state):
     org = state["setup"]["org"]
     people = []
-    for aid in sorted(state["seats"]):
-        person = domain.occupant_on(state["seats"][aid], state["date"])
+    for aid in sorted(WORLD["assignments"]):
         assignment = WORLD["assignments"][aid]
         if assignment["org"] != org:
             continue
+        person = domain.occupant_on(state["seats"].get(aid, []), state["date"])
         people.append(
             {**assignment, "person": person, "occupant": state["people"].get(person)}
         )

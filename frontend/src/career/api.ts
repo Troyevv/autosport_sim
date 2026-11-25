@@ -5,7 +5,7 @@ export type Championship = {
   name: string
   discipline: string
   classes: string[]
-  tyre_market:Record<string,{mode:string;approved_suppliers:string[]}>
+  tyre_market: Record<string, { mode: 'sole' | 'approved' | 'open'; approved_suppliers?: string[] }>
   crew: number[]
   finish: string
   sessions: Record<string, string[]>
@@ -24,7 +24,7 @@ export type Event = {
   org?: string
 }
 export type World = {
-  products:Record<string,{name:string}>
+  products: Record<string, { name: string }>
   engineering: {
     seasons: Record<string, { year: number; status: string; championship: string }>
     generations: Record<string, { category: string }>
