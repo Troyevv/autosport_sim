@@ -1,0 +1,133 @@
+championship,number,entrant,model,constructor,engine,transmission,tyre,class,crew
+dtm,1,ABT Sportsline,Lamborghini Huracan GT3 EVO 2,Lamborghini,,,Pirelli,GT3,driver-001
+dtm,2,ABT Sportsline,Lamborghini Huracan GT3 EVO 2,Lamborghini,,,Pirelli,GT3,driver-002
+dtm,7,Comtoyou Racing,Aston Martin Vantage GT3,Aston Martin,,,Pirelli,GT3,driver-003
+dtm,8,Comtoyou Racing,Aston Martin Vantage GT3,Aston Martin,,,Pirelli,GT3,driver-004
+dtm,10,EMIL FREY RACING,Ferrari 296 GT3,Ferrari,Ferrari,,Pirelli,GT3,driver-005
+dtm,11,Schubert Motorsport,BMW M4 GT3 Evo,BMW,BMW,,Pirelli,GT3,driver-006
+dtm,14,EMIL FREY RACING,Ferrari 296 GT3,Ferrari,Ferrari,,Pirelli,GT3,driver-007
+dtm,16,Dörr Motorsport,McLaren 720S GT3 Evo,McLaren,,,Pirelli,GT3,driver-008
+dtm,19,TGI Team Lamborghini by GRT,Lamborghini Huracan GT3 EVO 2,Lamborghini,,,Pirelli,GT3,driver-009
+dtm,22,Mercedes-AMG Team Landgraf,Mercedes-AMG GT3,Mercedes,,,Pirelli,GT3,driver-010
+dtm,24,Mercedes-AMG Team WINWARD,Mercedes-AMG GT3,Mercedes,,,Pirelli,GT3,driver-011
+dtm,25,Dörr Motorsport,McLaren 720S GT3 Evo,McLaren,,,Pirelli,GT3,driver-012
+dtm,29,Land Motorsport,Audi R8 LMS GT3 EVO II,Audi,,,Pirelli,GT3,driver-013
+dtm,33,Schubert Motorsport,BMW M4 GT3 Evo,BMW,BMW,,Pirelli,GT3,driver-014
+dtm,36,HRT Ford Performance,Ford Mustang GT3,Ford,,,Pirelli,GT3,driver-015
+dtm,48,Mercedes-AMG Team MANN-FILTER,Mercedes-AMG GT3,Mercedes,,,Pirelli,GT3,driver-016
+dtm,63,TGI Team Lamborghini by GRT,Lamborghini Huracan GT3 EVO 2,Lamborghini,,,Pirelli,GT3,driver-017
+dtm,64,HRT Ford Performance,Ford Mustang GT3,Ford,,,Pirelli,GT3,driver-018
+dtm,69,EMIL FREY RACING,Ferrari 296 GT3,Ferrari,Ferrari,,Pirelli,GT3,driver-019
+dtm,71,Paul Motorsport,Lamborghini Huracan GT3 EVO 2,Lamborghini,,,Pirelli,GT3,driver-020
+dtm,84,Mercedes-AMG Team Landgraf,Mercedes-AMG GT3,Mercedes,,,Pirelli,GT3,driver-021
+dtm,90,Manthey EMA,Porsche 911 GT3 R 992,Porsche,Porsche,,Pirelli,GT3,driver-022
+dtm,91,Manthey EMA,Porsche 911 GT3 R 992,Porsche,Porsche,,Pirelli,GT3,driver-023
+dtm,92,Manthey Junior Team,Porsche 911 GT3 R 992,Porsche,Porsche,,Pirelli,GT3,driver-024
+f1,1,Oracle Red Bull Racing,RB21,Oracle Red Bull Racing,Honda RBPT,,Pirelli,F1,driver-025
+f1,4,McLaren Formula 1 Team,MCL39,McLaren Formula 1 Team,Mercedes,,Pirelli,F1,driver-026
+f1,5,Kick Sauber F1 Team,C45,Kick Sauber F1 Team,Ferrari,,Pirelli,F1,driver-027
+f1,6,Visa Cash App Racing Bulls,VCARB 02,Visa Cash App Racing Bulls,Honda RBPT,,Pirelli,F1,driver-028
+f1,7,BWT Alpine F1 Team,A525,BWT Alpine F1 Team,Renault,,Pirelli,F1,driver-029
+f1,10,BWT Alpine F1 Team,A525,BWT Alpine F1 Team,Renault,,Pirelli,F1,driver-030
+f1,12,Mercedes AMG PETRONAS F1 Team,W16,Mercedes AMG PETRONAS F1 Team,Mercedes,,Pirelli,F1,driver-031
+f1,14,Aston Martin Aramco F1 Team,AMR25,Aston Martin Aramco F1 Team,Mercedes,,Pirelli,F1,driver-032
+f1,16,Scuderia Ferrari,SF-25,Scuderia Ferrari,Ferrari,,Pirelli,F1,driver-033
+f1,18,Aston Martin Aramco F1 Team,AMR25,Aston Martin Aramco F1 Team,Mercedes,,Pirelli,F1,driver-034
+f1,22,Visa Cash App Racing Bulls,VCARB 02,Visa Cash App Racing Bulls,Honda RBPT,,Pirelli,F1,driver-035
+f1,23,Williams Racing,FW47,Williams Racing,Mercedes,,Pirelli,F1,driver-036
+f1,27,Kick Sauber F1 Team,C45,Kick Sauber F1 Team,Ferrari,,Pirelli,F1,driver-037
+f1,30,Oracle Red Bull Racing,RB21,Oracle Red Bull Racing,Honda RBPT,,Pirelli,F1,driver-038
+f1,31,MoneyGram Haas F1 Team,VF-25,MoneyGram Haas F1 Team,Ferrari,,Pirelli,F1,driver-039
+f1,44,Scuderia Ferrari,SF-25,Scuderia Ferrari,Ferrari,,Pirelli,F1,driver-040
+f1,55,Williams Racing,FW47,Williams Racing,Mercedes,,Pirelli,F1,driver-041
+f1,63,Mercedes AMG PETRONAS F1 Team,W16,Mercedes AMG PETRONAS F1 Team,Mercedes,,Pirelli,F1,driver-042
+f1,81,McLaren Formula 1 Team,MCL39,McLaren Formula 1 Team,Mercedes,,Pirelli,F1,driver-043
+f1,87,MoneyGram Haas F1 Team,VF-25,MoneyGram Haas F1 Team,Ferrari,,Pirelli,F1,driver-044
+f2,1,Invicta Racing,Dallara F2 2024,Dallara,Mecachrome,Hewland,Pirelli,F2,driver-045
+f2,2,Invicta Racing,Dallara F2 2024,Dallara,Mecachrome,Hewland,Pirelli,F2,driver-046
+f2,3,Campos Racing,Dallara F2 2024,Dallara,Mecachrome,Hewland,Pirelli,F2,driver-047
+f2,4,Campos Racing,Dallara F2 2024,Dallara,Mecachrome,Hewland,Pirelli,F2,driver-048
+f2,5,MP Motorsport,Dallara F2 2024,Dallara,Mecachrome,Hewland,Pirelli,F2,driver-049
+f2,6,MP Motorsport,Dallara F2 2024,Dallara,Mecachrome,Hewland,Pirelli,F2,driver-050
+f2,7,Hitech TGR,Dallara F2 2024,Dallara,Mecachrome,Hewland,Pirelli,F2,driver-051
+f2,8,Hitech TGR,Dallara F2 2024,Dallara,Mecachrome,Hewland,Pirelli,F2,driver-052
+f2,9,PREMA Racing,Dallara F2 2024,Dallara,Mecachrome,Hewland,Pirelli,F2,driver-053
+f2,10,PREMA Racing,Dallara F2 2024,Dallara,Mecachrome,Hewland,Pirelli,F2,driver-054
+f2,11,DAMS Lucas Oil,Dallara F2 2024,Dallara,Mecachrome,Hewland,Pirelli,F2,driver-055
+f2,12,DAMS Lucas Oil,Dallara F2 2024,Dallara,Mecachrome,Hewland,Pirelli,F2,driver-056
+f2,14,ART Grand Prix,Dallara F2 2024,Dallara,Mecachrome,Hewland,Pirelli,F2,driver-057
+f2,15,ART Grand Prix,Dallara F2 2024,Dallara,Mecachrome,Hewland,Pirelli,F2,driver-058
+f2,16,Rodin Motorsport,Dallara F2 2024,Dallara,Mecachrome,Hewland,Pirelli,F2,driver-059
+f2,17,Rodin Motorsport,Dallara F2 2024,Dallara,Mecachrome,Hewland,Pirelli,F2,driver-060
+f2,20,AIX Racing,Dallara F2 2024,Dallara,Mecachrome,Hewland,Pirelli,F2,driver-061
+f2,21,AIX Racing,Dallara F2 2024,Dallara,Mecachrome,Hewland,Pirelli,F2,driver-062
+f2,22,TRIDENT,Dallara F2 2024,Dallara,Mecachrome,Hewland,Pirelli,F2,driver-063
+f2,23,TRIDENT,Dallara F2 2024,Dallara,Mecachrome,Hewland,Pirelli,F2,driver-064
+f2,24,Van Amersfoort Racing,Dallara F2 2024,Dallara,Mecachrome,Hewland,Pirelli,F2,driver-065
+f2,25,Van Amersfoort Racing,Dallara F2 2024,Dallara,Mecachrome,Hewland,Pirelli,F2,driver-066
+f3,1,PREMA Racing,Dallara F3 2025,Dallara,Mecachrome,3MO,Pirelli,F3,driver-067
+f3,2,PREMA Racing,Dallara F3 2025,Dallara,Mecachrome,3MO,Pirelli,F3,driver-068
+f3,3,PREMA Racing,Dallara F3 2025,Dallara,Mecachrome,3MO,Pirelli,F3,driver-069
+f3,4,TRIDENT,Dallara F3 2025,Dallara,Mecachrome,3MO,Pirelli,F3,driver-070
+f3,5,TRIDENT,Dallara F3 2025,Dallara,Mecachrome,3MO,Pirelli,F3,driver-071
+f3,6,TRIDENT,Dallara F3 2025,Dallara,Mecachrome,3MO,Pirelli,F3,driver-072
+f3,7,ART Grand Prix,Dallara F3 2025,Dallara,Mecachrome,3MO,Pirelli,F3,driver-073
+f3,8,ART Grand Prix,Dallara F3 2025,Dallara,Mecachrome,3MO,Pirelli,F3,driver-074
+f3,9,ART Grand Prix,Dallara F3 2025,Dallara,Mecachrome,3MO,Pirelli,F3,driver-075
+f3,10,Campos Racing,Dallara F3 2025,Dallara,Mecachrome,3MO,Pirelli,F3,driver-076
+f3,11,Campos Racing,Dallara F3 2025,Dallara,Mecachrome,3MO,Pirelli,F3,driver-077
+f3,12,Campos Racing,Dallara F3 2025,Dallara,Mecachrome,3MO,Pirelli,F3,driver-078
+f3,14,Hitech TGR,Dallara F3 2025,Dallara,Mecachrome,3MO,Pirelli,F3,driver-079
+f3,15,Hitech TGR,Dallara F3 2025,Dallara,Mecachrome,3MO,Pirelli,F3,driver-080
+f3,16,Hitech TGR,Dallara F3 2025,Dallara,Mecachrome,3MO,Pirelli,F3,driver-081
+f3,17,MP Motorsport,Dallara F3 2025,Dallara,Mecachrome,3MO,Pirelli,F3,driver-082
+f3,18,MP Motorsport,Dallara F3 2025,Dallara,Mecachrome,3MO,Pirelli,F3,driver-083
+f3,19,MP Motorsport,Dallara F3 2025,Dallara,Mecachrome,3MO,Pirelli,F3,driver-084
+f3,20,Van Amersfoort Racing,Dallara F3 2025,Dallara,Mecachrome,3MO,Pirelli,F3,driver-085
+f3,21,Van Amersfoort Racing,Dallara F3 2025,Dallara,Mecachrome,3MO,Pirelli,F3,driver-086
+f3,22,Van Amersfoort Racing,Dallara F3 2025,Dallara,Mecachrome,3MO,Pirelli,F3,driver-087
+f3,23,Rodin Motorsport,Dallara F3 2025,Dallara,Mecachrome,3MO,Pirelli,F3,driver-088
+f3,24,Rodin Motorsport,Dallara F3 2025,Dallara,Mecachrome,3MO,Pirelli,F3,driver-089
+f3,25,Rodin Motorsport,Dallara F3 2025,Dallara,Mecachrome,3MO,Pirelli,F3,driver-090
+f3,26,AIX Racing,Dallara F3 2025,Dallara,Mecachrome,3MO,Pirelli,F3,driver-091
+f3,27,AIX Racing,Dallara F3 2025,Dallara,Mecachrome,3MO,Pirelli,F3,driver-092
+f3,28,AIX Racing,Dallara F3 2025,Dallara,Mecachrome,3MO,Pirelli,F3,driver-093
+f3,29,DAMS Lucas Oil,Dallara F3 2025,Dallara,Mecachrome,3MO,Pirelli,F3,driver-094
+f3,30,DAMS Lucas Oil,Dallara F3 2025,Dallara,Mecachrome,3MO,Pirelli,F3,driver-095
+f3,31,DAMS Lucas Oil,Dallara F3 2025,Dallara,Mecachrome,3MO,Pirelli,F3,driver-096
+wec,5,Porsche Penske Motorsport,Porsche 963,Porsche,Porsche,Xtrac,Michelin,Hypercar,driver-097|driver-098|driver-099
+wec,6,Porsche Penske Motorsport,Porsche 963,Porsche,Porsche,Xtrac,Michelin,Hypercar,driver-100|driver-101|driver-102
+wec,007,Aston Martin THOR Team,Aston Martin Valkyrie,Aston Martin,,,Michelin,Hypercar,driver-103|driver-104|driver-105
+wec,7,Toyota Gazoo Racing,Toyota GR010 - Hybrid,Toyota,Toyota,,Michelin,Hypercar,driver-106|driver-107|driver-108
+wec,8,Toyota Gazoo Racing,Toyota GR010 - Hybrid,Toyota,Toyota,,Michelin,Hypercar,driver-109|driver-110|driver-111
+wec,009,Aston Martin THOR Team,Aston Martin Valkyrie,Aston Martin,,,Michelin,Hypercar,driver-112|driver-113|driver-114
+wec,10,Racing Spirit Of Leman,Aston Martin Vantage AMR LMGT3,Aston Martin,,,Goodyear,LMGT3,driver-115|driver-116|driver-117
+wec,12,Cadillac Hertz Team JOTA,Cadillac V-Series.R,Cadillac,,Xtrac,Michelin,Hypercar,driver-118|driver-119|driver-120
+wec,15,BMW M Team WRT,BMW M Hybrid V8,BMW,BMW,Xtrac,Michelin,Hypercar,driver-121|driver-122|driver-123
+wec,20,BMW M Team WRT,BMW M Hybrid V8,BMW,BMW,Xtrac,Michelin,Hypercar,driver-014|driver-124|driver-125
+wec,21,Vista AF Corse,Ferrari 296 LMGT3,Ferrari,Ferrari,,Goodyear,LMGT3,driver-126|driver-127|driver-128
+wec,27,Heart Of Racing Team,Aston Martin Vantage AMR LMGT3,Aston Martin,,,Goodyear,LMGT3,driver-129|driver-130|driver-131
+wec,31,The Bend Team WRT,BMW M4 LMGT3,BMW,BMW,,Goodyear,LMGT3,driver-132|driver-133|driver-134
+wec,33,TF Sport,Corvette Z06 LMGT3.R,Corvette,,,Goodyear,LMGT3,driver-135|driver-136|driver-137
+wec,35,Alpine Endurance Team,Alpine A424,Alpine,,Xtrac,Michelin,Hypercar,driver-138|driver-139|driver-140
+wec,36,Alpine Endurance Team,Alpine A424,Alpine,,Xtrac,Michelin,Hypercar,driver-016|driver-141|driver-142
+wec,38,Cadillac Hertz Team JOTA,Cadillac V-Series.R,Cadillac,,Xtrac,Michelin,Hypercar,driver-143|driver-144|driver-145
+wec,46,Team WRT,BMW M4 LMGT3,BMW,BMW,,Goodyear,LMGT3,driver-146|driver-147|driver-148
+wec,50,Ferrari AF Corse,Ferrari 499P,Ferrari,Ferrari,,Michelin,Hypercar,driver-149|driver-150|driver-151
+wec,51,Ferrari AF Corse,Ferrari 499P,Ferrari,Ferrari,,Michelin,Hypercar,driver-152|driver-153|driver-154
+wec,54,Vista AF Corse,Ferrari 296 LMGT3,Ferrari,Ferrari,,Goodyear,LMGT3,driver-155|driver-156|driver-157
+wec,59,United Autosports,McLaren 720S LMGT3 Evo,McLaren,,,Goodyear,LMGT3,driver-158|driver-159|driver-160
+wec,60,Iron Lynx,Mercedes-AMG LMGT3,Mercedes-AMG,,,Goodyear,LMGT3,driver-161|driver-162|driver-163
+wec,61,Iron Lynx,Mercedes-AMG LMGT3,Mercedes-AMG,,,Goodyear,LMGT3,driver-164|driver-165|driver-166
+wec,77,Proton Competition,Ford Mustang LMGT3,Ford,,,Goodyear,LMGT3,driver-167|driver-168|driver-169
+wec,78,Akkodis ASP Team,Lexus RC F LMGT3,Lexus,,,Goodyear,LMGT3,driver-170|driver-171|driver-172
+wec,81,TF Sport,Corvette Z06 LMGT3.R,Corvette,,,Goodyear,LMGT3,driver-173|driver-174|driver-175
+wec,83,AF Corse,Ferrari 499P,Ferrari,Ferrari,,Michelin,Hypercar,driver-176|driver-177|driver-178
+wec,85,Iron Dames,Porsche 911 GT3 R LMGT3,Porsche,Porsche,,Goodyear,LMGT3,driver-179|driver-180|driver-181
+wec,87,Akkodis ASP Team,Lexus RC F LMGT3,Lexus,,,Goodyear,LMGT3,driver-182|driver-183|driver-184
+wec,88,Proton Competition,Ford Mustang LMGT3,Ford,,,Goodyear,LMGT3,driver-185|driver-186|driver-187
+wec,92,Manthey 1st Phorm,Porsche 911 GT3 R LMGT3,Porsche,Porsche,,Goodyear,LMGT3,driver-188|driver-189|driver-190
+wec,93,Peugeot TotalEnergies,Peugeot 9X8,Peugeot,,,Michelin,Hypercar,driver-191|driver-192|driver-193
+wec,94,Peugeot TotalEnergies,Peugeot 9X8,Peugeot,,,Michelin,Hypercar,driver-194|driver-195|driver-196
+wec,95,United Autosports,McLaren 720S LMGT3 Evo,McLaren,,,Goodyear,LMGT3,driver-197|driver-198|driver-199
+wec,99,Proton Competition,Porsche 963,Porsche,Porsche,Xtrac,Michelin,Hypercar,driver-200|driver-201|driver-202

@@ -1,0 +1,61 @@
+#gallery {
+  width: min(1280px, 100%);
+  margin: auto;
+  padding: clamp(14px, 3vw, 44px);
+  color: #ebedf2;
+}
+#gallery h1 {
+  margin: 0 0 24px;
+}
+#gallery label {
+  display: grid;
+  gap: 8px;
+  max-width: 340px;
+}
+#gallery select {
+  width: 100%;
+  padding: 0.5rem;
+}
+#gallery section {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+  margin: 24px 0;
+  gap: 14px;
+}
+#gallery figure {
+  margin: 0;
+  background: #20242d;
+  border-radius: 4px;
+  overflow: hidden;
+}
+#gallery .career-portrait {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+#gallery figcaption {
+  padding: 10px;
+  font-size: 0.9rem;
+}
+#gallery a {
+  color: #bed5ff;
+}
+#gallery .studio-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+#gallery button {
+  padding: 0.55rem 1rem;
+  margin: 0 0 12px;
+  color: inherit;
+  background: #262b36;
+  border: 1px solid #464d59;
+  border-radius: 4px;
+}
+@media (max-width: 760px) {
+  #gallery .studio-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+#gallery nav { display: flex; align-items: baseline; gap: 12px; }
+#gallery button:disabled { opacity: 0.45; }

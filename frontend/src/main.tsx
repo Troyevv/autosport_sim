@@ -9,10 +9,26 @@ import './people.css'
 import './race.css'
 import './app.css'
 
+import { Library } from './career/Library'
+import { Workspace } from './career/Workspace'
+import { api, explain, type World, type Save, type Career, type Asset } from './career/api'
+import './career/career.css'
+
 function Bootstrap() {
+  const [boot, setBoot] = useState<{
+    world: World
+    saves: Save[]
+    career: Career | null
+    media: Asset[]
+  } | null>(null)
+  const [message, setMessage] = useState('')
+  const params = new URLSearchParams(location.search)
+  const demo = params.get('demo') === '1',
+    cid = params.get('career')
+
   const [attempt, retry] = useState(0)
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading')
-  const [adapter] = useState(() => new DemoGameAdapter())
+
   useEffect(() => {
     const controller = new AbortController()
     const timeout = setTimeout(() => controller.abort(), 8000)
@@ -22,9 +38,20 @@ function Bootstrap() {
         const r = await fetch('/api/config', { signal: controller.signal })
         if (!r.ok) throw Error()
         const config = await r.json()
-        if (config.mode !== 'demo' || config.career_saves !== false) throw Error()
+        if (config.mode !== 'career' || config.career_saves !== true) throw Error()
+        if (!demo) {
+          const opts = { signal: controller.signal }
+          const [world, saves, career, media] = await Promise.all([
+            api<World>('world', opts),
+            api<Save[]>('careers', opts),
+            cid ? api<Career>('careers/' + encodeURIComponent(cid), opts) : null,
+            api<Asset[]>('media', opts),
+          ])
+          if (active) setBoot({ world, saves, career, media })
+        }
         if (active) setStatus('ready')
-      } catch {
+      } catch (err) {
+        if (active) setMessage(explain(err))
         if (active) setStatus('error')
       } finally {
         clearTimeout(timeout)
@@ -36,7 +63,7 @@ function Bootstrap() {
       clearTimeout(timeout)
       controller.abort()
     }
-  }, [attempt])
+  }, [attempt, demo, cid])
   if (status !== 'ready')
     return (
       <main className="boot panel" aria-live="polite">
@@ -44,7 +71,10 @@ function Bootstrap() {
         <h1>{status === 'error' ? 'Нет связи с приложением' : 'Загрузка интерфейса…'}</h1>
         {status === 'error' && (
           <>
-            <p>Проверьте запуск локального API на порту 8102.</p>
+            <p>{message}</p>
+            <a className="btn" href="./">
+              К списку карьер
+            </a>
             <button
               className="btn btn-primary"
               onClick={() => {
@@ -58,6 +88,16 @@ function Bootstrap() {
         )}
       </main>
     )
+  if (!demo && boot)
+    return boot.career ? (
+      <Workspace world={boot.world} c={boot.career} media={boot.media} />
+    ) : (
+      <Library world={boot.world} saves={boot.saves} media={boot.media} />
+    )
+  return <Demo />
+}
+function Demo() {
+  const [adapter] = useState(() => new DemoGameAdapter())
   return (
     <GameContext.Provider value={adapter}>
       <App />

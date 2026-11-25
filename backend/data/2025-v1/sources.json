@@ -1,0 +1,31 @@
+{
+  "season": 2025,
+  "verified": "2026-11-25",
+  "basis": "Заявки первого этапа каждой серии, календарь на начало сезона",
+  "sources": {
+    "f1": "https://api.fia.com/sites/default/files/media_kit_-_2025_australian_grand_prix_.pdf",
+    "f2": "https://www.fia.com/system/files/decision-document/2025_melbourne_event_-_f2_qualifying_-_final_classification.pdf",
+    "f3": "https://www.fia.com/sites/default/files/doc_24_-_2025_melbourne_event_-_f3_qualifying_-_final_classification.pdf",
+    "dtm": "https://www.adac-sport.com/Virtual_Noticeboard_DTM_Oschersleben_731842/docs/75_DTM_Qualifying_1_ResultList_10.PDF",
+    "wec": "https://fiawec.alkamelsystems.com/Results/14_2025/01_LOSAIL/00_Event%20Info/2_Provisional%20Entry%20List%20V1.pdf",
+    "wecfinal": "https://storage.googleapis.com/ecm-prod/assets/1/course/4929/03-classification-race-hour-10_67fc22.pdf",
+    "cal": "https://www.fia.com/news/2025-fia-sporting-calendars-approved-world-motor-sport-council-0",
+    "dtmcal": "https://media.adac-motorsport.de/dl.php?dID=2614%2C2615%2C2943%2C3183&fID=83431",
+    "staff": "https://www.formula1.com/en/latest/article/who-are-the-2025-f1-team-principals.2GSAsHzQG3pHubcnxBOV8t",
+    "dtm_rules": "https://media.adac-motorsport.de/dl.php?dID=2614%2C2691%2C3255%2C3288&fID=84822",
+    "fia_rules": "https://www.fia.com/regulations",
+    "f2_rules": "https://www.fiaformula2.com/Latest/Tag/Guide-To-F2",
+    "f3_rules": "https://www.fiaformula3.com/Latest/Tag/Guide-To-F3",
+    "wec_staff": "https://toyotagazooracing.com/wec/drivers/2025/",
+    "prema": "https://www.fiaformula2.com/en/latest/article/prema-racings-2025-season-review-a-lot-of-positives-but-more-work-to-do.4I3gckR3KIkDJ2xVtGvpru",
+    "grasser": "https://www.grasser-racing.com/category/news/page/2/",
+    "mercedes": "https://www.mercedesamgf1.com/car/2025",
+    "bmw": "https://www.bmw-m.com/en/fastlane/motorsport/race-cars/bmw-m4-gt3-evo.html",
+    "f2_car": "https://www.fiaformula2.com/en/information/the-car-and-engine-f2.14LCsEEMG9yyx5DkhcN1J8",
+    "f3_car": "https://www.fiaformula3.com/en/information/the-car-and-engine-f3.5tGE8Qr5FdTJJwaUN0YbWq",
+    "xtrac": "https://www.xtrac.com/xtrac-appointed-sole-gearbox-supplier-for-new-hybrid-lmdh-class-of-endurance-racing/",
+    "formula-tyres": "https://www.fia.com/news/pirelli-confirmed-fia-formula-one-world-championship-sole-tyre-supplier-2025-2027",
+    "wec-tyres": "https://api.fia.com/news/wec-fia-confirms-tyre-suppliers-2030-2032",
+    "dtm-tyres": "https://press.pirelli.com/dtm-fires-up-at-oschersleben/"
+  }
+}

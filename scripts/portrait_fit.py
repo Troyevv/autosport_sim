@@ -1,0 +1,285 @@
+"""Register studio anatomy and kit necklines in the original photograph's plane."""
+
+from io import BytesIO
+
+import cv2
+import numpy as np
+from PIL import Image
+
+# The measurement canvas includes shoulders beyond the edges of the 240-unit head layer.
+OFFSET = 120
+W, H = 480, 300
+
+
+def component(mask):
+    count, labels, stats, _ = cv2.connectedComponentsWithStats(np.uint8(mask > 0.48))
+    if count < 2:
+        raise ValueError("Не виден контур ткани")
+    label = 1 + np.argmax(stats[1:, cv2.CC_STAT_AREA])
+    return labels == label
+
+
+def shoulder_panels(mask, center, chin, span):
+    # A deep neckline can split a single garment into two disconnected panels
+    # above the lower edge of a roster photograph. Measure each shoulder.
+    count, labels = cv2.connectedComponents(np.uint8(mask > 0.48))
+    if count < 2:
+        raise ValueError("Не видна ткань на плечах")
+    yy, xx = np.ogrid[: mask.shape[0], : mask.shape[1]]
+    chest = (yy > chin) & (yy < chin + 3 * span)
+    selected = []
+    for sign in (-1, 1):
+        distance = (xx - center) * sign
+        side = labels[chest & (distance > 0.65 * span) & (distance < 4.3 * span)]
+        sizes = np.bincount(side, minlength=count)[1:]
+        if sizes.max() < 0.07 * span**2:
+            raise ValueError("Не видны оба плеча")
+        selected.append(1 + sizes.argmax())
+    return np.isin(labels, selected)
+
+
+def top_line(mask, default):
+    present = np.flatnonzero(mask.any(axis=0))
+    if len(present) < 8:
+        raise ValueError("Недостаточно ткани для измерения воротника")
+    values = np.argmax(mask[:, present], axis=0)
+    result = np.interp(np.arange(W), present, values, left=default, right=default)
+    return cv2.medianBlur(result.astype("float32")[None], 5)[0]
+
+
+def rounded(values):
+    return [round(float(v), 2) for v in values]
+
+
+def anchors(line, center, left, right, neck, skin=None):
+    def ridge(sign):
+        offsets = np.arange(max(4, round(neck * 0.62)), max(7, round(neck * 1.48)))
+        samples = np.clip(np.rint(center + offsets * sign).astype(int), 0, W - 1)
+        # Prefer the shoulder-side end of a rounded collar lip.
+        score = line[samples] + 0.13 * np.abs(offsets - neck)
+        return float(samples[np.argmin(score)])
+
+    nl, nr = ridge(-1), ridge(1)
+    left = min(left, nl - 10)
+    right = max(right, nr + 10)
+    xs = np.concatenate(
+        [
+            np.linspace(left, nl, 7)[:-1],
+            np.linspace(nl, center, 8)[:-1],
+            np.linspace(center, nr, 8)[:-1],
+            np.linspace(nr, right, 7),
+        ]
+    )
+    ys = np.interp(xs, np.arange(W), line)
+    if skin is not None:
+        bottom, chin, eye_span = skin
+        # Seat the front band just inside the original visible neck. Sample the
+        # alpha contour along the entire throat, including either side of a V.
+        for i, x in enumerate(xs):
+            distal = abs(x - center) / eye_span
+            if distal <= 0.92:
+                y = bottom[int(np.clip(round(x), 0, W - 1))]
+                if y > chin - 1:
+                    ys[i] = min(ys[i], y - 2)
+        # Hair can hide the collar in the source photo. Under it the cloth
+        # continues to the shoulder instead of tracing the tips of long hair.
+        ys = np.minimum(
+            ys,
+            np.interp(
+                xs,
+                [left, nl, center, nr, right],
+                [ys[0], chin + eye_span * 0.56, ys[13], chin + eye_span * 0.56, ys[-1]],
+            )
+            + eye_span * 0.27,
+        )
+    return [rounded(xs - OFFSET), rounded(ys)]
+
+
+def smooth_shoulders(outline):
+    # Hair over a sleeve may leave one isolated cloth sample near the cheek.
+    # Interpolate only that sample between its measured neighbours. Leave both
+    # collar ridges and the centre of the neck untouched.
+    xs, ys = outline
+    fitted = list(ys)
+    tolerance = max(4.0, (xs[20] - xs[6]) * 0.12)
+    for i in (1, 2, 3, 4, 22, 23, 24, 25):
+        if min(ys[i - 1], ys[i + 1]) - ys[i] > tolerance:
+            weight = (xs[i] - xs[i - 1]) / (xs[i + 1] - xs[i - 1])
+            fitted[i] = round(ys[i - 1] + weight * (ys[i + 1] - ys[i - 1]), 2)
+    return [xs, fitted]
+
+
+def neckline(outline, full_depth):
+    xs, measured = (np.array(row) for row in outline)
+    middle = len(xs) // 2
+    # The original neckline supplies tilt and depth. Smooth the front band
+    # between its two endpoints without following individual segmentation pixels.
+    # Old cutouts may end on a horizontal crop; give them a continuous neckline
+    # inside that shorter skin contour.
+    fitted = measured.copy()
+    for ridge in (6, 20):
+        side = np.arange(min(middle, ridge), max(middle, ridge) + 1)
+        t = abs((xs[side] - xs[middle]) / (xs[ridge] - xs[middle]))
+        arc = measured[ridge] + (measured[middle] - measured[ridge]) * (1 - t**1.45)
+        original = np.array(full_depth)[side]
+        loss = max(0, full_depth[middle] - measured[middle])
+        fitted[side] = np.minimum(
+            measured[side], 0.50 * arc + 0.50 * (original - loss * (1 - t**2))
+        )
+    return smooth_shoulders([rounded(xs), rounded(fitted)])
+
+
+def body(original, rgb, lm, matrix, old, processor):
+    masks = processor.skin.segment(processor.image(rgb)).confidence_masks
+    masks = [m.numpy_view().squeeze().copy() for m in masks]
+    face = lm @ matrix[:, :2].T + matrix[:, 2]
+    eyes = (face[[33, 133]].mean(0) + face[[362, 263]].mean(0)) / 4
+    chin = face[152] / 2
+    span = np.linalg.norm(face[[33, 133]].mean(0) - face[[362, 263]].mean(0)) / 2
+    cx = chin[0] + OFFSET
+    rgba = np.asarray(Image.open(BytesIO(old)).convert("RGBA")).copy()
+    # Recover only lower-neck skin from the original pixels. Keep existing
+    # hair, ears and all face pixels byte-identical, including their matte.
+    # Segment around the jaw at portrait resolution. The full body model can
+    # assign adjoining rows of the same neck to its face-skin and body-skin
+    # classes. Both are real skin. Restrict additions to the neck outside the
+    # protected facial hull.
+    native_span = np.linalg.norm(lm[[33, 133]].mean(0) - lm[[362, 263]].mean(0))
+    px, py = lm[152]
+    x0, x1 = (
+        max(0, int(px - 2.25 * native_span)),
+        min(rgb.shape[1], int(px + 2.25 * native_span) + 1),
+    )
+    y0, y1 = (
+        max(0, int(py - 2.1 * native_span)),
+        min(rgb.shape[0], int(py + 3 * native_span) + 1),
+    )
+    local = processor.skin.segment(processor.image(rgb[y0:y1, x0:x1])).confidence_masks
+    score = local[2].numpy_view().squeeze() + local[3].numpy_view().squeeze()
+    if original[:, :, 3].min() == 0:
+        # On transparent studio originals the photographed outside edge is
+        # stronger evidence than the segmenter's low-resolution background
+        # label. Keep that edge where neither clothing nor accessories occur.
+        clothing = local[4].numpy_view().squeeze()
+        accessory = local[5].numpy_view().squeeze()
+        bare = np.clip((0.23 - clothing) / 0.20, 0, 1) * np.clip(
+            (0.25 - accessory) / 0.2, 0, 1
+        )
+        score = np.maximum(score, bare)
+    skin = np.zeros(rgb.shape[:2], dtype=np.float32)
+    skin[y0:y1, x0:x1] = np.clip((score - 0.12) / 0.73, 0, 1)
+    skin *= original[:, :, 3] / 255
+    neck = cv2.warpAffine(np.dstack((rgb * skin[:, :, None], skin)), matrix, (480, 560))
+    alpha = neck[:, :, 3]
+    yy, xx = np.ogrid[:560, :480]
+    dist = (xx - 2 * chin[0]) / (2 * span)
+    gate = np.clip((yy - 2 * chin[1] + span * 2.0) / (span * 0.30), 0, 1) * np.clip(
+        (1.38 - np.abs(dist)) / 0.18, 0, 1
+    )
+    gate *= np.clip((2 * chin[1] + span * 4.3 - yy) / (span * 0.5), 0, 1)
+    protected = np.zeros((560, 480), np.uint8)
+    cv2.fillConvexPoly(protected, cv2.convexHull(np.int32(np.rint(face))), 1)
+    gate *= 1 - cv2.erode(
+        protected, np.ones((max(3, round(span * 0.60)),) * 2, np.uint8)
+    )
+    a = alpha * gate
+    oa = rgba[:, :, 3] / 255
+    add = np.maximum(0, a - oa)
+    final = oa + add
+    color = np.divide(neck[:, :, :3], np.maximum(alpha[:, :, None], 0.00001))
+    change = add > 1 / 255
+    out = (rgba[:, :, :3] * oa[:, :, None] + color * add[:, :, None]) / np.maximum(
+        final[:, :, None], 0.00001
+    )
+    rgba[:, :, :3][change] = np.uint8(np.clip(out[change], 0, 255))
+    rgba[:, :, 3][change] = np.uint8(255 * final[change])
+    result = BytesIO()
+    Image.fromarray(rgba).save(result, "PNG", optimize=True)
+    transform = matrix / 2
+    transform[:, 2] += [OFFSET, 0]
+    cloth = cv2.warpAffine(masks[4] * original[:, :, 3] / 255, transform, (W, H))
+    keep = shoulder_panels(cloth, cx, chin[1], span)
+    line = top_line(keep, chin[1] + 2 * span)
+    row = int(np.clip(chin[1] + span * 2, 0, H - 1))
+    # Two clavicles and the observed outline in the upper chest retain
+    # asymmetry, body build and studio pose even when sleeves are cropped.
+    band = keep[max(0, row - 5) : row + 6].sum(axis=0) > 3
+    visible = np.flatnonzero(band)
+    if not len(visible) or visible[0] > cx - span or visible[-1] < cx + span:
+        visible = np.flatnonzero(keep.any(axis=0))
+    left = max(visible[0] + 3, cx - 4.3 * span)
+    right = min(visible[-1] - 3, cx + 4.3 * span)
+    opacity = cv2.resize(rgba[:, :, 3], (240, 280))
+    scalp = np.flatnonzero((opacity > 96).sum(axis=1) > 3)[0]
+    eye_chin = chin[1] - eyes[1]
+
+    foreground = original[:, :, 3] / 255
+    if foreground.min() > 0.99:
+        foreground = 1 - masks[0]
+    subject = cv2.warpAffine(foreground, transform, (W, H))
+
+    def guide(a):
+        visible = np.pad(a > 100, ((0, H - 280), (OFFSET, W - 240 - OFFSET)))
+        bottom = np.where(
+            visible.any(axis=0), H - 1 - np.argmax(visible[::-1], axis=0), 0
+        )
+        # Within the actual subject, the jersey begins where exposed skin ends.
+        # Read several consecutive pixels so a soft beard or a stray hair does
+        # not introduce a collar spur.
+        rows = np.arange(H)[:, None]
+        start = np.maximum(chin[1] - 0.22 * span, line - 0.85 * span)
+        interior = (subject > 0.78) & ~visible & (rows >= start)
+        solid = interior[:-2] & interior[1:-1] & interior[2:]
+        edge = np.where(solid.any(axis=0), np.argmax(solid, axis=0), line)
+        seam = np.minimum(line, cv2.medianBlur(edge.astype("float32")[None], 5)[0])
+        return anchors(seam, cx, left, right, span * 0.89, (bottom, chin[1], span))
+
+    registered = guide(opacity)
+    legacy = guide(
+        cv2.resize(np.asarray(Image.open(BytesIO(old)))[:, :, 3], (240, 280))
+    )
+    # Frame from hair to clavicles. Keep the full crown and temples for broad
+    # hairstyles without zooming back out to show the sponsor panel.
+    top = scalp - max(3, (chin[1] - scalp) * 0.048)
+    bottom = max(chin[1] + 0.69 * eye_chin, registered[1][13] + 0.24 * eye_chin)
+    hair = np.flatnonzero((opacity[: int(chin[1])] > 96).sum(axis=0) > 2)
+    height = max(bottom - top, (hair[-1] - hair[0] + 9) * 280 / 240)
+    width = height * 240 / 280
+    mid = np.clip(eyes[0], hair[-1] + 4 - width / 2, hair[0] - 4 + width / 2)
+    camera = rounded([mid - width / 2, top, width, height])
+    return result.getvalue(), dict(
+        camera=camera,
+        body=neckline(registered, registered[1]),
+        legacy=neckline(legacy, registered[1]),
+    )
+
+
+def kit_guide(image, rig):
+    alpha = np.asarray(image.convert("RGBA"))[:, :, 3] / 255
+    scale = 246 / rig["span"]
+    x, y = np.array(rig["seat"]) - scale * np.array(rig["collar"])
+    placed = cv2.warpAffine(
+        alpha, np.float32([[scale, 0, OFFSET + x], [0, scale, y]]), (W, H)
+    )
+    line = top_line(component(placed), rig["seat"][1] + 80)
+    # Use the same chest cross-section as the portrait; do not treat the
+    # farthest sleeve pixel as an anatomical shoulder joint.
+    row = round(rig["seat"][1] + 45)
+    cols = np.flatnonzero(placed[row] > 0.52)
+    return anchors(line, OFFSET + rig["seat"][0], cols[0] + 2, cols[-1] - 2, 26)
+
+
+def fit_studio_source(raw, processor):
+    """Reuse R3.2's initial cut and its original coordinate plane in the same pass."""
+    with Image.open(BytesIO(raw)) as image:
+        studio = image.convert("RGBA").getchannel("A").getextrema()[0] == 0
+    registered = []
+    initial, native_width = processor._render(
+        raw, studio=studio, register=lambda *args: registered.append(args)
+    )
+    pixels, fit = body(*registered[0], initial, processor)
+    return pixels, {
+        "camera": fit["camera"],
+        "body": fit["body"],
+        "nativeWidth": native_width,
+    }

@@ -1,0 +1,350 @@
+{
+  "f1": {
+    "name": "Formula 1",
+    "discipline": "Formula",
+    "classes": [
+      "F1"
+    ],
+    "crew": [
+      1,
+      1
+    ],
+    "cars_per_team": 2,
+    "sessions": {
+      "standard": [
+        "FP1",
+        "FP2",
+        "FP3",
+        "Q",
+        "Гран-при"
+      ],
+      "sprint": [
+        "FP1",
+        "SQ",
+        "Спринт",
+        "Q",
+        "Гран-при"
+      ]
+    },
+    "points": {
+      "race": [
+        25,
+        18,
+        15,
+        12,
+        10,
+        8,
+        6,
+        4,
+        2,
+        1
+      ],
+      "sprint": [
+        8,
+        7,
+        6,
+        5,
+        4,
+        3,
+        2,
+        1
+      ]
+    },
+    "finish": "Дистанция по кругам",
+    "tyre_market": {
+      "F1": {
+        "id": "f1-2025-f1-tyres-v1",
+        "mode": "sole",
+        "approved_suppliers": [
+          "supplier-pirelli"
+        ],
+        "allocation_authority": "organizer",
+        "source": "formula-tyres"
+      }
+    }
+  },
+  "f2": {
+    "name": "FIA Formula 2",
+    "discipline": "Formula",
+    "classes": [
+      "F2"
+    ],
+    "crew": [
+      1,
+      1
+    ],
+    "cars_per_team": 2,
+    "sessions": {
+      "standard": [
+        "Практика",
+        "Квалификация",
+        "Спринт",
+        "Основная гонка"
+      ]
+    },
+    "points": {
+      "race": [
+        25,
+        18,
+        15,
+        12,
+        10,
+        8,
+        6,
+        4,
+        2,
+        1
+      ],
+      "sprint": [
+        10,
+        8,
+        6,
+        5,
+        4,
+        3,
+        2,
+        1
+      ],
+      "pole": 2,
+      "fastest_eligible": 1
+    },
+    "finish": "Дистанция по кругам",
+    "tyre_market": {
+      "F2": {
+        "id": "f2-2025-f2-tyres-v1",
+        "mode": "sole",
+        "approved_suppliers": [
+          "supplier-pirelli"
+        ],
+        "allocation_authority": "organizer",
+        "source": "formula-tyres"
+      }
+    }
+  },
+  "f3": {
+    "name": "FIA Formula 3",
+    "discipline": "Formula",
+    "classes": [
+      "F3"
+    ],
+    "crew": [
+      1,
+      1
+    ],
+    "cars_per_team": 3,
+    "sessions": {
+      "standard": [
+        "Практика",
+        "Квалификация",
+        "Спринт",
+        "Основная гонка"
+      ]
+    },
+    "points": {
+      "race": [
+        25,
+        18,
+        15,
+        12,
+        10,
+        8,
+        6,
+        4,
+        2,
+        1
+      ],
+      "sprint": [
+        10,
+        9,
+        8,
+        7,
+        6,
+        5,
+        4,
+        3,
+        2,
+        1
+      ],
+      "pole": 2,
+      "fastest_eligible": 1
+    },
+    "finish": "Дистанция по кругам",
+    "tyre_market": {
+      "F3": {
+        "id": "f3-2025-f3-tyres-v1",
+        "mode": "sole",
+        "approved_suppliers": [
+          "supplier-pirelli"
+        ],
+        "allocation_authority": "organizer",
+        "source": "formula-tyres"
+      }
+    }
+  },
+  "dtm": {
+    "name": "DTM",
+    "discipline": "GT",
+    "classes": [
+      "GT3"
+    ],
+    "crew": [
+      1,
+      1
+    ],
+    "sessions": {
+      "standard": [
+        "Тренировки",
+        "Квалификация 1",
+        "Гонка 1",
+        "Квалификация 2",
+        "Гонка 2"
+      ]
+    },
+    "points": {
+      "race": [
+        25,
+        20,
+        16,
+        13,
+        11,
+        10,
+        9,
+        8,
+        7,
+        6,
+        5,
+        4,
+        3,
+        2,
+        1
+      ],
+      "qualifying": [
+        3,
+        2,
+        1
+      ]
+    },
+    "finish": "55 минут + 1 круг",
+    "tyre_market": {
+      "GT3": {
+        "id": "dtm-2025-gt3-tyres-v1",
+        "mode": "sole",
+        "approved_suppliers": [
+          "supplier-pirelli"
+        ],
+        "allocation_authority": "organizer",
+        "source": "dtm-tyres"
+      }
+    }
+  },
+  "wec": {
+    "name": "FIA WEC",
+    "discipline": "Endurance",
+    "classes": [
+      "Hypercar",
+      "LMGT3"
+    ],
+    "crew": [
+      2,
+      3
+    ],
+    "sessions": {
+      "6h": [
+        "Тренировки",
+        "Квалификация",
+        "Hyperpole",
+        "Гонка экипажей"
+      ],
+      "8h": [
+        "Тренировки",
+        "Квалификация",
+        "Hyperpole",
+        "Гонка экипажей"
+      ],
+      "10h": [
+        "Тренировки",
+        "Квалификация",
+        "Hyperpole",
+        "Гонка экипажей"
+      ],
+      "24h": [
+        "Тренировки",
+        "Квалификация",
+        "Hyperpole",
+        "Гонка экипажей"
+      ]
+    },
+    "points": {
+      "6h": [
+        25,
+        18,
+        15,
+        12,
+        10,
+        8,
+        6,
+        4,
+        2,
+        1
+      ],
+      "8h": [
+        38,
+        27,
+        23,
+        18,
+        15,
+        12,
+        9,
+        6,
+        3,
+        2
+      ],
+      "10h": [
+        38,
+        27,
+        23,
+        18,
+        15,
+        12,
+        9,
+        6,
+        3,
+        2
+      ],
+      "24h": [
+        50,
+        36,
+        30,
+        24,
+        20,
+        16,
+        12,
+        8,
+        4,
+        2
+      ],
+      "pole": 1
+    },
+    "finish": "По времени, со сменой пилотов. Катар — 1812 км или 10 часов.",
+    "tyre_market": {
+      "Hypercar": {
+        "id": "wec-2025-hypercar-tyres-v1",
+        "mode": "sole",
+        "approved_suppliers": [
+          "supplier-michelin"
+        ],
+        "allocation_authority": "organizer",
+        "source": "wec-tyres"
+      },
+      "LMGT3": {
+        "id": "wec-2025-lmgt3-tyres-v1",
+        "mode": "sole",
+        "approved_suppliers": [
+          "supplier-goodyear"
+        ],
+        "allocation_authority": "organizer",
+        "source": "wec-tyres"
+      }
+    }
+  }
+}
