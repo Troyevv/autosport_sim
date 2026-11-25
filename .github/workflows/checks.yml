@@ -80,5 +80,8 @@ jobs:
           try {
             $reader = [IO.StreamReader]::new($zip.GetEntry('manifest.json').Open())
             $manifest = $reader.ReadToEnd() | ConvertFrom-Json
+            $faces = @($manifest.assets | Where-Object { $_.kind -eq 'generated-head' -and $_.anatomy.body[0].Count -eq 27 })
+            $kits = @($manifest.assets | Where-Object { $_.kind -eq 'uniform' -and $_.garment })
+            if ($faces.Count -ne 8 -or $kits.Count -ne 4) { throw 'Incomplete R3.2 portrait geometry or wardrobe' }
             if ($manifest.assets.Count -lt 6 -or $zip.Entries.Count -ne ($manifest.assets.Count + 1)) { throw 'Incomplete media ZIP' }
           } finally { $zip.Dispose() }

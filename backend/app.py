@@ -5,8 +5,8 @@ from fastapi.responses import JSONResponse, Response
 from fastapi.concurrency import run_in_threadpool
 
 from . import media, service
-from .catalog import WORLD
-from .domain import RuleError
+from .catalog import DISPLAY_NAMES, WORLD
+from .domain import RuleError, team_color
 
 app = FastAPI(title="Autosport Sim", version="0.2.0")
 
@@ -28,7 +28,11 @@ def config():
 
 @app.get("/api/world")
 def world():
-    return WORLD
+    organizations = {
+        key: {**value, "color": team_color(key)}
+        for key, value in WORLD["organizations"].items()
+    }
+    return {**WORLD, "names": DISPLAY_NAMES, "organizations": organizations}
 
 
 @app.get("/api/careers")

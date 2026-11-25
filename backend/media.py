@@ -9,8 +9,8 @@ import zipfile
 import zlib
 
 from PIL import Image
-from pydantic import Field
-from typing import Literal
+from pydantic import Field, model_validator
+from typing import Annotated, Literal
 
 from .catalog import WORLD
 from .domain import RuleError
@@ -22,7 +22,48 @@ ITEM_LIMIT = 4 * 1024 * 1024
 Kind = Literal["head", "generated-head", "logo", "car", "sponsor-strip", "uniform"]
 
 
+Coordinate = Annotated[float, Field(ge=-1024, le=2048, allow_inf_nan=False)]
+Curve = Annotated[list[Coordinate], Field(min_length=27, max_length=27)]
+Outline = tuple[Curve, Curve]
+
+
+def check_outline(outline):
+    if any(b <= a for a, b in zip(outline[0], outline[0][1:])):
+        raise ValueError("Некорректные измерения плеч и воротника.")
+
+
+class Anatomy(Strict):
+    camera: tuple[Coordinate, Coordinate, Coordinate, Coordinate]
+    body: Outline
+    nativeWidth: int = Field(ge=1, le=10000)
+
+    @model_validator(mode="after")
+    def measured(self):
+        check_outline(self.body)
+        if not (5 <= self.camera[2] <= 512 and 5 <= self.camera[3] <= 600):
+            raise ValueError("Недопустимая область кадрирования.")
+        return self
+
+
+class Rig(Strict):
+    span: float = Field(ge=10, le=4096)
+    seat: tuple[Coordinate, Coordinate]
+    collar: tuple[Coordinate, Coordinate]
+
+
+class Garment(Strict):
+    rig: Rig
+    outline: Outline
+
+    @model_validator(mode="after")
+    def measured(self):
+        check_outline(self.outline)
+        return self
+
+
 class Asset(Strict):
+    anatomy: Anatomy | None = None
+    garment: Garment | None = None
     kind: Kind
     entity: str = Field(pattern=r"^[a-z0-9-]{1,100}$")
     path: str = Field(pattern=r"^images/[a-z0-9-]{1,130}\.(png|webp|jpg)$")
@@ -48,7 +89,9 @@ def known(a):
     if a.kind == "car":
         return a.entity in WORLD["cars"]
     if a.kind == "uniform":
-        return a.entity in ("driver", "staff")
+        return bool(
+            re.fullmatch(r"(studio-)?(driver|staff|manufacturer|neutral)", a.entity)
+        )
     if a.kind == "logo" and a.entity in WORLD["championships"]:
         return True
     return a.entity in WORLD["organizations"]
@@ -89,6 +132,12 @@ def validate(data):
             key = (a.kind, a.entity)
             if key in keys or not known(a):
                 raise ValueError("Неизвестный или повторяющийся ID.")
+            if a.anatomy and a.kind not in {"head", "generated-head"}:
+                raise ValueError("Анатомические измерения допустимы только для лица.")
+            if bool(a.garment) != (
+                a.kind == "uniform" and a.entity.startswith("studio-")
+            ):
+                raise ValueError("Для студийной ткани нужны измерения воротника.")
             keys.add(key)
             content = archive.read(a.path)
             if hashlib.sha256(content).hexdigest() != a.sha256:
@@ -104,15 +153,18 @@ def validate(data):
                 ):
                     raise ValueError("Неподдерживаемый формат или размер изображения.")
                 if a.kind in {"head", "generated-head", "uniform"} and (
-                    im.size != (256, 320)
+                    (
+                        not a.garment
+                        and im.size != ((480, 560) if a.anatomy else (256, 320))
+                    )
                     or im.mode != "RGBA"
                     or im.getchannel("A").getextrema() != (0, 255)
                 ):
                     raise ValueError(
-                        "Портретные слои требуют RGBA 256×320 с прозрачным фоном."
+                        f"Некорректный размер, формат RGBA или прозрачность слоя {a.entity}."
                     )
                 im.load()
-            assets.append((*key, dump(a.model_dump()), content))
+            assets.append((*key, dump(a.model_dump(exclude_none=True)), content))
         return assets
 
 

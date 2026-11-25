@@ -1,75 +1,117 @@
 import { useId } from 'react'
 import { assetUrl, type Asset, type Person } from './api'
+import stock from './garmentContours.json'
+import { shoulderFrame, useFittedFabric } from './portraitAnatomy'
 
-/** All head and uniform layers share a 256×320 canvas and a neck anchor at (128,191). */
 export function Portrait({
   person,
   org,
   color,
   driver,
   media,
+  showShoulders = false,
 }: {
-  person: Person
+  person: Pick<Person, 'name' | 'origin' | 'face'>
   org: string | null
   color: string
   driver: boolean
   media: Asset[]
+  showShoulders?: boolean
 }) {
-  const uid = useId().replace(/:/g, '')
-  const head = assetUrl(media, person.origin === 'generated' ? 'generated-head' : 'head', person.face)
-  const uniform = assetUrl(media, 'uniform', driver ? 'driver' : 'staff')
-  const logo = assetUrl(media, 'logo', org),
-    sponsors = assetUrl(media, 'sponsor-strip', org)
-  const body = driver
-    ? 'M0 320V274Q3 247 39 228L84 209 99 184H157L172 209 218 229Q252 247 256 274V320Z'
-    : 'M0 320V274Q5 245 43 228L93 200 101 185H155L165 201 213 227Q251 244 256 274V320Z'
+  const id = useId().replace(/:/g, '')
+  const kind = person.origin === 'generated' ? 'generated-head' : 'head'
+  const asset = media.find((a) => a.entity === person.face && a.kind === kind)
+  const role = !org ? 'neutral' : driver ? 'driver' : org.startsWith('supplier-') ? 'manufacturer' : 'staff'
+  const garment = media.find((a) => a.kind === 'uniform' && a.entity === 'studio-' + role)
+  const textile =
+    assetUrl(media, 'uniform', garment?.entity ?? null) || '/assets/studio-wardrobe/' + role + '.webp'
+  const fabric = useFittedFabric(asset?.sha256, garment?.garment ?? stock[role], textile, asset?.anatomy)
+  // Keep a fully dressed placeholder while the photographed fabric is being decoded.
+  const frame = fabric ? asset?.anatomy : undefined
+  const head = !asset?.anatomy || frame ? assetUrl(media, kind, person.face) : undefined
+  const surface = frame && shoulderFrame(frame)
+  const camera = showShoulders ? surface : frame?.camera
+  const fallback = assetUrl(media, 'uniform', role) || '/assets/wardrobe/' + role + '.webp'
+  const badge = assetUrl(media, 'logo', org)
+  const sponsors = assetUrl(media, 'sponsor-strip', org)
+  const rgb = (org ? color : '#85878a')
+    .slice(1)
+    .match(/../g)!
+    .map((v) => parseInt(v, 16) / 255)
+  const chestX = frame ? frame.body[0][21] - 3 : 151
+  const chestY = frame ? frame.body[1][21] + 18 : 235
+  const width = frame ? 20 : 35
   return (
     <svg
       className="career-portrait"
-      viewBox="0 0 256 320"
+      viewBox={camera?.join(' ') || '0 0 256 320'}
       role="img"
       aria-label={person.name + (head ? '' : ' · силуэт')}
     >
       <defs>
-        <linearGradient id={uid} x2="1" y2="1" gradientUnits="objectBoundingBox">
-          <stop stopColor="#959ca8" />
-          <stop offset=".5" stopColor="#575e69" />
-          <stop offset="1" stopColor="#363b44" />
+        <clipPath id={id + '-front'}>
+          <path d="M0 206 Q52 207 89 188 Q127 212 167 188 Q205 207 256 206 V320 H0Z" />
+        </clipPath>
+        <filter id={id + '-fabric'} colorInterpolationFilters="sRGB">
+          <feComponentTransfer>
+            {rgb.map((v, i) => {
+              const Channel = (['feFuncR', 'feFuncG', 'feFuncB'] as const)[i]
+              return (
+                <Channel
+                  key={i}
+                  type="table"
+                  tableValues={[0, v * 0.59, v, v + (1 - v) * 0.32, v + (1 - v) * 0.72].join(' ')}
+                />
+              )
+            })}
+          </feComponentTransfer>
+        </filter>
+        <linearGradient id={id + '-skin'} x2="1" y2=".6">
+          <stop stopColor="#9298a2" />
+          <stop offset="1" stopColor="#454a55" />
         </linearGradient>
       </defs>
+      {!frame && <image href={fallback} width="256" height="320" filter={'url(#' + id + '-fabric)'} />}
       {head ? (
-        <>
-          <path d={body} fill={org ? color : '#4e525c'} />
-          {uniform && (
-            <image
-              href={uniform}
-              width="256"
-              height="320"
-              style={{ mixBlendMode: 'luminosity', opacity: 0.8 }}
-            />
-          )}
-          <path
-            d="M12 255L82 218 69 232 6 271ZM244 255L174 218 188 232 250 271Z"
-            fill={org ? color : '#777b82'}
-          />
-          <image href={head} width="256" height="320" />
-          <path
-            d={
-              driver
-                ? 'M94 187Q128 209 162 187L158 202Q128 220 98 201Z'
-                : 'M95 187L126 203 111 222 88 202ZM161 187L130 203 145 222 168 202Z'
-            }
-            fill={org ? color : '#4e525c'}
-          />
-          <path d="M128 210V320" stroke="#22252b" strokeWidth="2" />
-          {logo && <image href={logo} x="151" y="226" width="40" height="24" />}
-          {sponsors && <image href={sponsors} x="73" y="266" width="110" height="25" />}
-        </>
+        <image data-layer="appearance" href={head} width={frame ? 240 : 256} height={frame ? 280 : 320} />
       ) : (
-        <g fill={'url(#' + uid + ')'}>
-          <path d={body} />
-          <path d="M100 197L102 173Q85 161 83 139Q72 138 75 122L80 119Q73 53 119 48Q173 39 177 98L175 120Q184 116 181 134Q180 141 173 143Q171 161 155 174L158 197Q129 220 100 197Z" />
-        </g>
+        <path
+          fill={'url(#' + id + '-skin)'}
+          d="M99 215L103 165Q86 153 83 133Q73 131 75 116L80 115Q74 51 118 45Q172 37 177 92L175 115Q184 111 181 130Q180 137 173 138Q170 157 154 167L158 215Z"
+        />
+      )}
+      {surface && fabric ? (
+        <image
+          data-layer="fitted-fabric"
+          href={fabric}
+          x={surface[0]}
+          y={surface[1]}
+          width={surface[2]}
+          height={surface[3]}
+          preserveAspectRatio="none"
+          filter={'url(#' + id + '-fabric)'}
+        />
+      ) : (
+        !frame && (
+          <image
+            data-layer="kit"
+            clipPath={'url(#' + id + '-front)'}
+            href={fallback}
+            width="256"
+            height="320"
+            filter={'url(#' + id + '-fabric)'}
+          />
+        )
+      )}
+      {badge && <image href={badge} x={chestX} y={chestY} width={width} height={width * 0.68} />}
+      {sponsors && (
+        <image
+          href={sponsors}
+          x={frame ? 90 : 77}
+          y={frame ? chestY + 35 : 276}
+          width={frame ? 65 : 100}
+          height="22"
+        />
       )}
     </svg>
   )

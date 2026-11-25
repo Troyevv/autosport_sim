@@ -210,6 +210,13 @@ def apply(state, catalog, action):
 def team_color(organization):
     # Interface palette for team apparel; also stable for independent teams.
     colors = {
+        "team-aston-martin-aramco-f1-team": "#00795e",
+        "team-williams-racing": "#1463be",
+        "team-toyota-gazoo-racing": "#3a3b3d",
+        "supplier-pirelli": "#e7b820",
+        "supplier-michelin": "#235799",
+        "supplier-goodyear": "#183e81",
+        "team-oracle-red-bull-racing": "#242d54",
         "team-mclaren-formula-1-team": "#eb8818",
         "team-scuderia-ferrari": "#ae293c",
         "team-mercedes-amg-petronas-f1-team": "#268c83",

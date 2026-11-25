@@ -195,3 +195,7 @@ def load_catalog():
 
 
 WORLD = load_catalog()
+
+# Version 1 replays the published name and ID byte-for-byte. Display the
+# corrected spelling without changing a saved world, the RNG or the photo ID.
+DISPLAY_NAMES = {**WORLD["names"], "person-louis-hamilton": "Lewis Hamilton"}

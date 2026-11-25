@@ -7,7 +7,7 @@ from uuid import uuid4
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
 from . import domain, storage
-from .catalog import VERSION, WORLD
+from .catalog import DISPLAY_NAMES, VERSION, WORLD
 from .engineering import resource_scope, project_target
 
 
@@ -58,9 +58,10 @@ def project(db, cid, state):
         if assignment["org"] != org:
             continue
         person = domain.occupant_on(state["seats"].get(aid, []), state["date"])
-        people.append(
-            {**assignment, "person": person, "occupant": state["people"].get(person)}
-        )
+        occupant = state["people"].get(person)
+        if occupant and person in DISPLAY_NAMES:
+            occupant = {**occupant, "name": DISPLAY_NAMES[person]}
+        people.append({**assignment, "person": person, "occupant": occupant})
     history = storage.postings(db, cid, org)
     targets = [
         project_target(WORLD, program["id"], g["season"], g["id"])

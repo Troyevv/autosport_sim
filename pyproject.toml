@@ -10,7 +10,7 @@ dependencies = [
 
 [project.optional-dependencies]
 media-builder = [
-    "opencv-python-headless>=5.1.0.95",
+    "mediapipe==0.10.32",
     "resvg-py>=0.5.0",
 ]
 

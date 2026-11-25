@@ -26,6 +26,16 @@ def pack(issue=None):
         changes="",
         sha256=hashlib.sha256(content).hexdigest(),
     )
+    if issue == "curve":
+        a["anatomy"] = dict(
+            camera=[20, 1, 180, 210], nativeWidth=300, body=[[90] * 27, [140] * 27]
+        )
+    if issue == "camera":
+        a["anatomy"] = dict(
+            camera=[20, 1, -120, 210],
+            nativeWidth=300,
+            body=[list(range(27)), [140] * 27],
+        )
     assets = [a]
     if issue == "unknown":
         assets = [a, {**a, "path": "images/second.png", "entity": "person-missing"}]
@@ -61,7 +71,16 @@ def test_pack_is_atomic_and_idempotent(tmp_path, monkeypatch):
     assert media.index() == []
     with pytest.raises(domain.RuleError):
         media.get("head", "person-lando-norris")
-    for issue in ("unknown", "link", "path", "checksum", "version", "format"):
+    for issue in (
+        "unknown",
+        "link",
+        "path",
+        "checksum",
+        "version",
+        "format",
+        "curve",
+        "camera",
+    ):
         with pytest.raises(domain.RuleError):
             media.install(pack(issue))
         assert media.index() == []

@@ -1,5 +1,5 @@
 import type { Role } from '../game'
-export type Organization = { id: string; name: string; kind: string; programs: string[]; lines: string[] }
+export type Organization = { color: string; id: string; name: string; kind: string; programs: string[]; lines: string[] }
 export type Championship = {
   id: string
   name: string
@@ -112,7 +112,11 @@ export type Career = Save & {
     payroll_cents: number
   }[]
 }
+export type Anatomy = { camera: number[]; body: number[][]; nativeWidth: number }
+export type Garment = { rig: { span: number; collar: number[]; seat: number[] }; outline: number[][] }
 export type Asset = {
+  anatomy?: Anatomy
+  garment?: Garment
   kind: string
   entity: string
   sha256: string

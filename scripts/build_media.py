@@ -15,123 +15,19 @@ import zipfile
 from pathlib import Path
 
 import cv2
-import numpy as np
 import resvg_py
-from PIL import Image, ImageDraw, ImageFilter, ImageOps
+from PIL import Image, ImageOps
 
 from backend.catalog import WORLD
 from backend.media import validate
+from .portrait_processing import PortraitProcessor
+from .portrait_fit import fit_studio_source, kit_guide
+import numpy as np
+from . import portrait_sources as sources
 
 ROOT = Path(__file__).resolve().parents[1]
-PROJECT = "https://github.com/Troyevv/autosport_sim/blob/1e0eeec/reference/ui-v1/docs/ASSETS.md"
 ICONS = "https://registry.npmjs.org/simple-icons/-/simple-icons-13.21.0.tgz"
 ICON_HASH = "33e4e8c92f51bac4c4e88c3b2d98ad2b4faa91a00cbfdf24c894e8691a2e63ea"
-PHOTOS = {
-    (
-        "head",
-        "person-lando-norris",
-    ): "Lando Norris Formula 1 Driver (49379469418) (cropped).jpg",
-    ("head", "person-andrea-stella"): "Andrea Stella 2024 (cropped).jpg",
-    ("car", "car-f1-4"): "2025 Japan GP - McLaren - Lando Norris - FP1 (cropped).jpg",
-}
-# Outlines in 200px reference coordinates, clockwise from crown; last section includes neck.
-OUTLINES = {
-    "keller": [
-        (96, 7),
-        (116, 8),
-        (131, 19),
-        (137, 35),
-        (135, 58),
-        (140, 64),
-        (138, 82),
-        (133, 87),
-        (130, 104),
-        (127, 116),
-        (129, 130),
-        (109, 143),
-        (91, 143),
-        (72, 130),
-        (73, 111),
-        (68, 96),
-        (66, 85),
-        (61, 76),
-        (61, 61),
-        (65, 58),
-        (59, 42),
-        (59, 23),
-        (74, 13),
-    ],
-    "weber": [
-        (91, 5),
-        (110, 2),
-        (128, 10),
-        (139, 24),
-        (137, 43),
-        (134, 60),
-        (136, 65),
-        (132, 81),
-        (128, 84),
-        (126, 103),
-        (128, 122),
-        (116, 133),
-        (96, 137),
-        (75, 129),
-        (73, 116),
-        (72, 101),
-        (68, 87),
-        (63, 80),
-        (61, 63),
-        (60, 55),
-        (54, 48),
-        (54, 31),
-        (65, 16),
-    ],
-    "morozova": [
-        (96, 4),
-        (114, 5),
-        (132, 20),
-        (143, 43),
-        (145, 76),
-        (146, 96),
-        (139, 110),
-        (127, 116),
-        (129, 135),
-        (115, 146),
-        (98, 148),
-        (77, 132),
-        (80, 116),
-        (61, 116),
-        (51, 107),
-        (48, 94),
-        (51, 66),
-        (56, 39),
-        (72, 15),
-    ],
-    "ricci": [
-        (94, 5),
-        (113, 7),
-        (132, 18),
-        (138, 34),
-        (137, 56),
-        (139, 63),
-        (136, 82),
-        (131, 87),
-        (128, 104),
-        (128, 123),
-        (119, 138),
-        (101, 148),
-        (79, 132),
-        (77, 117),
-        (77, 104),
-        (71, 88),
-        (66, 83),
-        (62, 68),
-        (63, 58),
-        (58, 48),
-        (58, 27),
-        (71, 14),
-    ],
-}
 
 
 def get(url):
@@ -154,121 +50,7 @@ def png(im):
     return out.getvalue()
 
 
-def synthetic_head(name):
-    im = Image.open(ROOT / "frontend/public/assets" / (name + ".webp")).convert("RGBA")
-    mask = Image.new("L", im.size)
-    ImageDraw.Draw(mask).polygon(
-        [
-            (round(x * im.width / 200), round(y * im.height / 200))
-            for x, y in OUTLINES[name]
-        ],
-        fill=255,
-    )
-    im.putalpha(mask.filter(ImageFilter.GaussianBlur(1)))
-    layer = im.crop(mask.getbbox())
-    layer = layer.resize(
-        (round(layer.width * 181 / layer.height), 181), Image.Resampling.LANCZOS
-    )
-    canvas = Image.new("RGBA", (256, 320))
-    canvas.alpha_composite(layer, ((256 - layer.width) // 2, 18))
-    return png(canvas)
-
-
-def uniform(driver):
-    # Reuse the photographed folds from the project's generated clothing. Blank chest badges
-    # with adjacent cloth texture; the importing team's badge is an independent layer.
-    name = "keller" if driver else "ricci"
-    im = (
-        Image.open(ROOT / "frontend/public/assets" / (name + ".webp"))
-        .convert("RGB")
-        .resize((400, 400))
-    )
-    im = ImageOps.grayscale(im)
-    im.paste(im.crop((211, 350, 279, 378)), (248, 351))
-    shape = (
-        [
-            (0, 339),
-            (87, 296),
-            (136, 268),
-            (142, 239),
-            (164, 271),
-            (202, 286),
-            (245, 268),
-            (258, 241),
-            (269, 265),
-            (320, 281),
-            (399, 328),
-            (399, 399),
-            (0, 399),
-        ]
-        if driver
-        else [
-            (0, 344),
-            (74, 291),
-            (134, 266),
-            (147, 228),
-            (158, 263),
-            (203, 295),
-            (245, 264),
-            (260, 227),
-            (278, 261),
-            (332, 288),
-            (399, 313),
-            (399, 399),
-            (0, 399),
-        ]
-    )
-    mask = Image.new("L", im.size)
-    ImageDraw.Draw(mask).polygon(shape, fill=255)
-    cloth = ImageOps.colorize(im, black="#252832", white="#c9cbd0").convert("RGBA")
-    cloth.putalpha(mask.filter(ImageFilter.GaussianBlur(1)))
-    cloth = cloth.crop((0, 225, 400, 400)).resize((256, 138), Image.Resampling.LANCZOS)
-    canvas = Image.new("RGBA", (256, 320))
-    canvas.alpha_composite(cloth, (0, 182))
-    return png(canvas)
-
-
-def cut_head(im):
-    """Fit one frontal subject, remove background with a seeded foreground mask."""
-    im = im.convert("RGB")
-    im.thumbnail((850, 850))
-    rgb = np.array(im)
-    classifier = cv2.CascadeClassifier(
-        cv2.data.haarcascades + "haarcascade_frontalface_default.xml"
-    )
-    faces = classifier.detectMultiScale(
-        cv2.cvtColor(rgb, cv2.COLOR_RGB2GRAY), 1.08, 5, minSize=(35, 35)
-    )
-    if len(faces) != 1:
-        raise ValueError("Для этой фотографии нужна ручная проверка вырезки")
-    x, y, w, h = map(int, faces[0])
-    mask = np.zeros(rgb.shape[:2], np.uint8)
-    center = (x + w // 2, y + h // 2)
-    cv2.ellipse(
-        mask, center, (int(0.69 * w), int(0.90 * h)), 0, 0, 360, cv2.GC_PR_FGD, -1
-    )
-    cv2.ellipse(mask, center, (int(0.36 * w), int(0.42 * h)), 0, 0, 360, cv2.GC_FGD, -1)
-    cv2.setRNGSeed(1)
-    cv2.grabCut(
-        rgb,
-        mask,
-        None,
-        np.zeros((1, 65), np.float64),
-        np.zeros((1, 65), np.float64),
-        5,
-        cv2.GC_INIT_WITH_MASK,
-    )
-    alpha = Image.fromarray(np.where((mask == 1) | (mask == 3), 255, 0).astype("uint8"))
-    im = im.convert("RGBA")
-    im.putalpha(alpha.filter(ImageFilter.GaussianBlur(0.6)))
-    layer = im.crop(alpha.getbbox())
-    layer.thumbnail((132, 183))
-    canvas = Image.new("RGBA", (256, 320))
-    canvas.alpha_composite(layer, ((256 - layer.width) // 2, 197 - layer.height))
-    return png(canvas)
-
-
-def commons_photo(kind, title):
+def commons_car(title):
     query = urllib.parse.urlencode(
         dict(
             action="query",
@@ -291,11 +73,8 @@ def commons_photo(kind, title):
     if urllib.parse.urlparse(url).hostname != "upload.wikimedia.org":
         raise ValueError("Неизвестный источник изображения")
     im = ImageOps.exif_transpose(Image.open(io.BytesIO(get(url))))
-    if kind == "head":
-        data = cut_head(im)
-    else:
-        im.thumbnail((1200, 900))
-        data = png(im)
+    im.thumbnail((1200, 900))
+    data = png(im)
     return (
         data,
         info["descriptionurl"],
@@ -305,11 +84,86 @@ def commons_photo(kind, title):
     )
 
 
+def source_bytes(item):
+    digest = item.get("sha256")
+    if not digest:
+        return sources.fetch(item["image"], set(item["hosts"]), 16 * 1024 * 1024)
+    cache = ROOT / ".autosport/media-cache" / digest
+    if cache.is_file():
+        data = cache.read_bytes()
+        if hashlib.sha256(data).hexdigest() == digest:
+            return data
+    data = sources.fetch(item["image"], {"raw.githubusercontent.com"}, 16 * 1024 * 1024)
+    if hashlib.sha256(data).hexdigest() != digest:
+        raise ValueError("Снимок источника отличается от проверенной версии")
+    cache.parent.mkdir(parents=True, exist_ok=True)
+    with tempfile.NamedTemporaryFile(dir=cache.parent, delete=False) as stream:
+        stream.write(data)
+    Path(stream.name).replace(cache)
+    return data
+
+
+def studio_portraits(add, gaps, curated):
+    """Build only the individually selected subjects in the fitting review."""
+    data_dir = ROOT / "scripts/data"
+    review = json.loads((data_dir / "studio-review.json").read_text(encoding="utf-8"))
+    subjects = []
+    for file in sorted((data_dir / "studio").glob("*.webp")):
+        subjects.append(
+            dict(
+                entity=file.stem,
+                file=file,
+                source="https://github.com/Troyevv/autosport_sim/tree/issue-3-career-world/scripts/data/studio",
+                author="Autosport Sim / OpenAI ImageGen",
+                license="MIT (project artwork)",
+            )
+        )
+    subjects.extend(r for r in curated if r["kind"] == "head")
+    processor = PortraitProcessor()
+
+    try:
+        for record in subjects:
+            pid = record["entity"]
+            native = "file" in record
+            try:
+                raw = record["file"].read_bytes() if native else source_bytes(record)
+                head, anatomy = fit_studio_source(raw, processor)
+            except (ValueError, OSError, sources.Unavailable, cv2.error) as err:
+                gaps.append(f"head/{pid}: {err}")
+                print(f"Пропущен {pid}: {err}", flush=True)
+                continue
+            annotation = review.get(hashlib.sha256(raw).hexdigest())
+            if annotation:
+                for point, ordinate in annotation["shoulderY"].items():
+                    anatomy["body"][1][int(point)] = ordinate
+            attribution = (record["source"], record["author"], record["license"])
+            add(
+                "generated-head" if native else "head",
+                pid,
+                head,
+                *attribution,
+                "Единый масштаб кадра; сегментация лица, волос и видимой шеи.",
+                anatomy=anatomy,
+            )
+    finally:
+        processor.close()
+
+
 def build(output):
     assets, files, gaps = [], {}, []
 
-    def add(kind, entity, data, source, author, license, changes):
-        path = f"images/{kind}-{entity}.png"
+    def add(
+        kind,
+        entity,
+        data,
+        source,
+        author,
+        license,
+        changes,
+        extension="png",
+        **geometry,
+    ):
+        path = f"images/{kind}-{entity}.{extension}"
         assets.append(
             dict(
                 kind=kind,
@@ -320,31 +174,42 @@ def build(output):
                 license=license,
                 changes=changes,
                 sha256=hashlib.sha256(data).hexdigest(),
+                **geometry,
             )
         )
         files[path] = data
         print(f"Подготовлено {len(assets)} · {kind}/{entity}", flush=True)
 
-    for name in OUTLINES:
-        add(
-            "generated-head",
-            "generated-" + name,
-            synthetic_head(name),
-            PROJECT,
-            "Autosport Sim / ImageGen",
-            "MIT (project artwork)",
-            "Вырезка и привязка синтетической головы.",
-        )
-    for kind in ("driver", "staff"):
+    art = "https://github.com/Troyevv/autosport_sim/tree/issue-3-career-world"
+    for file in sorted((ROOT / "frontend/public/assets/wardrobe").glob("*.webp")):
         add(
             "uniform",
-            kind,
-            uniform(kind == "driver"),
-            PROJECT,
-            "Autosport Sim / ImageGen",
+            file.stem,
+            file.read_bytes(),
+            art + "/frontend/public/assets/wardrobe",
+            "Autosport Sim / OpenAI ImageGen",
             "MIT (project artwork)",
-            "Маска формы, нейтральная текстура и освещение.",
+            "Фотографическая текстура, маска по воротнику.",
+            "webp",
         )
+    # Front garment surfaces measured in their native photographic plane.
+    for file in sorted((ROOT / "frontend/public/assets/studio-wardrobe").glob("*.webp")):
+        with Image.open(file) as image:
+            w, h = image.size
+            center = w // 2
+            front = int(np.flatnonzero(np.asarray(image)[:, center, 3] > 120)[0])
+            rig = dict(span=w, collar=[center, front], seat=[120, 157])
+            add(
+                "uniform",
+                "studio-" + file.stem,
+                file.read_bytes(),
+                art + "/frontend/public/assets/studio-wardrobe",
+                "Autosport Sim / OpenAI ImageGen",
+                "MIT (project artwork)",
+                "Фотографическая ткань и измеренный контур переднего края.",
+                "webp",
+                garment=dict(rig=rig, outline=kit_guide(image, rig)),
+            )
     try:
         print("Загрузка эмблем Simple Icons…", flush=True)
         raw = get(ICONS)
@@ -355,6 +220,12 @@ def build(output):
                 "f1": ["f1"],
                 "mclaren": ["team-mclaren-formula-1-team"],
                 "mercedes": ["supplier-mercedes"],
+                "ferrari": ["supplier-ferrari", "team-scuderia-ferrari"],
+                "bmw": ["supplier-bmw"],
+                "renault": ["supplier-renault"],
+                "toyota": ["supplier-toyota"],
+                "porsche": ["supplier-porsche"],
+                "astonmartin": ["team-aston-martin-aramco-f1-team"],
             }.items():
                 svg = tar.extractfile("package/icons/" + name + ".svg").read().decode()
                 raster = resvg_py.svg_to_bytes(
@@ -374,14 +245,69 @@ def build(output):
                     )
     except (OSError, ValueError) as exc:
         gaps.append("Simple Icons: " + str(exc))
-    for (kind, entity), title in PHOTOS.items():
-        print(f"Загрузка и обработка · {title}", flush=True)
+    curated = json.loads(
+        (ROOT / "scripts/data/photo-sources.json").read_text(encoding="utf8")
+    )
+    for item in curated:
+        if item["kind"] != "logo":
+            continue
         try:
-            add(kind, entity, *commons_photo(kind, title))
-        except (OSError, ValueError, KeyError, IndexError, cv2.error) as exc:
-            gaps.append(
-                f"{kind}/{entity}: https://commons.wikimedia.org/wiki/File:{urllib.parse.quote(title)} — {exc}"
-            )
+            raw = source_bytes(item)
+            if item["image"].endswith(".svg"):
+                raw = resvg_py.svg_to_bytes(svg_string=raw.decode(), width=256)
+            with Image.open(io.BytesIO(raw)) as im:
+                im.thumbnail((256, 256))
+                add(
+                    "logo",
+                    item["entity"],
+                    png(im.convert("RGBA")),
+                    item["source"],
+                    item["author"],
+                    item["license"],
+                    "Локальная идентификация организации; растровая копия.",
+                )
+        except (ValueError, OSError, sources.Unavailable) as ex:
+            gaps.append(item["entity"] + " · " + str(ex))
+    existing_logos = {a["entity"] for a in assets if a["kind"] == "logo"}
+    organizations = {**WORLD["championships"], **WORLD["organizations"]}
+    logo_names = {
+        "f1": "Formula One",
+        "f2": "FIA Formula 2 Championship",
+        "f3": "FIA Formula 3 Championship",
+        "wec": "FIA World Endurance Championship",
+        "dtm": "Deutsche Tourenwagen Masters",
+    }
+    for oid, org in organizations.items():
+        if oid in existing_logos:
+            continue
+        try:
+            for candidate in sources.organization_logos(
+                logo_names.get(oid, org["name"])
+            ):
+                with Image.open(io.BytesIO(source_bytes(candidate))) as im:
+                    im.thumbnail((256, 256))
+                    add(
+                        "logo",
+                        oid,
+                        png(im.convert("RGBA")),
+                        candidate["source"],
+                        candidate["author"],
+                        candidate["license"],
+                        "Растровая эмблема. Товарные знаки правообладателей.",
+                    )
+                break
+        except (ValueError, KeyError, OSError, sources.Unavailable) as err:
+            gaps.append(f"logo/{oid}: {err}")
+    studio_portraits(add, gaps, curated)
+    try:
+        add(
+            "car",
+            "car-f1-4",
+            *commons_car("2025 Japan GP - McLaren - Lando Norris - FP1 (cropped).jpg"),
+        )
+    except (OSError, ValueError, KeyError, IndexError) as exc:
+        gaps.append(f"car/car-f1-4: {exc}")
+    portrait_ids = {r["entity"] for r in curated if r["kind"] == "head"}
     present = {(a["kind"], a["entity"]) for a in assets}
     missing = 0
     for kind, entities in [
@@ -391,10 +317,20 @@ def build(output):
     ]:
         missing += sum((kind, eid) not in present for eid in entities)
         gaps.extend(
-            f"{kind}/{eid}: нет подготовленного разрешённого изображения"
+            f"{kind}/{eid}: "
+            + (
+                "вне контрольной подборки"
+                if kind == "head"
+                else "нет подготовленного разрешённого изображения"
+            )
             for eid in sorted(entities)
             if (kind, eid) not in present
+            and not (kind == "head" and eid in portrait_ids)
         )
+    print(
+        f"Портреты: реальных {sum(a[0] == 'head' for a in present)}, синтетических {sum(a[0] == 'generated-head' for a in present)}.",
+        flush=True,
+    )
     print("Запись и проверка ZIP…", flush=True)
     manifest = dict(version=1, world=WORLD["version"], assets=assets, gaps=gaps)
     output.parent.mkdir(parents=True, exist_ok=True)

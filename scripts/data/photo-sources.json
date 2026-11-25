@@ -1,0 +1,92 @@
+[
+  {
+    "kind": "head",
+    "entity": "person-fernando-alonso",
+    "image": "https://raw.githubusercontent.com/ShivekRanjan/f1-strategy-engine/2f2190c018f96f8e0ab3e5e43bbc4783037860af/frontend/public/drivers/cutouts/ALO.webp",
+    "source": "https://commons.wikimedia.org/wiki/File:Alonso-68_(24710447098).jpg",
+    "author": "United Autosports",
+    "license": "CC BY-SA 2.0",
+    "sha256": "8a6f632702817e6e607cd8b93884f45429f60c304ca04d16acd97a20ca993736"
+  },
+  {
+    "kind": "head",
+    "entity": "person-louis-hamilton",
+    "image": "https://raw.githubusercontent.com/ShivekRanjan/f1-strategy-engine/2f2190c018f96f8e0ab3e5e43bbc4783037860af/frontend/public/drivers/cutouts/HAM.webp",
+    "source": "https://commons.wikimedia.org/wiki/File:Prime_Minister_Keir_Starmer_meets_Sir_Lewis_Hamilton_(54566928382)_(cropped).jpg",
+    "author": "Number 10",
+    "license": "Open Government Licence v3.0 · https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/",
+    "sha256": "7b2daa77554b97e023832588f1e1472439d45a57b357403989c0665843c581f5"
+  },
+  {
+    "kind": "logo",
+    "entity": "team-bwt-alpine-f1-team",
+    "image": "https://raw.githubusercontent.com/Ulle4ever/f1-strategie-manager/1f4f376edb416cb9d4f019c3e28878f518267a25/logos/alpine.png",
+    "source": "https://commons.wikimedia.org/wiki/File%3AAlpine_F1_Team_Logo.svg",
+    "author": "Alpine F1 Team",
+    "license": "Public domain",
+    "sha256": "bc8ef788178f0f8f66c1bbdf01558fa567851dd067cdd73b34d3e2b1af0ecba4"
+  },
+  {
+    "kind": "logo",
+    "entity": "team-kick-sauber-f1-team",
+    "image": "https://raw.githubusercontent.com/Ulle4ever/f1-strategie-manager/1f4f376edb416cb9d4f019c3e28878f518267a25/logos/sauber.png",
+    "source": "https://commons.wikimedia.org/wiki/File%3ALogo_Sauber_F1.png",
+    "author": "Juanchocarbonero",
+    "license": "Public domain",
+    "sha256": "fad2a7165588df97ba843a804a077bb2f29a5732b1da2238b4ed4cd819d10507"
+  },
+  {
+    "kind": "logo",
+    "entity": "team-moneygram-haas-f1-team",
+    "image": "https://raw.githubusercontent.com/Ulle4ever/f1-strategie-manager/1f4f376edb416cb9d4f019c3e28878f518267a25/logos/haas.png",
+    "source": "https://commons.wikimedia.org/wiki/File%3AHaas_F1_Team_Logo.svg",
+    "author": "Haas F1 Team",
+    "license": "Public domain",
+    "sha256": "113f4ba150a51aa9f40188d49028571c5318de3bb47500c0ebd864ef217f87bd"
+  },
+  {
+    "kind": "logo",
+    "entity": "team-williams-racing",
+    "image": "https://raw.githubusercontent.com/Ulle4ever/f1-strategie-manager/1f4f376edb416cb9d4f019c3e28878f518267a25/logos/williams.png",
+    "source": "https://commons.wikimedia.org/wiki/File%3AWilliams_Racing_Monogram.png",
+    "author": "DJClements",
+    "license": "CC BY-SA 4.0",
+    "sha256": "4809faae5883311322ce437f5716e3a1f8fd0f2589ab23eeb315a25aed56230c"
+  },
+  {
+    "kind": "logo",
+    "entity": "team-visa-cash-app-racing-bulls",
+    "image": "https://raw.githubusercontent.com/Ulle4ever/f1-strategie-manager/1f4f376edb416cb9d4f019c3e28878f518267a25/logos/rb.png",
+    "source": "https://en.wikipedia.org/wiki/File:VCARB_F1_logo.svg",
+    "author": "?",
+    "license": "Fair use",
+    "sha256": "3174b0fb716acaa637177e7a4a84514e0b3ff1c5831eb8e0b77c66d8bc33587b"
+  },
+  {
+    "kind": "logo",
+    "entity": "supplier-michelin",
+    "image": "https://raw.githubusercontent.com/Mizerd/stocks/69309eda22e8bfb3d775767fb9519c37ce2ffca0/public/logos/1e324ca8.svg",
+    "source": "https://commons.wikimedia.org/wiki/File:Michelin_Wordmark.svg",
+    "author": "Trademarked by Michelin/Registrado por Michelin. Upload by: Spider_pig",
+    "license": "Public domain (PD-textlogo)",
+    "sha256": "7a20a6dcce4805ca06d560a3c81c5e368340760612ed5adeed975520ac6f5848"
+  },
+  {
+    "kind": "logo",
+    "entity": "supplier-pirelli",
+    "image": "https://raw.githubusercontent.com/Mizerd/stocks/69309eda22e8bfb3d775767fb9519c37ce2ffca0/public/logos/ac67ebdd.svg",
+    "source": "https://commons.wikimedia.org/wiki/File:Pirelli_-_logo_full_(Italy,_1997).svg",
+    "author": "Pierluigi Cerri",
+    "license": "Public domain (PD-textlogo)",
+    "sha256": "0c5062155d0dd463fb790a6629ccca43dac5d29a466ff40cea9e8543d74fa60b"
+  },
+  {
+    "kind": "head",
+    "entity": "person-ryo-hirakawa",
+    "image": "https://raw.githubusercontent.com/barrymichaeldoyle/GrandPrixPicks/a607ae1d51eab4106063ed381ddbd366caff8603/apps/web/public/images/guides/ryo-hirakawa.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Ryo_Hirakawa_2024_WEC_Fuji_3.jpg",
+    "author": "Morio",
+    "license": "Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0) https://creativecommons.org/licenses/by-sa/4.0",
+    "sha256": "ecac93dc4de56e342051dbd9b211d73ec61b6f9a5fba971e84406c3a573d225e"
+  }
+]

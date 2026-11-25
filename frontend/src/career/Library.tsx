@@ -32,9 +32,7 @@ export function Library({ world, saves, media }: { world: World; saves: Save[]; 
     [busy, setBusy] = useState(false),
     [assets, setAssets] = useState(media)
   const organizations = Object.values(world.organizations)
-    .filter(
-      (o) => o.programs.includes(series) && o.kind === (role === 'manufacturer' ? 'supplier' : 'team'),
-    )
+    .filter((o) => o.programs.includes(series) && o.kind === (role === 'manufacturer' ? 'supplier' : 'team'))
     .sort((a, b) => a.name.localeCompare(b.name))
   const org = organizations.some((o) => o.id === chosen) ? chosen : organizations[0]?.id
   const create = async (e: FormEvent) => {
@@ -188,6 +186,11 @@ export function Library({ world, saves, media }: { world: World; saves: Save[]; 
               <div className="panel-body">
                 <p aria-live="polite">Доступно изображений: {assets.length}</p>
                 <small className="muted">Портреты, форма и эмблемы из ZIP-пакета.</small>
+                {assets.some((a) => a.anatomy) && (
+                  <p>
+                    <a href="/portraits.html">Сравнить портреты и форму</a>
+                  </p>
+                )}
               </div>
               <FileInput label="Подключить ZIP" accept=".zip" busy={busy} onFile={(f) => upload(f, true)} />
             </Panel>
