@@ -16,7 +16,7 @@ jobs:
       - run: uv run --locked ruff check backend
       - run: uv run --locked python -m pytest -q
   interface:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     defaults:
       run:
         working-directory: frontend
