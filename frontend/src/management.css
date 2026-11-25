@@ -1,0 +1,595 @@
+.management-dev-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(290px, 1fr);
+  gap: 22px;
+  margin-top: 25px;
+}
+.management-dev-layout > aside {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.management-section-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 17px;
+}
+.management-section-label h2 {
+  font-size: 16px;
+}
+.management-section-label > span {
+  font-size: 12px;
+}
+.management-projects {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.management-project {
+  padding: 21px;
+  display: flex;
+  gap: 18px;
+}
+.management-project-icon {
+  width: 47px;
+  height: 47px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  background: #29202a;
+  color: #bd8390;
+  border: 1px solid #46303b;
+  border-radius: 5px;
+}
+.management-project-info {
+  min-width: 0;
+  flex: 1;
+}
+.management-project-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 15px;
+}
+.management-project-heading .eyebrow {
+  font-size: 9px;
+}
+.management-project-heading h2 {
+  font-size: 17px;
+  margin-top: 4px;
+}
+.management-project-info > p {
+  font-size: 12px;
+  color: var(--muted);
+  margin: 13px 0 18px;
+  line-height: 1.7;
+}
+.management-project-details {
+  display: flex;
+  gap: 17px;
+  align-items: center;
+  margin-top: 13px;
+  font-size: 11px;
+  color: var(--muted);
+}
+.management-project-details > span {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+.management-project-details strong {
+  margin-left: auto;
+  color: var(--green);
+  font-weight: 600;
+}
+.management-project-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 19px;
+  padding-top: 15px;
+  border-top: 1px solid var(--border);
+  gap: 12px;
+}
+.management-project-bottom > span {
+  font-size: 10px;
+}
+.management-radar-wrap {
+  padding: 22px 12px;
+}
+.management-advisor {
+  padding: 20px;
+}
+.management-advisor-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.management-advisor-head img {
+  width: 44px;
+  height: 44px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+.management-advisor-head strong {
+  font-size: 12px;
+  display: block;
+}
+.management-advisor-head small {
+  font-size: 10px;
+  color: var(--muted);
+  display: block;
+  margin-top: 4px;
+}
+.management-advisor blockquote {
+  margin: 19px 0;
+  font-size: 13px;
+  line-height: 1.8;
+  color: #c5cbd4;
+}
+.management-advisor > p {
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 8px;
+}
+.management-tabs {
+  margin-top: 26px;
+}
+.management-calendar-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 22px;
+  gap: 15px;
+}
+.management-month {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+.management-month h2 {
+  min-width: 118px;
+  text-align: center;
+  text-transform: capitalize;
+  font-size: 17px;
+}
+.management-calendar-toolbar select {
+  font-size: 12px;
+}
+.management-calendar-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 285px;
+  gap: 20px;
+  align-items: start;
+}
+.management-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  padding: 13px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 10px;
+  color: var(--dim);
+  text-align: center;
+  letter-spacing: 1px;
+  font-weight: 600;
+}
+.management-calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+.management-calendar-day {
+  height: 114px;
+  border: 0;
+  border-right: 1px solid #242c36;
+  border-bottom: 1px solid #242c36;
+  background: transparent;
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+  padding: 9px;
+  gap: 5px;
+  overflow: hidden;
+  text-align: left;
+}
+.management-calendar-day:nth-child(7n) {
+  border-right: 0;
+}
+.management-calendar-day > span {
+  font-size: 12px;
+  color: #adb5c0;
+  width: 23px;
+  height: 23px;
+  text-align: center;
+  display: grid;
+  place-items: center;
+  border-radius: 3px;
+  margin-bottom: 2px;
+}
+.management-calendar-day:hover {
+  background: #1a212b;
+}
+.management-calendar-day.today > span {
+  background: var(--accent);
+  color: white;
+}
+.management-calendar-day.selected {
+  background: #271f28;
+  box-shadow: inset 0 0 0 1px #9b4b5b;
+}
+.management-calendar-day.selected > span {
+  color: #f0c0c8;
+}
+.management-role-banner {
+  border: 1px solid #3b3540;
+  background: linear-gradient(105deg, #241c25, #161b22);
+  padding: 19px 22px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 22px;
+  border-radius: 4px;
+}
+.management-role-icon {
+  width: 47px;
+  height: 47px;
+  background: #352630;
+  display: grid;
+  place-items: center;
+  color: #cda0aa;
+  flex-shrink: 0;
+  border-radius: 4px;
+}
+.management-role-banner strong {
+  font-size: 14px;
+}
+.management-role-banner p {
+  font-size: 12px;
+  color: #a39eaa;
+  margin-top: 5px;
+}
+.management-role-banner > .chip {
+  margin-left: auto;
+}
+.management-program-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+.management-program {
+  padding: 23px;
+  border-top: 2px solid var(--program-color);
+}
+.management-program-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 23px;
+}
+.management-program-glyph {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  background: #1f252d;
+  border-radius: 4px;
+  color: var(--program-color);
+}
+.management-program h2 {
+  font-size: 23px;
+  margin-top: 7px;
+}
+.management-program .eyebrow {
+  font-size: 9px;
+  letter-spacing: 1.1px;
+}
+.management-program-rank {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 23px 0;
+}
+.management-program-rank > strong {
+  font-size: 51px;
+  font-weight: 550;
+  line-height: 1;
+  letter-spacing: -2px;
+}
+.management-program-rank > span {
+  font-size: 11px;
+  color: var(--dim);
+  line-height: 1.7;
+}
+.management-program-rank b {
+  color: #c4ccd6;
+  font-weight: 500;
+}
+.management-program > .progress-track {
+  margin: 19px 0 24px;
+}
+.management-program .progress-track > span {
+  background: var(--program-color);
+}
+.management-product-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 22px;
+}
+.management-product-visual {
+  height: 190px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(ellipse at center, #293342, #11161e 70%);
+  border-bottom: 1px solid var(--border);
+  overflow: hidden;
+}
+.management-product-visual > svg {
+  color: #a3adba;
+  position: relative;
+  z-index: 1;
+  stroke-width: 1px;
+}
+.management-product-visual > span {
+  position: absolute;
+  right: 23px;
+  bottom: 8px;
+  font-size: 82px;
+  font-weight: 800;
+  font-style: italic;
+  letter-spacing: -7px;
+  color: #ffffff06;
+}
+.management-product-body {
+  padding: 24px;
+}
+.management-product-body h2 {
+  font-size: 25px;
+  margin: 7px 0;
+}
+.management-product-body > p {
+  font-size: 12px;
+}
+.management-product-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin: 26px 0;
+}
+.management-product-stats span {
+  font-size: 10px;
+  color: var(--muted);
+  display: block;
+  margin-bottom: 8px;
+}
+.management-product-stats strong {
+  font-size: 24px;
+  font-weight: 600;
+}
+.management-product-stats strong small {
+  font-size: 10px;
+  color: var(--dim);
+  margin-left: 2px;
+}
+.management-product-stats .progress-track {
+  margin-top: 10px;
+  height: 3px;
+}
+.management-product-price {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  border-top: 1px solid var(--border);
+  padding-top: 18px;
+}
+.management-product-price > span {
+  font-size: 10px;
+  color: var(--muted);
+}
+.management-product-price strong {
+  display: block;
+  font-size: 20px;
+  color: var(--text);
+  margin-top: 5px;
+}
+@media (max-width: 1250px) {
+  .management-dev-layout {
+    grid-template-columns: 1.5fr 1fr;
+  }
+  .management-project {
+    padding: 17px;
+    gap: 13px;
+  }
+  .management-project-icon {
+    display: none;
+  }
+  .management-program-grid {
+    gap: 15px;
+  }
+  .management-program {
+    padding: 19px;
+  }
+  .management-program h2 {
+    font-size: 19px;
+  }
+  .management-calendar-layout {
+    grid-template-columns: minmax(0, 1fr) 255px;
+  }
+  .management-calendar-day {
+    height: 105px;
+    padding: 6px;
+  }
+  .management-calendar-toolbar {
+    flex-wrap: wrap;
+  }
+}
+@media (max-width: 1050px) {
+  .management-dev-layout {
+    grid-template-columns: 1fr;
+  }
+  .management-dev-layout > aside {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+  .management-dev-layout > aside > .panel:last-child {
+    grid-column: 1/-1;
+  }
+  .management-calendar-layout {
+    grid-template-columns: 1fr;
+  }
+  .management-program-grid {
+    grid-template-columns: 1fr;
+  }
+  .management-program {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 30px;
+  }
+  .management-program-top {
+    grid-column: 1/-1;
+    margin-bottom: 15px;
+  }
+  .management-program > .eyebrow {
+    grid-column: 1;
+  }
+  .management-program h2 {
+    grid-column: 1;
+  }
+  .management-program-rank {
+    grid-column: 1;
+    grid-row: 4;
+  }
+  .management-program > .progress-track {
+    grid-column: 1/-1;
+    margin: 4px 0 15px;
+  }
+  .management-program > .btn {
+    grid-column: 1/-1;
+  }
+  .management-role-banner > .chip {
+    display: none;
+  }
+}
+@media (max-width: 760px) {
+  .management-dev-layout {
+    margin-top: 22px;
+    gap: 18px;
+  }
+  .management-project {
+    padding: 18px;
+  }
+  .management-project-heading h2 {
+    font-size: 16px;
+  }
+  .management-project-info > p {
+    font-size: 12px;
+  }
+  .management-project-details {
+    flex-wrap: wrap;
+    gap: 10px;
+    font-size: 10px;
+  }
+  .management-project-details strong {
+    margin-left: 0;
+  }
+  .management-project-bottom {
+    gap: 8px;
+  }
+  .management-project-bottom > span {
+    font-size: 10px;
+  }
+  .management-dev-layout > aside {
+    display: flex;
+  }
+  .management-calendar-toolbar {
+    gap: 14px;
+  }
+  .management-month {
+    gap: 6px;
+    width: 100%;
+    justify-content: space-between;
+  }
+  .management-month h2 {
+    font-size: 16px;
+    min-width: 120px;
+  }
+  .management-month .btn {
+    font-size: 10px;
+    padding: 5px 8px;
+    min-height: 30px;
+  }
+  .management-calendar-toolbar select {
+    width: 100%;
+  }
+  .management-calendar-layout {
+    gap: 18px;
+  }
+  .management-calendar-day {
+    height: 77px;
+    padding: 4px;
+    gap: 3px;
+  }
+  .management-calendar-day > span {
+    font-size: 11px;
+    width: 19px;
+    height: 19px;
+  }
+  .management-weekdays {
+    font-size: 9px;
+    padding: 11px 0;
+  }
+  .management-role-banner {
+    padding: 17px;
+    align-items: flex-start;
+    gap: 13px;
+  }
+  .management-role-banner p {
+    font-size: 11px;
+    line-height: 1.8;
+  }
+  .management-role-banner strong {
+    font-size: 13px;
+  }
+  .management-role-icon {
+    width: 37px;
+    height: 37px;
+  }
+  .management-program {
+    padding: 21px;
+    gap: 0 20px;
+  }
+  .management-program h2 {
+    font-size: 19px;
+  }
+  .management-program-rank > strong {
+    font-size: 47px;
+  }
+  .management-program .eyebrow {
+    font-size: 8px;
+  }
+  .management-product-grid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+  .management-product-visual {
+    height: 160px;
+  }
+  .management-product-body {
+    padding: 22px;
+  }
+  .management-product-body h2 {
+    font-size: 24px;
+  }
+  .management-product-stats {
+    gap: 11px;
+  }
+  .management-product-stats span {
+    font-size: 9px;
+  }
+  .management-product-stats strong {
+    font-size: 23px;
+  }
+}
