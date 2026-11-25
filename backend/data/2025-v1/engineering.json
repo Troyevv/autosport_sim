@@ -1,0 +1,127 @@
+{
+  "f1_atr": {
+    "id": "f1-2025-atr-app7-issue4",
+    "season": "f1-2025",
+    "source": "https://api.fia.com/system/files/documents/fia_2025_formula_1_sporting_regulations_-_issue_4_-_2025-02-26.pdf",
+    "period_starts": [
+      "2025-01-01",
+      "2025-03-03",
+      "2025-04-28",
+      "2025-06-23",
+      "2025-09-01",
+      "2025-10-27"
+    ],
+    "end_exclusive": "2026-01-01",
+    "classification_dates": [
+      "2024-12-31",
+      "2025-06-22"
+    ],
+    "rank_percent": [
+      70,
+      75,
+      80,
+      85,
+      90,
+      95,
+      100,
+      105,
+      110,
+      115
+    ],
+    "base": {
+      "runs": 320,
+      "wind_on_minutes": 4800,
+      "occupancy_minutes": 24000,
+      "cfd_geometries": 2000,
+      "cfd_milli_mauh": 6000
+    },
+    "opening_rank": [
+      "team-mclaren-formula-1-team",
+      "team-scuderia-ferrari",
+      "team-oracle-red-bull-racing",
+      "team-mercedes-amg-petronas-f1-team",
+      "team-aston-martin-aramco-f1-team",
+      "team-bwt-alpine-f1-team",
+      "team-moneygram-haas-f1-team",
+      "team-visa-cash-app-racing-bulls",
+      "team-williams-racing",
+      "team-kick-sauber-f1-team"
+    ]
+  },
+  "f1_cost_cap": {
+    "id": "f1-2025-financial-issue22",
+    "source": "https://www.fia.com/sites/default/files/fia_formula_1_financial_regulations_-_issue_22_-_2024-12-11.pdf",
+    "currency": "USD",
+    "start": "2025-01-01",
+    "end_exclusive": "2026-01-01",
+    "base_cents": 13500000000,
+    "reference_rounds": 21,
+    "per_round_adjustment_cents": 180000000,
+    "indexation": "ст. 2.3 и приложение 1; базовая сумма до индексации",
+    "included": [
+      "car-design",
+      "car-manufacturing",
+      "race-operations"
+    ],
+    "excluded": [
+      "marketing",
+      "driver-remuneration",
+      "three-highest-paid-non-drivers"
+    ],
+    "sanctions": [
+      "financial-penalty",
+      "minor-sporting-penalty",
+      "material-sporting-penalty"
+    ]
+  },
+  "sources": {
+    "technical": "https://www.fia.com/regulation/category/110/technical-regulations",
+    "future": "https://api.fia.com/news/formula-1-commission-meeting-18022025-media-statement",
+    "presentation": "https://www.mclaren.com/racing/formula-1/2025/mclaren-racing-unveils-title-challenger-for-2025-fia-formula-1-world-championship/",
+    "launch": "https://www.formula1.com/en/latest/article/all-the-key-pre-season-dates-for-f1-2025.1ugNQZ4l2azsyiBMNd0MmN",
+    "testing": "https://www.fia.com/news/fia-and-formula-1-confirm-bahrain-will-host-2025-pre-season-testing"
+  },
+  "preseason": [
+    {
+      "id": "mcl39-reveal",
+      "series": "f1",
+      "org": "team-mclaren-formula-1-team",
+      "kind": "presentation",
+      "name": "Презентация McLaren MCL39",
+      "start": "2025-02-13",
+      "end": "2025-02-13",
+      "circuit": "Silverstone",
+      "source": "presentation"
+    },
+    {
+      "id": "f1-75-live",
+      "series": "f1",
+      "kind": "presentation",
+      "name": "F1 75 Live · презентация ливрей",
+      "start": "2025-02-18",
+      "end": "2025-02-18",
+      "circuit": "The O2, London",
+      "source": "launch"
+    },
+    {
+      "id": "wec-prologue",
+      "series": "wec",
+      "kind": "testing",
+      "name": "Официальный пролог WEC",
+      "start": "2025-02-21",
+      "end": "2025-02-22",
+      "circuit": "Lusail International Circuit",
+      "source": "cal"
+    },
+    {
+      "id": "f1-bahrain-test",
+      "series": "f1",
+      "kind": "testing",
+      "name": "Предсезонные тесты F1",
+      "start": "2025-02-26",
+      "end": "2025-02-28",
+      "circuit": "Bahrain International Circuit",
+      "source": "testing"
+    }
+  ]
+}

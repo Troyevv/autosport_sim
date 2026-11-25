@@ -1,0 +1,65 @@
+series,start,end,circuit,name,format
+dtm,2025-04-25,2025-04-27,Motorsport Arena Oschersleben,Motorsport Arena Oschersleben,standard
+dtm,2025-05-23,2025-05-25,Dekra Lausitzring,Dekra Lausitzring,standard
+dtm,2025-06-06,2025-06-08,Circuit Zandvoort (NL),Circuit Zandvoort (NL),standard
+dtm,2025-07-04,2025-07-06,Norisring,Norisring,standard
+dtm,2025-08-08,2025-08-10,Nürburgring,Nürburgring,standard
+dtm,2025-08-22,2025-08-24,Sachsenring,Sachsenring,standard
+dtm,2025-09-12,2025-09-14,Red Bull Ring (A),Red Bull Ring (A),standard
+dtm,2025-10-03,2025-10-05,Hockenheimring Baden-Württemberg,Hockenheimring Baden-Württemberg,standard
+f1,2025-03-14,2025-03-16,Albert Park,Гран-при Австралии,standard
+f1,2025-03-21,2025-03-23,Shanghai International Circuit,Гран-при Китая,sprint
+f1,2025-04-04,2025-04-06,Suzuka,Гран-при Японии,standard
+f1,2025-04-11,2025-04-13,Bahrain International Circuit,Гран-при Бахрейна,standard
+f1,2025-04-18,2025-04-20,Jeddah Corniche Circuit,Гран-при Саудовской Аравии,standard
+f1,2025-05-02,2025-05-04,Miami International Autodrome,Гран-при Майами,sprint
+f1,2025-05-16,2025-05-18,Imola,Гран-при Эмилии-Романьи,standard
+f1,2025-05-23,2025-05-25,Circuit de Monaco,Гран-при Монако,standard
+f1,2025-05-30,2025-06-01,Barcelona-Catalunya,Гран-при Испании,standard
+f1,2025-06-13,2025-06-15,Circuit Gilles-Villeneuve,Гран-при Канады,standard
+f1,2025-06-27,2025-06-29,Red Bull Ring,Гран-при Австрии,standard
+f1,2025-07-04,2025-07-06,Silverstone,Гран-при Великобритании,standard
+f1,2025-07-25,2025-07-27,Spa-Francorchamps,Гран-при Бельгии,sprint
+f1,2025-08-01,2025-08-03,Hungaroring,Гран-при Венгрии,standard
+f1,2025-08-29,2025-08-31,Zandvoort,Гран-при Нидерландов,standard
+f1,2025-09-05,2025-09-07,Monza,Гран-при Италии,standard
+f1,2025-09-19,2025-09-21,Baku City Circuit,Гран-при Азербайджана,standard
+f1,2025-10-03,2025-10-05,Marina Bay,Гран-при Сингапура,standard
+f1,2025-10-17,2025-10-19,Circuit of the Americas,Гран-при США,sprint
+f1,2025-10-24,2025-10-26,Autódromo Hermanos Rodríguez,Гран-при Мехико,standard
+f1,2025-11-07,2025-11-09,Interlagos,Гран-при Сан-Паулу,sprint
+f1,2025-11-20,2025-11-22,Las Vegas Strip Circuit,Гран-при Лас-Вегаса,standard
+f1,2025-11-28,2025-11-30,Lusail International Circuit,Гран-при Катара,sprint
+f1,2025-12-05,2025-12-07,Yas Marina,Гран-при Абу-Даби,standard
+f2,2025-03-14,2025-03-16,Albert Park,Albert Park,standard
+f2,2025-04-11,2025-04-13,Bahrain International Circuit,Bahrain International Circuit,standard
+f2,2025-04-18,2025-04-20,Jeddah Corniche Circuit,Jeddah Corniche Circuit,standard
+f2,2025-05-16,2025-05-18,Imola,Imola,standard
+f2,2025-05-22,2025-05-25,Circuit de Monaco,Circuit de Monaco,standard
+f2,2025-05-30,2025-06-01,Barcelona-Catalunya,Barcelona-Catalunya,standard
+f2,2025-06-27,2025-06-29,Red Bull Ring,Red Bull Ring,standard
+f2,2025-07-04,2025-07-06,Silverstone,Silverstone,standard
+f2,2025-07-25,2025-07-27,Spa-Francorchamps,Spa-Francorchamps,standard
+f2,2025-08-01,2025-08-03,Hungaroring,Hungaroring,standard
+f2,2025-09-05,2025-09-07,Monza,Monza,standard
+f2,2025-09-19,2025-09-21,Baku City Circuit,Baku City Circuit,standard
+f2,2025-11-28,2025-11-30,Lusail International Circuit,Lusail International Circuit,standard
+f2,2025-12-05,2025-12-07,Yas Marina,Yas Marina,standard
+f3,2025-03-14,2025-03-16,Albert Park,Albert Park,standard
+f3,2025-04-11,2025-04-13,Bahrain International Circuit,Bahrain International Circuit,standard
+f3,2025-05-16,2025-05-18,Imola,Imola,standard
+f3,2025-05-22,2025-05-25,Circuit de Monaco,Circuit de Monaco,standard
+f3,2025-05-30,2025-06-01,Barcelona-Catalunya,Barcelona-Catalunya,standard
+f3,2025-06-27,2025-06-29,Red Bull Ring,Red Bull Ring,standard
+f3,2025-07-04,2025-07-06,Silverstone,Silverstone,standard
+f3,2025-07-25,2025-07-27,Spa-Francorchamps,Spa-Francorchamps,standard
+f3,2025-08-01,2025-08-03,Hungaroring,Hungaroring,standard
+f3,2025-09-05,2025-09-07,Monza,Monza,standard
+wec,2025-02-26,2025-02-28,Lusail International Circuit,Qatar 1812 km,10h
+wec,2025-04-18,2025-04-20,Imola,6 часов Имолы,6h
+wec,2025-05-08,2025-05-10,Spa-Francorchamps,6 часов Спа,6h
+wec,2025-06-11,2025-06-15,Circuit de la Sarthe,24 часа Ле-Мана,24h
+wec,2025-07-11,2025-07-13,Interlagos,6 часов Сан-Паулу,6h
+wec,2025-09-05,2025-09-07,Circuit of the Americas,Lone Star Le Mans,6h
+wec,2025-09-26,2025-09-28,Fuji Speedway,6 часов Фудзи,6h
+wec,2025-11-06,2025-11-08,Bahrain International Circuit,8 часов Бахрейна,8h

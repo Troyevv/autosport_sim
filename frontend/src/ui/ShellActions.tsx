@@ -118,6 +118,7 @@ export function Settings() {
     { open, go } = useUI()
   return (
     <>
+      <a className="btn" href="./">К списку карьер</a>
       <p>Демонстрационный режим. Изменения действуют до обновления страницы.</p>
       <label className="toggle-row">
         Анимации интерфейса{' '}

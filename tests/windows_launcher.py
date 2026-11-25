@@ -20,7 +20,7 @@ SOURCE = Path(__file__).resolve().parents[1]
 
 @contextmanager
 def observe_browser(root):
-    """Only the disposable copy reports a visit, after React renders the HQ."""
+    """Only the disposable copy reports a visit, after React renders the career library."""
     visits = Queue()
 
     class Receiver(BaseHTTPRequestHandler):
@@ -39,7 +39,7 @@ def observe_browser(root):
 <script>
 const observer = new MutationObserver(() => {
   const heading = document.querySelector("main h1");
-  if (heading?.textContent === "Штаб команды") {
+  if (heading?.textContent === "Карьера в автоспорте") {
     observer.disconnect();
     navigator.sendBeacon("http://127.0.0.1:PORT/", JSON.stringify({
       url: location.origin, title: document.title, heading: heading.textContent
@@ -137,7 +137,7 @@ def run_smoke(tmp):
                     continue
                 assert (
                     visit["title"] == "APEX — Motorsport Manager"
-                    and visit["heading"] == "Штаб команды"
+                    and visit["heading"] == "Карьера в автоспорте"
                 )
                 print(f"Browser rendered HQ at {visit['url']} ({agent})", flush=True)
                 return visit["url"]

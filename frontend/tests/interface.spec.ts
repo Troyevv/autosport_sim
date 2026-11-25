@@ -54,10 +54,10 @@ test.beforeEach(async ({ page }) => {
   page.on('pageerror', (error) => issues.push(error.message))
   page.on('request', (request) => {
     const url = new URL(request.url())
-    if (url.protocol.startsWith('http') && url.origin !== 'http://127.0.0.1:4173')
+    if (url.protocol.startsWith('http') && url.origin !== 'http://127.0.0.1:4183')
       issues.push(request.url())
   })
-  await page.goto('/')
+  await page.goto('/?demo=1')
   await expect(page.getByRole('heading', { name: 'Штаб команды', exact: true })).toBeVisible()
 })
 
@@ -85,7 +85,7 @@ test('Все 11 разделов и рабочие места', async ({ page })
   await snap(page, 'production')
   await navigate(page, 'Гоночный центр')
   await expect(button(page, 'Пит-стоп')).toHaveCount(0)
-  await page.goto('/#organization')
+  await page.goto('/?demo=1#organization')
   await expect(page.locator('main h1')).toHaveText('Производство')
 })
 test('Поиск, уведомления, фон меню и фокус', async ({ page }) => {

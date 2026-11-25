@@ -1,0 +1,133 @@
+championship,number,entrant,model,constructor,engine,transmission,tyre,class,crew
+dtm,1,ABT Sportsline,Lamborghini Huracan GT3 EVO 2,Lamborghini,,,Pirelli,GT3,Mirko Bortolotti
+dtm,2,ABT Sportsline,Lamborghini Huracan GT3 EVO 2,Lamborghini,,,Pirelli,GT3,Nicki Thiim
+dtm,7,Comtoyou Racing,Aston Martin Vantage GT3,Aston Martin,,,Pirelli,GT3,Gilles Magnus
+dtm,8,Comtoyou Racing,Aston Martin Vantage GT3,Aston Martin,,,Pirelli,GT3,Nicolas Baert
+dtm,10,EMIL FREY RACING,Ferrari 296 GT3,Ferrari,Ferrari,,Pirelli,GT3,Ben Green
+dtm,11,Schubert Motorsport,BMW M4 GT3 Evo,BMW,BMW,,Pirelli,GT3,Marco Wittmann
+dtm,14,EMIL FREY RACING,Ferrari 296 GT3,Ferrari,Ferrari,,Pirelli,GT3,Jack Aitken
+dtm,16,Dörr Motorsport,McLaren 720S GT3 Evo,McLaren,,,Pirelli,GT3,Timo Glock
+dtm,19,TGI Team Lamborghini by GRT,Lamborghini Huracan GT3 EVO 2,Lamborghini,,,Pirelli,GT3,Luca Engstler
+dtm,22,Mercedes-AMG Team Landgraf,Mercedes-AMG GT3,Mercedes,,,Pirelli,GT3,Lucas Auer
+dtm,24,Mercedes-AMG Team WINWARD,Mercedes-AMG GT3,Mercedes,,,Pirelli,GT3,Maro Engel
+dtm,25,Dörr Motorsport,McLaren 720S GT3 Evo,McLaren,,,Pirelli,GT3,Ben Dörr
+dtm,29,Land Motorsport,Audi R8 LMS GT3 EVO II,Audi,,,Pirelli,GT3,Ricardo Feller
+dtm,33,Schubert Motorsport,BMW M4 GT3 Evo,BMW,BMW,,Pirelli,GT3,René Rast
+dtm,36,HRT Ford Performance,Ford Mustang GT3,Ford,,,Pirelli,GT3,Arjun Maini
+dtm,48,Mercedes-AMG Team MANN-FILTER,Mercedes-AMG GT3,Mercedes,,,Pirelli,GT3,Jules Gounon
+dtm,63,TGI Team Lamborghini by GRT,Lamborghini Huracan GT3 EVO 2,Lamborghini,,,Pirelli,GT3,Jordan Pepper
+dtm,64,HRT Ford Performance,Ford Mustang GT3,Ford,,,Pirelli,GT3,Fabio Scherer
+dtm,69,EMIL FREY RACING,Ferrari 296 GT3,Ferrari,Ferrari,,Pirelli,GT3,Thierry Vermeulen
+dtm,71,Paul Motorsport,Lamborghini Huracan GT3 EVO 2,Lamborghini,,,Pirelli,GT3,Maximilian Paul
+dtm,84,Mercedes-AMG Team Landgraf,Mercedes-AMG GT3,Mercedes,,,Pirelli,GT3,Tom Kalender
+dtm,90,Manthey EMA,Porsche 911 GT3 R 992,Porsche,Porsche,,Pirelli,GT3,Ayhancan Güven
+dtm,91,Manthey EMA,Porsche 911 GT3 R 992,Porsche,Porsche,,Pirelli,GT3,Thomas Preining
+dtm,92,Manthey Junior Team,Porsche 911 GT3 R 992,Porsche,Porsche,,Pirelli,GT3,Morris Schuring
+f1,1,Oracle Red Bull Racing,RB21,Oracle Red Bull Racing,Honda RBPT,,Pirelli,F1,Max Verstappen
+f1,4,McLaren Formula 1 Team,MCL39,McLaren Formula 1 Team,Mercedes,,Pirelli,F1,Lando Norris
+f1,5,Kick Sauber F1 Team,C45,Kick Sauber F1 Team,Ferrari,,Pirelli,F1,Gabriel Bortoleto
+f1,6,Visa Cash App Racing Bulls,VCARB 02,Visa Cash App Racing Bulls,Honda RBPT,,Pirelli,F1,Isack Hadjar
+f1,7,BWT Alpine F1 Team,A525,BWT Alpine F1 Team,Renault,,Pirelli,F1,Jack Doohan
+f1,10,BWT Alpine F1 Team,A525,BWT Alpine F1 Team,Renault,,Pirelli,F1,Pierre Gasly
+f1,12,Mercedes AMG PETRONAS F1 Team,W16,Mercedes AMG PETRONAS F1 Team,Mercedes,,Pirelli,F1,Andrea Kimi Antonelli
+f1,14,Aston Martin Aramco F1 Team,AMR25,Aston Martin Aramco F1 Team,Mercedes,,Pirelli,F1,Fernando Alonso
+f1,16,Scuderia Ferrari,SF-25,Scuderia Ferrari,Ferrari,,Pirelli,F1,Charles Leclerc
+f1,18,Aston Martin Aramco F1 Team,AMR25,Aston Martin Aramco F1 Team,Mercedes,,Pirelli,F1,Lance Stroll
+f1,22,Visa Cash App Racing Bulls,VCARB 02,Visa Cash App Racing Bulls,Honda RBPT,,Pirelli,F1,Yuki Tsunoda
+f1,23,Williams Racing,FW47,Williams Racing,Mercedes,,Pirelli,F1,Alex Albon
+f1,27,Kick Sauber F1 Team,C45,Kick Sauber F1 Team,Ferrari,,Pirelli,F1,Nico Hülkenberg
+f1,30,Oracle Red Bull Racing,RB21,Oracle Red Bull Racing,Honda RBPT,,Pirelli,F1,Liam Lawson
+f1,31,MoneyGram Haas F1 Team,VF-25,MoneyGram Haas F1 Team,Ferrari,,Pirelli,F1,Esteban Ocon
+f1,44,Scuderia Ferrari,SF-25,Scuderia Ferrari,Ferrari,,Pirelli,F1,Louis Hamilton
+f1,55,Williams Racing,FW47,Williams Racing,Mercedes,,Pirelli,F1,Carlos Sainz
+f1,63,Mercedes AMG PETRONAS F1 Team,W16,Mercedes AMG PETRONAS F1 Team,Mercedes,,Pirelli,F1,George Russell
+f1,81,McLaren Formula 1 Team,MCL39,McLaren Formula 1 Team,Mercedes,,Pirelli,F1,Oscar Piastri
+f1,87,MoneyGram Haas F1 Team,VF-25,MoneyGram Haas F1 Team,Ferrari,,Pirelli,F1,Oliver Bearman
+f2,1,Invicta Racing,Dallara F2 2024,Dallara,Mecachrome,Hewland,Pirelli,F2,Leonardo Fornaroli
+f2,2,Invicta Racing,Dallara F2 2024,Dallara,Mecachrome,Hewland,Pirelli,F2,Roman Staněk
+f2,3,Campos Racing,Dallara F2 2024,Dallara,Mecachrome,Hewland,Pirelli,F2,Josep María Martí
+f2,4,Campos Racing,Dallara F2 2024,Dallara,Mecachrome,Hewland,Pirelli,F2,Arvid Lindblad
+f2,5,MP Motorsport,Dallara F2 2024,Dallara,Mecachrome,Hewland,Pirelli,F2,Oliver Goethe
+f2,6,MP Motorsport,Dallara F2 2024,Dallara,Mecachrome,Hewland,Pirelli,F2,Richard Verschoor
+f2,7,Hitech TGR,Dallara F2 2024,Dallara,Mecachrome,Hewland,Pirelli,F2,Luke Browning
+f2,8,Hitech TGR,Dallara F2 2024,Dallara,Mecachrome,Hewland,Pirelli,F2,Dino Beganović
+f2,9,PREMA Racing,Dallara F2 2024,Dallara,Mecachrome,Hewland,Pirelli,F2,Sebastian Montoya
+f2,10,PREMA Racing,Dallara F2 2024,Dallara,Mecachrome,Hewland,Pirelli,F2,Gabriele Minì
+f2,11,DAMS Lucas Oil,Dallara F2 2024,Dallara,Mecachrome,Hewland,Pirelli,F2,Jak Crawford
+f2,12,DAMS Lucas Oil,Dallara F2 2024,Dallara,Mecachrome,Hewland,Pirelli,F2,Kush Maini
+f2,14,ART Grand Prix,Dallara F2 2024,Dallara,Mecachrome,Hewland,Pirelli,F2,Victor Martins
+f2,15,ART Grand Prix,Dallara F2 2024,Dallara,Mecachrome,Hewland,Pirelli,F2,Ritomo Miyata
+f2,16,Rodin Motorsport,Dallara F2 2024,Dallara,Mecachrome,Hewland,Pirelli,F2,Amaury Cordeel
+f2,17,Rodin Motorsport,Dallara F2 2024,Dallara,Mecachrome,Hewland,Pirelli,F2,Alexander Dunne
+f2,20,AIX Racing,Dallara F2 2024,Dallara,Mecachrome,Hewland,Pirelli,F2,Joshua Dürksen
+f2,21,AIX Racing,Dallara F2 2024,Dallara,Mecachrome,Hewland,Pirelli,F2,Cian Shields
+f2,22,TRIDENT,Dallara F2 2024,Dallara,Mecachrome,Hewland,Pirelli,F2,Sami Meguetounif
+f2,23,TRIDENT,Dallara F2 2024,Dallara,Mecachrome,Hewland,Pirelli,F2,Max Esterson
+f2,24,Van Amersfoort Racing,Dallara F2 2024,Dallara,Mecachrome,Hewland,Pirelli,F2,John Bennett
+f2,25,Van Amersfoort Racing,Dallara F2 2024,Dallara,Mecachrome,Hewland,Pirelli,F2,Rafael Villagómez
+f3,1,PREMA Racing,Dallara F3 2025,Dallara,Mecachrome,3MO,Pirelli,F3,Brando Badoer
+f3,2,PREMA Racing,Dallara F3 2025,Dallara,Mecachrome,3MO,Pirelli,F3,Noel León
+f3,3,PREMA Racing,Dallara F3 2025,Dallara,Mecachrome,3MO,Pirelli,F3,Ugo Ugochukwu
+f3,4,TRIDENT,Dallara F3 2025,Dallara,Mecachrome,3MO,Pirelli,F3,Noah Stromsted
+f3,5,TRIDENT,Dallara F3 2025,Dallara,Mecachrome,3MO,Pirelli,F3,Rafael Câmara
+f3,6,TRIDENT,Dallara F3 2025,Dallara,Mecachrome,3MO,Pirelli,F3,Charlie Wurz
+f3,7,ART Grand Prix,Dallara F3 2025,Dallara,Mecachrome,3MO,Pirelli,F3,Laurens van Hoepen
+f3,8,ART Grand Prix,Dallara F3 2025,Dallara,Mecachrome,3MO,Pirelli,F3,Tuukka Taponen
+f3,9,ART Grand Prix,Dallara F3 2025,Dallara,Mecachrome,3MO,Pirelli,F3,James Wharton
+f3,10,Campos Racing,Dallara F3 2025,Dallara,Mecachrome,3MO,Pirelli,F3,Mari Boya
+f3,11,Campos Racing,Dallara F3 2025,Dallara,Mecachrome,3MO,Pirelli,F3,Tasanapol Inthraphuvasak
+f3,12,Campos Racing,Dallara F3 2025,Dallara,Mecachrome,3MO,Pirelli,F3,Nikola Tsolov
+f3,14,Hitech TGR,Dallara F3 2025,Dallara,Mecachrome,3MO,Pirelli,F3,Martinius Stenshorne
+f3,15,Hitech TGR,Dallara F3 2025,Dallara,Mecachrome,3MO,Pirelli,F3,Joshua Dufek
+f3,16,Hitech TGR,Dallara F3 2025,Dallara,Mecachrome,3MO,Pirelli,F3,Gerrard Xie
+f3,17,MP Motorsport,Dallara F3 2025,Dallara,Mecachrome,3MO,Pirelli,F3,Tim Tramnitz
+f3,18,MP Motorsport,Dallara F3 2025,Dallara,Mecachrome,3MO,Pirelli,F3,Bruno Del Pino
+f3,19,MP Motorsport,Dallara F3 2025,Dallara,Mecachrome,3MO,Pirelli,F3,Alessandro Giusti
+f3,20,Van Amersfoort Racing,Dallara F3 2025,Dallara,Mecachrome,3MO,Pirelli,F3,Théophile Naël
+f3,21,Van Amersfoort Racing,Dallara F3 2025,Dallara,Mecachrome,3MO,Pirelli,F3,Santiago Ramos
+f3,22,Van Amersfoort Racing,Dallara F3 2025,Dallara,Mecachrome,3MO,Pirelli,F3,Ivan Domingues
+f3,23,Rodin Motorsport,Dallara F3 2025,Dallara,Mecachrome,3MO,Pirelli,F3,Callum Voisin
+f3,24,Rodin Motorsport,Dallara F3 2025,Dallara,Mecachrome,3MO,Pirelli,F3,Louis Sharp
+f3,25,Rodin Motorsport,Dallara F3 2025,Dallara,Mecachrome,3MO,Pirelli,F3,Roman Bilinski
+f3,26,AIX Racing,Dallara F3 2025,Dallara,Mecachrome,3MO,Pirelli,F3,Javier Sagrera
+f3,27,AIX Racing,Dallara F3 2025,Dallara,Mecachrome,3MO,Pirelli,F3,Nicola Marinangeli
+f3,28,AIX Racing,Dallara F3 2025,Dallara,Mecachrome,3MO,Pirelli,F3,Nikita Bedrin
+f3,29,DAMS Lucas Oil,Dallara F3 2025,Dallara,Mecachrome,3MO,Pirelli,F3,Nicola Lacorte
+f3,30,DAMS Lucas Oil,Dallara F3 2025,Dallara,Mecachrome,3MO,Pirelli,F3,Matias Zagazeta
+f3,31,DAMS Lucas Oil,Dallara F3 2025,Dallara,Mecachrome,3MO,Pirelli,F3,Christian Ho
+wec,5,Porsche Penske Motorsport,Porsche 963,Porsche,Porsche,Xtrac,Michelin,Hypercar,Julien Andlauer|Michael Christensen|Mathieu Jaminet
+wec,6,Porsche Penske Motorsport,Porsche 963,Porsche,Porsche,Xtrac,Michelin,Hypercar,Kévin Estre|Laurens Vanthoor|Matt Campbell
+wec,007,Aston Martin THOR Team,Aston Martin Valkyrie,Aston Martin,,,Michelin,Hypercar,Harry Tincknell|Tom Gamble|Ross Gunn
+wec,7,Toyota Gazoo Racing,Toyota GR010 - Hybrid,Toyota,Toyota,,Michelin,Hypercar,Mike Conway|Kamui Kobayashi|Nyck de Vries
+wec,8,Toyota Gazoo Racing,Toyota GR010 - Hybrid,Toyota,Toyota,,Michelin,Hypercar,Sébastien Buemi|Brendon Hartley|Ryō Hirakawa
+wec,009,Aston Martin THOR Team,Aston Martin Valkyrie,Aston Martin,,,Michelin,Hypercar,Alex Riberas|Marco Sørensen|Roman de Angelis
+wec,10,Racing Spirit Of Leman,Aston Martin Vantage AMR LMGT3,Aston Martin,,,Goodyear,LMGT3,Derek Deboer|Eduardo Barrichello|Valentin Hasse Clot
+wec,12,Cadillac Hertz Team JOTA,Cadillac V-Series.R,Cadillac,,Xtrac,Michelin,Hypercar,Alex Lynn|Norman Nato|Will Stevens
+wec,15,BMW M Team WRT,BMW M Hybrid V8,BMW,BMW,Xtrac,Michelin,Hypercar,Dries Vanthoor|Raffaele Marciello|Kevin Magnussen
+wec,20,BMW M Team WRT,BMW M Hybrid V8,BMW,BMW,Xtrac,Michelin,Hypercar,René Rast|Robin Frijns|Sheldon van Der Linde
+wec,21,Vista AF Corse,Ferrari 296 LMGT3,Ferrari,Ferrari,,Goodyear,LMGT3,François Heriau|Simon Mann|Alessio Rovera
+wec,27,Heart Of Racing Team,Aston Martin Vantage AMR LMGT3,Aston Martin,,,Goodyear,LMGT3,Ian James|Zacharie Robichon|Mattia Drudi
+wec,31,The Bend Team WRT,BMW M4 LMGT3,BMW,BMW,,Goodyear,LMGT3,Yasser Shahin|Timur Boguslavskiy|Augusto Farfus
+wec,33,TF Sport,Corvette Z06 LMGT3.R,Corvette,,,Goodyear,LMGT3,Ben Keating|Jonny Edgar|Daniel Juncadella
+wec,35,Alpine Endurance Team,Alpine A424,Alpine,,Xtrac,Michelin,Hypercar,Paul-Loup Chatin|Ferdinand Habsburg|Charles Milesi
+wec,36,Alpine Endurance Team,Alpine A424,Alpine,,Xtrac,Michelin,Hypercar,Jules Gounon|Frédéric Makowiecki|Mick Schumacher
+wec,38,Cadillac Hertz Team JOTA,Cadillac V-Series.R,Cadillac,,Xtrac,Michelin,Hypercar,Earl Bamber|Sebastien Bourdais|Jenson Button
+wec,46,Team WRT,BMW M4 LMGT3,BMW,BMW,,Goodyear,LMGT3,Ahmad Al Harthy|Valentino Rossi|Kelvin van Der Linde
+wec,50,Ferrari AF Corse,Ferrari 499P,Ferrari,Ferrari,,Michelin,Hypercar,Antonio Fuoco|Miguel Molina|Nicklas Nielsen
+wec,51,Ferrari AF Corse,Ferrari 499P,Ferrari,Ferrari,,Michelin,Hypercar,Alessandro Pier Guidi|James Calado|Antonio Giovinazzi
+wec,54,Vista AF Corse,Ferrari 296 LMGT3,Ferrari,Ferrari,,Goodyear,LMGT3,Thomas Flohr|Francesco Castellacci|Davide Rigon
+wec,59,United Autosports,McLaren 720S LMGT3 Evo,McLaren,,,Goodyear,LMGT3,James Cottingham|Sébastien Baud|Grégoire Saucy
+wec,60,Iron Lynx,Mercedes-AMG LMGT3,Mercedes-AMG,,,Goodyear,LMGT3,Claudio Schiavoni|Matteo Cressoni|Matteo Cairoli
+wec,61,Iron Lynx,Mercedes-AMG LMGT3,Mercedes-AMG,,,Goodyear,LMGT3,Christian Ried|Lin Hodenius|Maxime Martin
+wec,77,Proton Competition,Ford Mustang LMGT3,Ford,,,Goodyear,LMGT3,Bernardo Sousa|Ben Tuck|Benjamin Barker
+wec,78,Akkodis ASP Team,Lexus RC F LMGT3,Lexus,,,Goodyear,LMGT3,Arnold Robin|Finn Gehrsitz|Ben Barnicoat
+wec,81,TF Sport,Corvette Z06 LMGT3.R,Corvette,,,Goodyear,LMGT3,Tom van Rompuy|Rui Andrade|Charlie Eastwood
+wec,83,AF Corse,Ferrari 499P,Ferrari,Ferrari,,Michelin,Hypercar,Robert Kubica|Yifei Ye|Philip Hanson
+wec,85,Iron Dames,Porsche 911 GT3 R LMGT3,Porsche,Porsche,,Goodyear,LMGT3,Célia Martin|Rahel Frey|Michelle Gatting
+wec,87,Akkodis ASP Team,Lexus RC F LMGT3,Lexus,,,Goodyear,LMGT3,Petru Umbrarescu|Clemens Schmid|José María López
+wec,88,Proton Competition,Ford Mustang LMGT3,Ford,,,Goodyear,LMGT3,Stefano Gattuso|Giammarco Levorato|Dennis Olsen
+wec,92,Manthey 1st Phorm,Porsche 911 GT3 R LMGT3,Porsche,Porsche,,Goodyear,LMGT3,Ryan Hardwick|Riccardo Pera|Richard Lietz
+wec,93,Peugeot TotalEnergies,Peugeot 9X8,Peugeot,,,Michelin,Hypercar,Paul Di Resta|Mikkel Jensen|Jean-Éric Vergne
+wec,94,Peugeot TotalEnergies,Peugeot 9X8,Peugeot,,,Michelin,Hypercar,Loïc Duval|Malthe Jakobsen|Stoffel Vandoorne
+wec,95,United Autosports,McLaren 720S LMGT3 Evo,McLaren,,,Goodyear,LMGT3,Darren Leung|Sean Gelael|Marino Sato
+wec,99,Proton Competition,Porsche 963,Porsche,Porsche,Xtrac,Michelin,Hypercar,Neel Jani|Nicolas Pino|Nicolas Varrone

@@ -1,0 +1,24 @@
+{
+  "engine": {
+    "name": "Двигатели",
+    "lead_position": "engines"
+  },
+  "transmission": {
+    "name": "Трансмиссии",
+    "lead_position": "transmissions"
+  },
+  "tyre": {
+    "name": "Шины",
+    "lead_position": "tyres",
+    "spec_attributes": [
+      "grip",
+      "wear",
+      "temperature_window",
+      "warmup",
+      "overheating",
+      "rolling_resistance",
+      "strength",
+      "water_displacement"
+    ]
+  }
+}

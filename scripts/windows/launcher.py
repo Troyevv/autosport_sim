@@ -135,7 +135,7 @@ def check_ready(api_url, ui_url, entry):
         raise ValueError("API пока не готов.")
     # Match the frontend bootstrap contract; additional API fields are valid.
     config = json.loads(read(ui_url + "/api/config"))
-    if config.get("mode") != "demo" or config.get("career_saves") is not False:
+    if config.get("mode") != "career" or config.get("career_saves") is not True:
         raise ValueError("Прокси интерфейса вернул несовместимую конфигурацию.")
     if entry not in read(ui_url + "/").decode():
         raise ValueError("HTTP-сервер отдал другую сборку интерфейса.")
