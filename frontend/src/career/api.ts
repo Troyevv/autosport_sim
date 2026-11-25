@@ -1,3 +1,4 @@
+import type { Livery } from '../garage/model'
 import type { Role } from '../game'
 export type Organization = { color: string; id: string; name: string; kind: string; programs: string[]; lines: string[] }
 export type Championship = {
@@ -47,7 +48,7 @@ export type World = {
       category: string
     }
   >
-  cars: Record<string, { name: string; suppliers: Record<string, string> }>
+  cars: Record<string, { regulation: string; name: string; suppliers: Record<string, string> }>
   names: Record<string, string>
   faces: Record<string, string>
   assignments: Record<string, { person: string; org: string; position: string }>
@@ -85,6 +86,11 @@ export type Seat = {
   occupant: Person | null
 }
 export type Career = Save & {
+  liveries: Record<string, Livery>
+  garage_configurations: Record<
+    string,
+    { regulation: string; concept: string; geometry: string | null; installed: Record<string, string> }
+  >
   player_id: string
   account: {
     cash_cents: number

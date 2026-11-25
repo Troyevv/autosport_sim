@@ -190,12 +190,18 @@ def post_payroll(state, target):
             )
 
 
-def apply(state, catalog, action):
+def apply(state, catalog, action, paint=None):
     setup = state["setup"]
     office = setup["org"] + ":" + setup["role"]
     if occupant_on(state["seats"][office], state["date"]) != state["player_id"]:
         raise RuleError("Действующее назначение не даёт полномочий.", 403)
-    if action == "advance":
+    if action == "save-livery" and paint is not None:
+        from .livery import install
+
+        install(state, catalog, paint)
+    elif paint is not None:
+        raise RuleError("Лишние параметры команды.")
+    elif action == "advance":
         if state["pending"]:
             raise RuleError("Сначала подтвердите обязательный брифинг.", 409)
         target = next_date(state, catalog)

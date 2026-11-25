@@ -4,12 +4,24 @@ import hashlib
 import json
 from uuid import uuid4
 
-from pydantic import BaseModel, ConfigDict, Field, ValidationError
+from pydantic import BaseModel, ConfigDict, Field, ValidationError, model_validator
 
 from . import domain, storage
+from .livery import GARAGE, PaintOrder
 from .catalog import VERSION, WORLD
 from .roster_upgrade import original_world, upgrade
 from .engineering import resource_scope, project_target
+
+
+# A regulation/concept pair identifies the historical homologation independently
+# of the crew's livery. Multiple entries in a spec series share its asset.
+VISUAL_CONCEPTS = {
+    (
+        WORLD["cars"][entry["car"]]["regulation"],
+        WORLD["cars"][entry["car"]]["concept"],
+    ): GARAGE["entries"][entry["id"]]["geometry"]
+    for entry in WORLD["entries"].values()
+}
 
 
 class Strict(BaseModel):
@@ -28,6 +40,16 @@ class Command(Strict):
     command_id: str = Field(min_length=1, max_length=80, pattern=r"^[A-Za-z0-9_-]+$")
     revision: int = Field(ge=0)
     action: str = Field(min_length=1, max_length=32)
+    paint: PaintOrder | None = None
+
+    @model_validator(mode="after")
+    def check_action_payload(self):
+        if (self.action == "save-livery") != (self.paint is not None):
+            raise ValueError("Неверные параметры команды ливреи.")
+        return self
+
+    def paint_data(self):
+        return self.paint.model_dump() if self.paint else None
 
 
 def summary(cid, state):
@@ -72,6 +94,16 @@ def project(db, cid, state):
         and g["category"] in program["classes"]
     ]
     return dict(
+        liveries=state.get("liveries", {}),
+        garage_configurations={
+            car_id: dict(
+                regulation=config["regulation"],
+                concept=config["concept"],
+                geometry=VISUAL_CONCEPTS.get((config["regulation"], config["concept"])),
+                installed=config.get("visual_parts", {}),
+            )
+            for car_id, config in state["car_configurations"].items()
+        },
         atr=resource_scope(WORLD, org, state["date"]),
         targets=targets,
         **summary(cid, state),
@@ -105,14 +137,20 @@ def load(cid):
 
 
 def execute(cid, command):
+    paint = command.paint_data()
+    stored_paint = storage.dump(paint) if paint is not None else None
     with storage.transaction(True) as db:
         state = storage.checkpoint(db, cid)
         old = db.execute(
-            "SELECT revision,action FROM receipt WHERE career=? AND command_id=?",
+            "SELECT revision,action,paint FROM receipt WHERE career=? AND command_id=?",
             (cid, command.command_id),
         ).fetchone()
         if old:
-            if (old["revision"], old["action"]) != (command.revision, command.action):
+            if (old["revision"], old["action"], old["paint"]) != (
+                command.revision,
+                command.action,
+                stored_paint,
+            ):
                 raise domain.RuleError(
                     "Этот ключ команды уже использован с другими параметрами.", 409
                 )
@@ -121,11 +159,17 @@ def execute(cid, command):
                 raise domain.RuleError(
                     "Карьеру изменили в другом окне. Состояние обновлено.", 409
                 )
-            domain.apply(state, WORLD, command.action)
+            domain.apply(state, WORLD, command.action, paint)
             storage.store(db, cid, state)
             db.execute(
-                "INSERT INTO receipt VALUES(?,?,?,?)",
-                (cid, command.command_id, command.revision, command.action),
+                "INSERT INTO receipt(career,command_id,revision,action,paint) VALUES(?,?,?,?,?)",
+                (
+                    cid,
+                    command.command_id,
+                    command.revision,
+                    command.action,
+                    stored_paint,
+                ),
             )
         return project(db, cid, state)
 
@@ -186,16 +230,26 @@ def import_save(document):
         spec = CareerInput.model_validate(setup)
         catalog = original_world() if legacy else WORLD
         commands = payload["commands"]
-        if not isinstance(commands, list) or len(commands) > 256:
+        if not isinstance(commands, list):
             raise ValueError
         state = domain.new_world(catalog, dict(**spec.model_dump(), **appearance))
         seen = set()
+        receipts = []
         for item in commands:
             cmd = Command.model_validate(item)
             if cmd.command_id in seen or cmd.revision != state["revision"]:
                 raise ValueError
             seen.add(cmd.command_id)
-            domain.apply(state, catalog, cmd.action)
+            paint = cmd.paint_data()
+            domain.apply(state, catalog, cmd.action, paint)
+            receipts.append(
+                (
+                    cmd.command_id,
+                    cmd.revision,
+                    cmd.action,
+                    storage.dump(paint) if paint else None,
+                )
+            )
         state["ledger"].sort(key=lambda p: (p["date"], p["org"], p["key"]))
         if storage.dump(state) != storage.dump(saved):
             raise ValueError
@@ -207,7 +261,7 @@ def import_save(document):
     with storage.transaction(True) as db:
         storage.store(db, cid, state, create=True)
         db.executemany(
-            "INSERT INTO receipt VALUES(?,?,?,?)",
-            [(cid, c["command_id"], c["revision"], c["action"]) for c in commands],
+            "INSERT INTO receipt(career,command_id,revision,action,paint) VALUES(?,?,?,?,?)",
+            [(cid, *row) for row in receipts],
         )
         return project(db, cid, state)
