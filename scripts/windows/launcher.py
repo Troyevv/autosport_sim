@@ -15,7 +15,6 @@ import time
 import urllib.error
 import urllib.request
 import uuid
-import webbrowser
 
 from kernel import Event, Job, Mutex
 
@@ -40,7 +39,9 @@ def tool(name, args, minimum):
         raise RuntimeError(
             f"Не найден {name}. Установите инструмент и снова откройте start.bat."
         )
-    result = subprocess.check_output([path, *args], text=True).strip()
+    result = subprocess.check_output(
+        [path, *args], stdin=subprocess.DEVNULL, text=True, timeout=20
+    ).strip()
     match = re.search(r"\b(\d+)\.(\d+)\.(\d+)", result.lstrip("v"))
     if not match or tuple(map(int, match.groups())) < minimum:
         version = ".".join(map(str, minimum))
@@ -64,6 +65,7 @@ def prepare():
         [uv, "sync", "--locked", "--python", sys.executable],
         cwd=ROOT,
         env={**os.environ, "UV_PROJECT_ENVIRONMENT": str(PYTHON.parents[1])},
+        stdin=subprocess.DEVNULL,
         check=True,
     )
     modules = FRONT / "node_modules"
@@ -71,7 +73,9 @@ def prepare():
     digest = hashlib.sha256()
     for manifest in ("package.json", "package-lock.json"):
         digest.update((FRONT / manifest).read_bytes())
-    arch = subprocess.check_output([node, "-p", "process.arch"], text=True).strip()
+    arch = subprocess.check_output(
+        [node, "-p", "process.arch"], stdin=subprocess.DEVNULL, text=True, timeout=20
+    ).strip()
     digest.update(f"{node_version}/{npm_version}/{arch}".encode())
     installed_lock = modules / ".package-lock.json"
 
@@ -92,13 +96,16 @@ def prepare():
         subprocess.run(
             [npm, "ci", "--include=dev", "--no-audit", "--no-fund"],
             cwd=FRONT,
+            stdin=subprocess.DEVNULL,
             check=True,
         )
         stamp.write_bytes(install_key().encode())
     else:
         say("Зависимости интерфейса уже установлены.")
     say("Сборка интерфейса…")
-    subprocess.run([npm, "run", "build"], cwd=FRONT, check=True)
+    subprocess.run(
+        [npm, "run", "build"], cwd=FRONT, stdin=subprocess.DEVNULL, check=True
+    )
     return node, vite
 
 
@@ -116,23 +123,37 @@ def reserve_port(preferred):
         raise
 
 
-def read_url(url):
-    with HTTP.open(url, timeout=0.8) as response:
-        return response.read()
+def check_ready(api_url, ui_url, entry):
+    def read(url):
+        try:
+            with HTTP.open(url, timeout=2) as response:
+                return response.read()
+        except OSError as error:
+            raise RuntimeError(f"{url}: {error}") from error
+
+    if json.loads(read(api_url + "/api/health")).get("status") != "ok":
+        raise ValueError("API пока не готов.")
+    # Match the frontend bootstrap contract; additional API fields are valid.
+    config = json.loads(read(ui_url + "/api/config"))
+    if config.get("mode") != "demo" or config.get("career_saves") is not False:
+        raise ValueError("Прокси интерфейса вернул несовместимую конфигурацию.")
+    if entry not in read(ui_url + "/").decode():
+        raise ValueError("HTTP-сервер отдал другую сборку интерфейса.")
+    if read(ui_url + entry) != (FRONT / "dist" / entry.lstrip("/")).read_bytes():
+        raise ValueError(f"Содержимое модуля {entry} расходится со сборкой.")
 
 
-def ready(api_url, ui_url, entry):
+def open_game(url):
     try:
-        return (
-            json.loads(read_url(api_url + "/api/health")).get("status") == "ok"
-            and json.loads(read_url(ui_url + "/api/config"))
-            == {"mode": "demo", "career_saves": False}
-            and entry in read_url(ui_url + "/").decode()
-            and read_url(ui_url + entry)
-            == (FRONT / "dist" / entry.lstrip("/")).read_bytes()
+        # ShellExecute uses the user's HTTP association and propagates WinError.
+        os.startfile(url, "open")
+    except OSError as error:
+        say(
+            f"Ошибка открытия браузера: {error}. Проверьте браузер по умолчанию "
+            "для HTTP в параметрах Windows и повторите двойной клик по start.bat."
         )
-    except (OSError, ValueError, urllib.error.URLError):
-        return False
+    else:
+        say(f"Адрес передан браузеру по умолчанию: {url}")
 
 
 def stop_servers(servers):
@@ -217,13 +238,19 @@ def serve(api_port, ui_port, ready_name):
                             f"{name} завершился с кодом {process.returncode}. См. вывод выше."
                         )
                 if not announced:
-                    if ready(api_url, ui_url, entry.group(1)):
+                    try:
+                        check_ready(api_url, ui_url, entry.group(1))
+                    except (RuntimeError, ValueError) as error:
+                        if time.monotonic() >= deadline:
+                            raise RuntimeError(
+                                f"Не удалось подтвердить готовность: {error}"
+                            ) from error
+                    else:
+                        say(
+                            "API, прокси и сборка готовы. Сигнал передаётся окну запуска."
+                        )
                         started.signal()
                         announced = True
-                    elif time.monotonic() > deadline:
-                        raise RuntimeError(
-                            f"Приложение не ответило за минуту. API {api_url}, интерфейс {ui_url}."
-                        )
     finally:
         stop_servers(servers)
 
@@ -259,15 +286,14 @@ def supervise(stop, reopen):
                 if worker.poll() is not None:
                     raise RuntimeError("Запуск игры прерван. Проверьте сообщение выше.")
                 again = reopen.wait()
-                if started.wait() or (active and again):
+                if started.wait():
                     active = True
                     say(
-                        f"Игра готова: {url}. Для остановки откройте stop.bat или закройте это окно."
+                        "Готовность подтверждена. Для остановки откройте stop.bat или закройте это окно."
                     )
-                    if not webbrowser.open(url):
-                        say(
-                            f"Не удалось открыть браузер по умолчанию. Откройте {url} в браузере."
-                        )
+                    open_game(url)
+                elif active and again:
+                    open_game(url)
         except KeyboardInterrupt:
             pass
         finally:
