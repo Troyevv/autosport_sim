@@ -56,3 +56,6 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+#gallery nav { display: flex; align-items: baseline; gap: 12px; }
+#gallery button:disabled { opacity: 0.45; }

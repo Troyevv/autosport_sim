@@ -38,6 +38,10 @@ function Gallery({ world, media }: { world: World; media: Asset[] }) {
     media.find((a) => a.kind === 'head' && a.anatomy)?.entity ?? 'person-fernando-alonso',
   )
   const subjects = media.filter((a) => ['head', 'generated-head'].includes(a.kind) && a.anatomy)
+    .sort((a, b) => Number(b.kind === 'head') - Number(a.kind === 'head'))
+  const [page, setPage] = useState(0)
+  const pageSize = 12
+  const pages = Math.ceil(subjects.length / pageSize)
   const [overview, setOverview] = useState(true)
   const generated = media.filter((a) => a.kind === 'generated-head')
   const names = {
@@ -54,8 +58,14 @@ function Gallery({ world, media }: { world: World; media: Asset[] }) {
         {overview ? 'Сравнить комплекты' : 'Все портреты'}
       </button>
       {overview ? (
+        <>
+        {pages > 1 && <nav aria-label="Страницы галереи">
+          <button disabled={page === 0} onClick={() => setPage(page - 1)}>Назад</button>
+          <span aria-live="polite">{page + 1} / {pages}</span>
+          <button disabled={page + 1 >= pages} onClick={() => setPage(page + 1)}>Далее</button>
+        </nav>}
         <section className="studio-grid">
-          {subjects.map((a, i) => {
+          {subjects.slice(page * pageSize, (page + 1) * pageSize).map((a, i) => {
             const entry =
               a.kind === 'head' && Object.values(world.entries).find((e) => e.crew.includes(a.entity))
             const team = entry && world.organizations[entry.org]
@@ -75,12 +85,13 @@ function Gallery({ world, media }: { world: World; media: Asset[] }) {
                   media={media}
                 />
                 <figcaption>
-                  {a.kind === 'head' ? names[a.entity] : 'Студийный портрет ' + (i + 1)} · {look.name}
+                  {names[a.entity]} · {look.name}
                 </figcaption>
               </figure>
             )
           })}
         </section>
+        </>
       ) : (
         <>
           <label>

@@ -18,7 +18,10 @@ import cv2
 import resvg_py
 from PIL import Image, ImageOps
 
-from backend.catalog import WORLD
+from backend.catalog import DISPLAY_NAMES, WORLD
+from .media_report import coverage
+from .wardrobe import colorway
+from backend.studio_sources import REVIEWED
 from backend.media import validate
 from .portrait_processing import PortraitProcessor
 from .portrait_fit import fit_studio_source, kit_guide
@@ -93,7 +96,11 @@ def source_bytes(item):
         data = cache.read_bytes()
         if hashlib.sha256(data).hexdigest() == digest:
             return data
-    data = sources.fetch(item["image"], {"raw.githubusercontent.com"}, 16 * 1024 * 1024)
+    data = sources.fetch(
+        item["image"],
+        set(item.get("hosts", ["raw.githubusercontent.com"])),
+        16 * 1024 * 1024,
+    )
     if hashlib.sha256(data).hexdigest() != digest:
         raise ValueError("Снимок источника отличается от проверенной версии")
     cache.parent.mkdir(parents=True, exist_ok=True)
@@ -103,50 +110,91 @@ def source_bytes(item):
     return data
 
 
-def studio_portraits(add, gaps, curated):
-    """Build only the individually selected subjects in the fitting review."""
-    data_dir = ROOT / "scripts/data"
-    review = json.loads((data_dir / "studio-review.json").read_text(encoding="utf-8"))
-    subjects = []
-    for file in sorted((data_dir / "studio").glob("*.webp")):
-        subjects.append(
-            dict(
-                entity=file.stem,
-                file=file,
-                source="https://github.com/Troyevv/autosport_sim/tree/issue-3-career-world/scripts/data/studio",
-                author="Autosport Sim / OpenAI ImageGen",
-                license="MIT (project artwork)",
-            )
-        )
-    subjects.extend(r for r in curated if r["kind"] == "head")
+def collect_portraits(add, gaps):
+    directory = ROOT / "scripts/data"
+    review = json.loads((directory / "studio-review.json").read_text(encoding="utf-8"))
+    research = json.loads(
+        (directory / "official-search.json").read_text(encoding="utf-8")
+    )
+    results = {}
     processor = PortraitProcessor()
 
+    def prepare(entity, raw, source, author, license, original=None):
+        digest = hashlib.sha256(raw).hexdigest()
+        if original and digest != original:
+            raise ValueError("Проверенный оригинал изменился.")
+        head, anatomy = fit_studio_source(raw, processor)
+        for point, y in review.get(digest, {}).get("shoulderY", {}).items():
+            anatomy["body"][1][int(point)] = y
+        if original and anatomy["nativeWidth"] < 300:
+            raise ValueError("Недостаточное разрешение лица в оригинале.")
+        encoded = io.BytesIO()
+        with Image.open(io.BytesIO(head)) as pixels:
+            pixels.save(encoded, "WEBP", quality=95, method=4)
+        add(
+            "head" if original else "generated-head",
+            entity,
+            encoded.getvalue(),
+            source,
+            author,
+            license,
+            "R3.2: сегментация, измерения головы, воротника и плеч.",
+            extension="webp",
+            anatomy=anatomy,
+            **({"originalSha256": digest} if original else {}),
+        )
+
     try:
-        for record in subjects:
-            pid = record["entity"]
-            native = "file" in record
+        for file in sorted((directory / "studio").glob("*.webp")):
             try:
-                raw = record["file"].read_bytes() if native else source_bytes(record)
-                head, anatomy = fit_studio_source(raw, processor)
-            except (ValueError, OSError, sources.Unavailable, cv2.error) as err:
-                gaps.append(f"head/{pid}: {err}")
-                print(f"Пропущен {pid}: {err}", flush=True)
-                continue
-            annotation = review.get(hashlib.sha256(raw).hexdigest())
-            if annotation:
-                for point, ordinate in annotation["shoulderY"].items():
-                    anatomy["body"][1][int(point)] = ordinate
-            attribution = (record["source"], record["author"], record["license"])
-            add(
-                "generated-head" if native else "head",
-                pid,
-                head,
-                *attribution,
-                "Единый масштаб кадра; сегментация лица, волос и видимой шеи.",
-                anatomy=anatomy,
-            )
+                prepare(
+                    file.stem,
+                    file.read_bytes(),
+                    "https://github.com/Troyevv/autosport_sim/tree/issue-3-career-world/scripts/data/studio",
+                    "Autosport Sim / OpenAI ImageGen",
+                    "MIT (project artwork)",
+                )
+            except (ValueError, OSError, IndexError, cv2.error) as err:
+                gaps.append(f"generated-head/{file.stem}: {err}")
+        for index, (pid, name) in enumerate(sorted(DISPLAY_NAMES.items()), start=1):
+            print(f"Портрет {index}/{len(DISPLAY_NAMES)} · {name}", flush=True)
+            status = results[pid] = {**research[pid], "prepared": False, "attempts": []}
+            for item in (s for s in REVIEWED.values() if s.entity == pid):
+                try:
+                    raw = source_bytes(
+                        {
+                            **item.model_dump(),
+                            "hosts": [urllib.parse.urlsplit(item.image).hostname],
+                        }
+                    )
+                    prepare(
+                        pid, raw, item.source, item.author, item.license, item.sha256
+                    )
+                except (
+                    ValueError,
+                    OSError,
+                    IndexError,
+                    cv2.error,
+                    sources.Unavailable,
+                ) as err:
+                    status["attempts"].append(
+                        {"source": item.source, "reason": str(err)}
+                    )
+                    continue
+                status.update(prepared=True, source=item.source)
+                break
+            if not status["prepared"]:
+                gaps.append(
+                    f"head/{pid}: "
+                    + (
+                        status["attempts"][-1]["reason"]
+                        if status["attempts"]
+                        else status["reason"]
+                    )
+                )
     finally:
         processor.close()
+    return results
 
 
 def build(output):
@@ -181,35 +229,45 @@ def build(output):
         print(f"Подготовлено {len(assets)} · {kind}/{entity}", flush=True)
 
     art = "https://github.com/Troyevv/autosport_sim/tree/issue-3-career-world"
-    for file in sorted((ROOT / "frontend/public/assets/wardrobe").glob("*.webp")):
-        add(
-            "uniform",
-            file.stem,
-            file.read_bytes(),
-            art + "/frontend/public/assets/wardrobe",
-            "Autosport Sim / OpenAI ImageGen",
-            "MIT (project artwork)",
-            "Фотографическая текстура, маска по воротнику.",
-            "webp",
-        )
-    # Front garment surfaces measured in their native photographic plane.
-    for file in sorted((ROOT / "frontend/public/assets/studio-wardrobe").glob("*.webp")):
-        with Image.open(file) as image:
-            w, h = image.size
-            center = w // 2
-            front = int(np.flatnonzero(np.asarray(image)[:, center, 3] > 120)[0])
-            rig = dict(span=w, collar=[center, front], seat=[120, 157])
-            add(
-                "uniform",
-                "studio-" + file.stem,
-                file.read_bytes(),
-                art + "/frontend/public/assets/studio-wardrobe",
-                "Autosport Sim / OpenAI ImageGen",
-                "MIT (project artwork)",
-                "Фотографическая ткань и измеренный контур переднего края.",
-                "webp",
-                garment=dict(rig=rig, outline=kit_guide(image, rig)),
-            )
+    palettes = json.loads(
+        (ROOT / "scripts/data/kit-colors.json").read_text(encoding="utf-8")
+    )
+    for folder in ("wardrobe", "studio-wardrobe"):
+        for file in sorted((ROOT / "frontend/public/assets" / folder).glob("*.webp")):
+            name = ("studio-" if folder == "studio-wardrobe" else "") + file.stem
+            geometry = {}
+            with Image.open(file) as image:
+                if folder == "studio-wardrobe":
+                    center = image.width // 2
+                    front = int(
+                        np.flatnonzero(np.asarray(image)[:, center, 3] > 120)[0]
+                    )
+                    rig = dict(
+                        span=image.width, collar=[center, front], seat=[120, 157]
+                    )
+                    geometry["garment"] = dict(rig=rig, outline=kit_guide(image, rig))
+                credit = (
+                    art + "/frontend/public/assets/" + folder,
+                    "Autosport Sim / OpenAI ImageGen",
+                    "MIT (project artwork)",
+                    "Фотографическая ткань, цветовые панели и отделка.",
+                    "webp",
+                )
+                add("uniform", name, file.read_bytes(), *credit, **geometry)
+                for org, colors in palettes.items():
+                    roles = (
+                        {"manufacturer"}
+                        if WORLD["organizations"][org]["kind"] == "supplier"
+                        else {"staff", "driver"}
+                    )
+                    if file.stem in roles:
+                        add(
+                            "uniform",
+                            name + "-" + org,
+                            colorway(image, colors, file.stem),
+                            *credit,
+                            **geometry,
+                        )
     try:
         print("Загрузка эмблем Simple Icons…", flush=True)
         raw = get(ICONS)
@@ -277,12 +335,19 @@ def build(output):
         "wec": "FIA World Endurance Championship",
         "dtm": "Deutsche Tourenwagen Masters",
     }
+    logo_files = {
+        "dtm": "DTM logo.svg",
+        "f2": "FIA Formula 2 Championship logo.svg",
+        "f3": "FIA Formula 3 Championship logo.svg",
+        "team-toyota-gazoo-racing": "Toyota Gazoo Racing logo.svg",
+        "supplier-mecachrome": "Nouveau logo Mecachrome.png",
+    }
     for oid, org in organizations.items():
         if oid in existing_logos:
             continue
         try:
             for candidate in sources.organization_logos(
-                logo_names.get(oid, org["name"])
+                logo_names.get(oid, org["name"]), logo_files.get(oid)
             ):
                 with Image.open(io.BytesIO(source_bytes(candidate))) as im:
                     im.thumbnail((256, 256))
@@ -298,7 +363,7 @@ def build(output):
                 break
         except (ValueError, KeyError, OSError, sources.Unavailable) as err:
             gaps.append(f"logo/{oid}: {err}")
-    studio_portraits(add, gaps, curated)
+    attempts = collect_portraits(add, gaps)
     try:
         add(
             "car",
@@ -307,7 +372,6 @@ def build(output):
         )
     except (OSError, ValueError, KeyError, IndexError) as exc:
         gaps.append(f"car/car-f1-4: {exc}")
-    portrait_ids = {r["entity"] for r in curated if r["kind"] == "head"}
     present = {(a["kind"], a["entity"]) for a in assets}
     missing = 0
     for kind, entities in [
@@ -317,15 +381,9 @@ def build(output):
     ]:
         missing += sum((kind, eid) not in present for eid in entities)
         gaps.extend(
-            f"{kind}/{eid}: "
-            + (
-                "вне контрольной подборки"
-                if kind == "head"
-                else "нет подготовленного разрешённого изображения"
-            )
+            f"{kind}/{eid}: нет подготовленного разрешённого изображения"
             for eid in sorted(entities)
-            if (kind, eid) not in present
-            and not (kind == "head" and eid in portrait_ids)
+            if kind != "head" and (kind, eid) not in present
         )
     print(
         f"Портреты: реальных {sum(a[0] == 'head' for a in present)}, синтетических {sum(a[0] == 'generated-head' for a in present)}.",
@@ -343,7 +401,19 @@ def build(output):
             for path, content in files.items():
                 z.writestr(path, content)
         validate(staged.read_bytes())
+        report = coverage(assets, attempts, gaps, staged.stat().st_size)
+        report_path = output.with_name(output.stem + "-report.json")
+        temp_report = Path(tmp) / "report.json"
+        temp_report.write_text(
+            json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8"
+        )
         staged.replace(output)
+        temp_report.replace(report_path)
+    print(
+        "Покрытие по чемпионатам: "
+        + json.dumps(report["championships"], ensure_ascii=False)
+    )
+    print("Отчёт:", report_path)
     print(
         f"{output} · подготовлено: {len(assets)} · отсутствует: {missing} (manifest.json)"
     )

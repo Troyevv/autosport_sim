@@ -15,6 +15,7 @@ from typing import Annotated, Literal
 from .catalog import WORLD
 from .domain import RuleError
 from .service import Strict
+from .studio_sources import REVIEWED
 from .storage import dump, transaction
 
 LIMIT = 64 * 1024 * 1024
@@ -62,6 +63,7 @@ class Garment(Strict):
 
 
 class Asset(Strict):
+    originalSha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
     anatomy: Anatomy | None = None
     garment: Garment | None = None
     kind: Kind
@@ -77,20 +79,35 @@ class Asset(Strict):
 class Manifest(Strict):
     version: Literal[1]
     world: Literal["2025-v1"]
-    assets: list[Asset] = Field(min_length=1, max_length=512)
+    assets: list[Asset] = Field(min_length=1, max_length=800)
     gaps: list[str] = Field(max_length=1024)
 
 
 def known(a):
     if a.kind == "head":
-        return a.entity in WORLD["names"]
+        original = REVIEWED.get((a.entity, a.originalSha256))
+        return (
+            a.entity in WORLD["names"]
+            and original is not None
+            and a.anatomy is not None
+            and (a.source, a.license, a.author)
+            == (original.source, original.license, original.author)
+        )
     if a.kind == "generated-head":
         return re.fullmatch(r"generated-[a-z0-9-]{1,65}", a.entity)
     if a.kind == "car":
         return a.entity in WORLD["cars"]
     if a.kind == "uniform":
+        role, _, org = a.entity.removeprefix("studio-").partition("-")
+        if not org:
+            return role in {"driver", "staff", "manufacturer", "neutral"}
+        owner = WORLD["organizations"].get(org)
         return bool(
-            re.fullmatch(r"(studio-)?(driver|staff|manufacturer|neutral)", a.entity)
+            owner
+            and role
+            in (
+                {"manufacturer"} if owner["kind"] == "supplier" else {"driver", "staff"}
+            )
         )
     if a.kind == "logo" and a.entity in WORLD["championships"]:
         return True
@@ -104,7 +121,7 @@ def validate(data):
         items = archive.infolist()
         paths = set(archive.namelist())
         if (
-            len(items) > 513
+            len(items) > 801
             or len(paths) != len(items)
             or sum(i.file_size for i in items) > LIMIT
         ):

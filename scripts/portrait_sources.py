@@ -123,7 +123,7 @@ def fetch(url, hosts, limit):
     return data
 
 
-def organization_logos(name):
+def organization_logos(name, file_title=None):
     """Search licensed marks named for the organisation, requesting a raster thumbnail."""
     query = urlencode(
         dict(
@@ -138,10 +138,23 @@ def organization_logos(name):
             iiurlwidth=256,
         )
     )
+    if file_title:
+        query = urlencode(
+            dict(
+                action="query",
+                format="json",
+                titles="File:" + file_title,
+                prop="imageinfo",
+                iiprop="url|extmetadata",
+                iiurlwidth=256,
+            )
+        )
     response = json.loads(fetch(API + "?" + query, COMMONS, 2_000_000))
     for page in response.get("query", {}).get("pages", {}).values():
         title = normalized(page.get("title", ""))
-        if not contains(title, name) or not contains(title, "logo"):
+        if not file_title and (
+            not contains(title, name) or not contains(title, "logo")
+        ):
             continue
         info = next(iter(page.get("imageinfo", [])), {})
         meta = info.get("extmetadata", {})

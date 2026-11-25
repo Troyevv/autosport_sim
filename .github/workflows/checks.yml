@@ -82,6 +82,8 @@ jobs:
             $manifest = $reader.ReadToEnd() | ConvertFrom-Json
             $faces = @($manifest.assets | Where-Object { $_.kind -eq 'generated-head' -and $_.anatomy.body[0].Count -eq 27 })
             $kits = @($manifest.assets | Where-Object { $_.kind -eq 'uniform' -and $_.garment })
-            if ($faces.Count -ne 8 -or $kits.Count -ne 4) { throw 'Incomplete R3.2 portrait geometry or wardrobe' }
+            if ($faces.Count -lt 200 -or $faces.Count -gt 300 -or $kits.Count -lt 100) { throw 'Incomplete R3.2 portrait geometry or wardrobe' }
+            $unreviewed = @($manifest.assets | Where-Object { $_.kind -eq 'head' -and !$_.originalSha256 })
+            if ($unreviewed.Count) { throw 'Unreviewed real portrait' }
             if ($manifest.assets.Count -lt 6 -or $zip.Entries.Count -ne ($manifest.assets.Count + 1)) { throw 'Incomplete media ZIP' }
           } finally { $zip.Dispose() }

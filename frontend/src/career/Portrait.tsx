@@ -22,7 +22,9 @@ export function Portrait({
   const kind = person.origin === 'generated' ? 'generated-head' : 'head'
   const asset = media.find((a) => a.entity === person.face && a.kind === kind)
   const role = !org ? 'neutral' : driver ? 'driver' : org.startsWith('supplier-') ? 'manufacturer' : 'staff'
-  const garment = media.find((a) => a.kind === 'uniform' && a.entity === 'studio-' + role)
+  const teamKit = org && media.find((a) => a.kind === 'uniform' && a.entity === role + '-' + org)
+  const teamStudio = org && media.find((a) => a.kind === 'uniform' && a.entity === 'studio-' + role + '-' + org)
+  const garment = teamStudio || media.find((a) => a.kind === 'uniform' && a.entity === 'studio-' + role)
   const textile =
     assetUrl(media, 'uniform', garment?.entity ?? null) || '/assets/studio-wardrobe/' + role + '.webp'
   const fabric = useFittedFabric(asset?.sha256, garment?.garment ?? stock[role], textile, asset?.anatomy)
@@ -31,7 +33,7 @@ export function Portrait({
   const head = !asset?.anatomy || frame ? assetUrl(media, kind, person.face) : undefined
   const surface = frame && shoulderFrame(frame)
   const camera = showShoulders ? surface : frame?.camera
-  const fallback = assetUrl(media, 'uniform', role) || '/assets/wardrobe/' + role + '.webp'
+  const fallback = assetUrl(media, 'uniform', teamKit ? teamKit.entity : role) || '/assets/wardrobe/' + role + '.webp'
   const badge = assetUrl(media, 'logo', org)
   const sponsors = assetUrl(media, 'sponsor-strip', org)
   const rgb = (org ? color : '#85878a')
@@ -71,7 +73,7 @@ export function Portrait({
           <stop offset="1" stopColor="#454a55" />
         </linearGradient>
       </defs>
-      {!frame && <image href={fallback} width="256" height="320" filter={'url(#' + id + '-fabric)'} />}
+      {!frame && <image href={fallback} width="256" height="320" filter={teamKit ? undefined : 'url(#' + id + '-fabric)'} />}
       {head ? (
         <image data-layer="appearance" href={head} width={frame ? 240 : 256} height={frame ? 280 : 320} />
       ) : (
@@ -89,7 +91,7 @@ export function Portrait({
           width={surface[2]}
           height={surface[3]}
           preserveAspectRatio="none"
-          filter={'url(#' + id + '-fabric)'}
+          filter={teamStudio ? undefined : 'url(#' + id + '-fabric)'}
         />
       ) : (
         !frame && (
@@ -99,7 +101,7 @@ export function Portrait({
             href={fallback}
             width="256"
             height="320"
-            filter={'url(#' + id + '-fabric)'}
+            filter={teamKit ? undefined : 'url(#' + id + '-fabric)'}
           />
         )
       )}

@@ -26,6 +26,9 @@ MIGRATIONS = [
             kind TEXT NOT NULL, entity TEXT NOT NULL, metadata TEXT NOT NULL,
             content BLOB NOT NULL, PRIMARY KEY(kind,entity))"""
     ],
+    # Earlier versions imported real faces without a studio review. Careers store
+    # stable identities separately and keep their assigned face across this migration.
+    ["DELETE FROM media WHERE kind='head' AND json_extract(metadata, '$.originalSha256') IS NULL"],
 ]
 
 

@@ -19,6 +19,25 @@ def component(mask):
     return labels == label
 
 
+def shoulder_panels(mask, center, chin, span):
+    # A deep neckline can split a single garment into two disconnected panels
+    # above the lower edge of a roster photograph. Measure each shoulder.
+    count, labels = cv2.connectedComponents(np.uint8(mask > 0.48))
+    if count < 2:
+        raise ValueError("Не видна ткань на плечах")
+    yy, xx = np.ogrid[: mask.shape[0], : mask.shape[1]]
+    chest = (yy > chin) & (yy < chin + 3 * span)
+    selected = []
+    for sign in (-1, 1):
+        distance = (xx - center) * sign
+        side = labels[chest & (distance > 0.65 * span) & (distance < 4.3 * span)]
+        sizes = np.bincount(side, minlength=count)[1:]
+        if sizes.max() < 0.07 * span**2:
+            raise ValueError("Не видны оба плеча")
+        selected.append(1 + sizes.argmax())
+    return np.isin(labels, selected)
+
+
 def top_line(mask, default):
     present = np.flatnonzero(mask.any(axis=0))
     if len(present) < 8:
@@ -165,14 +184,14 @@ def body(original, rgb, lm, matrix, old, processor):
     transform = matrix / 2
     transform[:, 2] += [OFFSET, 0]
     cloth = cv2.warpAffine(masks[4] * original[:, :, 3] / 255, transform, (W, H))
-    keep = component(cloth)
+    keep = shoulder_panels(cloth, cx, chin[1], span)
     line = top_line(keep, chin[1] + 2 * span)
     row = int(np.clip(chin[1] + span * 2, 0, H - 1))
     # Two clavicles and the observed outline in the upper chest retain
     # asymmetry, body build and studio pose even when sleeves are cropped.
     band = keep[max(0, row - 5) : row + 6].sum(axis=0) > 3
     visible = np.flatnonzero(band)
-    if not len(visible):
+    if not len(visible) or visible[0] > cx - span or visible[-1] < cx + span:
         visible = np.flatnonzero(keep.any(axis=0))
     left = max(visible[0] + 3, cx - 4.3 * span)
     right = min(visible[-1] - 3, cx + 4.3 * span)
