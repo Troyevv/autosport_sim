@@ -1,0 +1,597 @@
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.boot {
+  max-width: 520px;
+  margin: 15vh auto;
+  padding: 32px;
+}
+.boot p,
+.boot button {
+  margin-top: 18px;
+}
+.demo-chip {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: #e3b6be;
+  background: #2e2027;
+  border: 1px solid #54313b;
+  border-radius: 3px;
+  padding: 3px 7px;
+}
+.sidebar {
+  overflow-y: auto;
+}
+.team-switch,
+.brand,
+.sidebar-footer {
+  flex-shrink: 0;
+}
+.top-date strong {
+  white-space: nowrap;
+}
+.native-dialog {
+  padding: 0;
+  color: var(--text);
+  max-width: calc(100vw - 32px);
+  margin: auto;
+}
+.native-dialog::backdrop {
+  background: #020509bd;
+  backdrop-filter: blur(5px);
+}
+.native-dialog:not([open]) {
+  display: none;
+}
+.native-dialog .modal-head {
+  flex: none;
+}
+.native-dialog .modal-body {
+  overscroll-behavior: contain;
+}
+.native-dialog:has(.role-option) {
+  max-width: 380px;
+}
+.native-dialog:has(.full-car) {
+  width: min(1150px, 96vw);
+}
+.native-dialog .field {
+  margin: 16px 0;
+}
+.field {
+  font-weight: 550;
+  color: #b8c1cc;
+}
+.field input,
+.field select {
+  width: 100%;
+}
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+.facts {
+  margin: 14px 0;
+  display: grid;
+  gap: 0;
+}
+.facts > div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+}
+.facts dt {
+  color: var(--muted);
+}
+.facts dd {
+  text-align: right;
+  margin: 0;
+  font-weight: 650;
+}
+.result {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 18px;
+  border: 0;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  width: 100%;
+  background: transparent;
+  color: var(--text);
+  font-size: 12px;
+}
+.result small,
+.result span > strong,
+.candidate small {
+  display: block;
+}
+.result small,
+.candidate small {
+  color: var(--muted);
+  font-size: 11px;
+}
+button.result:hover {
+  background: var(--surface-2);
+}
+.profile-lead {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 15px;
+}
+.profile-lead .people-avatar {
+  width: 78px;
+  height: 92px;
+  flex: none;
+}
+.profile-lead small {
+  color: var(--muted);
+}
+.modal-body .people-search {
+  border: 1px solid var(--border);
+}
+.modal-body .people-search input {
+  width: 100%;
+  border: 0;
+  background: none;
+}
+.people-summary svg {
+  flex-shrink: 0;
+}
+.candidate > button {
+  display: block;
+  text-align: left;
+  border: 0;
+  padding: 0;
+  color: var(--text);
+  background: transparent;
+  font-weight: 700;
+}
+.candidate label {
+  font-size: 11px;
+  color: var(--muted);
+}
+.contract-warning {
+  padding: 8px;
+  background: #2b261f;
+  color: #dcc18b;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+}
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(245px, 100%), 1fr));
+  gap: 18px;
+  margin-top: 16px;
+}
+.section-grid,
+.management-projects,
+.garage-layout,
+.stack,
+.section-grid > * {
+  min-width: 0;
+}
+.section-grid {
+  align-items: start;
+}
+.block-gap {
+  margin-bottom: 22px;
+}
+.metric {
+  margin: 10px 0 15px;
+}
+.metric > span {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+  color: var(--muted);
+  font-size: 12px;
+}
+.metric b {
+  color: var(--text);
+}
+.series-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 25px;
+  background: linear-gradient(115deg, #21212c, #131920);
+  border: 1px solid var(--border);
+  padding: 25px 28px;
+  margin: 20px 0;
+  border-radius: 4px;
+}
+.series-banner p,
+.series-banner small {
+  color: var(--muted);
+  font-size: 12px;
+}
+.series-banner h2 {
+  font-size: 24px;
+}
+.series-banner > div + div {
+  padding-left: 20px;
+  border-left: 2px solid #6f3d49;
+}
+.event-detail + article {
+  margin-top: 20px;
+}
+.event-detail p {
+  color: var(--muted);
+  margin: 12px 0;
+}
+.calendar-event {
+  display: block;
+  background: #30212a;
+  border-left: 2px solid #c15669;
+  font-size: 10px;
+  line-height: 1.5;
+  padding: 4px;
+  max-width: 100%;
+  white-space: normal;
+}
+.calendar-event.development,
+.calendar-event.meeting {
+  background: #1d2c32;
+  border-color: #668e99;
+}
+.management-calendar-day span.today {
+  background: var(--accent);
+  padding: 1px 4px;
+  color: white;
+}
+.spending-chart {
+  padding: 22px;
+  display: flex;
+  justify-content: space-around;
+  align-items: end;
+  gap: 10px;
+  background: repeating-linear-gradient(to top, transparent 0 38px, #202630 39px 40px);
+}
+.spending-chart > div {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+}
+.spending-chart i {
+  width: clamp(18px, 3vw, 48px);
+  background: #a84e60;
+}
+.spending-chart small {
+  font-size: 10px;
+  color: var(--muted);
+}
+.garage-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 2.35fr) minmax(260px, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+.garage-scene {
+  background: #101216;
+  display: flex;
+  flex-direction: column;
+}
+.garage-scene header {
+  padding: 25px 28px;
+  background: linear-gradient(140deg, #1c2127, #101216);
+  position: relative;
+}
+.garage-scene h2 {
+  font-size: 48px;
+  font-weight: 550;
+  letter-spacing: -3px;
+  line-height: 1.1;
+}
+.garage-scene header p,
+.garage-scene footer {
+  font-size: 10px;
+  color: #a4aeb9;
+  letter-spacing: 1.5px;
+}
+.garage-scene header .chip {
+  position: absolute;
+  right: 22px;
+  top: 24px;
+}
+.car-photo {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: #0a0b0d;
+}
+.car-photo img,
+.full-car {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.garage-scene footer {
+  padding: 16px 23px;
+  display: flex;
+  justify-content: space-between;
+  border-top: 1px solid var(--border);
+}
+.stack {
+  display: grid;
+  gap: 16px;
+}
+.car-rating {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 14px;
+  margin-bottom: 16px;
+}
+.car-rating b {
+  font-size: 44px;
+  line-height: 1.1;
+}
+.car-rating small {
+  display: block;
+  color: var(--muted);
+  font-size: 11px;
+}
+.checkline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  margin: 9px 0;
+  font-size: 12px;
+}
+.checkline svg {
+  color: var(--green);
+}
+.swatches {
+  display: flex;
+  gap: 8px;
+  margin: 16px 0;
+}
+.swatches span {
+  flex: 1;
+  font-size: 11px;
+}
+.swatches i {
+  display: block;
+  height: 22px;
+  border: 1px solid #58606a;
+  border-radius: 2px;
+  margin-bottom: 5px;
+}
+.part {
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--border);
+}
+.circuit-map {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.circuit-map g[role='button'] {
+  cursor: pointer;
+}
+.race-driver-actions label {
+  display: grid;
+  gap: 4px;
+  font-size: 11px;
+  color: var(--muted);
+}
+.race-driver-actions select {
+  font-size: 12px;
+}
+.race-driver .facts {
+  margin-top: 10px;
+}
+.stints {
+  display: flex;
+  gap: 3px;
+  margin: 15px 0;
+}
+.stints span {
+  padding: 7px 10px;
+  border-top: 3px solid #c7aa68;
+  background: #25241e;
+  flex: 1;
+  font-size: 11px;
+}
+.stints span + span {
+  border-color: #b6becb;
+  background: #21262b;
+}
+.race-map-footer {
+  gap: 10px;
+}
+.mobile-menu .brand {
+  display: none;
+}
+.mobile-menu .team-switch {
+  margin: 0 0 12px;
+}
+.mobile-menu .form-actions {
+  justify-content: flex-start;
+}
+.mobile-menu .nav-fill {
+  display: none;
+}
+.mobile-menu .sidebar-footer {
+  margin-top: 12px;
+}
+@media (max-width: 1000px) {
+  .garage-layout {
+    grid-template-columns: minmax(0, 1.8fr) minmax(210px, 1fr);
+  }
+}
+@media (max-width: 760px) {
+  .sidebar {
+    display: none;
+  }
+  .topbar-breadcrumb {
+    display: none;
+  }
+  .topbar .top-date {
+    display: block;
+  }
+  .demo-chip {
+    font-size: 9px;
+  }
+  .screen .section-grid,
+  .garage-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .head-actions {
+    flex-wrap: wrap;
+  }
+  .kpi-value {
+    overflow-wrap: anywhere;
+  }
+  .native-dialog:has(.mobile-menu) {
+    margin: 0 auto 0 0;
+    max-width: min(88vw, 340px);
+    max-height: 100dvh;
+    height: 100dvh;
+    border-radius: 0;
+  }
+  .mobile-menu .nav-link {
+    min-height: 38px;
+  }
+  .native-dialog:has(.mobile-menu) .modal-head {
+    padding: 11px 16px;
+  }
+  .native-dialog:has(.mobile-menu) .modal-body {
+    padding: 14px 16px;
+  }
+  .series-banner {
+    padding: 18px;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .series-banner > div + div {
+    padding-left: 12px;
+  }
+  .calendar-event {
+    font-size: 9px;
+    padding: 1px 2px;
+    line-height: 1.25;
+    overflow: hidden;
+  }
+  .management-calendar-day {
+    min-height: 64px;
+  }
+  .management-calendar-toolbar {
+    flex-wrap: wrap;
+  }
+  .management-month {
+    gap: 3px;
+  }
+  .management-month h2 {
+    min-width: 90px;
+  }
+  .garage-scene header {
+    padding: 16px;
+  }
+  .garage-scene header .chip {
+    right: 12px;
+    top: 14px;
+  }
+  .garage-scene footer {
+    padding: 12px;
+    font-size: 9px;
+  }
+  .garage-scene h2 {
+    font-size: 36px;
+  }
+  .race-driver-grid,
+  .race-bottom-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .race-sessionbar {
+    flex-wrap: wrap;
+  }
+  .race-sessionbar .race-session-controls {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .race-session-controls .segmented button {
+    padding: 5px 8px;
+  }
+  .modal-body .table-wrap {
+    max-width: 100%;
+  }
+  .profile-lead {
+    gap: 10px;
+  }
+  .mobile-bottom {
+    padding-bottom: max(8px, env(safe-area-inset-bottom));
+  }
+  button,
+  a,
+  input,
+  select {
+    scroll-margin-block: 76px 85px;
+  }
+  .garage-layout .stack {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.market-check-label label {
+  display: flex;
+}
+.market-check-label input {
+  margin: 0;
+}
+.market-candidate-identity button {
+  background: none;
+  border: 0;
+  color: var(--text);
+  font-weight: 650;
+  padding: 0;
+  text-align: left;
+}
+.compact .data-table td {
+  padding-block: 7px;
+}
+.compact .standing-row {
+  padding-block: 7px;
+}
+.compact .market-candidate {
+  padding-block: 12px;
+}
+
+@media (max-width: 600px) {
+  .people-toolbar {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .people-toolbar .people-search,
+  .people-toolbar .btn {
+    grid-column: 1 / -1;
+  }
+  .people-toolbar select {
+    width: 100%;
+    font-size: 12px;
+  }
+}
