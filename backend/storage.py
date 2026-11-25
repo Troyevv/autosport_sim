@@ -28,7 +28,10 @@ MIGRATIONS = [
     ],
     # Earlier versions imported real faces without a studio review. Careers store
     # stable identities separately and keep their assigned face across this migration.
-    ["DELETE FROM media WHERE kind='head' AND json_extract(metadata, '$.originalSha256') IS NULL"],
+    [
+        "DELETE FROM media WHERE kind='head' AND json_extract(metadata, '$.originalSha256') IS NULL"
+    ],
+    [],  # Fictional roster. Upgrade checkpoint data in the migration transaction.
 ]
 
 
@@ -66,6 +69,16 @@ def transaction(write=False):
         for idx in range(version, len(MIGRATIONS)):
             for statement in MIGRATIONS[idx]:
                 db.execute(statement)
+            if idx == 3:
+                from .roster_upgrade import upgrade
+
+                for row in db.execute("SELECT id,state FROM career").fetchall():
+                    state = json.loads(row["state"])
+                    if state.get("rules") == "2025-v1":
+                        db.execute(
+                            "UPDATE career SET state=? WHERE id=?",
+                            (dump(upgrade(state)), row["id"]),
+                        )
             db.execute(f"PRAGMA user_version={idx + 1}")
         yield db
         db.commit()

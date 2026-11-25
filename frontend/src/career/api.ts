@@ -49,6 +49,8 @@ export type World = {
   >
   cars: Record<string, { name: string; suppliers: Record<string, string> }>
   names: Record<string, string>
+  faces: Record<string, string>
+  assignments: Record<string, { person: string; org: string; position: string }>
   events: Event[]
 }
 export type Save = {
@@ -65,6 +67,10 @@ export type Person = {
   name: string
   face: string | null
   origin: string
+  nationality: string
+  birth_date: string
+  experience: number
+  specialization: string
   skills: Record<string, number>
   potential: number
   morale: number
@@ -79,6 +85,7 @@ export type Seat = {
   occupant: Person | null
 }
 export type Career = Save & {
+  player_id: string
   account: {
     cash_cents: number
     budget_cents: number

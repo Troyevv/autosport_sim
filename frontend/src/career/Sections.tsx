@@ -315,9 +315,15 @@ export function People({ world, c, media }: SectionProps) {
             <div>
               <p className="eyebrow">{world.positions[selected.position].name}</p>
               <h3>{world.organizations[c.org].name}</h3>
-              <p>{person.origin === 'real' ? 'Стартовый состав' : 'Игрок'}</p>
+              <p>{person.id === c.player_id ? 'Игрок' : 'Стартовый состав'}</p>
             </div>
           </div>
+          <Facts items={[
+            ['Гражданство', person.nationality],
+            ['Возраст', Number(c.date.slice(0, 4)) - Number(person.birth_date.slice(0, 4)) - Number(c.date.slice(5) < person.birth_date.slice(5))],
+            ['Дата рождения', new Date(person.birth_date + 'T12:00:00Z').toLocaleDateString('ru-RU', { timeZone: 'UTC' })],
+            ['Опыт, лет', person.experience], ['Специализация', person.specialization], ['Потенциал', person.potential],
+          ]} />
           <Facts items={Object.entries(person.skills)} />
           <small className="muted">Игровые оценки по шкале 0–100</small>
         </Dialog>

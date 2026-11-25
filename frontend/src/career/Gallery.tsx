@@ -34,26 +34,32 @@ const looks = [
   { name: 'Свободный агент', id: null, color: '#85878a', driver: false },
 ]
 function Gallery({ world, media }: { world: World; media: Asset[] }) {
-  const [id, select] = useState(
-    media.find((a) => a.kind === 'head' && a.anatomy)?.entity ?? 'person-fernando-alonso',
+  const names: Record<string, string> = {}
+  const appointments = new Map<string, { org: string; position: string }>()
+  for (const seat of Object.values(world.assignments)) {
+    const face = world.faces[seat.person]
+    names[face] = world.names[seat.person]
+    appointments.set(face, seat)
+  }
+  const subjects = media.filter((a) => a.kind === 'generated-head' && a.anatomy).sort((a, b) =>
+    Number(appointments.has(b.entity)) - Number(appointments.has(a.entity)) ||
+    (names[a.entity] ?? a.entity).localeCompare(names[b.entity] ?? b.entity, 'ru'),
   )
-  const subjects = media.filter((a) => ['head', 'generated-head'].includes(a.kind) && a.anatomy)
-    .sort((a, b) => Number(b.kind === 'head') - Number(a.kind === 'head'))
+  let reserve = 0
+  for (const face of subjects) {
+    if (!names[face.entity]) names[face.entity] = 'Резерв · ' + (++reserve)
+  }
+  const [id, select] = useState(subjects[0]?.entity ?? '')
   const [page, setPage] = useState(0)
   const pageSize = 12
   const pages = Math.ceil(subjects.length / pageSize)
   const [overview, setOverview] = useState(true)
-  const generated = media.filter((a) => a.kind === 'generated-head')
-  const names = {
-    ...world.names,
-    ...Object.fromEntries(generated.map((a, i) => [a.entity, 'Студийный портрет ' + (i + 1)])),
-  }
-  const source = media.find((a) => ['head', 'generated-head'].includes(a.kind) && a.entity === id)
+  const source = subjects.find((a) => a.entity === id)
   return (
     <>
       <h1>Галерея портретов</h1>
       <p>Примерка формы разных организаций. Выбор комплекта здесь не меняет карьеру.</p>
-      {!subjects.length && <p>Для просмотра студийных портретов подключите ZIP на главном экране.</p>}
+      {!subjects.length && <p>Студийная библиотека недоступна.</p>}
       <button onClick={() => setOverview(!overview)}>
         {overview ? 'Сравнить комплекты' : 'Все портреты'}
       </button>
@@ -66,17 +72,16 @@ function Gallery({ world, media }: { world: World; media: Asset[] }) {
         </nav>}
         <section className="studio-grid">
           {subjects.slice(page * pageSize, (page + 1) * pageSize).map((a, i) => {
-            const entry =
-              a.kind === 'head' && Object.values(world.entries).find((e) => e.crew.includes(a.entity))
-            const team = entry && world.organizations[entry.org]
-            const look = team ? { ...team, driver: true } : looks[i % looks.length]
+            const seat = appointments.get(a.entity)
+            const team = seat && world.organizations[seat.org]
+            const look = team && seat ? { ...team, driver: seat.position === 'driver' } : looks[i % looks.length]
             return (
               <figure key={a.entity}>
                 <Portrait
                   showShoulders
                   person={{
                     name: names[a.entity],
-                    origin: a.kind === 'head' ? 'real' : 'generated',
+                    origin: 'generated',
                     face: a.entity,
                   }}
                   org={look.id}
@@ -111,7 +116,7 @@ function Gallery({ world, media }: { world: World; media: Asset[] }) {
                   showShoulders
                   person={{
                     name: names[id],
-                    origin: id.startsWith('generated-') ? 'generated' : 'real',
+                    origin: 'generated',
                     face: id,
                   }}
                   org={look.id}
@@ -128,7 +133,7 @@ function Gallery({ world, media }: { world: World; media: Asset[] }) {
               {source.author} · {source.license} · {source.changes} <a href={source.source}>Источник</a>
             </p>
           ) : (
-            <p>В локальной медиатеке нет фотографии этого человека.</p>
+            <p>Изображение недоступно.</p>
           )}
         </>
       )}

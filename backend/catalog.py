@@ -2,6 +2,7 @@
 
 import csv
 import json
+from hashlib import sha256
 import re
 import unicodedata
 from pathlib import Path
@@ -9,8 +10,9 @@ from pathlib import Path
 from .engineering import technical_catalog
 from .supply import tyre_eligible
 
-VERSION = "2025-v1"
-DATA = Path(__file__).with_name("data") / VERSION
+VERSION = "2025-v2"
+DATA = Path(__file__).with_name("data") / "2025-v1"
+ROSTER = DATA.parent / VERSION
 
 
 def slug(text):
@@ -18,12 +20,18 @@ def slug(text):
     return re.sub("[^a-z0-9]+", "-", ascii_text.lower()).strip("-")
 
 
-def rows(name):
-    with (DATA / name).open(encoding="utf-8", newline="") as source:
+def rows(name, directory=DATA):
+    with (directory / name).open(encoding="utf-8", newline="") as source:
         return list(csv.DictReader(source))
 
 
-def load_catalog():
+def load_catalog(*, legacy=False):
+    version = "2025-v1" if legacy else VERSION
+    palette = (
+        {}
+        if legacy
+        else json.loads((ROSTER / "kit-colors.json").read_text(encoding="utf-8"))
+    )
     products = json.loads((DATA / "products.json").read_text(encoding="utf-8"))
     rules = json.loads((DATA / "rules.json").read_text(encoding="utf-8"))
     positions = json.loads((DATA / "positions.json").read_text(encoding="utf-8"))
@@ -35,6 +43,8 @@ def load_catalog():
         org = organizations.setdefault(
             oid, dict(id=oid, name=name, kind=kind, programs=[], lines=[])
         )
+        if not legacy:
+            org["color"] = "#" + palette[oid][0]
         if series not in org["programs"]:
             org["programs"].append(series)
         if line and line not in org["lines"]:
@@ -70,7 +80,7 @@ def load_catalog():
         names[pid] = name
         return pid
 
-    for row in rows("entries.csv"):
+    for row in rows("entries.csv", DATA if legacy else ROSTER):
         series, number = row["championship"], row["number"]
         eid = series + "-" + number
         org = organization(row["entrant"], "team", series)
@@ -86,7 +96,11 @@ def load_catalog():
         programs.setdefault(pid, dict(id=pid, org=org, championship=series, classes=[]))
         if row["class"] not in programs[pid]["classes"]:
             programs[pid]["classes"].append(row["class"])
-        crew = [identify(n) for n in row["crew"].split("|")]
+        crew = (
+            [identify(n) for n in row["crew"].split("|")]
+            if legacy
+            else row["crew"].split("|")
+        )
         entries[eid] = dict(
             id=eid,
             championship=series,
@@ -133,7 +147,7 @@ def load_catalog():
                 *(products[line]["lead_position"] for line in rec["lines"]),
             ]:
                 seat(org, pos)
-    for row in rows("staff.csv"):
+    for row in rows("staff.csv") if legacy else ():
         eid = row["entry"]
         seat(
             row["org"],
@@ -143,6 +157,16 @@ def load_catalog():
             eid or None,
         )
 
+    profiles = {}
+    if not legacy:
+        profiles = json.loads((ROSTER / "people.json").read_text(encoding="utf-8"))
+        for key, assignment in assignments.items():
+            if assignment["person"] is None:
+                assignment["person"] = "staff-" + sha256(key.encode()).hexdigest()[:12]
+        names = {pid: p["name"] for pid, p in profiles.items()}
+        expected = {a["person"] for a in assignments.values()}
+        if expected != names.keys():
+            raise ValueError("Штатные назначения расходятся с каталогом людей")
     config = json.loads((DATA / "engineering.json").read_text(encoding="utf-8"))
     engineering = technical_catalog(rules, entries, cars, config)
     for item in config["preseason"]:
@@ -175,13 +199,29 @@ def load_catalog():
         )
     for series, rule in rules.items():
         rule.update(
-            id=series, season_id=f"{series}-2025", rules_id=f"{VERSION}-{series}"
+            id=series, season_id=f"{series}-2025", rules_id=f"{version}-{series}"
         )
+    if not legacy:
+        for ser, rule in rules.items():
+            rule["governing_body"] = "DMSB" if ser == "dtm" else "FIA"
+        rules["dtm"]["organizer"] = "ADAC"
+        rules["wec"]["organizer"] = "ACO"
+    origin = json.loads((DATA / "sources.json").read_text(encoding="utf-8"))
+    if not legacy:
+        for historic_staff_source in ("staff", "wec_staff"):
+            origin["sources"].pop(historic_staff_source, None)
     return dict(
-        version=VERSION,
+        version=version,
+        profiles=profiles,
+        reserve_ages={}
+        if legacy
+        else json.loads((ROSTER / "reserve-ages.json").read_text(encoding="utf-8")),
+        reserve=[]
+        if legacy
+        else json.loads((ROSTER / "reserve.json").read_text(encoding="utf-8")),
         engineering=engineering,
         products=products,
-        origin=json.loads((DATA / "sources.json").read_text(encoding="utf-8")),
+        origin=origin,
         championships=rules,
         organizations=organizations,
         programs=programs,
@@ -195,7 +235,3 @@ def load_catalog():
 
 
 WORLD = load_catalog()
-
-# Version 1 replays the published name and ID byte-for-byte. Display the
-# corrected spelling without changing a saved world, the RNG or the photo ID.
-DISPLAY_NAMES = {**WORLD["names"], "person-louis-hamilton": "Lewis Hamilton"}

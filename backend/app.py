@@ -5,8 +5,8 @@ from fastapi.responses import JSONResponse, Response
 from fastapi.concurrency import run_in_threadpool
 
 from . import media, service
-from .catalog import DISPLAY_NAMES, WORLD
-from .domain import RuleError, team_color
+from .catalog import WORLD
+from .domain import RuleError
 
 app = FastAPI(title="Autosport Sim", version="0.2.0")
 
@@ -28,11 +28,14 @@ def config():
 
 @app.get("/api/world")
 def world():
-    organizations = {
-        key: {**value, "color": team_color(key)}
-        for key, value in WORLD["organizations"].items()
+    return {
+        **{
+            k: v
+            for k, v in WORLD.items()
+            if k not in ("profiles", "reserve", "reserve_ages")
+        },
+        "faces": {p: v["face"] for p, v in WORLD["profiles"].items()},
     }
-    return {**WORLD, "names": DISPLAY_NAMES, "organizations": organizations}
 
 
 @app.get("/api/careers")
@@ -90,14 +93,8 @@ def media_index():
     return media.index()
 
 
-@app.post("/api/media/import")
-async def import_pack(request: Request):
-    data = await read_upload(request, media.LIMIT)
-    return {"assets": await run_in_threadpool(media.install, data)}
-
-
 @app.get("/api/media/{kind}/{entity}")
-def asset(kind: str, entity: str):
+def asset(kind: str, entity: str, v: str | None = None):
     meta, content = media.get(kind, entity)
     mime = {"jpg": "image/jpeg", "png": "image/png", "webp": "image/webp"}
     return Response(
@@ -106,5 +103,8 @@ def asset(kind: str, entity: str):
         headers={
             "X-Content-Type-Options": "nosniff",
             "ETag": '"' + meta["sha256"] + '"',
+            "Cache-Control": "public, max-age=31536000, immutable"
+            if v == meta["sha256"]
+            else "no-cache",
         },
     )

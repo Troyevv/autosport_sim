@@ -1,7 +1,6 @@
 """Career rules. World and checkpoint inputs are ordinary Python values; no I/O."""
 
 from datetime import date
-from hashlib import sha256
 
 START = "2025-02-01"
 ROLES = {"manager": "team", "owner": "team", "manufacturer": "supplier"}
@@ -44,11 +43,26 @@ def occupant_on(appointments, day):
     )
 
 
+def player_face(catalog, setup):
+    seat = catalog["assignments"][setup["org"] + ":" + setup["role"]]
+    birth = catalog["profiles"][seat["person"]]["birth_date"]
+    age = 2025 - int(birth[:4]) - int(birth[5:] > "02-01")
+    pool = [
+        face
+        for face, (low, high) in catalog["reserve_ages"].items()
+        if low <= age <= high
+    ]
+    faces = pool or catalog["reserve"]
+    return faces[setup["seed"] % len(faces)]
+
+
 def new_world(catalog, setup):
     role, org, series = setup["role"], setup["org"], setup["series"]
     rec = catalog["organizations"].get(org)
     if not rec or ROLES.get(role) != rec["kind"] or series not in rec["programs"]:
         raise RuleError("Должность или программа недоступна для этой организации.")
+    if catalog["version"] != "2025-v1" and "player_face" not in setup:
+        setup = {**setup, "player_face": player_face(catalog, setup)}
     state = dict(
         rules=catalog["version"],
         setup=setup,
@@ -71,35 +85,35 @@ def new_world(catalog, setup):
         }
         for cid, car in catalog["cars"].items()
     }
-    positions = {}
-    for aid, assignment in catalog["assignments"].items():
-        pid = assignment["person"]
-        if pid:
-            positions.setdefault(pid, set()).add(assignment["position"])
-        if assignment["org"] == org and assignment["position"] == role:
-            pid = "player"
-        state["seats"][aid] = [dict(person=pid, start=START, end=None)] if pid else []
-    positions["player"] = {role}
-    for pid, jobs in sorted(positions.items()):
-        profile_rng = {"rng": setup["seed"]} if pid == "player" else state
-        skills = {
-            skill: draw(profile_rng, 55, 94)
-            for job in sorted(jobs)
-            for skill in catalog["positions"][job]["skills"]
+    if catalog["version"] == "2025-v1":
+        from .legacy_people import populate
+
+        populate(catalog, setup, state)
+    else:
+        profiles = catalog["profiles"]
+        state["people"] = {
+            pid: {**profile, "skills": profile["skills"].copy(), "traits": []}
+            for pid, profile in profiles.items()
         }
-        person = dict(
-            id=pid,
-            name=setup["name"] if pid == "player" else catalog["names"][pid],
-            origin="generated" if pid == "player" else "real",
-            face=None if pid == "player" else pid,
-            skills=skills,
-            potential=draw(profile_rng, max(skills.values()), 100),
-            morale=70,
-            fatigue=0,
-            traits=[],
-        )
-        assign_face(person, state["people"], setup["face_pool"], setup["seed"])
-        state["people"][pid] = person
+        office = catalog["assignments"][org + ":" + role]
+        incumbent = profiles[office["person"]]
+        face = setup["player_face"]
+        player = {
+            **incumbent,
+            "id": "player",
+            "name": setup["name"],
+            "face": face,
+            "skills": incumbent["skills"].copy(),
+            "traits": [],
+        }
+        state["people"]["player"] = player
+        for aid, assignment in catalog["assignments"].items():
+            pid = "player" if aid == office["id"] else assignment["person"]
+            state["seats"][aid] = [dict(person=pid, start=START, end=None)]
+        # Freeze the independent finance/collective stream from the published 2025
+        # rules. Old ledgers and opening balances replay exactly after migration.
+        for _ in range(2312):
+            draw(state, 0, 1)
     for oid, organization in catalog["organizations"].items():
         team = organization["kind"] == "team"
         groups = (
@@ -205,25 +219,3 @@ def apply(state, catalog, action):
     else:
         raise RuleError("У этой должности нет полномочий на команду.", 403)
     state["revision"] += 1
-
-
-def team_color(organization):
-    # Interface palette for team apparel; also stable for independent teams.
-    colors = {
-        "team-aston-martin-aramco-f1-team": "#00795e",
-        "team-williams-racing": "#1463be",
-        "team-toyota-gazoo-racing": "#3a3b3d",
-        "supplier-pirelli": "#e7b820",
-        "supplier-michelin": "#235799",
-        "supplier-goodyear": "#183e81",
-        "team-oracle-red-bull-racing": "#242d54",
-        "team-mclaren-formula-1-team": "#eb8818",
-        "team-scuderia-ferrari": "#ae293c",
-        "team-mercedes-amg-petronas-f1-team": "#268c83",
-    }
-    palette = ["#733847", "#254963", "#365449", "#444057", "#766245"]
-    if not organization:
-        return "#4e525c"
-    return colors.get(
-        organization, palette[sha256(organization.encode()).digest()[0] % len(palette)]
-    )

@@ -1,7 +1,6 @@
 """Offline geometric quality checks and semantic head/neck segmentation.
 
-Landmarks are used for framing and pose only. Sporting identity is determined
-from publisher metadata before this module receives pixels.
+The offline artist workflow fits authored synthetic studio faces to team clothing.
 """
 
 import hashlib

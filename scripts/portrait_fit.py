@@ -95,6 +95,20 @@ def anchors(line, center, left, right, neck, skin=None):
     return [rounded(xs - OFFSET), rounded(ys)]
 
 
+def smooth_shoulders(outline):
+    # Hair over a sleeve may leave one isolated cloth sample near the cheek.
+    # Interpolate only that sample between its measured neighbours. Leave both
+    # collar ridges and the centre of the neck untouched.
+    xs, ys = outline
+    fitted = list(ys)
+    tolerance = max(4.0, (xs[20] - xs[6]) * 0.12)
+    for i in (1, 2, 3, 4, 22, 23, 24, 25):
+        if min(ys[i - 1], ys[i + 1]) - ys[i] > tolerance:
+            weight = (xs[i] - xs[i - 1]) / (xs[i + 1] - xs[i - 1])
+            fitted[i] = round(ys[i - 1] + weight * (ys[i + 1] - ys[i - 1]), 2)
+    return [xs, fitted]
+
+
 def neckline(outline, full_depth):
     xs, measured = (np.array(row) for row in outline)
     middle = len(xs) // 2
@@ -112,7 +126,7 @@ def neckline(outline, full_depth):
         fitted[side] = np.minimum(
             measured[side], 0.50 * arc + 0.50 * (original - loss * (1 - t**2))
         )
-    return [rounded(xs), rounded(fitted)]
+    return smooth_shoulders([rounded(xs), rounded(fitted)])
 
 
 def body(original, rgb, lm, matrix, old, processor):

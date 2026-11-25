@@ -29,8 +29,7 @@ export function Library({ world, saves, media }: { world: World; saves: Save[]; 
     [name, setName] = useState(''),
     [seed, setSeed] = useState('')
   const [error, setError] = useState(''),
-    [busy, setBusy] = useState(false),
-    [assets, setAssets] = useState(media)
+    [busy, setBusy] = useState(false)
   const organizations = Object.values(world.organizations)
     .filter((o) => o.programs.includes(series) && o.kind === (role === 'manufacturer' ? 'supplier' : 'team'))
     .sort((a, b) => a.name.localeCompare(b.name))
@@ -56,17 +55,12 @@ export function Library({ world, saves, media }: { world: World; saves: Save[]; 
       setBusy(false)
     }
   }
-  async function upload(file: File, pack: boolean) {
+  async function upload(file: File) {
     setBusy(true)
     setError('')
     try {
-      if (pack) {
-        await api('media/import', { method: 'POST', body: file })
-        setAssets(await api<Asset[]>('media'))
-      } else {
-        const save = await api<Save>('careers/import', { method: 'POST', body: file })
-        location.assign(careerUrl(save.id))
-      }
+      const save = await api<Save>('careers/import', { method: 'POST', body: file })
+      location.assign(careerUrl(save.id))
     } catch (e) {
       setError(explain(e))
     } finally {
@@ -179,20 +173,19 @@ export function Library({ world, saves, media }: { world: World; saves: Save[]; 
                 label="Импортировать сохранение"
                 accept=".json"
                 busy={busy}
-                onFile={(f) => upload(f, false)}
+                onFile={upload}
               />
             </Panel>
             <Panel title="Локальная медиатека">
               <div className="panel-body">
-                <p aria-live="polite">Доступно изображений: {assets.length}</p>
-                <small className="muted">Портреты, форма и эмблемы из ZIP-пакета.</small>
-                {assets.some((a) => a.anatomy) && (
+                <p aria-live="polite">Доступно изображений: {media.length}</p>
+                <small className="muted">Студийные портреты, форма и эмблемы организаций.</small>
+                {media.some((a) => a.anatomy) && (
                   <p>
                     <a href="/portraits.html">Сравнить портреты и форму</a>
                   </p>
                 )}
               </div>
-              <FileInput label="Подключить ZIP" accept=".zip" busy={busy} onFile={(f) => upload(f, true)} />
             </Panel>
           </div>
         </div>

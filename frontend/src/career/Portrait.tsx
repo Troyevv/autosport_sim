@@ -19,7 +19,7 @@ export function Portrait({
   showShoulders?: boolean
 }) {
   const id = useId().replace(/:/g, '')
-  const kind = person.origin === 'generated' ? 'generated-head' : 'head'
+  const kind = 'generated-head'
   const asset = media.find((a) => a.entity === person.face && a.kind === kind)
   const role = !org ? 'neutral' : driver ? 'driver' : org.startsWith('supplier-') ? 'manufacturer' : 'staff'
   const teamKit = org && media.find((a) => a.kind === 'uniform' && a.entity === role + '-' + org)

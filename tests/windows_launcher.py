@@ -7,6 +7,7 @@ import os
 from pathlib import Path
 import re
 from queue import Empty, Queue
+from urllib.request import urlopen
 import shutil
 import socket
 import subprocess
@@ -177,6 +178,24 @@ def run_smoke(tmp):
             api, ui, _ = ports_and_pid(log)
             assert {api, ui}.isdisjoint({8102, 5173}) and api != ui
             assert url == f"http://127.0.0.1:{ui}"
+            with urlopen(url + "/api/world", timeout=10) as response:
+                world = json.load(response)
+            with urlopen(url + "/api/media", timeout=10) as response:
+                assets = json.load(response)
+            faces = set(world["faces"].values())
+            assert len(faces) >= 1000
+            for kind in ("generated-head", "uniform", "logo"):
+                item = next(
+                    a
+                    for a in assets
+                    if a["kind"] == kind
+                    and (kind != "generated-head" or a["entity"] in faces)
+                )
+                with urlopen(
+                    f"{url}/api/media/{kind}/{item['entity']}", timeout=10
+                ) as response:
+                    assert response.headers.get_content_maintype() == "image"
+                    assert len(response.read()) > 128
             assert (root / ".venv/Scripts/python.exe").is_file()
             modules = root / "frontend/node_modules"
             sentinel = modules / "keep-on-warm-start"

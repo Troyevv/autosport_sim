@@ -7,7 +7,8 @@ from uuid import uuid4
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
 from . import domain, storage
-from .catalog import DISPLAY_NAMES, VERSION, WORLD
+from .catalog import VERSION, WORLD
+from .roster_upgrade import original_world, upgrade
 from .engineering import resource_scope, project_target
 
 
@@ -59,8 +60,6 @@ def project(db, cid, state):
             continue
         person = domain.occupant_on(state["seats"].get(aid, []), state["date"])
         occupant = state["people"].get(person)
-        if occupant and person in DISPLAY_NAMES:
-            occupant = {**occupant, "name": DISPLAY_NAMES[person]}
         people.append({**assignment, "person": person, "occupant": occupant})
     history = storage.postings(db, cid, org)
     targets = [
@@ -80,7 +79,7 @@ def project(db, cid, state):
         player_id=state["player_id"],
         player_cash_cents=state["player_cash_cents"],
         account=state["accounts"][org],
-        team_color=domain.team_color(org),
+        team_color=WORLD["organizations"][org]["color"],
         assignments=people,
         ledger=history,
         collectives=[v for v in state["collectives"].values() if v["org"] == org],
@@ -93,13 +92,7 @@ def project(db, cid, state):
 
 def create(spec):
     with storage.transaction(True) as db:
-        pool = [
-            r[0]
-            for r in db.execute(
-                "SELECT entity FROM media WHERE kind='generated-head' ORDER BY entity"
-            )
-        ]
-        setup = dict(**spec.model_dump(), face_pool=pool)
+        setup = spec.model_dump()
         state = domain.new_world(WORLD, setup)
         cid = str(uuid4())
         storage.store(db, cid, state, create=True)
@@ -158,7 +151,7 @@ def import_save(document):
         or (
             type(document.get("version")) is not int
             or document["version"] != 1
-            or document.get("rules") != VERSION
+            or document.get("rules") not in ("2025-v1", VERSION)
         )
     ):
         raise domain.RuleError("Неизвестный формат сохранения или версия правил.")
@@ -171,32 +164,43 @@ def import_save(document):
             raise ValueError
         saved = payload["state"]
         setup = dict(saved["setup"])
-        pool = setup.pop("face_pool")
-        if (
-            not isinstance(pool, list)
-            or len(pool) > 512
-            or not all(
-                isinstance(p, str) and p.startswith("generated-") and len(p) <= 80
-                for p in pool
-            )
-            or pool != sorted(set(pool))
-        ):
-            raise ValueError
+        legacy = document["rules"] == "2025-v1"
+        if legacy:
+            pool = setup.pop("face_pool")
+            if (
+                not isinstance(pool, list)
+                or len(pool) > 512
+                or not all(
+                    isinstance(p, str) and p.startswith("generated-") and len(p) <= 80
+                    for p in pool
+                )
+                or pool != sorted(set(pool))
+            ):
+                raise ValueError
+            appearance = {"face_pool": pool}
+        else:
+            face = setup.pop("player_face")
+            if face not in WORLD["reserve"]:
+                raise ValueError
+            appearance = {"player_face": face}
         spec = CareerInput.model_validate(setup)
+        catalog = original_world() if legacy else WORLD
         commands = payload["commands"]
         if not isinstance(commands, list) or len(commands) > 256:
             raise ValueError
-        state = domain.new_world(WORLD, dict(**spec.model_dump(), face_pool=pool))
+        state = domain.new_world(catalog, dict(**spec.model_dump(), **appearance))
         seen = set()
         for item in commands:
             cmd = Command.model_validate(item)
             if cmd.command_id in seen or cmd.revision != state["revision"]:
                 raise ValueError
             seen.add(cmd.command_id)
-            domain.apply(state, WORLD, cmd.action)
+            domain.apply(state, catalog, cmd.action)
         state["ledger"].sort(key=lambda p: (p["date"], p["org"], p["key"]))
         if storage.dump(state) != storage.dump(saved):
             raise ValueError
+        if legacy:
+            state = upgrade(state)
     except (KeyError, TypeError, ValueError, RecursionError, ValidationError):
         raise domain.RuleError("Файл повреждён или нарушает правила мира.") from None
     cid = str(uuid4())

@@ -45,11 +45,12 @@ def test_seed_integrity():
     assert counts == dict(f1=20, f2=22, f3=30, dtm=24, wec=36)
     assert len(WORLD["events"]) == len({e["id"] for e in WORLD["events"]})
     assert WORLD["entries"]["wec-7"]["car"] != WORLD["entries"]["wec-007"]["car"]
-    assert "person-jules-gounon" in WORLD["entries"]["wec-36"]["crew"]
-    assert "person-jules-gounon" in WORLD["entries"]["dtm-48"]["crew"]
+    assert set(WORLD["entries"]["wec-36"]["crew"]) & set(
+        WORLD["entries"]["dtm-48"]["crew"]
+    )
     for a in WORLD["assignments"].values():
         assert a["entry"] is None or a["entry"] in WORLD["entries"]
-        assert a["person"] is None or a["person"] in WORLD["names"]
+        assert a["person"] in WORLD["profiles"]
     for e in WORLD["entries"].values():
         r = WORLD["championships"][e["championship"]]
         assert r["crew"][0] <= len(e["crew"]) <= r["crew"][1]
@@ -211,3 +212,93 @@ def test_generated_faces_keep_identity_and_never_replace_real_people():
     exhausted = dict(origin="generated", face=None)
     domain.assign_face(exhausted, people, ["generated-a", "generated-b"])
     assert exhausted["face"] is None
+
+
+def test_fictional_roster_biographies_and_series_balance():
+    from collections import defaultdict
+    from datetime import date
+    from statistics import mean
+
+    profiles = WORLD["profiles"]
+    assert len({p["name"] for p in profiles.values()}) == len(profiles)
+    assert len({p["nationality"] for p in profiles.values()}) >= 20
+    series_scores = defaultdict(list)
+    for seat in WORLD["assignments"].values():
+        person = profiles[seat["person"]]
+        birth = date.fromisoformat(person["birth_date"])
+        age = 2025 - birth.year - ((2, 1) < (birth.month, birth.day))
+        assert 18 <= age <= 70 and 0 < person["experience"] < age
+        skills = person["skills"]
+        assert set(skills) == set(WORLD["positions"][seat["position"]]["skills"])
+        assert person["specialization"] in skills
+        assert max(skills.values()) <= person["potential"] <= 100
+        if seat["position"] == "driver":
+            series_scores[seat["series"]].append(mean(skills.values()))
+    assert (
+        mean(series_scores["f1"])
+        > mean(series_scores["f2"])
+        > mean(series_scores["f3"])
+    )
+
+
+def test_version_one_import_and_sqlite_upgrade():
+    import json
+    from backend.roster_upgrade import original_world
+
+    setup = dict(
+        name="Тест сохранения",
+        role="manager",
+        org=MCLAREN,
+        series="f1",
+        seed=42,
+        face_pool=[
+            next(f for f in WORLD["reserve"] if f.startswith("generated-paddock-"))
+        ],
+    )
+    old = original_world()
+    state = domain.new_world(old, setup)
+    domain.apply(state, old, "advance")
+    state["ledger"].sort(key=lambda p: (p["date"], p["org"], p["key"]))
+    commands = [dict(action="advance", revision=0, command_id="first")]
+    payload = dict(state=state, commands=commands)
+    exported = dict(
+        format="autosport-career",
+        version=1,
+        rules="2025-v1",
+        payload=payload,
+        sha256=hashlib.sha256(storage.dump(payload).encode()).hexdigest(),
+    )
+    imported = service.import_save(exported)
+    upgraded = service.export_save(imported["id"])
+    new = upgraded["payload"]["state"]
+    for key in (
+        "rng",
+        "revision",
+        "date",
+        "accounts",
+        "ledger",
+        "checkpoint",
+        "pending",
+        "collectives",
+    ):
+        assert new[key] == state[key]
+    assert new["people"]["player"]["face"] == state["people"]["player"]["face"]
+    assert service.export_save(service.import_save(upgraded)["id"]) == upgraded
+    with storage.transaction(True) as db:
+        storage.store(db, "historical", state, create=True)
+        db.execute(
+            "INSERT INTO receipt VALUES (?,?,?,?)",
+            ("historical", "first", 0, "advance"),
+        )
+        db.execute("PRAGMA user_version=3")
+    assert service.export_save("historical") == upgraded
+    with storage.transaction() as db:
+        assert db.execute("PRAGMA user_version").fetchone()[0] == 4
+        assert (
+            json.loads(
+                db.execute("SELECT state FROM career WHERE id='historical'").fetchone()[
+                    0
+                ]
+            )["rules"]
+            == WORLD["version"]
+        )
