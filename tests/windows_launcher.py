@@ -1,33 +1,63 @@
 """Windows CI smoke through the same .bat files that Explorer invokes."""
 
-from contextlib import ExitStack
+from contextlib import ExitStack, contextmanager
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
 import os
 from pathlib import Path
 import re
+from queue import Empty, Queue
 import shutil
 import socket
 import subprocess
-import sys
 import tempfile
 import time
-import urllib.request
+import threading
 
 SOURCE = Path(__file__).resolve().parents[1]
 
 
-def browser_probe(url):
-    # Registered via Python's standard BROWSER setting. Validate the published
-    # URL at the instant a normal desktop browser would have received it.
-    with urllib.request.urlopen(url, timeout=5) as response:
-        index = response.read().decode()
-    script = re.search(r'<script\b[^>]*\bsrc="([^"]+)"', index)[1]
-    with urllib.request.urlopen(url + script, timeout=5) as response:
-        assert len(response.read()) > 100
-    with urllib.request.urlopen(url + "/api/config", timeout=5) as response:
-        assert json.load(response)["mode"] == "demo"
-    with Path(os.environ["LAUNCHER_SMOKE_VISITS"]).open("a", encoding="utf-8") as f:
-        print(url, file=f)
+@contextmanager
+def observe_browser(root):
+    """Only the disposable copy reports a visit, after React renders the HQ."""
+    visits = Queue()
+
+    class Receiver(BaseHTTPRequestHandler):
+        def do_POST(self):
+            size = int(self.headers["Content-Length"])
+            visit = json.loads(self.rfile.read(size))
+            visits.put((visit, self.headers.get("User-Agent", "")))
+            self.send_response(204)
+            self.end_headers()
+
+    with ThreadingHTTPServer(("127.0.0.1", 0), Receiver) as observer:
+        observer.daemon_threads = True
+        port = observer.server_address[1]
+        html = root / "frontend/index.html"
+        instrument = """
+<script>
+const observer = new MutationObserver(() => {
+  const heading = document.querySelector("main h1");
+  if (heading?.textContent === "Штаб команды") {
+    observer.disconnect();
+    navigator.sendBeacon("http://127.0.0.1:PORT/", JSON.stringify({
+      url: location.origin, title: document.title, heading: heading.textContent
+    }));
+  }
+});
+observer.observe(document.body, {childList: true, subtree: true});
+</script>""".replace("PORT", str(port))
+        html.write_text(
+            html.read_text(encoding="utf-8").replace("</body>", instrument + "</body>"),
+            encoding="utf-8",
+        )
+        thread = threading.Thread(target=observer.serve_forever, daemon=True)
+        thread.start()
+        try:
+            yield visits
+        finally:
+            observer.shutdown()
+            thread.join()
 
 
 def run_smoke(tmp):
@@ -47,17 +77,10 @@ def run_smoke(tmp):
                 "playwright-report",
             ),
         )
-    probe = tmp / "browser.py"
-    shutil.copy2(__file__, probe)
-    visits = tmp / "visits.txt"
-    env = {
-        **os.environ,
-        "PYTHONUTF8": "1",
-        "LAUNCHER_SMOKE_VISITS": str(visits),
-        "BROWSER": f'"{sys.executable}" "{probe}" %s',
-    }
+    env = {**os.environ, "PYTHONUTF8": "1"}
     launched = []
     with ExitStack() as stack:
+        visits = stack.enter_context(observe_browser(root))
 
         def launch(name):
             log = tmp / f"{len(launched)}-{name}.log"
@@ -77,14 +100,19 @@ def run_smoke(tmp):
             proc, log = launch(name)
             assert proc.wait(60) == 0, log.read_text(encoding="utf-8", errors="replace")
 
-        def wait_for_launch(proc, log, expected):
+        def wait_for_launch(proc, log):
             deadline = time.monotonic() + 240
             while time.monotonic() < deadline and proc.poll() is None:
-                if visits.exists():
-                    urls = visits.read_text(encoding="utf-8").splitlines()
-                    if len(urls) == expected:
-                        return urls[-1]
-                time.sleep(0.2)
+                try:
+                    visit, agent = visits.get(timeout=0.2)
+                except Empty:
+                    continue
+                assert (
+                    visit["title"] == "APEX — Motorsport Manager"
+                    and visit["heading"] == "Штаб команды"
+                )
+                print(f"Browser rendered HQ at {visit['url']} ({agent})", flush=True)
+                return visit["url"]
             raise AssertionError(log.read_text(encoding="utf-8", errors="replace"))
 
         def ports_and_pid(log):
@@ -117,7 +145,7 @@ def run_smoke(tmp):
         try:
             command("stop")
             first, log = launch("start")
-            url = wait_for_launch(first, log, 1)
+            url = wait_for_launch(first, log)
             api, ui, _ = ports_and_pid(log)
             assert {api, ui}.isdisjoint({8102, 5173}) and api != ui
             assert url == f"http://127.0.0.1:{ui}"
@@ -126,7 +154,7 @@ def run_smoke(tmp):
             sentinel = modules / "keep-on-warm-start"
             sentinel.touch()
             command("start")
-            assert wait_for_launch(first, log, 2) == url
+            assert wait_for_launch(first, log) == url
             command("stop")
             assert first.wait(10) == 0
             check_stopped((api, ui))
@@ -135,7 +163,7 @@ def run_smoke(tmp):
                 assert sock.getsockopt(socket.SOL_SOCKET, socket.SO_ACCEPTCONN)
                 sock.close()
             second, log = launch("start")
-            assert wait_for_launch(second, log, 3) == "http://127.0.0.1:5173"
+            assert wait_for_launch(second, log) == "http://127.0.0.1:5173"
             assert sentinel.exists(), "npm reinstalled unchanged packages"
             assert "Зависимости интерфейса уже установлены" in log.read_text(
                 encoding="utf-8", errors="replace"
@@ -150,7 +178,7 @@ def run_smoke(tmp):
             with (root / "frontend/package.json").open("a") as f:
                 f.write("\n")
             third, log = launch("start")
-            wait_for_launch(third, log, 4)
+            wait_for_launch(third, log)
             assert not sentinel.exists(), "changed manifest did not trigger npm ci"
             command("stop")
             assert third.wait(10) == 0
@@ -165,8 +193,5 @@ def run_smoke(tmp):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) == 2:
-        browser_probe(sys.argv[1])
-    else:
-        with tempfile.TemporaryDirectory(prefix="APEX smoke ") as temp:
-            run_smoke(Path(temp))
+    with tempfile.TemporaryDirectory(prefix="APEX smoke ") as temp:
+        run_smoke(Path(temp))
