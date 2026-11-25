@@ -51,10 +51,8 @@ def tool(name, args, minimum):
 
 def prepare():
     uv, _ = tool("uv.exe", ["--version"], (0, 13, 9))
-    if sys.version_info[:2] != (3, 12):
-        raise RuntimeError(
-            "Для запуска нужен Python 3.12. Откройте start.bat через uv."
-        )
+    if not (3, 11) <= sys.version_info[:2] < (3, 15):
+        raise RuntimeError("Нужен Python 3.11–3.14. Запустите игру через start.bat.")
     say("Python: " + sys.version.split()[0])
     node, node_version = tool("node.exe", ["--version"], (22, 13, 0))
     if node_version.startswith("v23."):
@@ -75,14 +73,19 @@ def prepare():
         digest.update((FRONT / manifest).read_bytes())
     arch = subprocess.check_output([node, "-p", "process.arch"], text=True).strip()
     digest.update(f"{node_version}/{npm_version}/{arch}".encode())
-    key = digest.hexdigest()
+    installed_lock = modules / ".package-lock.json"
+
+    def install_key():
+        installed = hashlib.sha256(installed_lock.read_bytes()).hexdigest()
+        return digest.hexdigest() + ":" + installed
+
     vite = modules / "vite/bin/vite.js"
     if not (
         stamp.is_file()
-        and stamp.read_text() == key
+        and installed_lock.is_file()
+        and stamp.read_bytes() == install_key().encode()
         and vite.is_file()
         and (modules / "typescript/bin/tsc").is_file()
-        and (modules / ".package-lock.json").is_file()
     ):
         say("Установка зависимостей интерфейса…")
         stamp.unlink(missing_ok=True)
@@ -91,7 +94,7 @@ def prepare():
             cwd=FRONT,
             check=True,
         )
-        stamp.write_text(key)
+        stamp.write_bytes(install_key().encode())
     else:
         say("Зависимости интерфейса уже установлены.")
     say("Сборка интерфейса…")
@@ -99,21 +102,18 @@ def prepare():
     return node, vite
 
 
-def available_port(preferred, excluded=0):
-    for port in (preferred, 0):
-        with socket.socket() as sock:
-            sock.setsockopt(socket.SOL_SOCKET, socket.SO_EXCLUSIVEADDRUSE, 1)
-            try:
-                sock.bind((HOST, port))
-            except OSError:
-                if port:
-                    continue
-                raise
-            actual = sock.getsockname()[1]
-            if actual != excluded:
-                return actual
-    # An ephemeral port coincided with the port reserved for the other server.
-    return available_port(0, excluded)
+def reserve_port(preferred):
+    sock = socket.socket()
+    try:
+        sock.setsockopt(socket.SOL_SOCKET, socket.SO_EXCLUSIVEADDRUSE, 1)
+        try:
+            sock.bind((HOST, preferred))
+        except OSError:
+            sock.bind((HOST, 0))
+        return sock
+    except OSError:
+        sock.close()
+        raise
 
 
 def read_url(url):
@@ -162,6 +162,8 @@ def serve(api_port, ui_port, ready_name):
 
     threading.Thread(target=watch_parent, daemon=True).start()
     node, vite = prepare()
+    if stopping.is_set():
+        return
     api_url, ui_url = (f"http://{HOST}:{port}" for port in (api_port, ui_port))
     index = (FRONT / "dist/index.html").read_text(encoding="utf-8")
     entry = re.search(r'<script\b[^>]*\bsrc="(/assets/[^"]+\.js)"', index)
@@ -227,8 +229,8 @@ def serve(api_port, ui_port, ready_name):
 
 
 def supervise(stop, reopen):
-    api_port = available_port(8102)
-    ui_port = available_port(5173, api_port)
+    with reserve_port(8102) as api, reserve_port(5173) as ui:
+        api_port, ui_port = api.getsockname()[1], ui.getsockname()[1]
     url = f"http://{HOST}:{ui_port}"
     say(f"Адреса запуска: API {api_port}, интерфейс {ui_port}. PID {os.getpid()}.")
     ready_name = INSTANCE + "-" + uuid.uuid4().hex
@@ -263,8 +265,8 @@ def supervise(stop, reopen):
                         f"Игра готова: {url}. Для остановки откройте stop.bat или закройте это окно."
                     )
                     if not webbrowser.open(url):
-                        raise RuntimeError(
-                            f"Не удалось открыть браузер по умолчанию. Адрес игры: {url}"
+                        say(
+                            f"Не удалось открыть браузер по умолчанию. Откройте {url} в браузере."
                         )
         except KeyboardInterrupt:
             pass

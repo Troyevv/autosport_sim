@@ -10,7 +10,7 @@ goto :done
 where.exe uv.exe >nul 2>nul
 if errorlevel 1 goto :no_uv
 set "VIRTUAL_ENV="
-uv.exe run --no-project --python 3.12 -- python "scripts\windows\launcher.py" stop
+uv.exe run --no-project --python ">=3.11,<3.15" -- python "scripts\windows\launcher.py" stop
 :done
 if errorlevel 1 goto :failed
 popd
