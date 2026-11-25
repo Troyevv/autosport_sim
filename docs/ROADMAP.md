@@ -1,0 +1,50 @@
+# План начала разработки
+
+Эпик: [#1 — Autosport Sim — первый полноценный карьерный цикл и интерфейс](https://github.com/Troyevv/autosport_sim/issues/1).
+
+## Старт
+
+**Первая задача — [#2](https://github.com/Troyevv/autosport_sim/issues/2).** Не поручать Codex весь эпик одним запуском. Каждая issue содержит область работы, зависимости, критерии приёмки и ограничения. Номер этапа в заголовке — ориентир; фактические зависимости важнее простой числовой очереди.
+
+| Задача | Зависимости |
+|---|---|
+| [#2 — Запуск приложения и законченный интерфейс по эталону APEX](https://github.com/Troyevv/autosport_sim/issues/2) | Нет |
+| [#3 — Игровой мир, календарь, доменные команды и сохранения SQLite](https://github.com/Troyevv/autosport_sim/issues/3) | [#2](https://github.com/Troyevv/autosport_sim/issues/2) |
+| [#4 — Фотореалистичный 2D-гараж и полноценный редактор ливреи](https://github.com/Troyevv/autosport_sim/issues/4) | [#2](https://github.com/Troyevv/autosport_sim/issues/2), [#3](https://github.com/Troyevv/autosport_sim/issues/3) |
+| [#5 — Пилоты, персонал, трейты, контракты и переходы между дисциплинами](https://github.com/Troyevv/autosport_sim/issues/5) | [#3](https://github.com/Troyevv/autosport_sim/issues/3) |
+| [#6 — Финансы, обязательства и спонсорские договоры без фиктивных KPI](https://github.com/Troyevv/autosport_sim/issues/6) | [#3](https://github.com/Troyevv/autosport_sim/issues/3) |
+| [#7 — Разработка машины, компоненты, износ и договоры поставки](https://github.com/Troyevv/autosport_sim/issues/7) | [#3](https://github.com/Troyevv/autosport_sim/issues/3), [#5](https://github.com/Troyevv/autosport_sim/issues/5), [#6](https://github.com/Troyevv/autosport_sim/issues/6) |
+| [#8 — Детерминированный гоночный уик-энд, регламенты и корректные результаты](https://github.com/Troyevv/autosport_sim/issues/8) | [#3](https://github.com/Troyevv/autosport_sim/issues/3), [#5](https://github.com/Troyevv/autosport_sim/issues/5), [#7](https://github.com/Troyevv/autosport_sim/issues/7) |
+| [#9 — Гоночный центр: 2D-карта, тайминг, стратегия и управление экипажем](https://github.com/Troyevv/autosport_sim/issues/9) | [#2](https://github.com/Troyevv/autosport_sim/issues/2), [#8](https://github.com/Troyevv/autosport_sim/issues/8) |
+| [#10 — Полноценные роли владельца и производителя: программы, заказы и делегирование](https://github.com/Troyevv/autosport_sim/issues/10) | [#5](https://github.com/Troyevv/autosport_sim/issues/5), [#6](https://github.com/Troyevv/autosport_sim/issues/6), [#7](https://github.com/Troyevv/autosport_sim/issues/7) |
+| [#11 — Замкнутый карьерный цикл: NPC, сезон, межсезонье и интеграционная приёмка](https://github.com/Troyevv/autosport_sim/issues/11) | [#4](https://github.com/Troyevv/autosport_sim/issues/4), [#5](https://github.com/Troyevv/autosport_sim/issues/5), [#6](https://github.com/Troyevv/autosport_sim/issues/6), [#7](https://github.com/Troyevv/autosport_sim/issues/7), [#8](https://github.com/Troyevv/autosport_sim/issues/8), [#9](https://github.com/Troyevv/autosport_sim/issues/9), [#10](https://github.com/Troyevv/autosport_sim/issues/10) |
+
+## Порядок работы
+
+1. [#2](https://github.com/Troyevv/autosport_sim/issues/2) — воспроизводимый запуск и весь интерфейс.
+2. [#3](https://github.com/Troyevv/autosport_sim/issues/3) — авторитетное состояние, команды, время и сохранения.
+3. После основания можно разделить работу на [#4](https://github.com/Troyevv/autosport_sim/issues/4) (гараж), [#5](https://github.com/Troyevv/autosport_sim/issues/5) (люди), [#6](https://github.com/Troyevv/autosport_sim/issues/6) (финансы).
+4. После людей и финансов — [#7](https://github.com/Troyevv/autosport_sim/issues/7) (техника).
+5. Затем [#8](https://github.com/Troyevv/autosport_sim/issues/8) (движок уик-энда) и [#10](https://github.com/Troyevv/autosport_sim/issues/10) (владелец/производитель) могут идти отдельными ветками.
+6. После движка — [#9](https://github.com/Troyevv/autosport_sim/issues/9) (настоящий гоночный интерфейс).
+7. [#11](https://github.com/Troyevv/autosport_sim/issues/11) — финальное соединение систем и завершённый сезон.
+
+Параллельные задачи выполнять в отдельных ветках после согласования общих контрактов. Не назначать независимым агентам одновременную перезапись одного общего файла. Зависимость считается готовой после включения её результата в рабочую ветку, а не после создания PR.
+
+## Что означает «готово» на каждом этапе
+
+В первой задаче допустим явный демонстрационный адаптер, поскольку её цель — перенос полного интерфейса. После основания реальные подсистемы подключаются к одному состоянию карьеры. Нельзя смешивать фиктивные операции и настоящие сохранения или выдавать статичные показатели за работающую экономику.
+
+Для первоначального UI гараж получает качественный статичный боковой 2D-вид и законченные панели. Полное редактирование масок/цветов/декалей — отдельная [#4](https://github.com/Troyevv/autosport_sim/issues/4). Исторический 3D-гараж остаётся только внутри `reference/ui-v1`.
+
+В финале [#11](https://github.com/Troyevv/autosport_sim/issues/11) должны исчезнуть все demo-обработчики из карьерного режима. При этом отдельный режим знакомства с интерфейсом допустим, если он явно отделён от сохранений.
+
+## Постоянные документы
+
+- [AGENTS.md](../AGENTS.md) — рабочие правила Codex.
+- [PRODUCT.md](PRODUCT.md) — действующие продуктовые решения.
+- [ARCHITECTURE.md](ARCHITECTURE.md) — начальная архитектура и инварианты.
+- [Локальный эталон](../reference/ui-v1/README.md) — запуск и актуальное исключение о 2D.
+
+Не считать сохранённый исторический `VALIDATION.md` отчётом о тестировании будущей игры: он описывает только исходный макет.
+
