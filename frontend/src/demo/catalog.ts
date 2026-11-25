@@ -78,10 +78,10 @@ const orders = [
   { id: 'north', team: 'NORTH Racing', product: 'VP6 Hybrid', units: 2, load: 12 },
 ]
 const frames = [
-  { lap: 14, clock: '20:13', offset: 0, radio: 'Келлер: «Баланс хороший. Теряем сцепление на выходе». ' },
-  { lap: 15, clock: '21:42', offset: 0.17, radio: 'Стратег: отрыв до Уорда стабилен.' },
-  { lap: 16, clock: '23:12', offset: 0.45, radio: 'Вебер: «Шины в рабочем диапазоне». ' },
-  { lap: 17, clock: '24:41', offset: 0.72, radio: 'Инженер: окно остановки по плану A.' },
+  { lap: 14, radio: 'Келлер: «Баланс хороший. Теряем сцепление на выходе». ' },
+  { lap: 15, radio: 'Стратег: отрыв до Уорда стабилен.' },
+  { lap: 16, radio: 'Вебер: «Шины в рабочем диапазоне». ' },
+  { lap: 17, radio: 'Инженер: окно остановки по плану A.' },
 ]
 const facilities = [
   {
@@ -148,6 +148,7 @@ export const catalog: GameCatalog = {
   sponsors,
   cars,
   messages,
+  replay: { lapSeconds: 89.6, startSeconds: 20 * 60 + 13, timeScale: 8 },
   frames,
   raceCars: {
     kel: { personId: 'keller', energy: 68, lastLap: '1:29.470' },

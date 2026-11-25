@@ -97,6 +97,7 @@ export interface GameCatalog {
   world: Record<Series, Championship>
   cars: Record<Series, Car>
   grid: readonly {
+    number: number
     id: string
     name: string
     code: string
@@ -109,7 +110,8 @@ export interface GameCatalog {
     interval: number
   }[]
   raceCars: Record<'kel' | 'web', { personId: string; energy: number; lastLap: string }>
-  frames: readonly { lap: number; clock: string; offset: number; radio: string }[]
+  replay: { lapSeconds: number; startSeconds: number; timeScale: number }
+  frames: readonly { lap: number; radio: string }[]
   projects: readonly ProjectSpec[]
   programs: readonly {
     id: Series

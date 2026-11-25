@@ -314,3 +314,64 @@ test('Редактирование плана, объектов и услови�
   await button(page, 'Начать разработку').click()
   await expect(button(page, 'Спецификация в разработке')).toBeDisabled()
 })
+
+test('Все машины следуют таймингу на каждой скорости и на границе повтора', async ({ page }) => {
+  await navigate(page, 'Гоночный центр')
+  const start = new Date('2028-05-21T14:00:00Z')
+  await page.clock.install({ time: start })
+  await page.clock.pauseAt(new Date(+start + 1024))
+  const control = (name: string) => button(page, name).dispatchEvent('click')
+
+  // Sample the rendered SVG against the distances implied by the visible timing rows.
+  async function checkPositions(seconds: number) {
+    const errors = await page.evaluate((seconds) => {
+      const track = document.querySelector<SVGPathElement>('.race-course')!
+      const length = track.getTotalLength()
+      return [...document.querySelectorAll('.race-timing-row')].map((row) => {
+        const name = row.querySelector('.race-timing-driver')!.textContent
+        const car = document.querySelector<SVGGElement>(`.circuit-map [aria-label^="На карте: ${name},"]`)!
+        const gap = Number(row.querySelector('.race-gap')!.textContent) || 0
+        const progress = ((seconds - gap) / 89.6 % 1 + 1) % 1
+        const expected = track.getPointAtLength(progress * length)
+        const actual = car.transform.baseVal.getItem(0).matrix
+        return Math.hypot(actual.e - expected.x, actual.f - expected.y)
+      })
+    }, seconds)
+    expect(errors).toHaveLength(20)
+    expect(Math.max(...errors)).toBeLessThan(0.2)
+  }
+  await checkPositions(0)
+  await control('Начать показ')
+  await page.clock.runFor(160)
+  await checkPositions(1.28)
+  await control('4×')
+  await page.clock.runFor(320)
+  await checkPositions(11.52)
+  await control('Пауза')
+  await page.clock.runFor(480)
+  await checkPositions(11.52)
+  await control('16×')
+  await control('Начать показ')
+  // Step past a lap boundary and then the end of the four-lap loop.
+  await page.clock.runFor(624)
+  await expect(page.locator('.race-lap strong')).toHaveText('15')
+  await checkPositions(91.392)
+  await page.clock.runFor(2096)
+  await expect(page.locator('.race-lap strong')).toHaveText('14')
+  await checkPositions(359.68)
+
+  const sizes = await page.locator('.race-timing').evaluate((panel) => {
+    const head = panel.querySelector('.race-table-head')!
+    const columns = [...head.children].map((cell) => cell.getBoundingClientRect())
+    return [...panel.querySelectorAll('.race-timing-row')].every((row) => {
+      const bounds = row.getBoundingClientRect()
+      return Math.abs(bounds.height - 34) < 0.1 && bounds.width === head.getBoundingClientRect().width &&
+        [...row.children].every((cell, i) => {
+          const rect = cell.getBoundingClientRect()
+          return Math.abs(columns[i].left - rect.left) < 1 && Math.abs(columns[i].right - rect.right) < 1 &&
+            cell.scrollWidth <= cell.clientWidth + 1 && rect.height < bounds.height
+        })
+    })
+  })
+  expect(sizes).toBe(true)
+})

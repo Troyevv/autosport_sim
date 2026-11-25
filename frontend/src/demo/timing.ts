@@ -1,6 +1,7 @@
 export const GRID = [
   {
     id: 'sil',
+    number: 5,
     name: 'Д. Силва',
     code: 'SIL',
     team: 'AURORA Motorsport',
@@ -14,6 +15,7 @@ export const GRID = [
   },
   {
     id: 'rin',
+    number: 11,
     name: 'М. Ринальди',
     code: 'RIN',
     team: 'SCUDERIA Rosso',
@@ -27,6 +29,7 @@ export const GRID = [
   },
   {
     id: 'war',
+    number: 44,
     name: 'О. Уорд',
     code: 'WAR',
     team: 'NORTHSTAR Racing',
@@ -40,6 +43,7 @@ export const GRID = [
   },
   {
     id: 'kel',
+    number: 17,
     name: 'А. Келлер',
     code: 'KEL',
     team: 'VANTA Racing',
@@ -53,6 +57,7 @@ export const GRID = [
   },
   {
     id: 'lau',
+    number: 28,
     name: 'А. Лоран',
     code: 'LAU',
     team: 'AURORA Motorsport',
@@ -66,6 +71,7 @@ export const GRID = [
   },
   {
     id: 'mor',
+    number: 33,
     name: 'Т. Моро',
     code: 'MOR',
     team: 'TITAN GP',
@@ -79,6 +85,7 @@ export const GRID = [
   },
   {
     id: 'and',
+    number: 10,
     name: 'Н. Андерсен',
     code: 'AND',
     team: 'NORTHSTAR Racing',
@@ -92,6 +99,7 @@ export const GRID = [
   },
   {
     id: 'web',
+    number: 24,
     name: 'Л. Вебер',
     code: 'WEB',
     team: 'VANTA Racing',
@@ -105,6 +113,7 @@ export const GRID = [
   },
   {
     id: 'kos',
+    number: 16,
     name: 'И. Коста',
     code: 'KOS',
     team: 'SCUDERIA Rosso',
@@ -118,6 +127,7 @@ export const GRID = [
   },
   {
     id: 'tan',
+    number: 22,
     name: 'К. Танака',
     code: 'TAN',
     team: 'NOVA Motorsport',
@@ -131,6 +141,7 @@ export const GRID = [
   },
   {
     id: 'rom',
+    number: 55,
     name: 'М. Ромеро',
     code: 'ROM',
     team: 'ORION Racing',
@@ -144,6 +155,7 @@ export const GRID = [
   },
   {
     id: 'lee',
+    number: 8,
     name: 'Д. Ли',
     code: 'LEE',
     team: 'NOVA Motorsport',
@@ -157,6 +169,7 @@ export const GRID = [
   },
   {
     id: 'dup',
+    number: 12,
     name: 'Л. Дюпон',
     code: 'DUP',
     team: 'TITAN GP',
@@ -170,6 +183,7 @@ export const GRID = [
   },
   {
     id: 'pet',
+    number: 77,
     name: 'М. Петров',
     code: 'PET',
     team: 'ATLAS Motorsport',
@@ -183,6 +197,7 @@ export const GRID = [
   },
   {
     id: 'sch',
+    number: 27,
     name: 'Ф. Шмидт',
     code: 'SCH',
     team: 'ORION Racing',
@@ -196,6 +211,7 @@ export const GRID = [
   },
   {
     id: 'alb',
+    number: 14,
     name: 'Р. Альба',
     code: 'ALB',
     team: 'SOLAR Racing',
@@ -209,6 +225,7 @@ export const GRID = [
   },
   {
     id: 'kim',
+    number: 30,
     name: 'А. Ким',
     code: 'KIM',
     team: 'ATLAS Motorsport',
@@ -222,6 +239,7 @@ export const GRID = [
   },
   {
     id: 'fer',
+    number: 63,
     name: 'П. Ферро',
     code: 'FER',
     team: 'SOLAR Racing',
@@ -235,6 +253,7 @@ export const GRID = [
   },
   {
     id: 'eri',
+    number: 19,
     name: 'Л. Эриксен',
     code: 'ERI',
     team: 'NORTH Racing',
@@ -248,6 +267,7 @@ export const GRID = [
   },
   {
     id: 'bat',
+    number: 36,
     name: 'Н. Батлер',
     code: 'BAT',
     team: 'NORTH Racing',

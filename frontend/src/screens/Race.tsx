@@ -1,26 +1,63 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { useLayoutEffect, useMemo, useRef, useState, type RefObject } from 'react'
 import { Flag, Play, Pause, Radio, Sun } from 'lucide-react'
 import { useGame, useUI } from '../ui/context'
 import { Header, Button, Choices, Panel, Facts, Progress, Confirm } from '../ui/components'
 const course =
   'M91 232 C49 216 56 155 76 118 Q96 76 156 70 C203 62 237 85 271 77 S366 44 408 62 L450 86 Q482 105 450 120 C423 132 357 109 325 121 Q297 137 331 148 L395 169 Q426 185 398 200 C371 219 330 200 307 182 Q273 155 249 178 L215 201 Q195 216 176 205 L155 192 Q142 184 128 204 L113 227 Q103 239 91 232 Z'
-function Circuit({ selected, select }: { selected: string; select: (id: string) => void }) {
-  const { state, data } = useGame(),
-    path = useRef<SVGPathElement>(null),
-    [positions, setPositions] = useState<{ x: number; y: number }[]>([])
+interface CircuitProps {
+  selected: string
+  select: (id: string) => void
+  rate: number
+  clock: RefObject<HTMLTimeElement | null>
+}
+function Circuit({ selected, select, rate, clock }: CircuitProps) {
+  const { state, data, send } = useGame()
+  const path = useRef<SVGPathElement>(null)
+  const markers = useRef(new Map<string, SVGGElement>())
+  const { lapSeconds, startSeconds, timeScale } = data.replay
+  const elapsed = useRef(state.frame * lapSeconds)
+  const cycleSeconds = data.frames.length * lapSeconds
+  const drawOrder = useMemo(
+    () => [...data.grid.filter((car) => car.id !== selected), data.grid.find((car) => car.id === selected)!],
+    [data.grid, selected],
+  )
+
   useLayoutEffect(() => {
-    const line = path.current!,
-      length = line.getTotalLength(),
-      offset = data.frames[state.frame].offset
-    setPositions(
-      data.grid.map((d) => {
-        const pos = line.getPointAtLength(((1.57 + offset - d.gap / 90) % 1) * length)
-        return { x: pos.x, y: pos.y }
-      }),
-    )
-  }, [state.frame, data])
+    const line = path.current!
+    const length = line.getTotalLength()
+    let request = 0
+    let previous = performance.now()
+    let displayedSecond = -1
+    function draw() {
+      for (const car of data.grid) {
+        // The timing gaps are seconds behind the leader at the same replay speed.
+        const fraction = ((elapsed.current - car.gap) / lapSeconds) % 1
+        const point = line.getPointAtLength((fraction < 0 ? fraction + 1 : fraction) * length)
+        markers.current.get(car.id)?.setAttribute('transform', `translate(${point.x} ${point.y})`)
+      }
+      const second = Math.floor(startSeconds + elapsed.current)
+      if (second !== displayedSecond && clock.current) {
+        clock.current.textContent = Math.floor(second / 60) + ':' + String(second % 60).padStart(2, '0')
+        displayedSecond = second
+      }
+    }
+    function tick(now: number) {
+      const lastLap = Math.floor(elapsed.current / lapSeconds)
+      // Bound the first step after the browser suspends animation frames.
+      const delta = Math.min(Math.max(0, now - previous), 100) / 1000
+      previous = now
+      elapsed.current = (elapsed.current + delta * timeScale * rate) % cycleSeconds
+      if (Math.floor(elapsed.current / lapSeconds) !== lastLap) send({ type: 'nextFrame' })
+      draw()
+      request = requestAnimationFrame(tick)
+    }
+    draw()
+    if (rate) request = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(request)
+  }, [clock, cycleSeconds, data.grid, lapSeconds, rate, send, startSeconds, timeScale])
+
   return (
-    <svg className="circuit-map" viewBox="20 24 480 232" role="group" aria-label="Карта Лазурного кольца">
+    <svg className="circuit-map" viewBox="45 30 438 224" role="group" aria-label="Карта Лазурного кольца">
       <defs>
         <pattern id="grid" width="16" height="16" patternUnits="userSpaceOnUse">
           <path d="M16 0H0V16" fill="none" stroke="#33404d" strokeWidth=".45" />
@@ -28,7 +65,7 @@ function Circuit({ selected, select }: { selected: string; select: (id: string) 
       </defs>
       <rect width="540" height="300" fill="url(#grid)" />
       <path d={course} fill="none" stroke="#404d5b" strokeWidth="10" />
-      <path ref={path} d={course} fill="none" stroke="#13181e" strokeWidth="7" />
+      <path className="race-course" ref={path} d={course} fill="none" stroke="#13181e" strokeWidth="7" />
       <path d={course} fill="none" stroke="#7b8794" strokeWidth=".8" strokeDasharray="3 3" />
       <g fill="#86939f" fontSize="9" letterSpacing="1.4">
         <text x="108" y="145">
@@ -44,39 +81,33 @@ function Circuit({ selected, select }: { selected: string; select: (id: string) 
           СЕКТОР 3
         </text>
       </g>
-      {data.grid.map((d, i) => {
-        const point = positions[i]
-        return (
-          point && (
-            <g
-              key={d.id}
-              role="button"
-              aria-label={'На карте: ' + d.name}
-              tabIndex={0}
-              onClick={() => select(d.id)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault()
-                  select(d.id)
-                }
-              }}
-              transform={'translate(' + point.x + ' ' + point.y + ')'}
-            >
-              <circle
-                r={5}
-                stroke={d.id === selected ? 'white' : '#13181e'}
-                strokeWidth={d.id === selected ? 2 : 1}
-                fill={d.color}
-              />
-              {d.id === selected && (
-                <text y="-10" fill="#fff" textAnchor="middle" fontSize="10">
-                  {d.code}
-                </text>
-              )}
-            </g>
-          )
-        )
-      })}
+      <path d="M87 241l7-17" stroke="#dce3e9" strokeWidth="3" strokeDasharray="2 2" />
+      {drawOrder.map((d) => (
+        <g
+          key={d.id}
+          ref={(element) => {
+            if (element) markers.current.set(d.id, element)
+            else markers.current.delete(d.id)
+          }}
+          role="button"
+          aria-label={'На карте: ' + d.name + ', №' + d.number}
+          aria-pressed={d.id === selected}
+          tabIndex={0}
+          onClick={() => select(d.id)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault()
+              select(d.id)
+            }
+          }}
+        >
+          <title>{`№${d.number} · ${d.name} · ${d.team}`}</title>
+          {d.id === selected && <circle r="10.3" fill="none" stroke="white" strokeWidth="1.3" />}
+          <circle r="7.8" fill="#171c22" stroke={d.color} strokeWidth="2.2" />
+          <text className="race-car-number">{d.number}</text>
+          {d.id === selected && <text className="race-car-code" y="-14">{d.code}</text>}
+        </g>
+      ))}
     </svg>
   )
 }
@@ -189,7 +220,7 @@ function Driver({ id, select }: { id: 'kel' | 'web'; select: (id: string) => voi
   )
 }
 export function Race() {
-  const { data, state, send } = useGame(),
+  const { data, state } = useGame(),
     { open } = useUI(),
     [selected, select] = useState('kel'),
     [playing, play] = useState(false),
@@ -197,11 +228,7 @@ export function Race() {
     [intervals, toggle] = useState(false)
   const frame = data.frames[state.frame],
     current = data.grid.find((d) => d.id === selected)!
-  useEffect(() => {
-    if (!playing) return
-    const timer = setInterval(() => send({ type: 'nextFrame' }), 8000 / Number(speed))
-    return () => clearInterval(timer)
-  }, [playing, speed, send])
+  const clock = useRef<HTMLTimeElement>(null)
   return (
     <section className="race-screen">
       <Header
@@ -237,11 +264,11 @@ export function Race() {
       <div className="race-sessionbar">
         <div className="race-session-state">
           <i className="race-status-light" />
-          {playing ? 'ПОКАЗ КАДРОВ' : 'ПОКАЗ НА ПАУЗЕ'}
+          {playing ? 'ИДЁТ ПОКАЗ' : 'ПОКАЗ НА ПАУЗЕ'}
           <span className="race-demo-label">Демонстрация гонки</span>
         </div>
         <div className="race-session-controls">
-          <span className="race-clock">{frame.clock}</span>
+          <time className="race-clock" ref={clock} aria-label="Время гонки" />
           <Choices
             segmented
             label="Скорость показа"
@@ -272,7 +299,7 @@ export function Race() {
               </div>
             </div>
             <div className="race-map-stage">
-              <Circuit {...{ selected, select }} />
+              <Circuit {...{ selected, select, clock }} rate={playing ? Number(speed) : 0} />
             </div>
             <div className="race-map-footer">
               <span>4,82 км · 18 поворотов</span>
@@ -310,15 +337,15 @@ export function Race() {
                 <span>{d.position}</span>
                 <span
                   className="race-timing-driver"
-                  style={{ borderLeft: '2px solid ' + d.color, paddingLeft: 7 }}
+                  style={{ borderColor: d.color }}
                 >
                   {d.name}
                 </span>
-                <span className="mono">
+                <span className="race-gap">
                   {i ? '+' + (intervals ? d.interval : d.gap).toFixed(3) : 'Лидер'}
                 </span>
-                <span>
-                  {d.tyre} · {d.life}%
+                <span className="race-tyres">
+                  <b data-compound={d.tyre}>{d.tyre}</b> {d.life}%
                 </span>
               </button>
             ))}

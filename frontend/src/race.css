@@ -294,71 +294,93 @@
 .race-text-button:hover {
   color: #dce0e7;
 }
-.race-table-head {
-  display: grid;
-  grid-template-columns: 32px minmax(0, 1fr) 64px 48px;
-  gap: 8px;
-  align-items: center;
-  padding: 12px 14px 10px;
-  color: #677484;
-  font-size: 8px;
-  letter-spacing: 0.7px;
-  border-bottom: 1px solid #232b35;
-}
-.race-table-head span:nth-child(3) {
-  text-align: right;
-}
-.race-table-head span:nth-child(4) {
-  text-align: right;
-}
-.race-timing-row {
+.race-table-head,
+.race-screen .race-timing-row {
+  box-sizing: border-box;
   display: grid;
   width: 100%;
-  grid-template-columns: 25px minmax(0, 1fr) 64px 48px;
-  gap: 8px;
+  grid-template-columns: 2.2ch minmax(0, 1fr) 6.8ch 6.7ch;
+  column-gap: 8px;
   align-items: center;
-  background: transparent;
-  border: 0;
-  border-left: 2px solid transparent;
-  color: #c6cdd6;
+  padding-inline: 12px;
   text-align: left;
-  padding: 8px 12px 8px 14px;
-  height: 31px;
+  white-space: nowrap;
+  font-size: 12px;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
 }
-.race-timing-row:hover {
-  background: #1a212a;
+.race-table-head {
+  height: 32px;
+  color: #929aa7;
+  border-bottom: 1px solid var(--race-border);
 }
-.race-timing-row:nth-child(even) {
-  background: #ffffff02;
+.race-table-head span {
+  font-size: 10px;
 }
-.race-timing-row.is-selected {
-  background: #a6384822;
-  border-left-color: #c83b4d;
+.race-table-head span:nth-child(2) {
+  padding-left: 8px;
+}
+.race-table-head span:nth-child(n+3),
+.race-gap {
+  text-align: right;
+}
+.race-screen .race-timing-row {
+  height: 34px;
+  border: 0;
+  border-radius: 0;
+  padding-block: 0;
+  background: transparent;
+  color: #c6cdd6;
+}
+.race-screen .race-timing-row:nth-child(even) {
+  background: #ffffff04;
+}
+.race-screen .race-timing-row:hover {
+  background: #1c232c;
+}
+.race-screen .race-timing-row.is-selected {
+  background: #352129;
+  box-shadow: inset 3px 0 #c83b4d;
+  color: #fff;
+}
+.race-screen .race-timing-row:focus-visible {
+  outline-offset: -2px;
 }
 .race-timing-driver {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  min-width: 0;
-}
-.race-timing-driver > i {
-  width: 2px;
-  height: 13px;
-  display: block;
-  flex: 0 0 2px;
-}
-.race-timing-driver > b {
-  font-size: 10px;
-  font-weight: 500;
-  text-overflow: ellipsis;
-  white-space: nowrap;
   overflow: hidden;
+  text-overflow: ellipsis;
+  padding-left: 6px;
+  border-left: 2px solid;
 }
-.race-timing-driver > em {
-  font-size: 8px;
-  font-style: normal;
-  color: #86b5ad;
-  letter-spacing: 0.4px;
+.race-tyres {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 4px;
+}
+.race-tyres b {
+  display: grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1px solid currentColor;
+  font: 700 10px/1 monospace;
+}
+.race-tyres b[data-compound='M'] { color: #e3c172; }
+.race-tyres b[data-compound='S'] { color: #ee808b; }
+.race-car-number,
+.race-car-code {
+  font: 700 9px/1 monospace;
+  text-anchor: middle;
+  pointer-events: none;
+  fill: #fff;
+}
+.race-car-number { dominant-baseline: central; }
+.race-car-code {
+  stroke: #10151b;
+  stroke-width: 2.5px;
+  paint-order: stroke;
 }
 .race-bottom-grid {
   display: grid;
@@ -385,21 +407,8 @@
   .race-map-stage {
     height: 386px;
   }
-  .race-timing-row {
-    height: 33px;
-  }
   .race-driver {
     padding: 19px 21px;
-  }
-  .race-timing-driver > b {
-    font-size: 11px;
-  }
-  .race-timing-rows {
-    padding: 2px 0;
-  }
-  .race-table-head {
-    padding-top: 14px;
-    padding-bottom: 12px;
   }
 }
 @media (max-width: 1200px) {
@@ -416,29 +425,11 @@
   .race-driver {
     padding: 14px 12px;
   }
-  .race-timing-row {
-    padding-left: 10px;
-    padding-right: 9px;
-    grid-template-columns: 21px minmax(0, 1fr) 59px 43px;
-    gap: 6px;
-  }
-  .race-table-head {
-    padding-left: 12px;
-    padding-right: 9px;
-    grid-template-columns: 26px minmax(0, 1fr) 59px 43px;
-    gap: 6px;
-  }
   .race-conditions {
     gap: 15px;
   }
   .race-map-top {
     padding: 0 17px;
-  }
-  .race-timing-driver {
-    gap: 6px;
-  }
-  .race-timing-driver > b {
-    font-size: 9px;
   }
   .race-driver-identity {
     gap: 8px;
@@ -465,34 +456,6 @@
   .race-timing {
     margin-top: 0;
   }
-  .race-timing-rows {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-  }
-  .race-timing-row {
-    height: 34px;
-    border-bottom: 1px solid #242b3455;
-  }
-  .race-table-head {
-    grid-template-columns: 26px minmax(0, 1fr) 65px 46px;
-    width: 50%;
-    padding-left: 14px;
-  }
-  .race-timing-row {
-    grid-template-columns: 25px minmax(0, 1fr) 64px 48px;
-    padding-left: 14px;
-    padding-right: 12px;
-    gap: 8px;
-  }
-  .race-timing-driver > b {
-    font-size: 10px;
-  }
-  .race-timing-row:nth-child(2n) {
-    border-left: 1px solid #282e37;
-  }
-  .race-timing-row.is-selected {
-    border-left: 2px solid #c83b4d;
-  }
   .race-map-stage {
     height: 370px;
   }
@@ -502,14 +465,9 @@
   .race-bottom-grid {
     grid-template-columns: 1fr 1fr;
   }
-  .race-timing-row:nth-child(even) {
-    background: #ffffff02;
-  }
-  .race-timing-row.is-selected {
-    background: #a6384822;
-  }
 }
 @media (max-width: 600px) {
+  .race-car-number { font-size: 11px; }
   .race-screen .eyebrow {
     font-size: 8px;
     letter-spacing: 0.9px;
@@ -619,20 +577,6 @@
     align-items: stretch;
     gap: 9px;
   }
-  .race-timing-rows {
-    grid-template-columns: 1fr;
-  }
-  .race-table-head {
-    width: 100%;
-    grid-template-columns: 26px minmax(0, 1fr) 65px 46px;
-    font-size: 8px;
-  }
-  .race-timing-row {
-    height: 34px;
-  }
-  .race-timing-driver > b {
-    font-size: 11px;
-  }
   .race-bottom-grid {
     grid-template-columns: 1fr;
   }
@@ -645,12 +589,6 @@
   .race-delegated {
     font-size: 9px;
     align-items: flex-start;
-  }
-  .race-timing-row:nth-child(2n) {
-    border-left: 2px solid transparent;
-  }
-  .race-timing-row.is-selected {
-    border-left-color: #c83b4d;
   }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -691,15 +629,6 @@
 .race-text-button {
   font-size: 11px;
 }
-.race-table-head {
-  font-size: 9px;
-}
-.race-timing-row {
-  height: 34px;
-}
-.race-timing-driver > b {
-  font-size: 11px;
-}
 .race-delegated {
   font-size: 11px;
 }
@@ -710,9 +639,6 @@
   }
   .race-driver-identity strong {
     font-size: 13px;
-  }
-  .race-timing-driver > b {
-    font-size: 10px;
   }
 }
 @media (max-width: 600px) {
