@@ -163,4 +163,11 @@ def test_registered_parts_reassemble_all_historical_silhouettes():
                             alternative.getchannel("A").tobytes()
                             != tile.getchannel("A").tobytes()
                         )
-        assert combined.tobytes() == base.tobytes(), name
+        assert combined.getchannel("A").tobytes() == base.getchannel("A").tobytes(), (
+            name
+        )
+        # Lossless WebP encoders may pick arbitrary RGB for fully transparent pixels.
+        visible = base.getchannel("A").point(lambda alpha: 255 if alpha else 0)
+        reference = Image.new("RGBA", base.size)
+        reference.paste(base, (0, 0), visible)
+        assert combined.tobytes() == reference.tobytes(), name
