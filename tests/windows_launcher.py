@@ -10,6 +10,7 @@ from queue import Empty, Queue
 import shutil
 import socket
 import subprocess
+import sys
 import tempfile
 import time
 import threading
@@ -60,6 +61,33 @@ observer.observe(document.body, {childList: true, subtree: true});
             thread.join()
 
 
+def conflicting_browser(tmp):
+    """Reproduce webbrowser.open returning True without visiting the page."""
+    handler = tmp / "discard URL.py"
+    receipt = handler.with_suffix(".txt")
+    handler.write_text(
+        "import sys\nfrom pathlib import Path\n"
+        "Path(__file__).with_suffix('.txt').write_text(sys.argv[1])\n",
+        encoding="utf-8",
+    )
+    override = f'"{Path(sys.executable).as_posix()}" "{handler.as_posix()}" %s'
+    url = "http://127.0.0.1:1/"
+    subprocess.run(
+        [
+            sys.executable,
+            "-c",
+            "import sys, webbrowser; assert webbrowser.open(sys.argv[1])",
+            url,
+        ],
+        env={**os.environ, "BROWSER": override},
+        check=True,
+        timeout=20,
+    )
+    assert receipt.read_text() == url
+    print("Reproduced: webbrowser.open reported success for a non-browser handler.")
+    return override
+
+
 def run_smoke(tmp):
     root = tmp / "Игра автоспорт"
     root.mkdir()
@@ -77,7 +105,7 @@ def run_smoke(tmp):
                 "playwright-report",
             ),
         )
-    env = {**os.environ, "PYTHONUTF8": "1"}
+    env = {**os.environ, "PYTHONUTF8": "1", "BROWSER": conflicting_browser(tmp)}
     launched = []
     with ExitStack() as stack:
         visits = stack.enter_context(observe_browser(root))
