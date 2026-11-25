@@ -55,3 +55,30 @@ jobs:
         with:
           version: '0.13.9'
       - run: python tests/windows_launcher.py
+
+  windows-media:
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: 'Проект автоспорта'
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: '0.13.9'
+          enable-cache: false
+      - name: Build and inspect local media ZIP via batch launcher
+        shell: pwsh
+        run: |
+          $env:UV_INSTALL_DIR = Join-Path $env:RUNNER_TEMP 'Инструменты сборки'
+          New-Item -ItemType Directory $env:UV_INSTALL_DIR
+          $uv = (Get-Command uv.exe).Source
+          Copy-Item $uv $env:UV_INSTALL_DIR
+          $env:PATH = (($env:PATH -split ';' | Where-Object { $_ -and !(Test-Path (Join-Path $_ 'uv.exe')) }) -join ';')
+          cmd.exe /d /c 'call "Проект автоспорта\build_media.bat" <nul'
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $zip = [IO.Compression.ZipFile]::OpenRead((Resolve-Path 'Проект автоспорта/autosport-2025.zip').Path)
+          try {
+            $reader = [IO.StreamReader]::new($zip.GetEntry('manifest.json').Open())
+            $manifest = $reader.ReadToEnd() | ConvertFrom-Json
+            if ($manifest.assets.Count -lt 6 -or $zip.Entries.Count -ne ($manifest.assets.Count + 1)) { throw 'Incomplete media ZIP' }
+          } finally { $zip.Dispose() }

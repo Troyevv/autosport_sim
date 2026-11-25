@@ -323,6 +323,7 @@ def build(output):
             )
         )
         files[path] = data
+        print(f"Подготовлено {len(assets)} · {kind}/{entity}", flush=True)
 
     for name in OUTLINES:
         add(
@@ -345,6 +346,7 @@ def build(output):
             "Маска формы, нейтральная текстура и освещение.",
         )
     try:
+        print("Загрузка эмблем Simple Icons…", flush=True)
         raw = get(ICONS)
         if hashlib.sha256(raw).hexdigest() != ICON_HASH:
             raise ValueError("Неизвестная версия Simple Icons")
@@ -373,6 +375,7 @@ def build(output):
     except (OSError, ValueError) as exc:
         gaps.append("Simple Icons: " + str(exc))
     for (kind, entity), title in PHOTOS.items():
+        print(f"Загрузка и обработка · {title}", flush=True)
         try:
             add(kind, entity, *commons_photo(kind, title))
         except (OSError, ValueError, KeyError, IndexError, cv2.error) as exc:
@@ -380,16 +383,19 @@ def build(output):
                 f"{kind}/{entity}: https://commons.wikimedia.org/wiki/File:{urllib.parse.quote(title)} — {exc}"
             )
     present = {(a["kind"], a["entity"]) for a in assets}
+    missing = 0
     for kind, entities in [
         ("head", WORLD["names"]),
         ("logo", {**WORLD["championships"], **WORLD["organizations"]}),
         ("car", WORLD["cars"]),
     ]:
+        missing += sum((kind, eid) not in present for eid in entities)
         gaps.extend(
             f"{kind}/{eid}: нет подготовленного разрешённого изображения"
             for eid in sorted(entities)
             if (kind, eid) not in present
         )
+    print("Запись и проверка ZIP…", flush=True)
     manifest = dict(version=1, world=WORLD["version"], assets=assets, gaps=gaps)
     output.parent.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(dir=output.parent) as tmp:
@@ -403,7 +409,7 @@ def build(output):
         validate(staged.read_bytes())
         staged.replace(output)
     print(
-        f"{output} · изображений: {len(assets)} · пробелы: {len(gaps)} (manifest.json)"
+        f"{output} · подготовлено: {len(assets)} · отсутствует: {missing} (manifest.json)"
     )
 
 
