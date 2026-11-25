@@ -192,7 +192,10 @@ export function compose(
     paint.rotate((d.angle * Math.PI) / 180)
     // Choose the ink against the actual underlying stripe, including pale side panels.
     const rgb = paint.getImageData(cx, cy, 1, 1).data
-    paint.fillStyle = rgb[0] * 0.299 + rgb[1] * 0.587 + rgb[2] * 0.114 > 157 ? '#23282b' : '#fffdf4'
+    const point = (cy * w + cx) * 4
+    const rawLuma = rgb[0] * 0.299 + rgb[1] * 0.587 + rgb[2] * 0.114
+    const luminance = source.data[point] + (source.data[point + 1] / 255) * rawLuma
+    paint.fillStyle = luminance > 126 ? '#23282b' : '#fffdf4'
     const rule = catalog.sponsors[d.asset],
       img = inks.get(d.asset)
     const maxWidth = width * w * d.scale,
