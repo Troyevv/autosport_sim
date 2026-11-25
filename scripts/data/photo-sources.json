@@ -70,5 +70,14 @@
     "author": "AF Corse S.r.l.",
     "license": "Public domain (PD-textlogo)",
     "sha256": "649ec26e8965d90a756bd1e093a9fdfccbd74c25c0ee3b3f0f18362597cda576"
+  },
+  {
+    "kind": "logo",
+    "entity": "team-team-wrt",
+    "image": "https://raw.githubusercontent.com/SoY256/MotorSport-Calendar/7ff410ef0cf5f01842dbc859694a871959603f11/assets/team_logos/team-team-wrt.png",
+    "source": "https://commons.wikimedia.org/wiki/File:Wrt2023logo.jpg",
+    "author": "W Racing Team",
+    "license": "CC BY-SA 4.0 · https://creativecommons.org/licenses/by-sa/4.0/",
+    "sha256": "1527c02c3f6f56790f342712040b68f0385575b8c1b15086956f111bf8cb51fa"
   }
 ]

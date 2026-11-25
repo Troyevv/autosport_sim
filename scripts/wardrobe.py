@@ -25,10 +25,12 @@ def colorway(image, colors, role):
     dye = primary + blend * (trim - primary)
     luminance = pixels[:, :, :3] @ np.array([0.2126, 0.7152, 0.0722]) / 255
     light = luminance[..., None]
-    # Preserve zipper/ribbing shadows and specular highlights of the original textile.
-    rgb = (
-        np.minimum(light * 2, 1) * dye + np.maximum(light - 0.5, 0) * (255 - dye) * 1.45
-    )
+    # Grey racing fabric is darker than the staff polo. Use a lit sample of the
+    # actual textile so the same team dye keeps its hue in both photographs.
+    swatch = np.percentile(luminance[pixels[:, :, 3] > 240], 75)
+    shade = np.minimum(light / swatch, 1)
+    specular = np.maximum(light - swatch, 0) / (1 - swatch)
+    rgb = shade * dye + specular * (255 - dye) * 0.75
     pixels[:, :, :3] = np.rint(np.clip(rgb, 0, 255)).astype("uint8")
     out = BytesIO()
     Image.fromarray(pixels).save(out, "WEBP", quality=89, method=4)

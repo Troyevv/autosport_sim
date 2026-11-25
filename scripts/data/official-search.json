@@ -91,7 +91,12 @@
   "person-timo-glock": {
     "pages": [],
     "roster_images": [],
-    "reason": "Поиск по официальным источникам не дал подтверждённого индивидуального студийного оригинала с подходящими условиями."
+    "reason": "Поиск по официальным источникам не дал подтверждённого индивидуального студийного оригинала с подходящими условиями.",
+    "publisher_leads": [
+      "https://newsroom.bmwgroup.com/global/farewell-at-mugello-bmw-m-motorsport-thanks-timo-glock-for-ten-years-working-together",
+      "https://dtm.com/zh/news/Sensational-comeback-Timo-Glock-is-back-in-the-DTM",
+      "https://www.dtm.com/au/news/New-manufacturers-new-stars-new-race-format-the-2025-DTM"
+    ]
   },
   "person-luca-engstler": {
     "pages": [
@@ -124,7 +129,12 @@
         "terms": "https://www.imsa.com/terms-of-use/"
       }
     ],
-    "reason": "Издатель публикует изображение в каталоге. Условия источника не дают подтверждённого разрешения на обработку для игровой формы."
+    "reason": "Издатель публикует изображение в каталоге. Условия источника не дают подтверждённого разрешения на обработку для игровой формы.",
+    "publisher_leads": [
+      "https://media.adac-motorsport.de/index.php?ID_dir=2614%2C2617%2C3207%2C3507",
+      "https://media.adac-motorsport.de/index.php?ID_dir=2614%2C2617%2C3207%2C3381",
+      "https://media.adac-motorsport.de/index.php?ID_dir=2614%2C2617%2C3207%2C3312&lang=en"
+    ]
   },
   "person-ben-dorr": {
     "pages": [
@@ -163,7 +173,12 @@
   "person-arjun-maini": {
     "pages": [],
     "roster_images": [],
-    "reason": "Поиск по официальным источникам не дал подтверждённого индивидуального студийного оригинала с подходящими условиями."
+    "reason": "Поиск по официальным источникам не дал подтверждённого индивидуального студийного оригинала с подходящими условиями.",
+    "publisher_leads": [
+      "https://media.adac-motorsport.de/index.php?ID_dir=2614%2C2617%2C3207%2C3381",
+      "https://www.hauptracingteam.de/files/Public/Downloads/2025/HRT_MediaGuide_DTM_2025_EN.pdf",
+      "https://media.adac-motorsport.de/index.php?ID_dir=2614%2C2617%2C3207%2C3480"
+    ]
   },
   "person-jules-gounon": {
     "pages": [
@@ -400,7 +415,8 @@
         "terms": "https://www.formula1.com/en/information/legal-notices.7egvZU48hzrypubGBNcQKt"
       }
     ],
-    "reason": "Издатель публикует изображение в каталоге. Условия источника не дают подтверждённого разрешения на обработку для игровой формы."
+    "reason": "Прежний снимок United Autosports не подтверждён как индивидуальный студийный оригинал. Условия каталога F1 не разрешают переработку.",
+    "reviewed_alternative": "https://commons.wikimedia.org/wiki/File:Alonso-68_(24710447098).jpg"
   },
   "person-charles-leclerc": {
     "pages": [
@@ -516,7 +532,8 @@
         "terms": "https://www.formula1.com/en/information/legal-notices.7egvZU48hzrypubGBNcQKt"
       }
     ],
-    "reason": "Издатель публикует изображение в каталоге. Условия источника не дают подтверждённого разрешения на обработку для игровой формы."
+    "reason": "Прежний кадр с приёма на Даунинг-стрит исключён. Для изображений из официального каталога F1 разрешение на обработку не подтверждено.",
+    "reviewed_alternative": "https://commons.wikimedia.org/wiki/File:Prime_Minister_Keir_Starmer_meets_Sir_Lewis_Hamilton_(54566928382)_(cropped).jpg"
   },
   "person-carlos-sainz": {
     "pages": [
@@ -744,7 +761,12 @@
   "person-amaury-cordeel": {
     "pages": [],
     "roster_images": [],
-    "reason": "Поиск по официальным источникам не дал подтверждённого индивидуального студийного оригинала с подходящими условиями."
+    "reason": "Поиск по официальным источникам не дал подтверждённого индивидуального студийного оригинала с подходящими условиями.",
+    "publisher_leads": [
+      "https://www.fiaformula2.com/en/latest/article/rodin-motorsport-confirms-amaury-cordeel-for-2025-season.5LVwSjDeuCETNWvOrTVxWf",
+      "https://www.rodinmotorsport.com/news/amaury-cordeel-joins-rodin-motorsport-for-formula-2-campaign",
+      "https://www.fiaformula2.com/en/latest/article/hitech-pulse-eight-confirm-paul-aron-and-amaury-cordeel-for-2024-lineup.26xzg64RCw8VuIMpQ3rXhP"
+    ]
   },
   "person-alexander-dunne": {
     "pages": [
@@ -808,7 +830,12 @@
         "terms": "https://www.imsa.com/terms-of-use/"
       }
     ],
-    "reason": "Издатель публикует изображение в каталоге. Условия источника не дают подтверждённого разрешения на обработку для игровой формы."
+    "reason": "Издатель публикует изображение в каталоге. Условия источника не дают подтверждённого разрешения на обработку для игровой формы.",
+    "publisher_leads": [
+      "https://www.fiaformula2.com/en/latest/article/trident-confirm-the-signing-of-max-esterson-for-the-2025-formula-2-season.7aZO2CyhzQLTGmta2sciY6",
+      "https://www.fiaformula2.com/en/latest/article/formula-2-opens-2025-season-with-pre-season-testing-in-barcelona.6Fr6EDBcQ7agfFTwYQEqFN",
+      "https://www.fiaformula2.com/en/latest/article/max-esterson-to-finish-2024-season-with-trident.4ne99butESP8ulyZT5gZOz"
+    ]
   },
   "person-john-bennett": {
     "pages": [
@@ -878,7 +905,8 @@
         "terms": "https://www.fiaformula3.com/en/information/terms-and-conditions.0vlDm8BfDsVwtxyY6k5sb"
       }
     ],
-    "reason": "Издатель публикует изображение в каталоге. Условия источника не дают подтверждённого разрешения на обработку для игровой формы."
+    "reason": "Найденный headshot снят на Гран-при Австралии. Это не проверенный официальный студийный снимок.",
+    "reviewed_alternative": "https://commons.wikimedia.org/wiki/File:Ugo_Ugochukwu_2026_(headshot).jpg"
   },
   "person-noah-stromsted": {
     "pages": [
@@ -1041,7 +1069,12 @@
   "person-tim-tramnitz": {
     "pages": [],
     "roster_images": [],
-    "reason": "Поиск по официальным источникам не дал подтверждённого индивидуального студийного оригинала с подходящими условиями."
+    "reason": "Поиск по официальным источникам не дал подтверждённого индивидуального студийного оригинала с подходящими условиями.",
+    "publisher_leads": [
+      "https://www.fiaformula3.com/en/latest/article/in-profile-tim-tramnitz.7afvOwAyFvF0EYdmVkk0yn",
+      "https://www.fiaformula3.com/en/latest/article/tim-tramnitz-stays-with-mp-motorsport-for-the-2025-formula-3-season.6bVVtQBrIcI7kBeqKSoyRN",
+      "https://www.fiaformula3.com/en/latest/article/mp-motorsport-confirms-tim-tramnitz-as-first-g-for-2024-season.xnxqDwlHjtZALgiSSsGpF"
+    ]
   },
   "person-bruno-del-pino": {
     "pages": [
@@ -1088,7 +1121,12 @@
   "person-santiago-ramos": {
     "pages": [],
     "roster_images": [],
-    "reason": "Поиск по официальным источникам не дал подтверждённого индивидуального студийного оригинала с подходящими условиями."
+    "reason": "Поиск по официальным источникам не дал подтверждённого индивидуального студийного оригинала с подходящими условиями.",
+    "publisher_leads": [
+      "https://www.fiaformula3.com/en/latest/article/in-profile-santiago-ramos.4zFP7cSOCO4cEb4tavbGEZ",
+      "https://www.fiaformula3.com/en/latest/article/van-amersfoort-racing-finalise-2025-lineup-with-santiago-ramos.4bzVbmg6uo1gGhn3gXkHMG",
+      "https://www.fiaformula3.com/en/latest/article/trident-sign-rookie-santiago-ramos-to-complete-2024-roster.45084DVIQZj3Ny9PtndQ4I"
+    ]
   },
   "person-ivan-domingues": {
     "pages": [
@@ -1100,7 +1138,12 @@
   "person-callum-voisin": {
     "pages": [],
     "roster_images": [],
-    "reason": "Поиск по официальным источникам не дал подтверждённого индивидуального студийного оригинала с подходящими условиями."
+    "reason": "Поиск по официальным источникам не дал подтверждённого индивидуального студийного оригинала с подходящими условиями.",
+    "publisher_leads": [
+      "https://www.fiaformula3.com/en/latest/article/in-profile-callum-voisin.66JtGXJjn6vyJy9BZb9as1",
+      "https://www.fiaformula3.com/en/latest/article/callum-voisin-returns-with-rodin-motorsport-for-2025-campaign.79nB0ZWmAg5suiGGBEC7s2",
+      "https://www.fiaformula3.com/en/latest/article/roman-bilinski-completes-rodin-motorsports-2025-formula-3-lineup.61CdDa63ZKiFpDY2aBJaX"
+    ]
   },
   "person-louis-sharp": {
     "pages": [
@@ -1270,7 +1313,8 @@
         "terms": "https://www.imsa.com/terms-of-use/"
       }
     ],
-    "reason": "Издатель публикует изображение в каталоге. Условия источника не дают подтверждённого разрешения на обработку для игровой формы."
+    "reason": "Снимок с подписью portrait сделан во время гоночного уикенда в Фудзи. Для фотографий официального каталога разрешение на обработку не подтверждено.",
+    "reviewed_alternative": "https://commons.wikimedia.org/wiki/File:Matt_Campbell_(portrait,_2024).jpg"
   },
   "person-harry-tincknell": {
     "pages": [
@@ -1337,7 +1381,10 @@
         "terms": "https://press.fiawec.com/Default/terms"
       }
     ],
-    "reason": "Издатель публикует изображение в каталоге. Условия источника не дают подтверждённого разрешения на обработку для игровой формы."
+    "reason": "Издатель публикует изображение в каталоге. Условия источника не дают подтверждённого разрешения на обработку для игровой формы.",
+    "publisher_leads": [
+      "https://www.fiawec.com/en/news/conway-calls-time-on-world-championship-winning-career/13843"
+    ]
   },
   "person-kamui-kobayashi": {
     "pages": [
@@ -1410,7 +1457,9 @@
         "terms": "https://press.fiawec.com/Default/terms"
       }
     ],
-    "reason": "Издатель публикует изображение в каталоге. Условия источника не дают подтверждённого разрешения на обработку для игровой формы."
+    "reason": "Прежний кадр с этапа в Фудзи исключён. Для обработки официального профиля Toyota требуется письменное согласие.",
+    "reviewed_alternative": "https://toyotagazooracing.com/wec/drivers/2025/",
+    "terms": "https://toyotagazooracing.com/terms-of-use/"
   },
   "person-alex-riberas": {
     "pages": [
@@ -1466,7 +1515,11 @@
   "person-derek-deboer": {
     "pages": [],
     "roster_images": [],
-    "reason": "Поиск по официальным источникам не дал подтверждённого индивидуального студийного оригинала с подходящими условиями."
+    "reason": "Поиск по официальным источникам не дал подтверждённого индивидуального студийного оригинала с подходящими условиями.",
+    "publisher_leads": [
+      "https://www.fiawec.com/en/news/eduardo-barrichello-realise-son-reve-de-piloter-une-aston-martin-avec-racing-spirit-of-le-mans/8185",
+      "https://www.fiawec.com/en/season/2025"
+    ]
   },
   "person-eduardo-barrichello": {
     "pages": [],
@@ -1477,7 +1530,12 @@
         "terms": "https://press.fiawec.com/Default/terms"
       }
     ],
-    "reason": "Издатель публикует изображение в каталоге. Условия источника не дают подтверждённого разрешения на обработку для игровой формы."
+    "reason": "Издатель публикует изображение в каталоге. Условия источника не дают подтверждённого разрешения на обработку для игровой формы.",
+    "publisher_leads": [
+      "https://www.fiawec.com/en/news/barrichello-ce-titre-depasse-tout-ce-dont-je-pouvais-rever/8568",
+      "https://www.fiawec.com/en/news/eduardo-barrichello-realise-son-reve-de-piloter-une-aston-martin-avec-racing-spirit-of-le-mans/8185",
+      "https://www.fiawec.com/en/news/le-fia-wec-publie-une-liste-actualisee-des-engages-pour-2025/8191"
+    ]
   },
   "person-valentin-hasse-clot": {
     "pages": [
@@ -1710,7 +1768,12 @@
         "terms": "https://press.fiawec.com/Default/terms"
       }
     ],
-    "reason": "Издатель публикует изображение в каталоге. Условия источника не дают подтверждённого разрешения на обработку для игровой формы."
+    "reason": "Издатель публикует изображение в каталоге. Условия источника не дают подтверждённого разрешения на обработку для игровой формы.",
+    "publisher_leads": [
+      "https://www.fiawec.com/en/news/heart-of-racing-officialise-ses-pilotes-lmgt3-2025/8199",
+      "https://www.fiawec.com/en/news/beyond-the-track-avant-les-gens-se-moquaient-de-moi/8633",
+      "https://www.fiawec.com/en/page/le-wec-cest-quoi-1/28"
+    ]
   },
   "person-zacharie-robichon": {
     "pages": [
@@ -2175,7 +2238,12 @@
         "terms": "https://press.fiawec.com/Default/terms"
       }
     ],
-    "reason": "Издатель публикует изображение в каталоге. Условия источника не дают подтверждённого разрешения на обработку для игровой формы."
+    "reason": "Издатель публикует изображение в каталоге. Условия источника не дают подтверждённого разрешения на обработку для игровой формы.",
+    "publisher_leads": [
+      "https://www.fiawec.com/en/news/cottingham-et-baud-completent-le-team-united-autosports-en-lmgt3/8193",
+      "https://www.fiawec.com/en/news/meet-the-2024-rookies-lmgt3/7902",
+      "https://www.fiawec.com/umbrella_media/wec-2026-programme-a4-imola-digi-150426-69e205c5d159f581509300.pdf"
+    ]
   },
   "person-sebastien-baud": {
     "pages": [
@@ -2489,7 +2557,8 @@
       "https://www.24h-lemans.com/en/track-record/driver/rahel-frey-1143"
     ],
     "roster_images": [],
-    "reason": "Найдена официальная страница. Для конкретного студийного оригинала не подтверждены одновременно кадр и право обработки."
+    "reason": "Фотограф указывает гоночный уикенд в Фудзи. Официальный студийный оригинал с правом обработки не подтверждён.",
+    "reviewed_alternative": "https://commons.wikimedia.org/wiki/File:Rahel_Frey_(portrait,_2024).jpg"
   },
   "person-michelle-gatting": {
     "pages": [
@@ -2648,14 +2717,14 @@
         "terms": "https://press.fiawec.com/Default/terms"
       }
     ],
-    "reason": "Издатель публикует изображение в каталоге. Условия источника не дают подтверждённого разрешения на обработку для игровой формы."
+    "reason": "Richard Lietz Sport GmbH указан как автор (CC BY-SA 3.0 DE). Не подтверждена студийная постановка исходного кадра 400 × 317.",
+    "reviewed_alternative": "https://commons.wikimedia.org/wiki/File:Richard_lietz_portrait.jpg"
   },
   "person-paul-di-resta": {
     "pages": [
       "https://competition.totalenergies.com/en/paul-di-resta",
       "https://www.imsa.com/drivers/paul-di-resta/",
-      "https://www.imsa.com/drivers/paul-di-resta",
-      "https://www.flickr.com/photos/unitedautosports/51946548972/"
+      "https://www.imsa.com/drivers/paul-di-resta"
     ],
     "roster_images": [
       {
@@ -2669,7 +2738,8 @@
         "terms": "https://press.fiawec.com/Default/terms"
       }
     ],
-    "reason": "Снимок United Autosports от 11.03.2022 имеет лицензию CC BY-SA 2.0, но происхождение из студийной съёмки не подтверждено."
+    "reason": "Командный источник и CC BY-SA 2.0 подтверждены. Найдена обрезанная версия снимка, исходное кадрирование и студийная обстановка не проверены.",
+    "reviewed_alternative": "https://www.flickr.com/photos/unitedautosports/51946555902/"
   },
   "person-mikkel-jensen": {
     "pages": [
@@ -2690,7 +2760,12 @@
   "person-jean-eric-vergne": {
     "pages": [],
     "roster_images": [],
-    "reason": "Поиск по официальным источникам не дал подтверждённого индивидуального студийного оригинала с подходящими условиями."
+    "reason": "Поиск по официальным источникам не дал подтверждённого индивидуального студийного оригинала с подходящими условиями.",
+    "publisher_leads": [
+      "https://www.media.stellantis.com/em-en/citroen/press/citroen-joins-formula-e-with-two-exceptional-drivers",
+      "https://www.media.stellantis.com/uk-en/citroen/press/citroen-joins-formula-e-with-two-exceptional-drivers",
+      "https://www.24h-lemans.com/en/news/team-peugeot-totalenergies-reveals-2025-lineups-59268"
+    ]
   },
   "person-loic-duval": {
     "pages": [
@@ -2838,7 +2913,12 @@
   "person-christian-horner": {
     "pages": [],
     "roster_images": [],
-    "reason": "Поиск по официальным источникам не дал подтверждённого индивидуального студийного оригинала с подходящими условиями."
+    "reason": "Поиск по официальным источникам не дал подтверждённого индивидуального студийного оригинала с подходящими условиями.",
+    "publisher_leads": [
+      "https://api.fia.com/sites/default/files/pdf_saudi_media_kit-2025-english.pdf",
+      "https://www.fia.com/sites/default/files/sagp_english_media_kit_final_.pdf",
+      "https://www.redbullracing.com/ORBR-2025-Fan-Charter.pdf"
+    ]
   },
   "person-toto-wolff": {
     "pages": [
@@ -2850,7 +2930,12 @@
   "person-andy-cowell": {
     "pages": [],
     "roster_images": [],
-    "reason": "Поиск по официальным источникам не дал подтверждённого индивидуального студийного оригинала с подходящими условиями."
+    "reason": "Поиск по официальным источникам не дал подтверждённого индивидуального студийного оригинала с подходящими условиями.",
+    "publisher_leads": [
+      "https://www.astonmartinf1.com/api/news/announcement/aston-martin-aramco-announces-organisational-restructure",
+      "https://api.fia.com/sites/default/files/formula_1_crypto.com_miami_grand_prix_2025_media_kit.pdf",
+      "https://www.astonmartinf1.com/en-GB/news/announcement/aston-martin-aramco-announces-andy-cowell-as-group-chief-executive-officer"
+    ]
   },
   "person-oliver-oakes": {
     "pages": [
@@ -2884,12 +2969,22 @@
   "person-will-joseph": {
     "pages": [],
     "roster_images": [],
-    "reason": "Поиск по официальным источникам не дал подтверждённого индивидуального студийного оригинала с подходящими условиями."
+    "reason": "Поиск по официальным источникам не дал подтверждённого индивидуального студийного оригинала с подходящими условиями.",
+    "publisher_leads": [
+      "https://www.mclaren.com/racing/team/my-f1-first-4177885/",
+      "https://www.mclaren.com/racing/formula-1/2026/how-the-mclaren-mastercard-formula-1-team-prepares-for-race-day/",
+      "https://www.mclaren.com/racing/team/meet-the-race-crew/"
+    ]
   },
   "person-tom-stallard": {
     "pages": [],
     "roster_images": [],
-    "reason": "Поиск по официальным источникам не дал подтверждённого индивидуального студийного оригинала с подходящими условиями."
+    "reason": "Поиск по официальным источникам не дал подтверждённого индивидуального студийного оригинала с подходящими условиями.",
+    "publisher_leads": [
+      "https://www.mclaren.com/racing/formula-1/2026/how-the-mclaren-mastercard-formula-1-team-prepares-for-race-day/",
+      "https://www.mclaren.com/racing/formula-1/2026/my-first-race-the-team/",
+      "https://www.mclaren.com/racing/team/meet-the-race-crew/"
+    ]
   },
   "person-gianpiero-lambiase": {
     "pages": [
@@ -2902,7 +2997,10 @@
   "person-rene-rosin": {
     "pages": [],
     "roster_images": [],
-    "reason": "Поиск по официальным источникам не дал подтверждённого индивидуального студийного оригинала с подходящими условиями."
+    "reason": "Поиск по официальным источникам не дал подтверждённого индивидуального студийного оригинала с подходящими условиями.",
+    "publisher_leads": [
+      "https://formularegionaleubyalpine.com/squadre/prema-racing-2025/"
+    ]
   },
   "person-gottfried-grasser": {
     "pages": [
@@ -2914,6 +3012,11 @@
   "person-hywel-thomas": {
     "pages": [],
     "roster_images": [],
-    "reason": "Поиск по официальным источникам не дал подтверждённого индивидуального студийного оригинала с подходящими условиями."
+    "reason": "Поиск по официальным источникам не дал подтверждённого индивидуального студийного оригинала с подходящими условиями.",
+    "publisher_leads": [
+      "https://www.fia.com/sites/default/files/2024-officialmediakit_booklet-digital-11.15.24.pdf",
+      "https://www.fia.com/sites/default/files/bcc_media_kit_2023_final_version_0.pdf",
+      "https://www.fia.com/sites/default/files/baku_final_mediakit_v2_02.06.2022.pdf"
+    ]
   }
 }
