@@ -324,3 +324,16 @@ def commercial_rights(cid: str):
 
     with storage.transaction() as db:
         return projection(storage.checkpoint(db, cid), WORLD)
+
+
+@app.get("/api/careers/{cid}/budget")
+def budget_control(cid: str, year: int | None = None):
+    from .finance.budget import report
+    from .catalog import WORLD
+    from . import storage
+
+    with storage.transaction() as db:
+        state = storage.checkpoint(db, cid)
+        return report(
+            state, WORLD, state["setup"]["org"], year or int(state["date"][:4])
+        )

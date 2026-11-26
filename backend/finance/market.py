@@ -513,7 +513,7 @@ def initialize(state, world):
         )
 
 
-def sign_supply(state, bid, reply, key):
+def sign_supply(state, world, bid, reply, key):
     t, s = bid.terms, bid.supply
     if s is None:
         raise RuleError("В предложении нет поставки.")
@@ -539,6 +539,9 @@ def sign_supply(state, bid, reply, key):
         ("seat", t.org, t.sponsor, s.seat_cents if reply.seat else 0, "driver-backing"),
     ]:
         if amt:
+            from .budget import authorize
+
+            authorize(state, world, paying, category, amt, t.start)
             rows.append(
                 Instalment(
                     id=key + ":" + suffix,
@@ -717,7 +720,7 @@ def respond(state, world, reply, actor):
             )
     # Reserve all payments before committing either agreement. SQLite commands roll back both on rejection.
     if reply.supply:
-        sign_supply(state, bid, reply, o["id"] + ":supply")
+        sign_supply(state, world, bid, reply, o["id"] + ":supply")
     if reply.sponsorship:
         sign_sponsor(state, world, t, o["id"] + ":sponsor")
     settle(state)
@@ -863,9 +866,12 @@ def tick(state, world):
         # Stage the economic records until both linked contracts have passed validation.
         from copy import deepcopy
 
+        sections = ["market", "finance", "accounts"] + (
+            ["control"] if "control" in state else []
+        )
         candidate = {
             **state,
-            **{k: deepcopy(state[k]) for k in ("market", "finance", "accounts")},
+            **{k: deepcopy(state[k]) for k in sections},
             "ledger": list(state["ledger"]),
         }
         try:
@@ -873,7 +879,7 @@ def tick(state, world):
         except RuleError as err:
             o.update(status="rejected", reason=str(err))
         else:
-            for k in ("market", "finance", "accounts", "ledger"):
+            for k in [*sections, "ledger"]:
                 state[k] = candidate[k]
             market = state["market"]
 

@@ -18,6 +18,7 @@ import { dateLabel } from '../game'
 import { roles } from '../ui/labels'
 import { Calendar, Overview, People, Finance, Championships, Briefing, type SectionProps } from './Sections'
 import { api, assetUrl, ApiError, explain, money, post } from './api'
+import { Budget, CostCap } from './finance/Budget'
 import { Rights } from './finance/Rights'
 import { Commercial } from './finance/Commercial'
 import { SeasonGarage } from '../garage/Garage'
@@ -32,6 +33,8 @@ const sections = [
   { id: 'rights', name: 'Рекламные права', icon: CarFront, view: Rights },
   { id: 'commercial', name: 'Коммерческий отдел', icon: Factory, view: Commercial },
   { id: 'finance', name: 'Финансы', icon: Wallet, view: Finance },
+  { id: 'budget', name: 'Бюджетирование', icon: Wallet, view: Budget },
+  { id: 'cap', name: 'Cost Cap и ATR', icon: Gauge, view: CostCap },
 ]
 function Engineering({ c, world }: SectionProps) {
   const reg = world.engineering.cost_cap

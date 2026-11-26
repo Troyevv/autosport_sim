@@ -8,7 +8,7 @@ from pydantic import BaseModel, ConfigDict, Field, ValidationError, model_valida
 
 from . import domain, storage, finance
 from .finance.events import PRODUCERS
-from .finance import market, rights
+from .finance import market, rights, budget
 from .livery import GARAGE, PaintOrder
 from .catalog import VERSION, WORLD
 from .roster_upgrade import (
@@ -25,7 +25,7 @@ from . import preparation, professional, junior_path
 from .media_profile import COUNTRIES, initialize as initialize_identity
 from .development_path import public_person
 from .team_staff import department_capacity
-from .engineering import resource_scope, project_target
+from .engineering import project_target
 
 
 # A regulation/concept pair identifies the historical homologation independently
@@ -84,6 +84,7 @@ class Command(Strict):
         finance_orders = {
             **finance.ORDERS,
             **market.ORDERS,
+            **budget.ORDERS,
             "finance-mount": rights.Mount,
             **PRODUCERS,
         }
@@ -159,6 +160,13 @@ def project(db, cid, state):
             if pid:
                 crews[assignment["entry"]].append(pid)
     contacts = teamwork.partnerships(state, WORLD, state["date"])
+    account = dict(state["accounts"][org])
+    if "control" in state:
+        view = budget.report(state, WORLD, org, state["date"][:4])
+        account.update(
+            development_spent_cents=view["actual"].get("engineering", 0),
+            development_reserved_cents=view["reserved"]["engineering"],
+        )
     return dict(
         crews=crews,
         team_names=rights.title_names(state, WORLD, state["date"]),
@@ -197,13 +205,13 @@ def project(db, cid, state):
             )
             for car_id, config in state["car_configurations"].items()
         },
-        atr=resource_scope(WORLD, org, state["date"]),
+        atr=budget.scope_for(state, WORLD, org),
         targets=targets,
         **summary(cid, state),
         rules=VERSION,
         player_id=state["player_id"],
         player_cash_cents=state["player_cash_cents"],
-        account=state["accounts"][org],
+        account=account,
         available_cents=finance.available(state, org),
         team_color=WORLD["organizations"][org]["color"],
         assignments=people,
@@ -231,6 +239,7 @@ def create(spec):
         state = domain.new_world(WORLD, setup)
         finance.activate(state, WORLD)
         market.initialize(state, WORLD)
+        budget.initialize(state, WORLD, state["ledger"])
         cid = str(uuid4())
         storage.store(db, cid, state, create=True)
         statistics_personnel.refresh(db, cid, state)
@@ -439,6 +448,8 @@ def import_save(document, *, statistics_records=None):
                 finance.activate(state, catalog, state["ledger"])
             if market_since == state["revision"]:
                 market.initialize(state, catalog)
+            if saved.get("control", {}).get("since") == state["revision"]:
+                budget.initialize(state, catalog, state["ledger"])
 
         for item in commands:
             apply_migrations()
@@ -453,7 +464,7 @@ def import_save(document, *, statistics_records=None):
                     cmd.command_id,
                     cmd.revision,
                     cmd.action,
-                    storage.dump(args) if args else None,
+                    storage.dump(args) if args is not None else None,
                 )
             )
         apply_migrations()
@@ -473,6 +484,7 @@ def import_save(document, *, statistics_records=None):
             upgrade_juniors(state)
         finance.activate(state, WORLD, state["ledger"])
         market.initialize(state, WORLD)
+        budget.initialize(state, WORLD, state["ledger"])
     except (KeyError, TypeError, ValueError, RecursionError, ValidationError):
         raise domain.RuleError("Файл повреждён или нарушает правила мира.") from None
     cid = str(uuid4())

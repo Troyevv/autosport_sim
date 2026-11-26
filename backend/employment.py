@@ -232,6 +232,17 @@ def sign(state, catalog, offer):
         > cash
     ):
         raise RuleError("Средств на бонус, выкуп и первый оклад недостаточно.", 409)
+    if "control" in state:
+        from .finance.budget import authorize
+
+        authorize(
+            state,
+            catalog,
+            org,
+            "signing",
+            offer["bonus_cents"] + sum(v for _, v, _ in costs),
+            state["date"],
+        )
     post(state, org, key + "-bonus", -offer["bonus_cents"], "signing")
     for old_org, value, aid in costs:
         if old_org != org:
@@ -371,6 +382,10 @@ def advance(state, catalog, target):
             from .finance import market
 
             market.tick(state, catalog)
+        if "control" in state:
+            from .finance import budget
+
+            budget.tick(state, catalog)
         backing.condition_review(state, day)
         for offer in sorted(
             state["offers"].values(),

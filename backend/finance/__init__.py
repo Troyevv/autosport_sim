@@ -1,7 +1,7 @@
 """Career accounting in EUR cents. The posting table is the single cash journal."""
 
 from collections import defaultdict
-from datetime import date
+from datetime import date, timedelta
 from typing import Annotated, Literal
 
 from pydantic import Field, model_validator
@@ -178,6 +178,11 @@ def post(state, account, key, delta, source):
     state["ledger"].append(
         dict(org=account, key=key, date=state["date"], delta_cents=delta, source=source)
     )
+    if "control" in state:
+        from ..catalog import WORLD
+        from . import budget
+
+        budget.observe(state, WORLD, state["ledger"][-1])
 
 
 def transfer(state, payer, recipient, key, amount, source, *, ignore=None):
@@ -347,7 +352,7 @@ def payroll(state, org, amount, player_share):
             recipient=receiver,
             amount_cents=value,
             due=state["date"],
-            earned=state["date"],
+            earned=(date.fromisoformat(state["date"]) - timedelta(days=1)).isoformat(),
             category="staff-payroll",
         )
         for index, (receiver, value) in enumerate(parts)

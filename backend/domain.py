@@ -258,9 +258,11 @@ def apply(state, catalog, action, payload=None):
     office = setup["org"] + ":" + setup["role"]
     if occupant_on(state["seats"][office], state["date"]) != state["player_id"]:
         raise RuleError("Действующее назначение не даёт полномочий.", 403)
-    from .finance import market
+    from .finance import market, budget
 
-    if action == "finance-mount" and "market" in state:
+    if action in budget.ORDERS and "control" in state:
+        budget.command(state, catalog, action, payload)
+    elif action == "finance-mount" and "market" in state:
         from .finance.rights import mount
 
         mount(state, catalog, payload)

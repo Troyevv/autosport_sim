@@ -239,6 +239,10 @@ def reserve(state, world, kind):
 
     pid = min(candidates, key=priority)
     key = f"prep-{state['revision'] + 1}"
+    if "control" in state:
+        from .finance.budget import authorize
+
+        authorize(state, world, org, "staff-preparation", cost, start)
     post(state, org, key, -cost, "staff-preparation")
     participants = [pid] + ([mentor] if mentor else [])
     state["preparations"][key] = dict(
