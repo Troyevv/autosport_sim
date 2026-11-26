@@ -100,6 +100,9 @@ def review(state, world):
         entrants = {r["person"] for a, r in roster if a["entry"]}
         per_series[series] = dict(
             main=len(entrants),
+            race_pay_cents=amounts(
+                r["salary_cents"] for seat, r in roster if seat["entry"]
+            ),
             funded=len(entrants & {f["person"] for f in funding}),
             hierarchy=distribution(
                 r.get("driver_status", a.get("duty") or "equal") for a, r in roster

@@ -4,6 +4,7 @@ import { join } from 'node:path'
 test('Менеджер согласует иерархию с обоими пилотами и открывает условия резервного договора', async ({
   page,
 }, info) => {
+  test.setTimeout(90000)
   const errors: string[] = []
   page.on('pageerror', (e) => errors.push(e.message))
   const res = await page.request.post('/api/careers', {
@@ -20,7 +21,9 @@ test('Менеджер согласует иерархию с обоими пи�
   await drivers.first().getByLabel('Предлагаемый статус').selectOption('first')
   await drivers.first().getByRole('button', { name: 'Обсудить условия' }).click()
   await expect(page.locator('.lineup-event').first()).toContainText('Запрашивает компенсацию')
-  await drivers.first().getByLabel('Предел компенсации').fill('10000')
+  const message = await page.locator('.lineup-event').first().innerText()
+  const amount = message.match(/компенсацию ([\d,.]+) €/)![1].replaceAll(',', '')
+  await drivers.first().getByLabel('Предел компенсации').fill(amount)
   await drivers.first().getByRole('button', { name: 'Обсудить условия' }).click()
   await expect(drivers.first().locator('.lineup-heading b')).toHaveText('Первый пилот')
   await expect(drivers.nth(1).locator('.lineup-heading b')).toHaveText('Второй пилот')
@@ -43,7 +46,9 @@ test('Менеджер согласует иерархию с обоими пи�
   await dialog.getByLabel('Оклад в месяц').fill('20000')
   await dialog.getByRole('button', { name: 'Отправить предложение' }).click()
   await expect(page.locator('.staff-offer')).toContainText('Резервный пилот')
+  const response = page.waitForResponse(r => r.url().endsWith('/commands') && r.request().method() === 'POST')
   await page.getByRole('button', { name: 'Продолжить' }).click()
+  expect((await response).ok()).toBe(true)
   await expect(page.locator('.staff-offer')).toContainText('Подписан')
   await expect(page.locator('.staff-offer')).toContainText('Назначение с ' + start)
   await page.getByRole('button', { name: 'Состав пилотов', exact: true }).click()

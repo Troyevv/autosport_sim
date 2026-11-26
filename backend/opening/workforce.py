@@ -132,6 +132,55 @@ def secondary_seats(state, world):
             pool.remove(chosen)
 
 
+def race_salary(state, person, seat, negotiated):
+    """Monthly guaranteed retainer, separate from seat backing and race bonuses."""
+    if person["position"] != "driver" or not seat.get("entry", True):
+        return negotiated
+    # A junior retainer is a racing allowance. Family, academy and sponsor
+    # contributions are booked separately to the racing operator.
+    junior_share = {
+        "kart-okj": 2,
+        "kart-ok": 3,
+        "f4-it": 8,
+        "f4-es": 8,
+        "f4-gb": 8,
+        "freca": 15,
+        "f3": 26,
+        "f2": 52,
+    }
+    series = seat["series"]
+    if series in junior_share:
+        return max(100, negotiated * junior_share[series] // 100)
+    if series not in ("f1", "wec", "dtm"):
+        return negotiated
+    # The top class buys scarce race seats at a different scale from GT and
+    # endurance. Reputation and driving experience affect an individual's market.
+    base_eur, premium = {"f1": (55000, 82), "wec": (5500, 4), "dtm": (4500, 3)}[
+        seat["series"]
+    ]
+    standing = max(
+        0,
+        person["skills"]["Темп"]
+        + person["reputation"]
+        + min(25, person["experience"])
+        - 103,
+    )
+    share = min(
+        130,
+        max(
+            74,
+            state["accounts"][seat["org"]]["budget_cents"]
+            // (125000000 if seat["series"] == "f1" else 14000000),
+        ),
+    )
+    if series == "wec" and seat.get("entry"):
+        from ..catalog import lineup_for
+
+        if lineup_for(state)["entries"][seat["entry"]]["category"] == "LMGT3":
+            share = share * 55 // 100
+    return (base_eur + premium * standing * standing) * share + negotiated
+
+
 def contracts_and_people(state, world):
     varied_profiles(state, world)
     secondary_seats(state, world)
@@ -164,6 +213,7 @@ def contracts_and_people(state, world):
                 * (50 + p["reputation"] // 2 + min(28, p["experience"]) + n % 38)
                 // 100
             )
+            row["salary_cents"] = race_salary(state, p, seat, row["salary_cents"])
             row["buyout_cents"] = (
                 0
                 if role == "owner"

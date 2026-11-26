@@ -112,9 +112,16 @@ def ask(state, catalog, p, seat):
             interest += 70 - mandate["satisfaction"]
         if mandate["goal"] != p["management"]["style"]:
             interest += 20
-    return max(
+    demand = max(
         10000, (profile["rating"] * 45 + interest * 6 + p["reputation"] * 8) * 100
     )
+    from .opening import VERSION
+
+    if state.get("opening") == VERSION:
+        from .opening.workforce import race_salary
+
+        return race_salary(state, p, seat, demand)
+    return demand
 
 
 def intersects(row, start, end):

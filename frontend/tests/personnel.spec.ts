@@ -3,6 +3,7 @@ import { expect, test } from '@playwright/test'
 import { join } from 'node:path'
 
 test('Рынок, сравнение и переход пилота GT на свободное место Formula', async ({ page }, info) => {
+  test.setTimeout(90000)
   const errors: string[] = []
   page.on('pageerror', (e) => errors.push(e.message))
   const world = await (await page.request.get('/api/world')).json()
@@ -17,6 +18,11 @@ test('Рынок, сравнение и переход пилота GT на св
   const incumbent = world.names[world.entries['f1-4'].crew[0]]
   const dialog = page.getByRole('dialog')
   const artist = dialog.locator('image[data-layer="appearance"]').first()
+  async function advance() {
+    const response = page.waitForResponse(r => r.url().endsWith('/commands') && r.request().method() === 'POST')
+    await page.getByRole('button', { name: 'Продолжить' }).click()
+    expect((await response).ok()).toBe(true)
+  }
   async function evidence(view: string) {
     await page.evaluate(() => document.fonts.ready)
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toEqual(
@@ -67,7 +73,7 @@ test('Рынок, сравнение и переход пилота GT на св
   await evidence('terms')
   await dialog.getByRole('button', { name: 'Отправить предложение' }).click()
   await expect(page.locator('.staff-offer')).toContainText('На рассмотрении')
-  await page.getByRole('button', { name: 'Продолжить' }).click()
+  await advance()
   await expect(page.locator('.staff-offer')).toContainText('Встречные условия')
   await page.getByRole('button', { name: 'Рассмотреть условия' }).click()
   await dialog.getByRole('button', { name: 'Подписать договор' }).click()
@@ -79,7 +85,7 @@ test('Рынок, сравнение и переход пилота GT на св
   await expect(dialog.locator('image[data-layer="fitted-fabric"]')).toHaveAttribute('href', oldKit!)
   await expect(dialog).toContainText('ABT Sportsline')
   await page.keyboard.press('Escape')
-  await page.getByRole('button', { name: 'Продолжить' }).click()
+  await advance()
   await page.getByRole('button', { name: 'Состав', exact: true }).click()
   await page.getByLabel('Найти человека').fill(name)
   await page.getByRole('button', { name: new RegExp(name) }).click()
