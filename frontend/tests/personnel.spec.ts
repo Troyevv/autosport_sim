@@ -222,3 +222,77 @@ test('Мандат владельца, наблюдение скаута и до
   await evidence('crew')
   expect(errors).toEqual([])
 })
+
+test('Национальность, флаги и публичный профиль домашнего этапа', async ({ page }, info) => {
+  async function shot(key: string) {
+    await page.evaluate(() => document.fonts.ready)
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toEqual(
+      page.viewportSize()!.width,
+    )
+    if (process.env.STAFF_EVIDENCE)
+      await page.screenshot({
+        path: join(process.env.STAFF_EVIDENCE, info.project.name + '-' + key + '.png'),
+      })
+  }
+  const world = await (await page.request.get('/api/world')).json()
+  await page.goto('/')
+  await page.getByLabel('Имя игрока').fill('Николь')
+  await page.getByRole('combobox', { name: 'Национальность игрока' }).selectOption('AR')
+  await page
+    .getByRole('combobox', { name: 'Организация', exact: true })
+    .selectOption('team-mclaren-formula-1-team')
+  await page
+    .getByRole('combobox', { name: 'Национальность игрока' })
+    .evaluate((el) => el.scrollIntoView({ block: 'center' }))
+  await shot('country')
+  await page.getByRole('button', { name: 'Создать карьеру' }).click()
+  await expect(page.getByRole('heading', { name: 'Штаб команды' })).toBeVisible()
+  const id = new URL(page.url()).searchParams.get('career')!
+  const rows = await (await page.request.get('/api/careers/' + id + '/personnel')).json()
+  type Candidate = { id: string; country: string; position: string; programs: string[]; name: string }
+  const pilot = rows.find(
+    (p: Candidate) =>
+      p.position === 'driver' &&
+      p.programs.includes('f1') &&
+      world.events.some(
+        (e: { series: string; country: string; kind: string }) =>
+          e.kind === 'round' && e.series === 'f1' && e.country === p.country,
+      ),
+  ) as Candidate
+  await page.goto('/?career=' + id + '#people')
+  await page.getByLabel('Найти человека').fill('Николь')
+  await expect(page.locator('.staff-card').getByRole('img', { name: 'Аргентина', exact: true })).toBeVisible()
+  await page.reload()
+  await page.getByRole('button', { name: 'Кадровый рынок', exact: true }).click()
+  await page.getByRole('combobox', { name: 'Национальность', exact: true }).selectOption(pilot.country)
+  await page.getByRole('combobox', { name: 'Профессия', exact: true }).selectOption('driver')
+  const cards = page.locator('.staff-card')
+  await cards.first().waitFor()
+  await expect(
+    cards.locator('.country-flag[aria-label="' + world.countries[pilot.country] + '"]'),
+  ).toHaveCount(await cards.count())
+  await page.getByLabel('Найти человека').fill(pilot.name)
+  await cards.first().click()
+  const dialog = page.getByRole('dialog')
+  await expect(dialog.getByRole('img', { name: world.countries[pilot.country], exact: true })).toBeVisible()
+  await dialog.getByRole('button', { name: 'Публичный профиль' }).click()
+  await expect(dialog.getByText('Профессиональная репутация', { exact: true })).toBeVisible()
+  await expect(dialog.getByText('Медийная популярность', { exact: true })).toBeVisible()
+  await dialog
+    .getByRole('heading', { name: 'Региональная популярность' })
+    .evaluate((el) => el.scrollIntoView({ block: 'center' }))
+  await shot('public-profile')
+  await expect(dialog.getByText(/· Домашний этап/)).toBeVisible()
+  await dialog
+    .getByRole('heading', { name: 'Внимание на этапе' })
+    .evaluate((el) => el.scrollIntoView({ block: 'center' }))
+  await shot('home-round')
+  const schedule = dialog.getByRole('combobox', { name: 'Этап по действующему назначению' })
+  const away = await schedule
+    .locator('option')
+    .evaluateAll(
+      (options) => (options as HTMLOptionElement[]).find((o) => !o.text.includes('домашний'))?.value,
+    )
+  await schedule.selectOption(away!)
+  await expect(dialog.getByText(/· Выездной этап/)).toBeVisible()
+})

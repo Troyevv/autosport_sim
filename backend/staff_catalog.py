@@ -35,6 +35,17 @@ def extend(world):
     rules = json.loads(
         path.with_name("personnel-rules.json").read_text(encoding="utf-8")
     )
+    from .media_profile import COUNTRIES
+
+    world["countries"] = COUNTRIES
+    locations = json.loads(
+        path.with_name("track-countries.json").read_text(encoding="utf-8")
+    )
+    for event in world["events"]:
+        country = event.get("country") or locations[event["track_id"]]
+        if country not in COUNTRIES:
+            raise ValueError("Страна этапа отсутствует в справочнике.")
+        event["country"] = country
     world["staff_rules"] = rules
     positions.update(rules["academy_positions"])
     for series, championship in world["championships"].items():

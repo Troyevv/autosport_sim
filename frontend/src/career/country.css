@@ -1,0 +1,23 @@
+.country-flag {
+  display: inline-block;
+  width: 1.5em;
+  height: 1.125em;
+  vertical-align: -0.17em;
+  flex: none;
+  background-image: url('/assets/countries/flags.webp');
+  background-repeat: no-repeat;
+  background-size: 1600% 1600%;
+}
+.country-choice {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  min-width: 0;
+}
+.country-choice select {
+  flex: 1;
+  min-width: 0;
+}
+.staff-card-copy .country-flag {
+  display: inline-block;
+}

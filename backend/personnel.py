@@ -122,6 +122,9 @@ def initialize(state, catalog):
     from . import teamwork
 
     teamwork.initialize(state, catalog)
+    from .media_profile import initialize as initialize_identity
+
+    initialize_identity(state)
 
 
 def disciplines(catalog, seat):

@@ -11,6 +11,7 @@ from .livery import GARAGE, PaintOrder
 from .catalog import VERSION, WORLD
 from .roster_upgrade import original_world, previous_world, upgrade, upgrade_personnel
 from .staff_input import ORDERS
+from .media_profile import COUNTRIES, initialize as initialize_identity
 from .development_path import public_person
 from .team_staff import department_capacity
 from .engineering import resource_scope, project_target
@@ -37,6 +38,13 @@ class CareerInput(Strict):
     org: str = Field(max_length=128)
     series: str = Field(max_length=16)
     seed: int = Field(ge=0, lt=2**32)
+    country: str | None = None
+
+    @model_validator(mode="after")
+    def recognized_country(self):
+        if self.country is not None and self.country not in COUNTRIES:
+            raise ValueError("Выберите страну из справочника.")
+        return self
 
 
 class Command(Strict):
@@ -165,7 +173,7 @@ def project(db, cid, state):
 
 def create(spec):
     with storage.transaction(True) as db:
-        setup = spec.model_dump()
+        setup = spec.model_dump(exclude_none=True)
         state = domain.new_world(WORLD, setup)
         cid = str(uuid4())
         storage.store(db, cid, state, create=True)
@@ -279,7 +287,9 @@ def import_save(document):
         commands = payload["commands"]
         if not isinstance(commands, list):
             raise ValueError
-        state = domain.new_world(catalog, dict(**spec.model_dump(), **appearance))
+        state = domain.new_world(
+            catalog, dict(**spec.model_dump(exclude_none=True), **appearance)
+        )
         seen = set()
         receipts = []
         for item in commands:
@@ -303,6 +313,9 @@ def import_save(document):
         if modern and activation == state["revision"]:
             state = upgrade_personnel(state)
         state["ledger"].sort(key=lambda p: (p["date"], p["org"], p["key"]))
+        if modern and "identity_schema" not in saved:
+            saved = json.loads(storage.dump(saved))
+            initialize_identity(saved)
         if storage.dump(state) != storage.dump(saved):
             raise ValueError
         if legacy:

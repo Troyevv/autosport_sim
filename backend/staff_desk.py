@@ -3,7 +3,7 @@
 from collections import defaultdict
 from . import personnel as people, employment, backing, development_path
 from .domain import RuleError
-from . import teamwork
+from . import teamwork, media_profile
 
 
 def appointments(state, world):
@@ -56,6 +56,7 @@ def dossier(state, world, pid, wet=False):
             )
     return dict(
         person=development_path.public_person(p),
+        calendar_context=media_profile.calendar_context(state, world, p),
         relationships=teamwork.links(state, world, pid, state["date"]),
         reports=state["reports"].get(state["setup"]["org"], {}).get(pid, []),
         financing=[r for r in state["funding"].values() if r["person"] == pid],
@@ -140,6 +141,7 @@ def directory(state, world):
             dict(
                 id=p["id"],
                 name=p["name"],
+                country=p["country"],
                 face=p["face"],
                 origin=p["origin"],
                 position=p["position"],

@@ -34,6 +34,7 @@ MIGRATIONS = [
     [],  # Fictional roster. Upgrade checkpoint data in the migration transaction.
     ["ALTER TABLE receipt ADD COLUMN paint TEXT"],
     [],  # Dated contracts and personnel activation revision.
+    [],  # Add country IDs and public profiles to existing v3 careers.
 ]
 
 
@@ -91,6 +92,15 @@ def transaction(write=False):
                             "UPDATE career SET state=? WHERE id=?",
                             (dump(upgrade_personnel(state)), row["id"]),
                         )
+            if idx == 6:
+                from .media_profile import initialize
+
+                for row in db.execute("SELECT id,state FROM career").fetchall():
+                    state = json.loads(row["state"])
+                    initialize(state)
+                    db.execute(
+                        "UPDATE career SET state=? WHERE id=?", (dump(state), row["id"])
+                    )
             db.execute(f"PRAGMA user_version={idx + 1}")
         yield db
         db.commit()

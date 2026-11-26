@@ -2,6 +2,7 @@ import { useRef, useState, type CSSProperties } from 'react'
 import { ArrowUpRight, ChevronLeft, ChevronRight, Search, Users } from 'lucide-react'
 import { Button, Choices, Dialog, Header, Panel, Table } from '../../ui/components'
 import { api, ApiError, explain, money, post, type Career } from '../api'
+import { CountryFlag, CountryOptions } from '../Country'
 import { Portrait } from '../Portrait'
 import type { SectionProps } from '../Sections'
 import { StaffFile } from './StaffFile'
@@ -26,7 +27,8 @@ export function People({
   const [tab, setTab] = useState<(typeof views)[number][0]>('roster')
   const [query, search] = useState(''),
     [position, profession] = useState(''),
-    [series, program] = useState('')
+    [series, program] = useState(''),
+    [country, setCountry] = useState('')
   const [free, availability] = useState(false),
     [page, paginate] = useState(0)
   const [selected, select] = useState(''),
@@ -46,6 +48,7 @@ export function People({
       (p) =>
         (!position || p.position === position) &&
         (!series || p.programs.includes(series)) &&
+        (!country || country === p.country) &&
         (!free || !p.org) &&
         (
           p.name +
@@ -110,6 +113,7 @@ export function People({
     profession('')
     program('')
     search('')
+    setCountry('')
     setError('')
   }
   return (
@@ -215,6 +219,17 @@ export function People({
                 </option>
               ))}
             </select>
+            <select
+              aria-label="Национальность"
+              value={country}
+              onChange={(e) => {
+                setCountry(e.target.value)
+                paginate(0)
+              }}
+            >
+              <option value="">Все страны</option>
+              <CountryOptions countries={world.countries} />
+            </select>
             {tab === 'market' && (
               <label className="staff-check">
                 <input
@@ -269,7 +284,10 @@ export function People({
                   />
                 </div>
                 <div className="staff-card-copy">
-                  <small>{world.positions[p.position].name}</small>
+                  <small>
+                    <CountryFlag id={p.country} countries={world.countries} />{' '}
+                    {world.positions[p.position].name}
+                  </small>
                   <strong>{p.name}</strong>
                   <span>{p.org ? world.organizations[p.org].name : 'Свободный агент'}</span>
                 </div>

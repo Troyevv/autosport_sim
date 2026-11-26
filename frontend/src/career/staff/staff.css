@@ -506,3 +506,15 @@
   align-items: center;
   overflow-wrap: anywhere;
 }
+.staff-local-audience {
+  display: grid;
+  gap: 6px;
+}
+.staff-local-audience > div {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 9px;
+  padding: 9px;
+  background: var(--surface-2);
+}

@@ -25,6 +25,7 @@ export type Event = {
   org?: string
 }
 export type World = {
+  countries: Record<string,string>
   staff_rules: { training: { days: number; fatigue: number; fatigue_limit: number } }
   products: Record<string, { name: string }>
   engineering: {
@@ -69,6 +70,7 @@ export type Person = {
   name: string
   face: string | null
   origin: string
+  country: string
   nationality: string
   birth_date: string
   experience: number

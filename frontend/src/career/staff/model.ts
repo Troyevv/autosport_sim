@@ -5,6 +5,7 @@ export type Candidate = Pick<Person, 'id' | 'name' | 'origin' | 'face'> & {
   org: string | null
   position: string
   age: number
+  country: string
   fit: number
   financial: { wage_cents: number; support_cents: number; net_cents: number } | null
   rating: number
@@ -26,6 +27,7 @@ type Contract = {
   buyout_cents: number
 }
 export type Dossier = {
+  calendar_context: import('./MediaProfile').Audience[]
   relationships: import('./Teamwork').Relationship[]
   reports: import('./pathModel').Report[]
   scout_available: boolean
@@ -34,6 +36,10 @@ export type Dossier = {
   person: Person & {
     position: string
     preferences?: Record<string, number>
+    authority: number
+    popularity: number
+    regional_popularity: Record<string, number>
+    media_traits: Record<string, number>
     ambition: number
     loyalty: number
     professionalism: number

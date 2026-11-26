@@ -3,6 +3,7 @@
 from .domain import RuleError, occupant_on
 from .personnel import evaluate
 from .development_path import eligibility
+from .media_profile import context as audience_context
 
 
 def department_capacity(group):
@@ -92,6 +93,10 @@ def crew_for_session(state, world, entry, event, *, wet=False):
         reason = eligibility(state["people"][member["person"]], policy, state["date"])
         if reason:
             raise RuleError(reason)
+        if event.get("kind") == "round" and event.get("country"):
+            member["audience"] = audience_context(
+                state["people"][member["person"]], event["country"]
+            )
         if member["person"] in busy:
             raise RuleError("Совмещающий пилот занят в приоритетном чемпионате.")
     return crew

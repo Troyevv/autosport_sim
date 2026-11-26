@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { Button, Choices, Dialog, Facts, Progress } from '../../ui/components'
 import type { SectionProps } from '../Sections'
 import { Connections, Handling, CompareWork } from './Teamwork'
+import { CountryFlag } from '../Country'
+import { MediaProfile, mediaTraits } from './MediaProfile'
 import { DriverBacking, Scouting, ManagerProfile, estimate } from './DriverPath'
 import { Portrait } from '../Portrait'
 import { money } from '../api'
@@ -27,6 +29,7 @@ type Props = SectionProps & {
 const tabs = [
   ['profile', 'Профиль'],
   ['career', 'Карьера'],
+  ['media', 'Публичный профиль'],
   ['teamwork', 'Взаимодействие'],
   ['compare', 'Сравнение'],
   ['terms', 'Договор'],
@@ -55,7 +58,8 @@ export function StaffFile(props: Props) {
             <small>{world.positions[employee.position].name}</small>
             <h3>{employee.org ? world.organizations[employee.org].name : 'Свободный агент'}</h3>
             <p>
-              {employee.age} лет · {data?.person.nationality}
+              {employee.age} лет · <CountryFlag id={employee.country} countries={world.countries} />{' '}
+              {world.countries[employee.country]}
             </p>
             <span className="staff-tag">{employee.tag}</span>
           </div>
@@ -145,6 +149,7 @@ export function StaffFile(props: Props) {
           </>
         )}
         {data && tab === 'profile' && data.person.management && <ManagerProfile p={data.person} />}
+        {data && tab === 'media' && <MediaProfile data={data} world={world} />}
         {data && tab === 'backing' && <DriverBacking {...props} data={data} />}
         {data && tab === 'career' && data.person.position === 'driver' && <Scouting {...props} data={data} />}
         {data && tab === 'career' && <CareerFile {...props} data={data} />}
@@ -174,7 +179,7 @@ function CareerFile({ data, c, world, order, busy }: FileProps) {
           ['Оценка потенциала', estimate(data)],
           ['Амбиции / лояльность', p.ambition + ' / ' + p.loyalty],
           ['Профессионализм', p.professionalism],
-          ['Репутация / адаптивность', p.reputation + ' / ' + p.adaptability],
+          ['Профессиональная репутация / адаптивность', p.reputation + ' / ' + p.adaptability],
           ['Усталость', p.fatigue],
         ]}
       />
@@ -359,6 +364,27 @@ function PeerSkills({
         </div>
       </div>
       <CompareWork left={data} right={second} />
+      <details className="staff-handling">
+        <summary>Сравнить публичные профили</summary>
+        <div className="staff-compare">
+          {(['reputation', 'authority', 'popularity', 'loyalty'] as const).map((k, i) => (
+            <div key={k}>
+              <b>{data.person[k]}</b>
+              <span>
+                {['Профессиональная репутация', 'Авторитет', 'Медийная популярность', 'Лояльность'][i]}
+              </span>
+              <b>{second.person[k]}</b>
+            </div>
+          ))}
+          {Object.entries(mediaTraits).map(([k, label]) => (
+            <div key={k}>
+              <b>{data.person.media_traits[k]}</b>
+              <span>{label}</span>
+              <b>{second.person.media_traits[k]}</b>
+            </div>
+          ))}
+        </div>
+      </details>
     </>
   )
 }

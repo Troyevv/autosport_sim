@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { ArrowRight, Building2, Factory, Flag, FolderOpen, Headset, Upload } from 'lucide-react'
+import { CountryFlag, CountryOptions } from './Country'
 import { roles } from '../ui/labels'
 import type { Role } from '../game'
 import { dateLabel } from '../game'
@@ -27,6 +28,7 @@ export function Library({ world, saves, media }: { world: World; saves: Save[]; 
     [series, setSeries] = useState('f1')
   const [chosen, setChosen] = useState(''),
     [name, setName] = useState(''),
+    [country, setCountry] = useState(''),
     [seed, setSeed] = useState('')
   const [error, setError] = useState(''),
     [busy, setBusy] = useState(false)
@@ -43,6 +45,7 @@ export function Library({ world, saves, media }: { world: World; saves: Save[]; 
         'careers',
         post({
           name: name.trim(),
+          ...(country ? { country } : {}),
           role,
           org,
           series,
@@ -113,6 +116,20 @@ export function Library({ world, saves, media }: { world: World; saves: Save[]; 
                       onChange={(e) => setName(e.target.value)}
                       autoComplete="off"
                     />
+                  </label>
+                  <label>
+                    Национальность игрока
+                    <span className="country-choice">
+                      {country && <CountryFlag id={country} countries={world.countries} />}
+                      <select
+                        aria-label="Национальность игрока"
+                        value={country}
+                        onChange={(e) => setCountry(e.target.value)}
+                      >
+                        <option value="">Из стартового профиля</option>
+                        <CountryOptions countries={world.countries} />
+                      </select>
+                    </span>
                   </label>
                   <label>
                     Чемпионат
