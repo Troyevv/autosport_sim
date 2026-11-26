@@ -301,7 +301,7 @@ function Memory({ data, order, manage }: { data: Desk; order: Order; manage: boo
 
 export function Research({ c, world, updateCareer }: SectionProps & { updateCareer: (c: Career) => void }) {
   const req = usePersonnel<Desk>('careers/' + c.id + '/research', c.revision),
-    data = req.data
+    data = req.error ? undefined : req.data
   const order = useOrder(c, updateCareer, 'research'),
     rental = useOrder(c, updateCareer)
   const [tab, setTab] = useState('queue'),

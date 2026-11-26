@@ -4,6 +4,7 @@ from math import ceil
 
 from .. import components
 from ..components.design import LABELS
+from ..domain import RuleError, occupant_on
 from ..finance import facilities
 from . import admitted, public_source
 from .model import METHODS, RANK, applicability
@@ -11,6 +12,11 @@ from .model import METHODS, RANK, applicability
 
 def projection(state, world):
     org = state["setup"]["org"]
+    office = org + ":" + state["setup"]["role"]
+    if occupant_on(state["seats"].get(office, []), state["date"]) != state["player_id"]:
+        raise RuleError(
+            "Доступ к архиву требует действующего назначения в организации.", 403
+        )
     data = state["research"]
     today = state["date"]
     tomorrow = facilities.later(today, 1)

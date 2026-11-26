@@ -322,3 +322,15 @@ def test_concurrent_commissions_and_exhausted_budget_leave_one_receipt():
     with pytest.raises(domain.RuleError, match="бюджета"):
         study(c, "chassis")
     assert service.export_save(c["id"]) == before
+
+
+def test_archive_requires_a_current_appointment():
+    c = study(create(), "chassis")
+    with storage.transaction(True) as db:
+        s = storage.checkpoint(db, c["id"])
+        s["seats"][MCLAREN + ":manager"][0]["end"] = s["date"]
+        storage.store(db, c["id"], s)
+    with TestClient(app) as client:
+        response = client.get(f"/api/careers/{c['id']}/research")
+        assert response.status_code == 403 and "projects" not in response.json()
+    assert checkpoint(c)["research"]["projects"]
