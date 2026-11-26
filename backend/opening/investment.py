@@ -16,6 +16,29 @@ HOLDINGS = {
 }
 
 
+def owner_endowment(state, world, oid):
+    """Liquid personal assets in cents, exclusive of shares and company buildings."""
+    org = world["organizations"][oid]
+    seat = oid + (":owner" if org["kind"] == "team" else ":manufacturer")
+    principal = state["people"][state["seats"][seat][0]["person"]]
+    programmes = set(org["programs"])
+    sample_id = sample(oid + "-personal-assets")
+    if oid in HOLDINGS or oid in SHARED_BASE:
+        # Appointed corporate principals have managerial savings independent of group turnover.
+        euros = (principal["experience"] + 2) * (45000 + sample_id % 85000)
+    elif "f1" in programmes:
+        # Liquid commitments of independent F1 holding principals; equity is valued separately.
+        euros = (18 + sample_id % 96) * 1000000
+    elif org["kind"] == "supplier":
+        euros = (2 + len(org["lines"])) * (175000 + sample_id % 2050000)
+    elif programmes <= {"kart-ok", "kart-okj"}:
+        euros = 55000 + principal["experience"] * 6000 + sample_id % 425000
+    else:
+        # Private competition operators range from family-run teams to multi-series businesses.
+        euros = (1 + len(programmes)) * (205000 + sample_id % 2850000)
+    return euros * 100
+
+
 def capitalize(state, world):
     for oid, org in world["organizations"].items():
         owner = capital.owner_wallet(oid)

@@ -34,3 +34,17 @@ test('Аренда мощности и источник многосерийно
     /^https:\/\/damslucasoil\.com\//,
   )
 })
+
+test('Корпоративная доля определяет полномочия владельца', async ({ page }) => {
+  const response = await page.request.post('/api/careers', {
+    data: { role: 'owner', org: 'team-scuderia-ferrari', series: 'f1', name: 'Приёмка', seed: 42 },
+  })
+  expect(response.status()).toBe(201)
+  const career = await response.json()
+  await page.goto('/?career=' + career.id + '#capital')
+  const shareholders = page.locator('.panel').filter({ has: page.getByRole('heading', { name: 'Собственники' }) })
+  await expect(shareholders).toContainText('Ferrari')
+  await expect(shareholders).toContainText('100%')
+  await expect(shareholders.getByRole('button', { name: 'Внести капитал' })).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Получить кредит' })).toHaveCount(0)
+})

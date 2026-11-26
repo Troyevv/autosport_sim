@@ -170,7 +170,70 @@ def review(state, world):
     )
 
 
-def measure(catalog):
+def organization_rows(state, world):
+    from backend.council import mandate
+    from backend.programme import policy
+
+    result = []
+    for oid, org in sorted(world["organizations"].items()):
+        account = state["accounts"][oid]
+        assets = [a for a in state["estate"]["assets"].values() if a["owner"] == oid]
+        employees = {
+            r["person"]
+            for aid, rows in state["seats"].items()
+            if world["assignments"][aid]["org"] == oid
+            for r in rows
+        }
+        supplies = state["market"]["supplies"].values()
+        sponsors = state["market"]["contracts"].values()
+        result.append(
+            dict(
+                id=oid,
+                name=org["name"],
+                type=org["kind"],
+                series=" ".join(org["programs"]),
+                employees=len(employees),
+                collective_headcount=sum(
+                    g["size"] for g in state["collectives"].values() if g["org"] == oid
+                ),
+                facilities=len(assets),
+                levels=" ".join(
+                    f"{a['kind']}={a['level']}"
+                    for a in sorted(assets, key=lambda a: a["kind"])
+                ),
+                condition_min=min(a["condition"] for a in assets),
+                condition_max=max(a["condition"] for a in assets),
+                leases=sum(
+                    r["org"] == oid for r in state["estate"]["bookings"].values()
+                ),
+                cash_cents=account["cash_cents"],
+                budget_cents=account["budget_cents"],
+                monthly_payroll_cents=account["payroll_cents"],
+                opening_principal_cents=sum(
+                    x["principal_cents"]
+                    for x in state["capital"]["loans"].values()
+                    if x["org"] == oid
+                ),
+                owner_liquidity_cents=finance.balance(state, capital.owner_wallet(oid)),
+                shareholders_bps=" ".join(
+                    f"{k}={v}"
+                    for k, v in sorted(state["capital"]["shares"][oid].items())
+                ),
+                sponsors_received=sum(d["org"] == oid for d in sponsors),
+                sponsors_given=sum(d["sponsor"] == oid for d in sponsors),
+                supply_contracts=sum(oid in (d["org"], d["sponsor"]) for d in supplies),
+                supported_drivers=len(
+                    employees & {f["person"] for f in state["funding"].values()}
+                ),
+                board_goal=state["mandates"].get(oid, {}).get("goal", ""),
+                generation=policy(state, oid),
+                delegation=mandate(state, oid)["mode"],
+            )
+        )
+    return result
+
+
+def measure(catalog, projection=review):
     import os
     from tempfile import TemporaryDirectory
     from backend import service, storage
@@ -190,12 +253,24 @@ def measure(catalog):
         )
         with storage.transaction() as db:
             state = storage.checkpoint(db, c["id"])
-        return review(state, lineup_for(state))
+        return projection(state, lineup_for(state))
 
 
 if __name__ == "__main__":
+    import argparse
+    import csv
     import json
+    import sys
     from backend.catalog import FIRST_SEASON, SEASON
+
+    cli = argparse.ArgumentParser()
+    cli.add_argument("--organizations", action="store_true")
+    if cli.parse_args().organizations:
+        rows = measure(SEASON, organization_rows)
+        writer = csv.DictWriter(sys.stdout, fieldnames=rows[0], lineterminator="\n")
+        writer.writeheader()
+        writer.writerows(rows)
+        raise SystemExit
 
     print(
         json.dumps(
