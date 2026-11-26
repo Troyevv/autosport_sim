@@ -130,13 +130,18 @@ def initialize(state, world):
     for org in sorted(state["accounts"]):
         owner = owner_wallet(org)
         wallets[owner] = 0
-        post(
-            state,
-            owner,
-            "capital-opening",
-            state["accounts"][org]["budget_cents"] // 2,
-            "opening",
-        )
+        wealth = state["accounts"][org]["budget_cents"] // 2
+        from ..opening import VERSION as opening_version
+
+        if state.get("opening") == opening_version:
+            from ..opening.population import sample
+
+            wealth = (
+                state["accounts"][org]["budget_cents"]
+                * (7 + sample(org + "-ownership") % 115)
+                // 100
+            )
+        post(state, owner, "capital-opening", wealth, "opening")
         s["shares"][org] = {owner: 10000}
     for wallet, amount in [(BANK, 100000000000), (INVESTOR, 30000000000)]:
         wallets[wallet] = 0

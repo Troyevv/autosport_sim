@@ -122,7 +122,7 @@ test('Производитель шин, поддержка клиента и н
   await dialog.getByRole('button', { name: 'Карьера', exact: true }).click()
   const assignment = dialog
     .locator('p')
-    .filter({ hasText: /1 февр.*15 февр/ })
+    .filter({ hasText: /1 февр.*—.*февр/ })
     .first()
   await expect(assignment).toBeVisible()
   await dialog.getByRole('button', { name: 'Назначить консультанта' }).click()

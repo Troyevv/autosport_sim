@@ -909,6 +909,16 @@ def assign_support(state, catalog, seat, row, args):
     reference = f"support-{state['revision']}"
     if any(r["id"] == reference for r in state["support"]):
         reference += f"/{seat['org']}/{entry['id']}/{product}/{start}"
+    from .opening import VERSION
+
+    channels = frozenset({"distance", "temperature", "wear", "feedback"})
+    allocation = 100
+    if terms and state.get("opening") == VERSION:
+        from .opening.partners import support_access
+
+        channels, allocation = support_access(
+            terms["partnership"], seat["org"], product
+        )
     assignment = SupportAssignment(
         reference,
         row["person"],
@@ -918,9 +928,9 @@ def assign_support(state, catalog, seat, row, args):
         product,
         start,
         end,
-        frozenset({"distance", "temperature", "wear", "feedback"}),
+        channels,
         row["salary_cents"],
-        100,
+        allocation,
     )
     data = asdict(assignment)
     if terms:

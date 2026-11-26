@@ -106,9 +106,12 @@ def audit(s):
             liveries=sum(e["id"] in GARAGE["entries"] for e in entries),
             personnel=len(
                 {
-                    a["person"]
-                    for a in world["assignments"].values()
-                    if a["org"] in orgs | makers and a["person"]
+                    row["person"]
+                    for aid, rows in s["seats"].items()
+                    if world["assignments"][aid]["org"] in orgs | makers
+                    for row in rows
+                    if row["start"] <= s["date"]
+                    and (not row["end"] or s["date"] < row["end"])
                 }
             ),
             collectives=sum(
@@ -218,11 +221,58 @@ def run(role, until):
     )
 
 
+def all_starts(role):
+    from backend.app import manufacturer_desk, programme_desk
+
+    counts = Counter()
+    organizations = set()
+    for oid, org in world["organizations"].items():
+        if org["kind"] != domain.ROLES[role] or not org.get("playable", True):
+            continue
+        for series in org["programs"]:
+            if not world["championships"][series].get("playable", True):
+                continue
+            with TemporaryDirectory() as temp:
+                os.environ["AUTOSPORT_DATA_DIR"] = temp
+                c = service.create(
+                    service.CareerInput(
+                        name="Проверка", role=role, org=oid, series=series, seed=60
+                    )
+                )
+                saved = service.load(c["id"])
+                assert (
+                    saved["role"],
+                    saved["org"],
+                    saved["series"],
+                    saved["date"],
+                ) == (role, oid, series, domain.START)
+                if role == "manager":
+                    assert programme_desk(c["id"])["plans"]
+                if role == "manufacturer":
+                    assert manufacturer_desk(c["id"])["catalog"]
+                counts[series] += 1
+                organizations.add(oid)
+    print(
+        json.dumps(
+            dict(
+                role=role,
+                organizations=len(organizations),
+                choices=sum(counts.values()),
+                series=counts,
+            )
+        )
+    )
+
+
 if __name__ == "__main__":
     cli = argparse.ArgumentParser()
     cli.add_argument("role", choices=CASES)
     cli.add_argument("--until", default="2025-04-01")
+    cli.add_argument("--all-starts", action="store_true")
     args = cli.parse_args()
+    if args.all_starts:
+        all_starts(args.role)
+        raise SystemExit
     with TemporaryDirectory() as temp:
         os.environ["AUTOSPORT_DATA_DIR"] = temp
         run(args.role, args.until)

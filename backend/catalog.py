@@ -330,15 +330,26 @@ LINEUP_WORLD = lineup_catalog(WORLD)
 
 from .opening.catalog import extend as opening_catalog  # noqa: E402
 
+from .opening import FIRST_VERSION  # noqa: E402
+
 SEASON = opening_catalog(WORLD)
+FIRST_SEASON = dict(SEASON, opening=FIRST_VERSION)
+from .opening.catalog import free_drivers, review_locations_and_schools  # noqa: E402
+
+SEASON = free_drivers(review_locations_and_schools(SEASON))
+FIRST_LINEUP = lineup_catalog(FIRST_SEASON)
 SEASON_LINEUP = lineup_catalog(SEASON)
 
 
 def base_catalog(state):
+    if state.get("opening") == FIRST_VERSION:
+        return FIRST_SEASON
     return SEASON if state.get("opening") else WORLD
 
 
 def lineup_for(state):
+    if state.get("opening") == FIRST_VERSION:
+        return FIRST_LINEUP
     return SEASON_LINEUP if state.get("opening") else LINEUP_WORLD
 
 

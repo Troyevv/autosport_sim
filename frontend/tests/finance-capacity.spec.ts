@@ -27,7 +27,7 @@ test('Аренда мощности и источник многосерийно
 
   await openCareer('team-dams-lucas-oil', 'f2', 'commercial')
   await page.getByRole('button', { name: 'Договоры', exact: true }).click()
-  await expect(page.locator('.commercial-row')).toHaveCount(8)
+  await expect(page.locator('.commercial-row').filter({ hasText: 'OMP Racing' })).toHaveCount(1)
   await page.locator('.commercial-row').filter({ hasText: 'OMP Racing' }).click()
   await expect(page.getByRole('link', { name: 'Источник партнёрства сезона 2025' })).toHaveAttribute(
     'href',

@@ -292,7 +292,7 @@ export function Championships({ world, c, media }: SectionProps) {
                 ...(profile.registration.headquarters ? [['Адрес регистрации', profile.registration.headquarters] as const] : []),
               ] : profile.domicile ? [['Юрисдикция оператора · оценка', world.countries[profile.domicile]] as const] : []),
               ...(profile.country ? [['Страна программы', world.countries[profile.country] ?? profile.country] as const] : []),
-              ...(profile.base_country ? [['Техническая база', profile.base_source ? <a href={profile.base_source} target="_blank" rel="noreferrer">{baseLocation}</a> : baseLocation] as const] : []),
+              ...(profile.base_country ? [[profile.base_estimated ? 'Район технической базы · оценка' : 'Техническая база', profile.base_source ? <a href={profile.base_source} target="_blank" rel="noreferrer">{baseLocation}</a> : baseLocation] as const] : []),
               ...(profile.affiliations ?? []).map((a) => ['Связь организаций', <a href={a.source} target="_blank" rel="noreferrer">{a.label}</a>] as const),
               ['Чемпионаты', profile.programs.map((id) => world.championships[id].name).join(' · ')],
               ...(profile.lines.length

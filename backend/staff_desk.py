@@ -219,7 +219,7 @@ def directory(state, world):
                 programs=programs,
                 specialty=p["specialization"],
                 strength=profile["values"][p["specialization"]],
-                tag=profile["traits"][0]["name"],
+                tag=profile["traits"][0]["name"] if profile["traits"] else "Без особых черт",
                 end=seat.get("end"),
             )
         )

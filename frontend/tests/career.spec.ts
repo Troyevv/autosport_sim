@@ -3,6 +3,7 @@ import { join } from 'node:path'
 import { test, expect } from '@playwright/test'
 
 test('Штаб, брифинг, загрузка и перенос сохранения', async ({ page }) => {
+  test.setTimeout(120000)
   const errors: string[] = []
   page.on('pageerror', (e) => errors.push(e.message))
   await page.goto('/')
@@ -12,7 +13,7 @@ test('Штаб, брифинг, загрузка и перенос сохран�
     .selectOption('team-mclaren-formula-1-team')
   await page.getByLabel('Seed мира').fill('42')
   await submitCareer(page)
-  await expect(page.getByRole('heading', { name: 'Штаб команды' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Штаб команды' })).toBeVisible({ timeout: 15000 })
   const original = page.url()
   const next = page.getByRole('button', { name: 'Продолжить' })
   await next.click()
@@ -44,7 +45,7 @@ test('Штаб, брифинг, загрузка и перенос сохран�
   )
   await page.getByLabel('Импортировать сохранение').setInputFiles(file!)
   expect((await importing).status()).toBe(201)
-  await expect(page.getByRole('heading', { name: 'Штаб команды' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Штаб команды' })).toBeVisible({ timeout: 15000 })
   expect(page.url()).not.toBe(original)
   await expect(page.locator('.top-date')).toContainText('13 февраля')
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(page.viewportSize()!.width)

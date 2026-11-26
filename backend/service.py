@@ -9,6 +9,7 @@ from pydantic import BaseModel, ConfigDict, Field, ValidationError, model_valida
 from . import domain, storage, finance
 from .finance.events import PRODUCERS
 from .finance import market, rights, budget, economy, capital, facilities
+from .opening import FIRST_VERSION
 from .livery import GARAGE, PaintOrder
 from .catalog import VERSION, WORLD, SEASON, base_catalog, lineup_for
 from . import (
@@ -535,7 +536,7 @@ def import_save(document, *, statistics_records=None):
         ):
             raise ValueError
         if (
-            saved.get("opening") not in (None, SEASON["opening"])
+            saved.get("opening") not in (None, FIRST_VERSION, SEASON["opening"])
             or saved.get("opening")
             and not native
         ):

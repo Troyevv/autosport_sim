@@ -8,6 +8,7 @@ from .. import finance, teamwork
 from ..finance import facilities
 from ..employment import assign_support
 from ..personnel import shifted
+from . import VERSION
 
 # Seasonal operating envelopes per programme (EUR), excluding parent-company turnover.
 PROGRAMME_EUR = {
@@ -119,7 +120,12 @@ def scopes(world):
             entries[oid].append(e)
     academies = {a["org"] for a in world["staff_rules"]["academies"].values()}
     for oid, org in world["organizations"].items():
-        yield oid, org, entries[oid], venue_plan(org, entries[oid], oid in academies)
+        levels = venue_plan(org, entries[oid], oid in academies)
+        if world["opening"] == VERSION:
+            from .operations import capacities
+
+            capacities(org, entries[oid], levels)
+        yield oid, org, entries[oid], levels
 
 
 def endow(state, world):
@@ -134,6 +140,15 @@ def endow(state, world):
             costs = costs * (0.45 if "engine" in org["lines"] else 0.16)
         elif any(e["category"] == "Hypercar" for e in entries):
             costs *= 2.8
+        if world["opening"] == VERSION:
+            # Operating expense follows the in-house workload, with differing
+            # overhead and external engineering shares for similar-size entrants.
+            from .operations import F1
+
+            scale = (
+                78 + sum(F1[oid]) if oid in F1 else 83 + sample(oid + "-overhead") % 38
+            )
+            costs = costs * scale / 100
         groups = [g for g in state["collectives"].values() if g["org"] == oid]
         operators = sum(level * facilities.TYPES[k][4] for k, level in kinds.items())
         staff = max(operators * 2 + len(groups), int(costs / 180000))
@@ -148,6 +163,9 @@ def endow(state, world):
         # Small paddocks use a shared workshop; existing simulation models its staff in collectives.
         budget = max(int(costs) * 100, monthly * 17)
         cash = budget * (67 + sample(oid + "-capital") % 23) // 100
+        if world["opening"] == VERSION:
+            # Starting liquidity, excluding historic asset purchases and loan proceeds.
+            cash = budget * (49 + sample(oid + "-liquidity") % 52) // 100
         state["accounts"][oid].update(
             budget_cents=budget,
             cash_cents=cash,
@@ -165,6 +183,8 @@ def populate(state, world):
         for kind, level in kinds.items():
             key = f"base:{oid}:{kind}"
             condition = 77 + sample(key) % 22
+            if world["opening"] == VERSION:
+                condition = 61 + sample(key + "-maintenance") % 37
             country = org["base_country"]
             value = (
                 facilities.quote(kind, country)["build_cents"]
@@ -249,6 +269,10 @@ def populate(state, world):
             days=days,
             spells=[dict(org=pair[3], start=first, end=day)],
         )
+    if world["opening"] == VERSION:
+        from .workforce import contracts_and_people
+
+        opening_crews = contracts_and_people(state, world)
     contracts(state, world)
     # Manthey's controlling shareholder was Porsche from 2013; the 2025 opening
     # predates the later increase in its holding.
@@ -260,6 +284,19 @@ def populate(state, world):
     }
     supplier_stock(state, world)
     fund_academies(state, world)
+    if world["opening"] == VERSION:
+        from .operations import policies, regional_access
+        from .workforce import sporting_terms
+        from .investment import capitalize
+        from .partners import commercial
+        from .pathways import pathways
+
+        pathways(state, world)
+        sporting_terms(state, opening_crews)
+        commercial(state, world)
+        capitalize(state, world)
+        policies(state, world)
+        regional_access(state, world)
 
 
 def date_days(start, end):
@@ -306,6 +343,10 @@ def contracts(state, world):
                 ),
             )
             d["entries"].append(eid)
+            if world["opening"] == VERSION and len(d["entries"]) == 1:
+                from .partners import supply_terms
+
+                d["discount_percent"] = supply_terms(d)
             if d["support"] and (maker not in advisors or works):
                 advisors[maker] = (entry, axis)
             if works and axis != "chassis":
@@ -333,9 +374,15 @@ def contracts(state, world):
             "chassis": 0.012,
         }[d["product"]]
         price = int(PROGRAMME_EUR[d["series"]] * share) * 100 * len(d["entries"])
+        discount = 0
+        if world["opening"] == VERSION:
+            discount = price * d["discount_percent"] // 100
         d.update(
-            list_cents=price, sale_cents=0 if d["partnership"] == "works" else price
+            list_cents=price,
+            discount_cents=discount,
+            sale_cents=0 if d["partnership"] == "works" else price - discount,
         )
+        price = d["sale_cents"]
         if d["sale_cents"]:
             dates = ("2025-04-01", "2025-07-01", "2025-10-01")
             # Ongoing supply rights/service, stock already on the books.
@@ -366,7 +413,10 @@ def contracts(state, world):
             state["seats"][seat["id"]][0],
             dict(
                 start=state["date"],
-                end=shifted(state["date"], 14),
+                end=shifted(
+                    state["date"],
+                    14 if world["opening"] != VERSION else 7 + sample(maker) % 21,
+                ),
                 entry=e["id"],
                 product=axis,
             ),

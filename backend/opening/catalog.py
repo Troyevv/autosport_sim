@@ -203,3 +203,75 @@ def extend(original):
     for record in values("history.csv"):
         world["championships"][record.pop("series")]["previous_season"] = record
     return world
+
+
+def review_locations_and_schools(world):
+    """A local technical catchment for private teams and a shared scout at smaller schools."""
+    assignments = dict(world["assignments"])
+    for key, school in world["staff_rules"]["academies"].items():
+        oid = school["org"]
+        if oid + ":scout:" + key not in assignments:
+            seat = oid + ":scout"
+            assignments[seat] = dict(assignments[seat], academy=key)
+    regions = {
+        "team-phm-racing": "Berlin–Brandenburg",
+        "team-vdk-racing": "Limburg",
+        "team-forza-racing": "West Midlands",
+        "team-victorylane": "Île-de-France",
+        "team-krz-motorsport": "Mazowsze",
+        "team-ricky-flynn-motorsport": "South East England",
+        "team-koski-motorsport": "Uusimaa",
+        "team-var-by-birel": "Flevoland",
+        "team-liqui-moly-roli-motorsport": "Harjumaa",
+        "team-kbk-competition": "Var",
+        "team-cl-racing-team": "Lombardia",
+        "team-ge-lu-mi-ni": "Lombardia",
+        "team-tepz-racing-team": "Jihomoravský kraj",
+    }
+    organizations = dict(world["organizations"])
+    for oid, region in regions.items():
+        organizations[oid] = dict(
+            organizations[oid], base=region, base_estimated=True, base_source=""
+        )
+    return dict(world, organizations=organizations, assignments=assignments)
+
+
+def free_drivers(world):
+    """Uncontracted fictional professionals with distinct faces from the studio reserve."""
+    profiles = dict(world["profiles"])
+    names = dict(world["names"])
+    reserve = world["reserve"].copy()
+    ages = world["reserve_ages"].copy()
+    for person in values("free-drivers.csv"):
+        pid, birth = person["id"], person["birth_date"]
+        age = 2025 - int(birth[:4]) - int(birth[5:] > "02-01")
+        face = next(f for f in sorted(reserve) if ages[f][0] <= age <= ages[f][1])
+        reserve.remove(face)
+        del ages[face]
+        experience = int(person["experience"])
+        skills = {
+            k: 41 + experience // 2 + sha256((pid + k).encode()).digest()[0] % 34
+            for k in world["positions"]["driver"]["skills"]
+        }
+        skills[person["strength"]] = max(skills.values()) + 2
+        names[pid] = person["name"]
+        profiles[pid] = dict(
+            id=pid,
+            name=names[pid],
+            position="driver",
+            origin="generated",
+            face=face,
+            nationality=world["countries"][person["country"]],
+            birth_date=birth,
+            experience=experience,
+            potential=min(99, max(skills.values()) + (6 if age < 25 else 2)),
+            skills=skills,
+            specialization=person["strength"],
+            market_discipline=person["discipline"],
+            fatigue=0,
+            morale=70,
+            traits=[],
+        )
+    return dict(
+        world, profiles=profiles, names=names, reserve=reserve, reserve_ages=ages
+    )

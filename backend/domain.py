@@ -58,6 +58,14 @@ def player_face(catalog, setup):
 
 def new_world(catalog, setup):
     role, org, series = setup["role"], setup["org"], setup["series"]
+    if org in catalog.get("entrant_operators", {}):
+        if not any(
+            e["entrant_id"] == org and e["championship"] == series
+            for e in catalog["entries"].values()
+        ):
+            raise RuleError("Марка не заявлена в этом чемпионате.")
+        org = catalog["entrant_operators"][org]
+        setup = dict(setup, org=org)
     rec = catalog["organizations"].get(org)
     if (
         not catalog["championships"].get(series, {}).get("playable", True)
