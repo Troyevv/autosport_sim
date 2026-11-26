@@ -58,6 +58,16 @@ def restriction(state, world, entry, axis):
         return "Изменения узла заморожены."
     if axis in car["suppliers"] and car["suppliers"][axis] != entry["org"]:
         return "Чертёж принадлежит утверждённому поставщику."
+    if any(
+        deal["org"] == entry["org"]
+        and deal["series"] == entry["championship"]
+        and deal["product"] == axis
+        and deal["status"] == "signed"
+        and deal["start"] <= state["date"] < deal["end"]
+        and deal["sponsor"] != entry["org"]
+        for deal in state["market"]["supplies"].values()
+    ):
+        return "На этот период действует договор поставки узла."
     if not rule or axis not in rule["team_slots"]:
         return "Регламент разрешает только утверждённые спецификации."
     return None

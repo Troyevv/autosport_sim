@@ -231,11 +231,14 @@ def transaction(write=False):
                         write_fact(db, row["id"], LINEUP_WORLD, report)
                     store(db, row["id"], state)
             if idx == 21:
-                from .development import initialize
+                from .catalog import LINEUP_WORLD
+                from .development import initialize, write_fact
 
                 for row in db.execute("SELECT id FROM career").fetchall():
                     state = checkpoint(db, row["id"])
                     initialize(state)
+                    for event in state["development"]["history"]:
+                        write_fact(db, row["id"], state, LINEUP_WORLD, event)
                     store(db, row["id"], state)
             db.execute(f"PRAGMA user_version={idx + 1}")
         yield db

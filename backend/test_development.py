@@ -142,6 +142,27 @@ def test_restrictions_capacity_priorities_and_funding():
     for axis in ("engine", "tyre"):
         with pytest.raises(domain.RuleError, match="поставщик"):
             design(c, development.versions(s, "f1-4", axis)[0]["id"])
+    # A dated supplier obligation also binds an otherwise open constructor slot.
+    s["market"]["supplies"]["gearbox-contract"] = dict(
+        org=MCLAREN,
+        series="f1",
+        product="transmission",
+        sponsor="supplier-hewland",
+        status="signed",
+        start=s["date"],
+        end="2025-03-01",
+    )
+    gearbox = development.versions(s, "f1-4", "transmission")[0]["id"]
+    with pytest.raises(domain.RuleError, match="договор поставки"):
+        development.commission(
+            s,
+            WORLD,
+            MCLAREN,
+            "customer-gearbox",
+            development.Design(
+                entry="f1-4", baseline=gearbox, priority="normal", brief="balanced"
+            ),
+        )
     other = WORLD["entries"]["dtm-1"]
     base = development.versions(s, other["id"], "brakes")[0]["id"]
     with pytest.raises(domain.RuleError, match="утверждённые"):
