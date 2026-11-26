@@ -9,7 +9,8 @@ export function OfferForm({
   initial,
   busy,
   submit,
-}: { brand: Brand; initial?: Bid; busy: boolean; submit: (b: Bid) => void } & Pick<
+  scholars,
+}: { scholars: string[]; brand: Brand; initial?: Bid; busy: boolean; submit: (b: Bid) => void } & Pick<
   SectionProps,
   'c' | 'world'
 >) {
@@ -68,7 +69,9 @@ export function OfferForm({
         rights: selected.map((zone) => ({
           zone,
           share: num('share-' + zone),
-          offset:num('offset-'+zone),priority:num('layer-'+zone),color:str('color-'+zone)||null,
+          offset: num('offset-' + zone),
+          priority: num('layer-' + zone),
+          color: str('color-' + zone) || null,
           shared: flag('shared-' + zone),
         })),
       },
@@ -233,9 +236,40 @@ export function OfferForm({
                     defaultValue={t?.rights.find((r) => r.zone === id)?.share ?? 50}
                   />
                 </label>
-                <label>Левый край зоны, %<input name={'offset-'+id} type="number" required min="0" max="90" defaultValue={t?.rights.find(r=>r.zone===id)?.offset??0}/></label>
-                {['flank','upper','nose','sill','shoulder','wing'].includes(id)&&<><label>Минимальный слой<input name={'layer-'+id} type="number" min="0" max="15" defaultValue={t?.rights.find(r=>r.zone===id)?.priority??0}/></label>
-                <label>Цвет кузова (HEX, по желанию)<input name={'color-'+id} pattern="#[a-fA-F0-9]{6}" placeholder="#e10600" defaultValue={t?.rights.find(r=>r.zone===id)?.color??''}/></label></>}
+                <label>
+                  Левый край зоны, %
+                  <input
+                    name={'offset-' + id}
+                    type="number"
+                    required
+                    min="0"
+                    max="90"
+                    defaultValue={t?.rights.find((r) => r.zone === id)?.offset ?? 0}
+                  />
+                </label>
+                {['flank', 'upper', 'nose', 'sill', 'shoulder', 'wing'].includes(id) && (
+                  <>
+                    <label>
+                      Минимальный слой
+                      <input
+                        name={'layer-' + id}
+                        type="number"
+                        min="0"
+                        max="15"
+                        defaultValue={t?.rights.find((r) => r.zone === id)?.priority ?? 0}
+                      />
+                    </label>
+                    <label>
+                      Цвет кузова (HEX, по желанию)
+                      <input
+                        name={'color-' + id}
+                        pattern="#[a-fA-F0-9]{6}"
+                        placeholder="#e10600"
+                        defaultValue={t?.rights.find((r) => r.zone === id)?.color ?? ''}
+                      />
+                    </label>
+                  </>
+                )}
                 <label>
                   <input
                     type="checkbox"
@@ -277,7 +311,7 @@ export function OfferForm({
                 <select name="scholar" defaultValue={s?.academy_person ?? ''}>
                   <option value="">Без финансирования</option>
                   {Object.entries(world.names)
-                    .filter(([id]) => id.startsWith('driver-'))
+                    .filter(([id]) => scholars.includes(id))
                     .map(([id, name]) => (
                       <option value={id} key={id}>
                         {name}

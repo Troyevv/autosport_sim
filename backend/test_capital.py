@@ -22,6 +22,7 @@ def test_capital_sources_loan_restructure_and_payoff():
         c["id"], command(c, "finance-loan", principal_cents=1234567, months=5)
     )
     d = capital_overview(c["id"])["loans"][0]
+    assert financial_statement(c["id"])["net_financial_assets_cents"] == cash + 15000
     assert (
         c["account"]["cash_cents"] == cash + 15000 + 1234567
         and financial_statement(c["id"])["profit_cents"] == 0

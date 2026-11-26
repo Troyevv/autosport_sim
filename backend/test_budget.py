@@ -35,6 +35,12 @@ def test_owner_revisions_never_mint_cash():
         c["account"]["cash_cents"] == before
         and budget_control(c["id"])["plan"]["allocations"] == amounts
     )
+    with storage.transaction() as db:
+        s = storage.checkpoint(db, c["id"])
+        assert any(
+            r["fact"]["kind"] == "commercial" and r["fact"]["person"] == "player"
+            for r in s["work_log"].values()
+        )
     c = service.execute(c["id"], command(c, "finance-budget-review"))
     k = budget_control(c["id"])["requests"][-1]["id"]
     c = service.execute(

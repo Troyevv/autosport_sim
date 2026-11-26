@@ -11,6 +11,7 @@ from . import (
     Schedule,
     PERSONAL,
     available,
+    pending,
     balance,
     next_month,
     post,
@@ -60,6 +61,20 @@ class Restructure(Fields):
     loan: Id
 
 
+class Launch(Fields):
+    series: Id
+    amount_cents: Cents
+
+
+class ProgramRegistration(Fields):
+    reference: Id
+    program: Id
+    organization: Id
+    series: Id
+    regulation: Id
+    capital_cents: Cents
+
+
 class Admission(Fields):
     program: Id
     organization: Id
@@ -85,10 +100,12 @@ ORDERS = {
     "finance-equity": Sale,
     "finance-asset": Trade,
     "finance-program-sale": ProgramSale,
+    "finance-program-launch": Launch,
     "finance-restructure": Restructure,
 }
 PRODUCERS = {
     "finance-program-admission": Admission,
+    "finance-program-register": ProgramRegistration,
     "finance-organization-change": OrganizationChange,
 }
 
@@ -135,11 +152,7 @@ def initialize(state, world):
 
 
 def obligations(state, org):
-    return [
-        r
-        for r in state["finance"]["instalments"].values()
-        if r["payer"] == org and r["status"] == "pending"
-    ]
+    return [r for r in pending(state, org)]
 
 
 def valuation(state, org):
@@ -157,7 +170,7 @@ def valuation(state, org):
     )
     revenue = sum(
         r["amount_cents"]
-        for r in state["finance"]["instalments"].values()
+        for r in pending(state)
         if r["recipient"] == org
         and r["category"] in ("sponsorship", "supply", "licensing")
         and r["status"] == "pending"
@@ -319,8 +332,15 @@ def asset_trade(state, world, org, key, order):
         or (a["owner"] == org) != (order.side == "sell")
     ):
         raise RuleError("Актив не выставлен этой стороной.")
+    if any(
+        r["facility"] == a["id"] and r["end"] > state["date"]
+        for r in state["estate"]["bookings"].values()
+    ):
+        raise RuleError(
+            "Передача объекта требует завершения действующих бронирований.", 409
+        )
     buyer = INVESTOR if order.side == "sell" else org
-    price = max(1, a["book_cents"] * (75 if buyer == INVESTOR else 95) // 100)
+    price = max(1, a["book_cents"] * (75 if buyer == INVESTOR else 115) // 100)
     if buyer == org:
         from .budget import authorize
 
@@ -354,7 +374,10 @@ def program_trade(state, world, org, key, order):
     basis = max(
         10000,
         balance(state, account)
-        + state["accounts"][world["programs"][account]["org"]]["budget_cents"] // 20,
+        + state["accounts"][(p.get("founder") or world["programs"][account]["org"])][
+            "budget_cents"
+        ]
+        // 20,
     )
     price = basis * (80 if order.side == "sell" else 100) // 100
     buyer = INVESTOR if order.side == "sell" else org
@@ -395,12 +418,40 @@ def act(state, world, org, key, order):
         lend(state, org, key, order)
     elif isinstance(order, Sale):
         shares_sale(state, org, key, order)
+    elif isinstance(order, Launch):
+        if (
+            world["organizations"][org]["kind"] != "team"
+            or order.series not in world["championships"]
+            or any(
+                p["org"] == org and p["series"] == order.series
+                for p in state["capital"]["programs"].values()
+            )
+        ):
+            raise RuleError("Выберите новую дисциплину для гоночной организации.")
+        reg = world["championships"][order.series]["rules_id"]
+        integration(
+            state,
+            world,
+            ProgramRegistration(
+                reference=key,
+                program=org + ":venture:" + order.series,
+                organization=org,
+                series=order.series,
+                regulation=reg,
+                capital_cents=order.amount_cents,
+            ),
+        )
     elif isinstance(order, ProgramSale):
         program_trade(state, world, org, key, order)
     elif isinstance(order, Trade):
         asset_trade(state, world, org, key, order)
     else:
         loan_action(state, org, key, order)
+    if isinstance(order, (Loan, Sale, Restructure)):
+        from .budget import office, negotiation_activity
+
+        signer = office(state, org, "owner") or office(state, org, "manufacturer")
+        negotiation_activity(state, world, org, signer, key + ":signed", "completed")
 
 
 def command(state, world, action, args):
@@ -452,7 +503,39 @@ def integration(state, world, e):
         if changes[e.reference] != e.model_dump():
             raise RuleError("Основание уже занято.", 409)
         return
-    if isinstance(e, Admission):
+    if isinstance(e, ProgramRegistration):
+        rule = world["championships"].get(e.series)
+        if (
+            e.organization not in state["accounts"]
+            or world["organizations"][e.organization]["kind"] != "team"
+            or not rule
+            or e.regulation != rule["rules_id"]
+            or not e.program.startswith(e.organization + ":")
+            or e.program in state["finance"]["pockets"]
+            or e.program in state["capital"]["programs"]
+        ):
+            raise RuleError(
+                "Неверная идентичность новой программы или версия регламента."
+            )
+        if (
+            state["capital"]["crises"].get(e.organization, {}).get("status")
+            == "bankrupt"
+        ):
+            raise RuleError("Учреждение программы приостановлено.")
+        state["finance"]["pockets"][e.program] = 0
+        transfer(
+            state, e.organization, e.program, e.reference, e.capital_cents, "allocation"
+        )
+        state["capital"]["programs"][e.program] = dict(
+            id=e.program,
+            org=e.organization,
+            founder=e.organization,
+            series=e.series,
+            status="withdrawn",
+            since=state["date"],
+        )
+        history(state, e.organization, e.reference, "incorporate", program=e.program)
+    elif isinstance(e, Admission):
         admission(state, world, e)
     else:
         if e.organization not in state["accounts"]:
@@ -527,6 +610,14 @@ def losses(state, world, org, all_staff=False):
 
 def bankrupt(state, world, org, key):
     losses(state, world, org, True)
+    for d in state["market"]["contracts"].values():
+        if d["sponsor"] == org and d["status"] == "signed":
+            market.end_deal(
+                state, d, org, "Прекращение деятельности спонсора", breach=True
+            )
+    for d in state["market"]["supplies"].values():
+        if org in (d["org"], d["sponsor"]) and d["status"] == "signed":
+            market.end_supply(state, org, d["id"])
     for p in state["capital"]["programs"].values():
         if p["org"] == org:
             p.update(status="closed", since=state["date"])

@@ -149,10 +149,11 @@ def test_sqlite_and_portable_migration_of_financed_seat(tmp_path):
         state.pop("finance")
         state.pop("market", None)
         state.pop("control", None)
+        state.pop("economy", None)
         state.pop("capital", None)
         state.pop("estate", None)
         db.execute(
-            "DELETE FROM posting WHERE career=? AND (key IN ('finance-opening','capital-opening') OR org='organizer:f3:2025:promotion' OR org LIKE 'brand:%')",
+            "DELETE FROM posting WHERE career=? AND (key IN ('finance-opening','capital-opening','economy-opening') OR org='organizer:f3:2025:promotion' OR org LIKE 'brand:%')",
             (c["id"],),
         )
         storage.store(db, c["id"], state)

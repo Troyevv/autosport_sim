@@ -16,6 +16,8 @@ export type Statement = {
   contracts: Record<string, number>
   in_kind: { reference: string; description: string; estimated_cents: number }[]
   activity: Record<string, number>
+  breakdown: Record<string, { income_cents: number; expense_cents: number }>
+  recommendation: string
   width: number
   officer: Analyst | null
   candidates: Analyst[]
@@ -34,7 +36,8 @@ export type Statement = {
 }
 const categories: Record<string, string> = {
   opening: 'Начальный капитал',
-  depreciation:'Амортизация',disposal:'Результат продажи актива',
+  depreciation: 'Амортизация',
+  disposal: 'Результат продажи актива',
   allocation: 'Внутренний перевод',
   payroll: 'Оплата коллективов',
   'staff-payroll': 'Зарплаты',

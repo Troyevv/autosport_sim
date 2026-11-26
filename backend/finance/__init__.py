@@ -1,6 +1,8 @@
 """Career accounting in EUR cents. The posting table is the single cash journal."""
 
 from collections import defaultdict
+from contextlib import contextmanager
+from contextvars import ContextVar
 from datetime import date, timedelta
 from typing import Annotated, Literal
 
@@ -113,6 +115,7 @@ def activate(state, world, previous=()):
         officers={},
         in_kind={},
     )
+    pockets.update({"academy:" + k: 0 for k in state.get("academies", {})})
     from .series import initialize
 
     initialize(state)
@@ -147,11 +150,45 @@ def balance(state, account):
     return state["finance"]["pockets"][account]
 
 
+# Transient indexes over the original installment records. Never persisted or used for replay input.
+_index = ContextVar("finance_pending", default=None)
+
+
+@contextmanager
+def indexed(state):
+    rows = state.get("finance", {}).get("instalments", {})
+    by_payer = defaultdict(list)
+    active = {}
+    for k, r in rows.items():
+        if r["status"] == "pending":
+            active[k] = r
+            by_payer[r["payer"]].append(r)
+    token = _index.set((rows, active, by_payer))
+    try:
+        yield
+    finally:
+        _index.reset(token)
+
+
+def pending(state, payer=None):
+    rows = state["finance"]["instalments"]
+    index = _index.get()
+    if index and index[0] is rows:
+        source = index[1].values() if payer is None else index[2].get(payer, ())
+    else:
+        source = rows.values()
+    return (
+        r
+        for r in source
+        if r["status"] == "pending" and (payer is None or r["payer"] == payer)
+    )
+
+
 def available(state, account, *, ignore=None):
     book = state["finance"]
     locked = sum(
         r["amount_cents"]
-        for r in book["instalments"].values()
+        for r in pending(state, account)
         if r["id"] != ignore
         and r["payer"] == account
         and r["reserved"]
@@ -183,11 +220,18 @@ def post(state, account, key, delta, source):
         from . import budget
 
         budget.observe(state, WORLD, state["ledger"][-1])
+    if "economy" in state:
+        from .economy import observe
+
+        observe(state, state["ledger"][-1])
 
 
 def transfer(state, payer, recipient, key, amount, source, *, ignore=None):
     if type(amount) is not int or amount <= 0 or payer == recipient:
         raise RuleError("Проверьте сумму и стороны платежа.")
+    if recipient is None and "economy" in state:
+        recipient = "economy:households"
+        key = payer + ":" + key if not key.startswith("due:") else key
     if recipient is not None:
         balance(state, recipient)
     if available(state, payer, ignore=ignore) < amount:
@@ -218,15 +262,34 @@ def register(state, schedule: Schedule):
     if any(v > available(state, k) for k, v in reserve.items()):
         raise RuleError("Для резерва по договору недостаточно денег.", 409)
     book.update(new)
+    index = _index.get()
+    if index and index[0] is book:
+        index[1].update(new)
+        for r in new.values():
+            index[2][r["payer"]].append(r)
 
 
 def settle(state):
     day = state["date"]
-    for r in sorted(
-        state["finance"]["instalments"].values(), key=lambda r: (r["due"], r["id"])
-    ):
+    for r in sorted(pending(state), key=lambda r: (r["due"], r["id"])):
         if r["status"] != "pending" or r["due"] > day:
             continue
+        if r["category"] == "driver-backing" and r["id"].endswith(":seat"):
+            supply = state.get("market", {}).get("supplies", {}).get(r["contract"])
+            if supply:
+                from ..catalog import WORLD
+                from .market import audience, active
+
+                if supply["end"] <= day or supply["status"] != "signed":
+                    r.update(status="cancelled", cancelled=day)
+                    continue
+                if not active(supply, day) or not any(
+                    p["id"] == supply["academy_person"]
+                    for p in audience(state, WORLD, supply["org"], supply["series"])
+                ):
+                    r.setdefault("withheld", day)
+                    continue
+                r.pop("withheld", None)
         if r["category"] == "sponsorship" and "market" in state:
             from .rights import release_payment
 
@@ -346,6 +409,14 @@ def payroll(state, org, amount, player_share):
     if available(state, org) >= amount:
         post(state, org, key, -amount, "staff-payroll")
         post(state, PERSONAL, key + ":" + org, player_share, "staff-payroll")
+        if "economy" in state:
+            post(
+                state,
+                "economy:households",
+                key + ":" + org,
+                amount - player_share,
+                "staff-payroll",
+            )
         return
     parts = [(None, amount - player_share), (PERSONAL, player_share)]
     terms = [

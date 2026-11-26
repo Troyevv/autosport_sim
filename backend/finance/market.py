@@ -287,6 +287,26 @@ def assessment(state, world, brand, terms):
     )
     popularity = max((p["popularity"] for p in people), default=0)
     reputation = max((p["reputation"] for p in people), default=0)
+    if "economy" in state and not terms.person:
+        # Company recognition persists across individual sporting contracts.
+        baseline = state["economy"]["audiences"].get(terms.org, {})
+        reach = max(
+            reach, max((baseline.get(r, 0) for r in brand["markets"]), default=0)
+        )
+        executive = next(
+            (
+                state["people"][pid]
+                for role in ("manager", "owner")
+                if (
+                    pid := occupant_on(
+                        state["seats"].get(terms.org + ":" + role, []), state["date"]
+                    )
+                )
+            ),
+            None,
+        )
+        if executive:
+            reputation = max(reputation, executive["reputation"])
     match = terms.series in brand["series"]
     affinity = terms.org in profile["organizations"] or any(
         p["id"] in profile["drivers"] for p in people
@@ -325,6 +345,65 @@ def assessment(state, world, brand, terms):
         state["market"]["budgets"][terms.sponsor] * max(5, min(90, score)) // 160,
     )
     return score, limit, reputation
+
+
+class Homologation(Fields):
+    reference: Id
+    provider: Id
+    entry: Id
+    product: Literal["tyre", "engine", "transmission"]
+    regulation: Id
+    start: Day
+    end: Day
+    works: bool = False
+
+
+def homologate(state, world, h):
+    entry = world["entries"].get(h.entry)
+    if (
+        not entry
+        or h.start >= h.end
+        or h.provider not in world["organizations"]
+        or h.product not in world["organizations"][h.provider]["lines"]
+    ):
+        raise RuleError("Неизвестная заявка, компонент или поставщик.")
+    rules = world["championships"][entry["championship"]]
+    if rules["rules_id"] != h.regulation:
+        raise RuleError("Не совпадает регламент допуска.")
+    if h.product == "tyre":
+        from ..supply import tyre_eligible
+
+        if not tyre_eligible(
+            rules["tyre_market"][entry["category"]], h.provider, homologated=True
+        ):
+            raise RuleError("Регламент поставщиков шин не допускает эту марку.")
+    rows = state["market"].setdefault("homologations", {})
+    if h.reference in rows and rows[h.reference] != h.model_dump():
+        raise RuleError("Решение уже зарегистрировано.")
+    rows[h.reference] = h.model_dump()
+
+
+def supplier_eligible(state, world, entry, sponsor, product, start, end):
+    initial = world["cars"][entry["car"]]["suppliers"].get(product) == sponsor
+    certified = any(
+        h["entry"] == entry["id"]
+        and h["provider"] == sponsor
+        and h["product"] == product
+        and h["start"] <= start
+        and end <= h["end"]
+        for h in state["market"].get("homologations", {}).values()
+    )
+    if product == "tyre":
+        from ..supply import tyre_eligible
+
+        return tyre_eligible(
+            world["championships"][entry["championship"]]["tyre_market"][
+                entry["category"]
+            ],
+            sponsor,
+            homologated=initial or certified,
+        )
+    return initial or certified
 
 
 def validate(state, world, bid, *, signing=False):
@@ -367,7 +446,7 @@ def validate(state, world, bid, *, signing=False):
             if e["org"] == t.org and e["championship"] == t.series
         ]
         if not entries or not all(
-            world["cars"][e["car"]]["suppliers"].get(s.product) == t.sponsor
+            supplier_eligible(state, world, e, t.sponsor, s.product, t.start, t.end)
             for e in entries
         ):
             raise RuleError(
@@ -539,6 +618,34 @@ def sign_supply(state, world, bid, reply, key):
         for d in state["market"]["supplies"].values()
     ):
         raise RuleError("На этот период уже согласована поставка.", 409)
+    entries = [
+        e
+        for e in world["entries"].values()
+        if e["org"] == t.org and e["championship"] == t.series
+    ]
+    works = bool(entries) and all(
+        any(
+            h["works"]
+            and h["provider"] == t.sponsor
+            and h["product"] == s.product
+            and h["entry"] == e["id"]
+            and h["start"] <= t.start
+            and h["end"] >= t.end
+            for h in state["market"].get("homologations", {}).values()
+        )
+        for e in entries
+    )
+    status = (
+        "works"
+        if works
+        else "priority"
+        if reply.support and s.support and reply.testing and s.testing
+        else "commercial"
+        if reply.sponsorship
+        else "technical"
+        if reply.support and s.support
+        else "client"
+    )
     discount = s.discount_cents if reply.discount else 0
     support = reply.support and s.support
     # Marginal costs and the support allocation are disclosed game estimates.
@@ -578,6 +685,7 @@ def sign_supply(state, world, bid, reply, key):
         start=t.start,
         end=t.end,
         status="signed",
+        partnership=status,
         list_cents=s.price_cents,
         discount_cents=discount,
         sale_cents=price,
@@ -694,7 +802,7 @@ def propose(state, world, bid, actor):
     return row
 
 
-def respond(state, world, reply, actor):
+def respond(state, world, reply, actor, *, deferred=False):
     o = state["market"]["offers"].get(reply.offer)
     if (
         not o
@@ -735,7 +843,17 @@ def respond(state, world, reply, actor):
         sign_supply(state, world, bid, reply, o["id"] + ":supply")
     if reply.sponsorship:
         sign_sponsor(state, world, t, o["id"] + ":sponsor")
-    settle(state)
+    if reply.supply:
+        state["market"]["supplies"][o["id"] + ":supply"].update(
+            package=o["id"],
+            sponsorship=o["id"] + ":sponsor" if reply.sponsorship else None,
+        )
+    if reply.sponsorship:
+        state["market"]["contracts"][o["id"] + ":sponsor"].update(
+            package=o["id"], supply=o["id"] + ":supply" if reply.supply else None
+        )
+    if not deferred:
+        settle(state)
     o.update(
         status="signed",
         reason="Принятые договоры вступают в силу по согласованным датам.",
@@ -876,24 +994,44 @@ def tick(state, world):
         )
         # NPC negotiations can lose the same race for funds and rights as a player.
         # Stage the economic records until both linked contracts have passed validation.
-        from copy import deepcopy
+        from collections import ChainMap
+        from . import Schedule, Instalment
 
-        sections = ["market", "finance", "accounts"] + (
-            ["control"] if "control" in state else []
-        )
-        candidate = {
+        terms = ChainMap({}, state["finance"]["instalments"])
+        staged = {
             **state,
-            **{k: deepcopy(state[k]) for k in sections},
-            "ledger": list(state["ledger"]),
+            "market": {
+                **market,
+                "contracts": dict(market["contracts"]),
+                "supplies": dict(market["supplies"]),
+                "offers": {**market["offers"], key: dict(o)},
+            },
+            "finance": {
+                **state["finance"],
+                "instalments": terms,
+                "pockets": dict(state["finance"]["pockets"]),
+            },
         }
         try:
-            respond(candidate, world, reply, t["org"])
+            respond(staged, world, reply, t["org"], deferred=True)
         except RuleError as err:
             o.update(status="rejected", reason=str(err))
         else:
-            for k in [*sections, "ledger"]:
-                state[k] = candidate[k]
-            market = state["market"]
+            state["finance"]["pockets"].update(staged["finance"]["pockets"])
+            if terms.maps[0]:
+                register(
+                    state,
+                    Schedule(
+                        installments=[
+                            Instalment.model_validate(
+                                {k: r[k] for k in Instalment.model_fields}
+                            )
+                            for r in terms.maps[0].values()
+                        ]
+                    ),
+                )
+            market.update(staged["market"])
+            settle(state)
 
 
 def invite(state, world, day, market, player):
@@ -979,19 +1117,30 @@ def renewals(state, world, day):
             }
         )
         if not conflict(state, world, terms):
-            d["renewal_offer"] = propose(state, world, Bid(terms=terms), d["sponsor"])[
-                "id"
-            ]
+            try:
+                d["renewal_offer"] = propose(
+                    state, world, Bid(terms=terms), d["sponsor"]
+                )["id"]
+            except RuleError as err:
+                d.update(renew=False, end_reason=str(err))
 
 
 def projection(state, world):
     org = state["setup"]["org"]
     market = state["market"]
     return dict(
+        scholars=sorted(
+            {
+                r["person"]
+                for r in state["scholarships"].values()
+                if r["start"] <= state["date"] < r["end"]
+            }
+        ),
         brands=[
             dict(
                 b,
                 **targets(state, world, b),
+                budget_cents=market["budgets"][b["id"]],
                 remaining_estimate_cents=funds(state, b["id"]) // 100000 * 100000,
             )
             for b in participants(world).values()

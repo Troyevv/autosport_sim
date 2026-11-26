@@ -52,6 +52,8 @@ def statement(state, world, db, cid, scope="organization"):
     scopes = [org, PERSONAL, *wallets[1:]]
     if state["setup"]["role"] == "owner":
         scopes.append("consolidated")
+    if "capital" in state and state["setup"]["role"] in ("owner", "manufacturer"):
+        scopes.append("owner:" + org)
     if scope == "organization":
         scope = org
     if scope not in scopes:
@@ -74,24 +76,35 @@ def statement(state, world, db, cid, scope="organization"):
     income = expense = opening = 0
     activity = defaultdict(int)
     history = defaultdict(int)
+    breakdown = defaultdict(lambda: dict(income_cents=0, expense_cents=0))
+    direct = defaultdict(int)
+
+    def operation(source, value):
+        nonlocal income, expense
+        inc = max(0, value)
+        out = max(0, -value)
+        income += inc
+        expense += out
+        breakdown[source]["income_cents"] += inc
+        breakdown[source]["expense_cents"] += out
+        activity[source] += value
+
     for p in journal:
         value, source = p["delta_cents"], p["source"]
         history[p["date"][:7]] += value
         if source == "opening":
             opening += value
         if source not in CAPITAL and not p["key"].startswith(("due:", "refund:")):
-            income += max(0, value)
-            expense += max(0, -value)
-            activity[source] += value
+            direct[(p["date"], p["key"], source)] += value
+    for (_, _, source), value in direct.items():
+        operation(source, value)
 
     for entry in state.get("capital", {}).get("history", []):
         if entry["org"] in accounts and entry.get("profit_cents"):
             value = entry["profit_cents"]
-            income += max(0, value)
-            expense += max(0, -value)
-            activity[
-                "depreciation" if entry["kind"] == "depreciation" else "disposal"
-            ] += value
+            operation(
+                "depreciation" if entry["kind"] == "depreciation" else "disposal", value
+            )
 
     def direction(row):
         return int(row["recipient"] in accounts) - int(row["payer"] in accounts)
@@ -105,9 +118,7 @@ def statement(state, world, db, cid, scope="organization"):
             and r["status"] != "cancelled"
         ):
             value = direction(r) * r["amount_cents"]
-            income += max(0, value)
-            expense += max(0, -value)
-            activity[r["category"]] += value
+            operation(r["category"], value)
             margins[r["contract"]] += value
     schedule = [
         dict(
@@ -139,9 +150,7 @@ def statement(state, world, db, cid, scope="organization"):
                         overdue=True,
                     )
                 )
-                income += max(0, sign * amt)
-                expense += max(0, -sign * amt)
-                activity["driver-backing"] += sign * amt
+                operation("driver-backing", sign * amt)
     forecast = []
     base = low = high = cash
     first = date.fromisoformat(day).replace(day=1)
@@ -189,6 +198,49 @@ def statement(state, world, db, cid, scope="organization"):
                             overdue=False,
                         )
                     )
+        if org in accounts and "estate" in state:
+            from .facilities import quote
+
+            for a in state["estate"]["assets"].values():
+                if (
+                    a["owner"] == org
+                    and a["ready"] <= due
+                    and a["status"] != "receivership"
+                ):
+                    flows.append(
+                        dict(
+                            id="forecast:maintenance:" + a["id"] + ":" + due,
+                            category="infrastructure",
+                            contract=a["id"],
+                            due=due,
+                            amount_cents=-quote(a["kind"], a["country"])[
+                                "monthly_cents"
+                            ]
+                            * a["level"],
+                            overdue=False,
+                        )
+                    )
+        if org in accounts and org in state.get("economy", {}).get("licenses", {}):
+            months = defaultdict(int)
+            for entry in journal:
+                if entry["source"] == "licensing" and entry["key"].startswith(
+                    "retail:"
+                ):
+                    months[entry["date"][:7]] += entry["delta_cents"]
+            if months:
+                recent = sorted(months)[
+                    -(3 if officer and officer["skill"] >= 50 else 1) :
+                ]
+                flows.append(
+                    dict(
+                        id="forecast:licensing:" + due,
+                        category="licensing",
+                        contract="distribution",
+                        due=due,
+                        amount_cents=sum(months[m] for m in recent) // len(recent),
+                        overdue=False,
+                    )
+                )
         fixed = sum(
             r["amount_cents"]
             for r in schedule
@@ -223,7 +275,8 @@ def statement(state, world, db, cid, scope="organization"):
         + sum(
             direction(r) * r["amount_cents"]
             for r in terms
-            if r["status"] == "pending" and r["earned"] <= day
+            if r["status"] == "pending"
+            and (r["earned"] <= day or r["category"] == "principal")
         )
         + sum(
             r["amount_cents"]
@@ -237,6 +290,7 @@ def statement(state, world, db, cid, scope="organization"):
         profit_cents=income - expense,
         overdue_cents=overdue,
         activity=dict(activity),
+        breakdown=dict(breakdown),
         contracts=dict(margins),
         in_kind=[
             r
@@ -244,6 +298,15 @@ def statement(state, world, db, cid, scope="organization"):
             if r["payer"] in accounts or r["recipient"] in accounts
         ],
         forecast=forecast,
+        recommendation=(
+            "Согласовать график погашения просроченных обязательств."
+            if overdue
+            else "Перенести необязательные расходы или привлечь финансирование до "
+            + next(r["date"] for r in forecast if r["negative_cents"] < 0)
+            + "."
+            if any(r["negative_cents"] < 0 for r in forecast)
+            else "Сохранить денежный резерв на ближайшие выплаты по календарю."
+        ),
         width=width,
         officer=officer,
         candidates=list(employees.values()),

@@ -272,6 +272,12 @@ def apply(state, catalog, action, payload=None):
         capital.command(state, catalog, action, payload)
         state["revision"] += 1
         return
+    from .finance import economy
+
+    if action in economy.ORDERS and "economy" in state:
+        economy.command(state, catalog, action, payload)
+        state["revision"] += 1
+        return
     if action in budget.ORDERS and "control" in state:
         budget.command(state, catalog, action, payload)
     elif action == "finance-mount" and "market" in state:

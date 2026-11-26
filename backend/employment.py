@@ -45,6 +45,8 @@ def post(state, org, key, amount, source):
 
         if amount < 0 and -amount > finance.available(state, org):
             raise RuleError("Недостаточно свободных средств.", 409)
+        if "economy" in state and source in ("signing", "severance") and amount < 0:
+            finance.post(state, "economy:households", org + ":" + key, -amount, source)
         return finance.post(state, org, key, amount, source)
     a = state["accounts"][org]
     if a["cash_cents"] + amount < 0:
@@ -361,6 +363,13 @@ def dates(state):
 
 
 def advance(state, catalog, target):
+    from .finance import indexed
+
+    with indexed(state):
+        advance_dates(state, catalog, target)
+
+
+def advance_dates(state, catalog, target):
     # Settle the previous calendar month before activating today's appointments.
     while state["date"] < target:
         current = date.fromisoformat(state["date"])
@@ -389,14 +398,18 @@ def advance(state, catalog, target):
             from .finance import budget
 
             budget.tick(state, catalog)
-        if "capital" in state:
-            from .finance import capital
-
-            capital.tick(state, catalog)
         if "estate" in state:
             from .finance import facilities
 
             facilities.tick(state, catalog)
+        if "capital" in state:
+            from .finance import capital
+
+            capital.tick(state, catalog)
+        if "economy" in state:
+            from .finance import economy
+
+            economy.tick(state, catalog)
         backing.condition_review(state, day)
         for offer in sorted(
             state["offers"].values(),
@@ -517,7 +530,7 @@ def assigned_actor(state, actor, day):
 
 def propose(state, catalog, args, org, role):
     day = state["date"]
-    if day >= HORIZON:
+    if day >= HORIZON and "economy" not in state:
         raise RuleError("Календарь сезона завершён.")
     if args["start"] < shifted(day, 2):
         raise RuleError("На рассмотрение предложения нужно два дня.")

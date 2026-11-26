@@ -13,9 +13,12 @@ const labels: Record<string, string> = {
   restructure: 'Реструктурировать',
   asset: 'Сделка с объектом',
   'program-sale': 'Сделка с программой',
+  'program-launch': 'Учредить программу',
 }
 const events: Record<string, string> = {
-  depreciation:'Амортизация',
+  depreciation: 'Амортизация',
+  resize: 'Сокращение затрат на персонал',
+  incorporate: 'Учреждение программы',
   repay: 'Погашение',
   sale: 'Смена владельца',
   issue: 'Дополнительная эмиссия',
@@ -73,6 +76,7 @@ export function Capital({ c, world, updateCareer }: SectionProps & { updateCaree
       restructure: { loan: target },
       asset: { asset: target, side },
       'program-sale': { program: target, side },
+      'program-launch': { series: f.get('series'), amount_cents: amt },
     }
     if (await order.send('finance-' + action, payload[action])) set('')
   }
@@ -158,7 +162,15 @@ export function Capital({ c, world, updateCareer }: SectionProps & { updateCaree
               </div>
             ))}
           </Panel>
-          <Panel title="Активы и программы">
+          <Panel
+            title="Активы и программы"
+            action={
+              owner &&
+              c.role !== 'manufacturer' && (
+                <Button onClick={() => open('program-launch')}>Учредить программу</Button>
+              )
+            }
+          >
             {[
               ...v.assets.map((a) => ({
                 id: a.id,
@@ -203,7 +215,7 @@ export function Capital({ c, world, updateCareer }: SectionProps & { updateCaree
       {action && (
         <Dialog title={labels[action]} onClose={() => set('')}>
           <form className="finance-form" onSubmit={submit}>
-            {['invest', 'dividend', 'loan'].includes(action) && (
+            {['invest', 'dividend', 'loan', 'program-launch'].includes(action) && (
               <label>
                 Сумма, EUR
                 <input name="amount" type="number" min=".01" step=".01" required />
@@ -213,6 +225,22 @@ export function Capital({ c, world, updateCareer }: SectionProps & { updateCaree
               <label>
                 Срок, месяцев
                 <input name="months" type="number" defaultValue="12" min="2" max="60" />
+              </label>
+            )}
+            {action === 'program-launch' && (
+              <label>
+                Целевой чемпионат
+                <select required name="series">
+                  {Object.entries(world.championships)
+                    .filter(([id]) => !v?.programs.some((p) => p.org === c.org && p.series === id))
+                    .map(([k, r]) => (
+                      <option key={k} value={k}>
+                        {r.name}
+                      </option>
+                    ))}
+                </select>
+                Средства будут переведены на счёт программы. Выход на старт требует отдельного решения
+                организатора.
               </label>
             )}
             {action === 'invest' && (

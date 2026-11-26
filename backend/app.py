@@ -357,3 +357,13 @@ def capital_overview(cid: str):
 
     with storage.transaction() as db:
         return projection(storage.checkpoint(db, cid), WORLD)
+
+
+@app.get("/api/careers/{cid}/economy")
+def economy_overview(cid: str):
+    from .finance.economy import projection
+    from .catalog import WORLD
+    from . import storage
+
+    with storage.transaction() as db:
+        return projection(storage.checkpoint(db, cid), WORLD)

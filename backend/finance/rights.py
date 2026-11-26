@@ -207,12 +207,12 @@ def audit(state, world, deal, only_entry=None):
     return result
 
 
-def mount(state, world, args):
+def mount(state, world, args, *, org=None):
     order = Mount.model_validate(args)
     d = state["market"]["contracts"].get(order.contract)
     if (
         not d
-        or d["org"] != state["setup"]["org"]
+        or d["org"] != (org or state["setup"]["org"])
         or not market.active(d, state["date"])
     ):
         raise RuleError("Размещение доступно действующей команде рекламодателя.", 403)

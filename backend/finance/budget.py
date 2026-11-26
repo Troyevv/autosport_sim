@@ -7,7 +7,7 @@ from pydantic import Field, model_validator
 from ..domain import RuleError, occupant_on
 from ..engineering import resource_scope, project_target
 from ..staff_input import Fields, Id, Day
-from . import available, Instalment, Schedule, register, settle
+from . import pending, available, Instalment, Schedule, register, settle
 
 Part = Literal[
     "personnel", "engineering", "operations", "commercial", "facilities", "reserve"
@@ -151,7 +151,8 @@ def attributable_pay(state, world, org, day):
 def observe(state, world, p):
     source = p["source"]
     delta = p["delta_cents"]
-    org = p["org"].split(":")[0]
+    program = state.get("capital", {}).get("programs", {}).get(p["org"])
+    org = program["org"] if program else p["org"].split(":")[0]
     if (
         org not in state["accounts"]
         or source not in GROUPS
@@ -187,6 +188,7 @@ def observe(state, world, p):
                 pid == state["player_id"]
             ):
                 continue
+            amount = -amount if p["key"].startswith("refund:") else amount
             if role == "driver":
                 data["drivers"] += amount
             else:
@@ -294,9 +296,16 @@ def report(state, world, org, year):
     actual = state["control"]["actual"].get(org, {}).get(year, {})
     reserved = dict.fromkeys(PARTS, 0)
     accrued = 0
-    for row in state["finance"]["instalments"].values():
+    accrued_drivers = 0
+    staff_with_dues = dict(actual.get("staff", {}))
+    rule = cap_rule(world, org, year)
+    for row in pending(state):
         if (
-            row["payer"].split(":")[0] != org
+            state.get("capital", {})
+            .get("programs", {})
+            .get(row["payer"], {})
+            .get("org", row["payer"].split(":")[0])
+            != org
             or row["status"] != "pending"
             or row["earned"][:4] != year
         ):
@@ -306,13 +315,31 @@ def report(state, world, org, year):
             reserved[part] += row["amount_cents"]
         if row["category"] in RELEVANT:
             accrued += row["amount_cents"]
+        if (
+            rule
+            and row["category"] == "staff-payroll"
+            and row["id"].startswith("payroll-")
+        ):
+            for pid, role, amount in attributable_pay(state, world, org, row["due"]):
+                if (row["recipient"] == "person:player") != (pid == state["player_id"]):
+                    continue
+                if role == "driver":
+                    accrued_drivers += amount
+                else:
+                    staff_with_dues[pid] = staff_with_dues.get(pid, 0) + amount
     counted = (
         actual.get("relevant", 0)
         - actual.get("drivers", 0)
         - sum(sorted(actual.get("staff", {}).values(), reverse=True)[:3])
     )
-    rule = cap_rule(world, org, year)
     if rule:
+        accrued = max(
+            0,
+            accrued
+            - accrued_drivers
+            - sum(sorted(staff_with_dues.values(), reverse=True)[:3])
+            + sum(sorted(actual.get("staff", {}).values(), reverse=True)[:3]),
+        )
         decision = state["control"].get("determinations", {}).get(f"{org}:{year}")
         if decision:
             reg = world["engineering"]["cost_cap"]
@@ -408,6 +435,12 @@ def decide(state, world, org, order, actor):
     if (order.allocations is not None) != (order.response == "adjust"):
         raise RuleError("Корректировка требует пересмотренной сметы.")
     amounts = order.allocations or r["allocations"]
+    old = (
+        state["control"]["plans"]
+        .get(org, {})
+        .get(str(r["year"]), {})
+        .get("allocations")
+    )
     if order.response != "reject":
         if set(amounts) != set(PARTS) or not sum(amounts.values()):
             raise RuleError("Неполная смета.")
@@ -435,6 +468,16 @@ def decide(state, world, org, order, actor):
         decision_reason=order.reason,
         approved_allocations=amounts if order.response != "reject" else None,
     )
+    if amounts != old:
+        for participant in sorted({r["actor"], actor}):
+            negotiation_activity(
+                state,
+                world,
+                org,
+                participant,
+                r["id"] + ":decision",
+                "failed" if order.response == "reject" else "completed",
+            )
 
 
 def office(state, org, role):
@@ -621,3 +664,34 @@ def close_period(state, world, org, year):
         state["accounts"][org]["development_budget_cents"] = plan["allocations"][
             "engineering"
         ]
+
+
+def negotiation_activity(state, world, org, pid, reference, result):
+    if "growth_since" not in state or pid not in state["people"]:
+        return
+    from ..professional import Activity, record
+
+    role = state["people"][pid]["position"]
+    skills = {
+        "owner": "Финансовое планирование",
+        "manager": "Бюджет",
+        "manufacturer": "Переговоры",
+    }
+    if role not in skills or office(state, org, role) != pid:
+        return
+    record(
+        state,
+        world,
+        Activity(
+            event_id=reference,
+            person=pid,
+            role=role,
+            org=org,
+            date=state["date"],
+            kind="commercial",
+            skills=[skills[role]],
+            difficulty=60,
+            result=result,
+            context={},
+        ),
+    )

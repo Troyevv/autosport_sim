@@ -43,8 +43,14 @@ MIGRATIONS = [
     [],  # Finance opens previously unjournaled balances on the activation revision.
     [],  # Commercial market activation.
     [],  # Annual mandates and ledger-derived cost aggregates.
-    [],  # capital activation.
     [],  # facilities activation.
+    [],  # capital activation.
+    [],  # economy activation.
+    [
+        """CREATE INDEX IF NOT EXISTS career_listing ON career (
+        json_extract(state,'$.setup'), json_extract(state,'$.date'),
+        json_extract(state,'$.revision'), id)"""
+    ],
 ]
 
 
@@ -177,6 +183,15 @@ def transaction(write=False):
                     cid = row["id"]
                     state = checkpoint(db, cid)
                     capital.initialize(state, WORLD)
+                    store(db, cid, state)
+            if idx == 15:
+                from .finance import economy
+                from .catalog import WORLD
+
+                for row in db.execute("SELECT id FROM career").fetchall():
+                    cid = row["id"]
+                    state = checkpoint(db, cid)
+                    economy.initialize(state, WORLD)
                     store(db, cid, state)
             db.execute(f"PRAGMA user_version={idx + 1}")
         yield db

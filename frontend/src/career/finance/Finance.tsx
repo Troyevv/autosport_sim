@@ -10,6 +10,7 @@ import './finance.css'
 
 const views = [
   ['overview', 'Обзор'],
+  ['results', 'Доходы и расходы'],
   ['journal', 'Денежные операции'],
   ['terms', 'Обязательства'],
   ['forecast', 'Прогноз'],
@@ -39,8 +40,9 @@ export function Finance({ c, world, updateCareer }: SectionProps & { updateCaree
   const name = (id: string) => {
     if (id === 'person:player') return 'Личный капитал · ' + c.name
     if (id === 'consolidated') return 'Группа · консолидация'
-    if(id.startsWith('academy:')) return c.academies.find(a=>a.id===id.slice(8))?.name??id
-    if (id.startsWith('group:')) return 'Средства владельца'
+    if (id.startsWith('academy:')) return c.academies.find((a) => a.id === id.slice(8))?.name ?? id
+    if (id.startsWith('group:')) return 'Счёт группы'
+    if (id.startsWith('owner:')) return 'Капитал собственника'
     if (id === c.org) return world.organizations[c.org].name
     return world.championships[id.slice(c.org.length + 1)]?.name ?? id
   }
@@ -93,6 +95,9 @@ export function Finance({ c, world, updateCareer }: SectionProps & { updateCaree
     )
     .slice()
     .reverse()
+  const [journalPage, setJournalPage] = useState(0)
+  const lastPage = Math.max(0, Math.ceil(journal.length / 40) - 1),
+    page = Math.min(lastPage, journalPage)
   const forecast = data?.forecast ?? []
   const max = Math.max(1, ...forecast.map((p) => Math.abs(p.base_cents)))
   const journalTable = (rows: Statement['journal']) => (
@@ -189,6 +194,27 @@ export function Finance({ c, world, updateCareer }: SectionProps & { updateCaree
               <Panel title="Последние операции">{journalTable(data.journal.slice(-5).reverse())}</Panel>
             </>
           )}
+          {tab === 'results' && (
+            <Panel title="Операционные статьи">
+              {Object.keys(data.breakdown).length ? (
+                <Table
+                  label="Начисления по статьям"
+                  columns={['Статья', 'Доходы', 'Расходы', 'Результат']}
+                  rows={Object.entries(data.breakdown).map(([k, r]) => ({
+                    id: k,
+                    cells: [
+                      category(k),
+                      money(r.income_cents),
+                      money(r.expense_cents),
+                      money(r.income_cents - r.expense_cents),
+                    ],
+                  }))}
+                />
+              ) : (
+                <p className="panel-body">На выбранном счёте ещё нет доходов и расходов.</p>
+              )}
+            </Panel>
+          )}
           {tab === 'journal' && (
             <Panel title="Журнал операций">
               <div className="finance-tools">
@@ -213,7 +239,22 @@ export function Finance({ c, world, updateCareer }: SectionProps & { updateCaree
                 </label>
               </div>
               {journal.length ? (
-                journalTable(journal)
+                <>
+                  {journalTable(journal.slice(page * 40, page * 40 + 40))}
+                  {lastPage > 0 && (
+                    <div className="finance-actions">
+                      <Button disabled={!page} onClick={() => setJournalPage(page - 1)}>
+                        Назад
+                      </Button>
+                      <span>
+                        {page + 1} / {lastPage + 1}
+                      </span>
+                      <Button disabled={page === lastPage} onClick={() => setJournalPage(page + 1)}>
+                        Далее
+                      </Button>
+                    </div>
+                  )}
+                </>
               ) : (
                 <p className="panel-body muted">За выбранный период проводок нет.</p>
               )}
@@ -264,6 +305,7 @@ export function Finance({ c, world, updateCareer }: SectionProps & { updateCaree
                 <Facts
                   items={[
                     ['Финансовый директор', data.officer?.name ?? 'Не назначен'],
+                    ['Рекомендация', data.recommendation],
                     ['Разброс по персоналу и финансированию мест', '±' + data.width + '%'],
                     [
                       'Первый прогнозируемый дефицит',
@@ -274,7 +316,8 @@ export function Finance({ c, world, updateCareer }: SectionProps & { updateCaree
                 />
                 <p className="panel-body muted">
                   Базовый сценарий учитывает даты действующих контрактов, зарплаты коллективов и сроки
-                  платежей. Новые сделки в расчёт не входят.
+                  платежей. Действующая дистрибуция оценивается по полученным роялти, содержание объектов — по
+                  расходам на обслуживание.
                 </p>
               </Panel>
             </>

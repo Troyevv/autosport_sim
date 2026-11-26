@@ -233,6 +233,16 @@ export function Commercial({ world, c, updateCareer }: SectionProps & { updateCa
                 <Facts
                   items={[
                     ['Клиент', name(d.org)],
+                    [
+                      'Статус партнёрства',
+                      {
+                        client: 'Клиент',
+                        technical: 'Технический партнёр',
+                        commercial: 'Коммерческий партнёр',
+                        priority: 'Приоритетный партнёр',
+                        works: 'Заводская программа',
+                      }[d.partnership ?? 'client'],
+                    ],
                     ['Цена после скидки', money(d.sale_cents)],
                     ['Скидка', money(d.discount_cents)],
                     ...(c.org === d.sponsor ? [['Себестоимость', money(d.cost_cents)] as const] : []),
@@ -241,6 +251,14 @@ export function Commercial({ world, c, updateCareer }: SectionProps & { updateCa
                     ['Совместная разработка', d.development ? 'По регламенту' : 'Нет'],
                   ]}
                 />
+                {d.status === 'signed' && (
+                  <Button
+                    disabled={order.busy}
+                    onClick={() => void order.send('finance-end-supply', { contract: d.id })}
+                  >
+                    Расторгнуть поставку
+                  </Button>
+                )}
               </div>
             ))}
             {!data.supplies.length && (
@@ -284,6 +302,7 @@ export function Commercial({ world, c, updateCareer }: SectionProps & { updateCa
             c={c}
             world={world}
             brand={brand}
+            scholars={data?.scholars ?? []}
             busy={order.busy}
             initial={counter ?? undefined}
             submit={submit}

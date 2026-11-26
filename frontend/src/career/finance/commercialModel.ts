@@ -12,7 +12,14 @@ export type Brand = {
   min_popularity: number
   remaining_estimate_cents: number
 }
-export type Right = { zone: string; share: number; shared: boolean; offset?:number; priority?:number; color?:string|null }
+export type Right = {
+  zone: string
+  share: number
+  shared: boolean
+  offset?: number
+  priority?: number
+  color?: string | null
+}
 export type Terms = {
   sponsor: string
   org: string
@@ -55,6 +62,7 @@ export type Offer = Bid & {
 }
 export type Contract = Terms & { id: string; status: string; source: string | null }
 export type Market = {
+  scholars: string[]
   brands: Brand[]
   offers: Offer[]
   contracts: Contract[]
@@ -65,6 +73,7 @@ export type Market = {
     product: string
     sale_cents: number
     discount_cents: number
+    partnership?: string
     cost_cents: number
     support: boolean
     testing: boolean

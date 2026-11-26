@@ -4,8 +4,8 @@ from typing import Literal
 from pydantic import Field
 from ..staff_input import Day, Fields, Id
 from ..domain import RuleError
-from . import budget, facilities, capital
-from .market import Appearance, appearance
+from . import budget, facilities, capital, economy
+from .market import Appearance, appearance, Homologation, homologate
 from .series import PromotionAwards, award
 from . import Instalment, Schedule, balance, register, settle, cancel
 
@@ -47,6 +47,8 @@ PRODUCERS = {
     **budget.PRODUCERS,
     **facilities.PRODUCERS,
     **capital.PRODUCERS,
+    **economy.PRODUCERS,
+    "finance-supplier-admission": Homologation,
     "finance-appearance": Appearance,
     "finance-promotion-awards": PromotionAwards,
     "finance-confirm": CommercialEvidence,
@@ -106,7 +108,16 @@ def participation(state, world, entry_id, day):
 
 def confirm(state, world, action, payload):
     event = PRODUCERS[action].model_validate(payload)
-    if isinstance(event, (capital.Admission, capital.OrganizationChange)):
+    if isinstance(event, Homologation):
+        homologate(state, world, event)
+    elif isinstance(event, economy.RegionalReceipt):
+        economy.regional(state, world, event)
+    elif isinstance(event, economy.SupplierWork):
+        economy.supplier_work(state, world, event)
+    elif isinstance(
+        event,
+        (capital.Admission, capital.OrganizationChange, capital.ProgramRegistration),
+    ):
         capital.integration(state, world, event)
     elif isinstance(event, facilities.Access):
         facilities.access(state, world, event)
