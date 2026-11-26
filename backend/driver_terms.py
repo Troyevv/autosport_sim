@@ -126,6 +126,14 @@ def assessment(state, p, org, status, previous):
     return delta * (5 + max(0, resolve) // 10) - min(15, complaints * 4), None
 
 
+def compatible(seat, status, peer, other):
+    if seat["entry"] == peer["entry"]:
+        return status == other
+    if "equal" in (status, other):
+        return status == other
+    return not (status == other == "first")
+
+
 def validate_offer(state, world, seat, offer):
     status = offer.get("driver_status")
     if seat.get("duty") == "relief":
@@ -150,15 +158,7 @@ def validate_offer(state, world, seat, offer):
             ):
                 continue
             other = row.get("driver_status", "equal")
-            if (
-                peer["entry"] == seat["entry"]
-                and status != other
-                or peer["entry"] != seat["entry"]
-                and (
-                    ("equal" in (status, other) and status != other)
-                    or status == other == "first"
-                )
-            ):
+            if not compatible(seat, status, peer, other):
                 raise RuleError(
                     "Условия расходятся с обещаниями экипажу. Согласуйте иерархию состава."
                 )
@@ -215,8 +215,10 @@ def review(state, world, request, org):
     for s, row, new, _ in changes:
         for peer, _ in rows:
             for future in state["seats"][peer["id"]]:
-                if future["start"] > day and (
-                    not row["end"] or future["start"] < row["end"]
+                if (
+                    future["start"] > day
+                    and (not row["end"] or future["start"] < row["end"])
+                    and not compatible(s, new, peer, future["driver_status"])
                 ):
                     raise RuleError(
                         "Уже подписан будущий договор. Сначала согласуйте сроки."
@@ -248,7 +250,9 @@ class ResourceOption(Fields):
     ]  # Homologation, equal supply, parc ferme and fit cleared upstream
 
 
-def recommend(state, world, seats, options: list[ResourceOption]):
+def recommend(
+    state, world, seats, options: list[ResourceOption], *, resource="specification"
+):
     """Non-mutating handoff for #7. One physical instance per distinct entry."""
     if len({x.instance for x in options}) != len(options):
         raise RuleError("Экземпляр указан дважды.")
@@ -268,6 +272,7 @@ def recommend(state, world, seats, options: list[ResourceOption]):
                 1
                 for h in state["lineup"]["history"]
                 if h.get("favoured_entry") == s["entry"]
+                and h.get("resource") == resource
             )
             entries[s["entry"]] = (r.get("driver_status") != "first", prior, s["entry"])
     available = sorted(
@@ -278,13 +283,31 @@ def recommend(state, world, seats, options: list[ResourceOption]):
             x.instance,
         ),
     )
-    result = {}
+    # Reassign an equivalent instance if it is the only legal fit for another entry.
+    # Earlier priorities retain their best available specification tier.
+    owners = {}
+
+    def assign(entry, seen, required_merit=None):
+        for option in sorted(
+            available, key=lambda opt: (-opt.merit, opt.instance in owners)
+        ):
+            if (
+                entry not in option.allowed_entries
+                or option.instance in seen
+                or required_merit is not None
+                and option.merit != required_merit
+            ):
+                continue
+            seen.add(option.instance)
+            previous = owners.get(option.instance)
+            if previous is None or assign(previous, seen, option.merit):
+                owners[option.instance] = entry
+                return True
+        return False
+
     for entry in sorted(entries, key=entries.get):
-        option = next((x for x in available if entry in x.allowed_entries), None)
-        if option:
-            result[entry] = option.instance
-            available.remove(option)
-    return result
+        assign(entry, set())
+    return {entry: instance for instance, entry in owners.items()}
 
 
 def observe(state, world, fact):
@@ -333,6 +356,7 @@ def observe(state, world, fact):
         and r["reference"] not in resolved
         and r["seat"] == seat["id"]
         and r["date"] >= row["start"]
+        and r["resource"] == fact.resource
         and r["status"] == row["driver_status"]
     ]
     history(
@@ -356,12 +380,29 @@ def observe(state, world, fact):
         r["due"] and r["due"] < fact.date and r["resource"] == fact.resource
         for r in previous
     )
+    opportunities_received = sum(
+        1
+        for r in state["lineup"]["history"]
+        if r["kind"] == "difference"
+        and r["status"] == "equal"
+        and not r["exception"]
+        and r["reference"] not in resolved
+        and r["resource"] == fact.resource
+        and r["entry"] == other["entry"]
+        and r["favoured_entry"] == seat["entry"]
+        and r["date"] >= row["start"]
+    )
     if (
         fact.exception
         and not overdue
         or row["driver_status"] == "second"
         or row["driver_status"] == "equal"
-        and not any(not r["exception"] for r in previous)
+        and sum(
+            1
+            for r in previous
+            if not r["exception"] and r["favoured_entry"] == other["entry"]
+        )
+        <= opportunities_received
         and not overdue
     ):
         return

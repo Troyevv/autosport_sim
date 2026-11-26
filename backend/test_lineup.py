@@ -419,3 +419,39 @@ def test_manager_mandate_and_strategy_handoff():
     assert priority(championship_priority=True) == "championship"
     assert priority(championship_priority=True, risk_acceptable=False) == "hold"
     assert priority(permitted=False) == "hold"
+
+
+def test_alternating_equal_priority_and_broken_first_driver_agreement():
+    c = create()
+    left, right = grid()
+    args = dict(
+        date=c["date"],
+        resource="spare",
+        reason="Выдан единственный запасной комплект.",
+        evidence="Накладная",
+        severity=1,
+    )
+    for index, (seat, peer) in enumerate(
+        [(left, right), (right, left), (left, right), (right, left)]
+    ):
+        c = run(
+            c,
+            "driver-decision",
+            **args,
+            seat=seat["id"],
+            favoured_seat=peer["id"],
+            reference=f"spare-{index}",
+        )
+    assert not any(r["kind"] == "grievance" for r in driver_lineup(c["id"])["history"])
+    c = run(
+        c, "driver-review", seat=left["id"], status="first", compensation_cents=1000000
+    )
+    c = run(
+        c,
+        "driver-decision",
+        **args,
+        seat=left["id"],
+        favoured_seat=right["id"],
+        reference="spare-first",
+    )
+    assert driver_lineup(c["id"])["history"][0]["kind"] == "grievance"
