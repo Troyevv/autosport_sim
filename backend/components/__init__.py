@@ -59,7 +59,15 @@ def remaining(state, iid):
 
 
 def compatible(
-    state, world, entry, drawing, *, year=None, for_review=False, planning=False
+    state,
+    world,
+    entry,
+    drawing,
+    *,
+    year=None,
+    for_review=False,
+    planning=False,
+    rollout=False,
 ):
     car = world["cars"][entry["car"]]
     slot = drawing["slot"]
@@ -122,6 +130,15 @@ def compatible(
             drawing["manufacturer"],
         ):
             return False
+        if "manufacturer" in state and not (for_review or rollout):
+            from ..manufacturer.rollout import market_key
+
+            key = market_key(
+                str(year or state["date"][:4]), entry, drawing["manufacturer"], slot
+            )
+            standard = state["manufacturer"]["standards"].get(key)
+            if standard and drawing["id"] != standard:
+                return False
         return supplier_eligible(
             state,
             world,

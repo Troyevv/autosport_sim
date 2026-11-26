@@ -1,3 +1,4 @@
+import { submitCareer } from './createCareer'
 import { join } from 'node:path'
 import { test, expect } from '@playwright/test'
 
@@ -10,7 +11,7 @@ test('Штаб, брифинг, загрузка и перенос сохран�
     .getByRole('combobox', { name: 'Организация', exact: true })
     .selectOption('team-mclaren-formula-1-team')
   await page.getByLabel('Seed мира').fill('42')
-  await page.getByRole('button', { name: 'Создать карьеру' }).click()
+  await submitCareer(page)
   await expect(page.getByRole('heading', { name: 'Штаб команды' })).toBeVisible()
   const original = page.url()
   const next = page.getByRole('button', { name: 'Продолжить' })
@@ -71,7 +72,7 @@ test('Владелец DTM и шинный поставщик WEC работаю
   await page.getByRole('combobox', { name: 'Чемпионат' }).selectOption('dtm')
   await page.getByRole('combobox', { name: 'Организация' }).selectOption('team-abt-sportsline')
   await page.getByLabel('Имя игрока').fill('Алекс')
-  await page.getByRole('button', { name: 'Создать карьеру' }).click()
+  await submitCareer(page)
   await expect(page.getByRole('heading', { name: 'Штаб владельца' })).toBeVisible()
   const world = await (await page.request.get('/api/world')).json()
   const driver = world.names[world.entries['dtm-1'].crew[0]]
@@ -89,7 +90,7 @@ test('Владелец DTM и шинный поставщик WEC работаю
   await page.getByRole('combobox', { name: 'Чемпионат' }).selectOption('wec')
   await page.getByRole('combobox', { name: 'Организация' }).selectOption('supplier-goodyear')
   await page.getByLabel('Имя игрока').fill('Ирина')
-  await page.getByRole('button', { name: 'Создать карьеру' }).click()
+  await submitCareer(page)
   await expect(page.getByRole('heading', { name: 'Штаб производителя' })).toBeVisible()
   await expect(page.getByRole('main')).toContainText('Шины')
   await expect(page.getByRole('main')).toContainText('Iron Dames')

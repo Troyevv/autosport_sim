@@ -186,9 +186,15 @@ def certify(state, world, entry, year, version, actor):
         and not p["report"]["detected"]
         for p in state["development"]["projects"].values()
     )
+    owner = entry["org"]
+    if "manufacturer" in state and d["manufacturer"] != owner and not original:
+        from ..manufacturer.context import agreement
+
+        terms = agreement(state, world, entry, d["slot"])
+        if terms and terms["maker"] == d["manufacturer"]:
+            owner = terms["maker"]
     if not tested or not (
-        original
-        or (released(state, entry["org"], version) and d["regulation"] == rule["id"])
+        original or (released(state, owner, version) and d["regulation"] == rule["id"])
     ):
         raise RuleError(
             "Для омологации требуется допущенный чертёж и протокол проверки в целевой сборке."

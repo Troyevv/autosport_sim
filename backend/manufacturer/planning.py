@@ -129,7 +129,7 @@ def review(state, world, org, ordinal):
                 "decline",
                 "Срок договорных полномочий по этому обращению завершён.",
             )
-        elif r["kind"] in ("consult", "problem", "warranty"):
+        elif r["kind"] in ("consult", "problem", "warranty", "data"):
             assign_advisor(state, world, r)
             report = diagnosis(state, world, r)
             choice = (

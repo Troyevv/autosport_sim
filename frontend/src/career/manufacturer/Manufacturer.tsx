@@ -42,6 +42,7 @@ export function Manufacturer({
   updateCareer,
 }: SectionProps & { updateCareer: (c: Career) => void }) {
   const [quantity, setQuantity] = useState(1)
+  const [caseKind, setCaseKind] = useState('change')
   const maker = c.role === 'manufacturer'
   const request = usePersonnel<Desk>('careers/' + c.id + '/manufacturer', c.revision)
   const orders = useOrder(c, updateCareer, 'manufacturer'),
@@ -119,6 +120,7 @@ export function Manufacturer({
           {label(r.kind)} · {label(r.objective)}
         </h3>
         <p>{r.message}</p>
+        {r.reference && <p>Переданный протокол · {r.reference}</p>}
         <p>
           {label(r.status)}
           {r.reason && ' · ' + r.reason}
@@ -546,14 +548,32 @@ export function Manufacturer({
                   >
                     {clientSelect}
                     <Field name="Вид обращения">
-                      <select name="kind">
+                      <select
+                        name="kind"
+                        value={tab === 'warranty' ? 'warranty' : caseKind}
+                        onChange={(e) => setCaseKind(e.target.value)}
+                      >
                         {options(
                           tab === 'warranty'
                             ? ['warranty']
-                            : ['change', 'next', 'consult', 'problem', 'warranty'],
+                            : ['change', 'next', 'consult', 'problem', 'warranty', 'data'],
                         )}
                       </select>
                     </Field>
+                    {tab !== 'warranty' && caseKind === 'data' && (
+                      <Field name="Разрешённый протокол">
+                        <select name="reference" required key={client.entry + client.axis}>
+                          {!client.shareable.length && (
+                            <option value="">Нет доступных измерений по договору</option>
+                          )}
+                          {client.shareable.map((f) => (
+                            <option key={f.reference} value={f.reference}>
+                              {f.day} · {f.label}
+                            </option>
+                          ))}
+                        </select>
+                      </Field>
+                    )}
                     <Field name="Приоритет клиента">
                       <select name="objective">{options(d.targets[client.axis])}</select>
                     </Field>

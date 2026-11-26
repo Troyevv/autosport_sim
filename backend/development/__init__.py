@@ -77,7 +77,7 @@ def restriction(state, world, entry, axis, *, year=None, reliability=False):
     return None
 
 
-def versions(state, eid, axis):
+def versions(state, eid, axis, world=None):
     fitted = components.spec(state, components.mounting(state, eid)[axis])
     org = OPENING.stock[OPENING.installed[eid][axis]]["org"]
     held = {
@@ -85,12 +85,32 @@ def versions(state, eid, axis):
         for item in state["components"]["inventory"].values()
         if item["org"] == org
     }
+    supplied = set()
+    if (
+        world
+        and "manufacturer" in state
+        and state["components"]["revisions"]
+        and axis in ROLES
+    ):
+        from ..manufacturer.context import agreement
+
+        terms = agreement(state, world, world["entries"][eid], axis)
+        if terms:
+            supplied = {
+                d["id"]
+                for d in state["components"]["revisions"].values()
+                if d["slot"] == axis
+                and d["interface"] == OPENING.interfaces[eid]
+                and d["manufacturer"] == terms["maker"]
+                and released(state, terms["maker"], d["id"])
+            }
     return sorted(
         (
             d
             for pool in (OPENING.specs, state["components"]["revisions"])
             for d in pool.values()
-            if d["family"] == fitted["family"]
+            if d["id"] in supplied
+            or d["family"] == fitted["family"]
             and (
                 d["id"] in OPENING.specs
                 or d["id"] == fitted["id"]
@@ -155,7 +175,7 @@ def commission(state, world, org, key, order, *, target_year=None, objective=Non
     axis = base["slot"]
     if axis not in components.mounting(state, entry["id"]):
         raise RuleError("Узел отсутствует в этой заявке.")
-    allowed = {d["id"] for d in versions(state, entry["id"], axis)}
+    allowed = {d["id"] for d in versions(state, entry["id"], axis, world)}
     maker = "supplier_axis" in entry
     if maker:
         family = OPENING.specs[entry["supplier_baseline"]]["family"]

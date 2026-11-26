@@ -310,6 +310,36 @@ def test_client_conflict_diagnosis_grants_and_npc():
         closed=dict(fact, reference="closed", channel="power"),
         another=dict(fact, reference="another", entry=other["id"]),
     )
+    args = dict(
+        entry=ENTRY,
+        axis="engine",
+        kind="data",
+        objective="thermal",
+        message="Протокол температур",
+    )
+    with pytest.raises(RuleError, match="доступный"):
+        support.open_case(
+            s,
+            WORLD,
+            first["org"],
+            "forbidden",
+            support.Request(**args, reference="closed"),
+        )
+    shared = support.open_case(
+        s, WORLD, first["org"], "packet", support.Request(**args, reference="hot")
+    )
+    assert [f["reference"] for f in support.evidence(s, WORLD, shared)] == ["hot"]
+    support.resolve(
+        s,
+        WORLD,
+        MAKER,
+        support.Resolve(
+            case="packet",
+            decision="advise",
+            reason="Проверить расход теплоносителя и допуск креплений.",
+        ),
+    )
+    assert shared["reviewer"] == row["person"]
     r = support.diagnosis(s, WORLD, hot)
     assert r["causes"]["cooling"] == r["causes"]["integration"] == ["hot"]
     assert not r["causes"]["design"] and not r["covered"] and 0 < r["confidence"] < 100
@@ -318,6 +348,7 @@ def test_client_conflict_diagnosis_grants_and_npc():
     assert {r["status"] for r in s["manufacturer"]["cases"].values()} == {
         "study",
         "decline",
+        "advise",
     }
     assert len(s["research"]["projects"]) == 1 and not s["components"]["revisions"]
     s["date"] = "2025-07-02"
@@ -378,6 +409,7 @@ def test_equal_supply_switch_requires_stock_for_every_entry():
         c["id"] for c in cohort
     }
     assert {i["spec"] for i in s["components"]["inventory"].values()} == {version}
+    assert not components.compatible(s, WORLD, e, base)
     with pytest.raises(RuleError):
         publish(s, WORLD, org, e, version)
 
@@ -461,3 +493,24 @@ def test_controlled_load_cases_use_physical_profile():
     rated, cold, wet = cases
     assert cold["warmup_energy_kj"] > rated["warmup_energy_kj"] == 0
     assert wet["contact_force_n"] / 0.75 < rated["contact_force_n"]
+
+
+def test_npc_runs_repeated_research_design_validation_and_delivery():
+    org = "supplier-xtrac"
+    state = checkpoint(create())
+    for day in range(65):
+        review(state, WORLD, org, day)
+        used = {}
+        for subsystem in ("research", "development"):
+            for project in state[subsystem]["projects"].values():
+                if project["org"] == org and not project["finished"]:
+                    work(state, WORLD, project, used)
+        factory_day(state, WORLD, used)
+        next_day(state)
+    programs = [p for p in state["development"]["projects"].values() if p["org"] == org]
+    assert any(p.get("report") for p in programs)
+    assert any(p.get("disposition") == "withdrawn" for p in programs)
+    assert any(p["kind"] == "design" and p["finished"] for p in programs)
+    assert any(
+        d["supplier"] == org for d in state["manufacturer"]["deliveries"].values()
+    )

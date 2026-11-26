@@ -13,10 +13,11 @@ from .profile import TARGETS
 class Request(Fields):
     entry: Id
     axis: Literal["engine", "transmission", "tyre"]
-    kind: Literal["problem", "change", "next", "consult", "warranty"]
+    kind: Literal["problem", "change", "next", "consult", "warranty", "data"]
     objective: Id
     message: Id
     instance: Id | None = None
+    reference: Id | None = None
 
 
 class Resolve(Fields):
@@ -61,7 +62,7 @@ def open_case(state, world, org, key, order):
     ):
         raise RuleError("Такое обращение по экземпляру уже зарегистрировано.", 409)
     row = dict(
-        **order.model_dump(exclude={"instance"}),
+        **order.model_dump(exclude={"instance"}, exclude_none=True),
         id=key,
         client=org,
         supplier=terms["maker"],
@@ -71,6 +72,13 @@ def open_case(state, world, org, key, order):
         specification=components.spec(state, iid)["id"],
         status="open",
     )
+    if order.kind == "data" or order.reference:
+        if not order.reference or not any(
+            f["reference"] == order.reference for f in evidence(state, world, row)
+        ):
+            raise RuleError(
+                "Для передачи нужен доступный по договору протокол этой заявки.", 403
+            )
     from . import history
 
     history.record(
@@ -118,6 +126,8 @@ def evidence(state, world, row):
         return []
     result = []
     for fact in state["council"]["observations"].values():
+        if row.get("reference") and row["reference"] != fact["reference"]:
+            continue
         if (fact["entry"], fact["instance"], fact["specification"]) != (
             e["id"],
             row["instance"],

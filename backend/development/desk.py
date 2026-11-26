@@ -51,7 +51,7 @@ def projection(state, world):
                             .get(d["manufacturer"], {})
                             .get("name", world["cars"][e["car"]]["constructor"]),
                         )
-                        for d in versions(state, e["id"], axis)
+                        for d in versions(state, e["id"], axis, world)
                     ],
                 )
             )

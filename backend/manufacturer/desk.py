@@ -16,7 +16,7 @@ from .context import (
 )
 from .operating import CASES, operating_point
 from .profile import parameters, TARGETS
-from .support import diagnosis, proposal
+from .support import diagnosis, proposal, evidence
 
 
 def projection(state, world):
@@ -96,6 +96,22 @@ def projection(state, world):
                 )
             if not terms or maker and terms["maker"] != org:
                 continue
+            shareable = []
+            if not maker and state["council"]["observations"]:
+                iid = components.mounting(state, e["id"])[axis]
+                scope = dict(
+                    entry=e["id"],
+                    axis=axis,
+                    instance=iid,
+                    specification=components.spec(state, iid)["id"],
+                    supplier=terms["maker"],
+                    contract=terms["id"],
+                    client=e["org"],
+                )
+                shareable = [
+                    dict(reference=f["reference"], label=f["observation"], day=f["day"])
+                    for f in evidence(state, world, scope)
+                ]
             clients.append(
                 dict(
                     entry=e["id"],
@@ -105,6 +121,7 @@ def projection(state, world):
                     car=world["cars"][e["car"]]["name"],
                     axis=axis,
                     terms=terms,
+                    shareable=shareable,
                     equal=equal_supply(world, e, axis),
                     stock=eligible_stock(state, world, org, e, axis) if maker else [],
                 )

@@ -27,6 +27,7 @@ export const labels: Record<string, string> = {
   problem: 'Техническая проблема',
   consult: 'Консультация',
   change: 'Изменение продукции',
+  data: 'Передача технических данных',
   warranty: 'Гарантия',
   study: 'Назначить исследование',
   advise: 'Дать рекомендацию',
@@ -102,6 +103,7 @@ export interface Client {
   car: string
   axis: string
   terms: { id: string; maker: string; partnership: string; support: boolean }
+  shareable: { reference: string; label: string; day: string }[]
   equal: boolean
   stock: string[]
 }
@@ -123,6 +125,7 @@ export interface Product {
   years: Record<string, string | null>
 }
 export interface Case {
+  reference?: string
   positions?: { name: string; argument: string; stance: string }[]
   id: string
   entry: string

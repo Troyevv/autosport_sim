@@ -189,7 +189,7 @@ def delivery_block(state, world, org, e, iid, *, rollout=False):
     ) != "stock" or not components.serviceable(state, iid):
         return "Экземпляр не прошёл контроль качества."
     if not components.compatible(
-        state, world, e, drawing
+        state, world, e, drawing, rollout=rollout
     ) or not components.installable_revision(state, iid):
         return "Спецификация не допущена для этой машины."
     from .rollout import standard
