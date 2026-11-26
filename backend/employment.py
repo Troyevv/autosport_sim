@@ -323,6 +323,9 @@ def resolve(state, catalog, offer):
 
 
 def dates(state):
+    for asset in state.get("estate", {}).get("assets", {}).values():
+        if asset["status"] in ("construction", "upgrade"):
+            yield asset["ready"]
     for offer in state.get("market", {}).get("offers", {}).values():
         if offer["status"] in ("offered", "counter"):
             yield shifted(offer["date"], 1)
@@ -386,6 +389,10 @@ def advance(state, catalog, target):
             from .finance import budget
 
             budget.tick(state, catalog)
+        if "estate" in state:
+            from .finance import facilities
+
+            facilities.tick(state, catalog)
         backing.condition_review(state, day)
         for offer in sorted(
             state["offers"].values(),

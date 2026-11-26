@@ -8,7 +8,7 @@ from pydantic import BaseModel, ConfigDict, Field, ValidationError, model_valida
 
 from . import domain, storage, finance
 from .finance.events import PRODUCERS
-from .finance import market, rights, budget
+from .finance import market, rights, budget, facilities
 from .livery import GARAGE, PaintOrder
 from .catalog import VERSION, WORLD
 from .roster_upgrade import (
@@ -85,6 +85,7 @@ class Command(Strict):
             **finance.ORDERS,
             **market.ORDERS,
             **budget.ORDERS,
+            **facilities.ORDERS,
             "finance-mount": rights.Mount,
             **PRODUCERS,
         }
@@ -240,6 +241,7 @@ def create(spec):
         finance.activate(state, WORLD)
         market.initialize(state, WORLD)
         budget.initialize(state, WORLD, state["ledger"])
+        facilities.initialize(state, WORLD)
         cid = str(uuid4())
         storage.store(db, cid, state, create=True)
         statistics_personnel.refresh(db, cid, state)
@@ -450,6 +452,8 @@ def import_save(document, *, statistics_records=None):
                 market.initialize(state, catalog)
             if saved.get("control", {}).get("since") == state["revision"]:
                 budget.initialize(state, catalog, state["ledger"])
+            if saved.get("estate", {}).get("since") == state["revision"]:
+                facilities.initialize(state, catalog)
 
         for item in commands:
             apply_migrations()
@@ -485,6 +489,7 @@ def import_save(document, *, statistics_records=None):
         finance.activate(state, WORLD, state["ledger"])
         market.initialize(state, WORLD)
         budget.initialize(state, WORLD, state["ledger"])
+        facilities.initialize(state, WORLD)
     except (KeyError, TypeError, ValueError, RecursionError, ValidationError):
         raise domain.RuleError("Файл повреждён или нарушает правила мира.") from None
     cid = str(uuid4())

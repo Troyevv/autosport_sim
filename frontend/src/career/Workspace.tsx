@@ -19,6 +19,7 @@ import { roles } from '../ui/labels'
 import { Calendar, Overview, People, Finance, Championships, Briefing, type SectionProps } from './Sections'
 import { api, assetUrl, ApiError, explain, money, post } from './api'
 import { Budget, CostCap } from './finance/Budget'
+import { Facilities } from './finance/Facilities'
 import { Rights } from './finance/Rights'
 import { Commercial } from './finance/Commercial'
 import { SeasonGarage } from '../garage/Garage'
@@ -34,6 +35,7 @@ const sections = [
   { id: 'commercial', name: 'Коммерческий отдел', icon: Factory, view: Commercial },
   { id: 'finance', name: 'Финансы', icon: Wallet, view: Finance },
   { id: 'budget', name: 'Бюджетирование', icon: Wallet, view: Budget },
+  { id: 'facilities', name: 'Инфраструктура', icon: Factory, view: Facilities },
   { id: 'cap', name: 'Cost Cap и ATR', icon: Gauge, view: CostCap },
 ]
 function Engineering({ c, world }: SectionProps) {

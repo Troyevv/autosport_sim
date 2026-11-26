@@ -4,7 +4,7 @@ from typing import Literal
 from pydantic import Field
 from ..staff_input import Day, Fields, Id
 from ..domain import RuleError
-from . import budget
+from . import budget, facilities
 from .market import Appearance, appearance
 from .series import PromotionAwards, award
 from . import Instalment, Schedule, balance, register, settle, cancel
@@ -45,6 +45,7 @@ class Cancellation(Fields):
 
 PRODUCERS = {
     **budget.PRODUCERS,
+    **facilities.PRODUCERS,
     "finance-appearance": Appearance,
     "finance-promotion-awards": PromotionAwards,
     "finance-confirm": CommercialEvidence,
@@ -93,7 +94,7 @@ def participation(state, world, entry_id, day):
         category="logistics",
         payer=org,
         recipient=None,
-        amount_cents=ROUND_COSTS[series],
+        amount_cents=ROUND_COSTS[series] * facilities.freight_index(state, org) // 100,
     )
     register(state, Schedule(installments=[term]))
     settle(state)
@@ -101,7 +102,9 @@ def participation(state, world, entry_id, day):
 
 def confirm(state, world, action, payload):
     event = PRODUCERS[action].model_validate(payload)
-    if isinstance(event, budget.ProjectCost):
+    if isinstance(event, facilities.Access):
+        facilities.access(state, world, event)
+    elif isinstance(event, budget.ProjectCost):
         budget.project(state, world, event)
     elif isinstance(event, (budget.Ranking, budget.Determination)):
         budget.determination(state, world, event)

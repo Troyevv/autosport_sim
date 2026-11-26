@@ -35,6 +35,7 @@ GROUPS = {
     "fine": "operations",
     "interest": "operations",
     "infrastructure": "facilities",
+    "asset-purchase": "facilities",
     "marketing": "commercial",
     "sponsorship": "commercial",
     "driver-backing": "commercial",

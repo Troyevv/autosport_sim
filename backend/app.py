@@ -337,3 +337,13 @@ def budget_control(cid: str, year: int | None = None):
         return report(
             state, WORLD, state["setup"]["org"], year or int(state["date"][:4])
         )
+
+
+@app.get("/api/careers/{cid}/facilities")
+def facilities_overview(cid: str):
+    from .finance.facilities import projection
+    from .catalog import WORLD
+    from . import storage
+
+    with storage.transaction() as db:
+        return projection(storage.checkpoint(db, cid), WORLD)

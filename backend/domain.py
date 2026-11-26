@@ -260,6 +260,12 @@ def apply(state, catalog, action, payload=None):
         raise RuleError("Действующее назначение не даёт полномочий.", 403)
     from .finance import market, budget
 
+    from .finance import facilities
+
+    if action in facilities.ORDERS and "estate" in state:
+        facilities.command(state, catalog, action, payload)
+        state["revision"] += 1
+        return
     if action in budget.ORDERS and "control" in state:
         budget.command(state, catalog, action, payload)
     elif action == "finance-mount" and "market" in state:

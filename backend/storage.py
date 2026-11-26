@@ -43,6 +43,7 @@ MIGRATIONS = [
     [],  # Finance opens previously unjournaled balances on the activation revision.
     [],  # Commercial market activation.
     [],  # Annual mandates and ledger-derived cost aggregates.
+    [],  # facilities activation.
 ]
 
 
@@ -157,6 +158,15 @@ def transaction(write=False):
                     cid = row["id"]
                     state = checkpoint(db, cid)
                     budget.initialize(state, WORLD, postings(db, cid))
+                    store(db, cid, state)
+            if idx == 13:
+                from .finance import facilities
+                from .catalog import WORLD
+
+                for row in db.execute("SELECT id FROM career").fetchall():
+                    cid = row["id"]
+                    state = checkpoint(db, cid)
+                    facilities.initialize(state, WORLD)
                     store(db, cid, state)
             db.execute(f"PRAGMA user_version={idx + 1}")
         yield db
