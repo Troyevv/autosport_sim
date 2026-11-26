@@ -209,6 +209,19 @@ def statement(state, world, db, cid, scope="organization"):
         reserve_cents=cash - free,
         opening_cents=opening,
         cash_flow_cents=cash - opening,
+        net_financial_assets_cents=cash
+        + sum(
+            direction(r) * r["amount_cents"]
+            for r in terms
+            if r["status"] == "pending" and r["earned"] <= day
+        )
+        + sum(
+            r["amount_cents"]
+            for r in schedule
+            if r["overdue"]
+            and r["category"] == "driver-backing"
+            and r["contract"] in state["funding"]
+        ),
         income_cents=income,
         expense_cents=expense,
         profit_cents=income - expense,

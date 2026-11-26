@@ -4,6 +4,7 @@ from typing import Literal
 from pydantic import Field
 from ..staff_input import Day, Fields, Id
 from ..domain import RuleError
+from .series import PromotionAwards, award
 from . import Instalment, Schedule, balance, register, settle, cancel
 
 
@@ -41,6 +42,7 @@ class Cancellation(Fields):
 
 
 PRODUCERS = {
+    "finance-promotion-awards": PromotionAwards,
     "finance-confirm": CommercialEvidence,
     "finance-in-kind": InKindDelivery,
     "finance-cancel": Cancellation,
@@ -95,7 +97,9 @@ def participation(state, world, entry_id, day):
 
 def confirm(state, world, action, payload):
     event = PRODUCERS[action].model_validate(payload)
-    if isinstance(event, CommercialEvidence):
+    if isinstance(event, PromotionAwards):
+        award(state, world, event)
+    elif isinstance(event, CommercialEvidence):
         rule = world["championships"].get(event.series)
         if not rule or rule["rules_id"] != event.regulation:
             raise RuleError("Версия регламента финансового события не совпадает.")

@@ -113,6 +113,9 @@ def activate(state, world, previous=()):
         officers={},
         in_kind={},
     )
+    from .series import initialize
+
+    initialize(state)
     # Older careers already moved backing cash without a posting for opening equity.
     # Seed the difference only; preserve every historical payment and its date.
     legacy = {**state["backers"], PERSONAL: state["player_cash_cents"]}

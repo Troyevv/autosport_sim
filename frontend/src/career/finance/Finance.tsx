@@ -292,6 +292,7 @@ export function Finance({ c, world, updateCareer }: SectionProps & { updateCaree
                     ['Доходы', money(data.income_cents)],
                     ['Расходы', money(data.expense_cents)],
                     ['Прибыль', money(data.profit_cents)],
+                    ['Деньги и чистые начисленные требования', money(data.net_financial_assets_cents)],
                     ['Изменение денежных средств', money(data.cash_flow_cents)],
                   ]}
                 />

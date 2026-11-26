@@ -148,7 +148,8 @@ def test_sqlite_and_portable_migration_of_financed_seat(tmp_path):
         state = storage.checkpoint(db, c["id"])
         state.pop("finance")
         db.execute(
-            "DELETE FROM posting WHERE career=? AND key='finance-opening'", (c["id"],)
+            "DELETE FROM posting WHERE career=? AND (key='finance-opening' OR org='organizer:f3:2025:promotion')",
+            (c["id"],),
         )
         storage.store(db, c["id"], state)
         old = service.checkpoint_document(db, c["id"])
@@ -213,3 +214,44 @@ def test_in_kind_and_analyst_do_not_create_cash_or_profit():
         and s["profit_cents"] == 0
     )
     assert s["in_kind"][0]["estimated_cents"] == 20000
+
+
+def test_promotion_prize_rolls_down_to_eligible_f2_drivers_only():
+    from backend.finance.series import F3_FUND, award, PromotionAwards
+
+    c = create()
+    with storage.transaction() as db:
+        state = storage.checkpoint(db, c["id"])
+    entries = [
+        (aid, s["person"])
+        for aid, s in WORLD["assignments"].items()
+        if s["series"] == "f2" and s["position"] == "driver"
+    ][:5]
+    state["date"] = "2026-02-01"
+    for place, (aid, pid) in enumerate(entries, 2):
+        state["people"][pid]["credentials"].setdefault("classifications", {})[
+            "f3-2025"
+        ] = {"place": place}
+        state["seats"][aid][-1]["end"] = "2027-01-01"
+    order = PromotionAwards(
+        classification="published-2025", successor_entries=[pid for _, pid in entries]
+    )
+    award(state, WORLD, order)
+    award(state, WORLD, order)
+    assert state["finance"]["pockets"][F3_FUND] == 0
+    assert state["finance"]["pockets"]["driver:" + entries[0][1]] == 30000000
+    assert sum(p["delta_cents"] for p in state["ledger"]) == 0
+
+
+def test_operating_categories_and_capital_use_the_same_settlement():
+    from typing import get_args
+    from backend.finance import Category, CAPITAL
+
+    c = create(role="owner")
+    keys = list(get_args(Category))
+    c = confirm(c, *(term(c, k, 59, c["date"], source=k) for k in keys))
+    r = financial_statement(c["id"], MCLAREN + ":f1")
+    assert r["cash_cents"] == 59 * len(keys)
+    assert r["profit_cents"] == 59 * len(set(keys) - CAPITAL)
+    assert r["net_financial_assets_cents"] == r["cash_cents"]
+    assert financial_statement(c["id"], "consolidated")["profit_cents"] == 0

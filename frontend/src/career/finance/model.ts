@@ -8,6 +8,7 @@ export type Statement = {
   reserve_cents: number
   opening_cents: number
   cash_flow_cents: number
+  net_financial_assets_cents: number
   income_cents: number
   expense_cents: number
   profit_cents: number

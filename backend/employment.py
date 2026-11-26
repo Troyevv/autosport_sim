@@ -222,9 +222,14 @@ def sign(state, catalog, offer):
     seat, p, previous = check_terms(state, catalog, offer)
     org, key = seat["org"], offer["id"]
     costs = transfer_costs(catalog, previous, org)
+    cash = state["accounts"][org]["cash_cents"]
+    if "finance" in state:
+        from .finance import available
+
+        cash = available(state, org)
     if (
         offer["bonus_cents"] + sum(v for _, v, _ in costs) + offer["salary_cents"]
-        > state["accounts"][org]["cash_cents"]
+        > cash
     ):
         raise RuleError("Средств на бонус, выкуп и первый оклад недостаточно.", 409)
     post(state, org, key + "-bonus", -offer["bonus_cents"], "signing")
