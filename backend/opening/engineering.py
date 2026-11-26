@@ -76,6 +76,9 @@ def specification(category, interface, maker, slot, physical):
         )
     elif slot == "engine":
         life = round(engine / thermal)
+        # A higher thermal duty requires a heavier cooling package; the model
+        # uses a narrower torque spread than the gearbox input safety margin.
+        physical["peak_torque_nm"] = round(physical["peak_torque_nm"] * thermal, 2)
         heat = physical["heat_kw"] * thermal
         physical.update(
             heat_kw=round(heat, 2),
@@ -110,7 +113,13 @@ def specification(category, interface, maker, slot, physical):
             )
         )
         if slot == "cooling":
-            physical["rejection_kw"] *= thermal
+            physical["rejection_kw"] = round(physical["rejection_kw"] * thermal, 2)
+            physical["mass_kg"] = round(physical["mass_kg"] * thermal, 3)
+        if slot == "chassis" and interface in THERMAL:
+            physical["base_drag_area_m2"] = round(
+                physical["base_drag_area_m2"] / thermal, 4
+            )
+            physical["inlet_area_m2"] = round(physical["inlet_area_m2"] * thermal, 4)
     if slot in {"tyre", "engine", "transmission"}:
         physical["design_life_km"] = life
     return life * 1000

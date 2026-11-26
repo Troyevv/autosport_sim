@@ -248,6 +248,14 @@ export function Championships({ world, c, media }: SectionProps) {
           ]}
         />
       </Panel>
+      {r.previous_season && (
+        <Panel title="Архив сезона 2024">
+          <div className="panel-body">
+            <p>{r.previous_season.fact}</p>
+            <a href={r.previous_season.source} target="_blank" rel="noreferrer">Публикация организатора</a>
+          </div>
+        </Panel>
+      )}
       <Panel title={'Заявки · ' + es.length}>
         <Table
           label="Заявки чемпионата"
@@ -278,8 +286,13 @@ export function Championships({ world, c, media }: SectionProps) {
           <Facts
             items={[
               ['Организация', profile.kind === 'team' ? 'Гоночная команда' : 'Производитель'],
+              ...(profile.registration ? [
+                ['Регистрация', <a href={profile.registration.source} target="_blank" rel="noreferrer">{profile.registration.legal_name} · {world.countries[profile.registration.country]}</a>] as const,
+                ...(profile.registration.headquarters ? [['Штаб-квартира', profile.registration.headquarters] as const] : []),
+              ] : []),
               ...(profile.country ? [['Страна программы', world.countries[profile.country] ?? profile.country] as const] : []),
               ...(profile.base_country ? [['Техническая база', [profile.base, world.countries[profile.base_country]].filter(Boolean).join(', ')] as const] : []),
+              ...(profile.affiliations ?? []).map((a) => ['Связь организаций', <a href={a.source} target="_blank" rel="noreferrer">{a.label}</a>] as const),
               ['Чемпионаты', profile.programs.map((id) => world.championships[id].name).join(' · ')],
               ...(profile.lines.length
                 ? [['Продукция', profile.lines.map((line) => world.products[line].name).join(' · ')] as const]

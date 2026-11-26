@@ -1,7 +1,7 @@
 """Resolve the engineering owner separately from the racing entry used for fit checks."""
 
 from functools import lru_cache
-from .components.catalog import parts_for, POLICIES
+from .components.catalog import OPENING, SEASON_PARTS, POLICIES
 from .domain import RuleError, occupant_on
 from .finance.market import supplier_eligible
 from .finance.facilities import later
@@ -57,17 +57,17 @@ def agreement(state, world, e, axis, day=None):
 
 @lru_cache(maxsize=None)
 def _baseline(eid, org, axis, edition):
-    state = {"opening": edition}
-    original = parts_for(state).installed[eid].get(axis)
+    parts = SEASON_PARTS if edition else OPENING
+    original = parts.installed[eid].get(axis)
     if not original:
         return None
-    drawing = parts_for(state).specs[parts_for(state).stock[original]["spec"]]
+    drawing = parts.specs[parts.stock[original]["spec"]]
     if drawing["manufacturer"] == org:
         return drawing["id"]
     return next(
         (
             d["id"]
-            for d in parts_for(state).specs.values()
+            for d in parts.specs.values()
             if d["slot"] == axis
             and d["manufacturer"] == org
             and d["interface"] == drawing["interface"]

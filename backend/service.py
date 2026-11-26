@@ -319,28 +319,28 @@ def project(db, cid, state):
 
 
 def create(spec, *, catalog=SEASON):
-    with storage.transaction(True) as db:
-        setup = spec.model_dump(exclude_none=True)
-        state = domain.new_world(catalog, setup)
-        finance.activate(state, base_catalog(state))
-        market.initialize(state, base_catalog(state))
-        budget.initialize(state, base_catalog(state), state["ledger"])
-        facilities.initialize(state, base_catalog(state))
-        capital.initialize(state, base_catalog(state))
-        economy.initialize(state, base_catalog(state))
-        lineup.terms.initialize(state, lineup_for(state))
-        components.initialize(state)
-        research.initialize(state)
-        development.initialize(state)
-        production.initialize(state)
-        council.initialize(state)
-        programme.initialize(state)
-        manufacturer.initialize(state)
-        if state.get("opening"):
-            from .opening.population import populate
+    setup = spec.model_dump(exclude_none=True)
+    state = domain.new_world(catalog, setup)
+    finance.activate(state, base_catalog(state))
+    market.initialize(state, base_catalog(state))
+    budget.initialize(state, base_catalog(state), state["ledger"])
+    facilities.initialize(state, base_catalog(state))
+    capital.initialize(state, base_catalog(state))
+    economy.initialize(state, base_catalog(state))
+    lineup.terms.initialize(state, lineup_for(state))
+    components.initialize(state)
+    research.initialize(state)
+    development.initialize(state)
+    production.initialize(state)
+    council.initialize(state)
+    programme.initialize(state)
+    manufacturer.initialize(state)
+    if state.get("opening"):
+        from .opening.population import populate
 
-            populate(state, lineup_for(state))
-        cid = str(uuid4())
+        populate(state, lineup_for(state))
+    cid = str(uuid4())
+    with storage.transaction(True) as db:
         storage.store(db, cid, state, create=True)
         statistics_personnel.refresh(db, cid, state)
         return project(db, cid, state)
@@ -351,78 +351,87 @@ def load(cid):
         return project(db, cid, storage.checkpoint(db, cid))
 
 
+def command_applied(db, cid, command, stored_args, revision):
+    receipt = db.execute(
+        "SELECT revision,action,paint FROM receipt WHERE career=? AND command_id=?",
+        (cid, command.command_id),
+    ).fetchone()
+    if receipt:
+        if tuple(receipt) != (command.revision, command.action, stored_args):
+            raise domain.RuleError(
+                "Этот ключ команды уже использован с другими параметрами.", 409
+            )
+        return True
+    if command.revision != revision:
+        raise domain.RuleError(
+            "Карьеру изменили в другом окне. Состояние обновлено.", 409
+        )
+    return False
+
+
 def execute(cid, command):
     args = command.payload()
     stored_args = storage.dump(args) if args is not None else None
-    with storage.transaction(True) as db:
+    with storage.transaction() as db:
         state = storage.checkpoint(db, cid)
-        old = db.execute(
-            "SELECT revision,action,paint FROM receipt WHERE career=? AND command_id=?",
-            (cid, command.command_id),
+        if command_applied(db, cid, command, stored_args, state["revision"]):
+            return project(db, cid, state)
+
+    # Simulate against the private snapshot. Other careers can save during this step.
+    prior_maker = len(state.get("manufacturer", {}).get("events", []))
+    prior_programme = len(state.get("programme", {}).get("decisions", []))
+    prior_council = len(state.get("council", {}).get("history", []))
+    prior_production = len(state.get("production", {}).get("history", []))
+    prior_fits = len(state["components"]["history"])
+    prior_events = len(state.get("development", {}).get("history", []))
+    prior_reports = set(state["research"]["reports"])
+    previous = statistics_personnel.mutable_state(state)
+    domain.apply(state, base_catalog(state), command.action, args)
+
+    with storage.transaction(True) as db:
+        row = db.execute(
+            "SELECT json_extract(state,'$.revision') FROM career WHERE id=?", (cid,)
         ).fetchone()
-        if old:
-            if (old["revision"], old["action"], old["paint"]) != (
+        if row is None:
+            raise domain.RuleError("Сохранение не найдено.", 404)
+        if command_applied(db, cid, command, stored_args, row[0]):
+            return project(db, cid, storage.checkpoint(db, cid))
+        from .manufacturer.history import write_fact as maker_fact
+
+        for event in state["manufacturer"]["events"][prior_maker:]:
+            maker_fact(db, cid, state, lineup_for(state), event)
+        for event in state.get("programme", {}).get("decisions", [])[prior_programme:]:
+            programme.write_fact(db, cid, lineup_for(state), event)
+        for event in state.get("council", {}).get("history", [])[prior_council:]:
+            council.write_fact(db, cid, state, lineup_for(state), event)
+        for event in state.get("development", {}).get("history", [])[prior_events:]:
+            development.write_fact(db, cid, state, lineup_for(state), event)
+        for event in state.get("production", {}).get("history", [])[prior_production:]:
+            production.write_fact(db, cid, state, lineup_for(state), event)
+        for event in state["components"]["history"][prior_fits:]:
+            components.write_install_fact(db, cid, state, lineup_for(state), event)
+        statistics_personnel.refresh(db, cid, state, previous, command.action, args)
+        if command.action == "advance":
+            for key, report in state["research"]["reports"].items():
+                if key not in prior_reports:
+                    research.write_fact(db, cid, lineup_for(state), report)
+            from datetime import date
+            from .statistics.telemetry import get_policy, prune
+
+            policy = get_policy(db, cid)
+            if policy:
+                prune(db, cid, date.fromisoformat(state["date"]), policy)
+        storage.store(db, cid, state)
+        db.execute(
+            "INSERT INTO receipt(career,command_id,revision,action,paint) VALUES(?,?,?,?,?)",
+            (
+                cid,
+                command.command_id,
                 command.revision,
                 command.action,
                 stored_args,
-            ):
-                raise domain.RuleError(
-                    "Этот ключ команды уже использован с другими параметрами.", 409
-                )
-        else:
-            if command.revision != state["revision"]:
-                raise domain.RuleError(
-                    "Карьеру изменили в другом окне. Состояние обновлено.", 409
-                )
-            prior_maker = len(state.get("manufacturer", {}).get("events", []))
-            prior_programme = len(state.get("programme", {}).get("decisions", []))
-            prior_council = len(state.get("council", {}).get("history", []))
-            prior_production = len(state.get("production", {}).get("history", []))
-            prior_fits = len(state["components"]["history"])
-            prior_events = len(state.get("development", {}).get("history", []))
-            prior_reports = set(state["research"]["reports"])
-            previous = statistics_personnel.mutable_state(state)
-            domain.apply(state, base_catalog(state), command.action, args)
-            from .manufacturer.history import write_fact as maker_fact
-
-            for event in state["manufacturer"]["events"][prior_maker:]:
-                maker_fact(db, cid, state, lineup_for(state), event)
-            for event in state.get("programme", {}).get("decisions", [])[
-                prior_programme:
-            ]:
-                programme.write_fact(db, cid, lineup_for(state), event)
-            for event in state.get("council", {}).get("history", [])[prior_council:]:
-                council.write_fact(db, cid, state, lineup_for(state), event)
-            for event in state.get("development", {}).get("history", [])[prior_events:]:
-                development.write_fact(db, cid, state, lineup_for(state), event)
-            for event in state.get("production", {}).get("history", [])[
-                prior_production:
-            ]:
-                production.write_fact(db, cid, state, lineup_for(state), event)
-            for event in state["components"]["history"][prior_fits:]:
-                components.write_install_fact(db, cid, state, lineup_for(state), event)
-            statistics_personnel.refresh(db, cid, state, previous, command.action, args)
-            if command.action == "advance":
-                for key, report in state["research"]["reports"].items():
-                    if key not in prior_reports:
-                        research.write_fact(db, cid, lineup_for(state), report)
-                from datetime import date
-                from .statistics.telemetry import get_policy, prune
-
-                policy = get_policy(db, cid)
-                if policy:
-                    prune(db, cid, date.fromisoformat(state["date"]), policy)
-            storage.store(db, cid, state)
-            db.execute(
-                "INSERT INTO receipt(career,command_id,revision,action,paint) VALUES(?,?,?,?,?)",
-                (
-                    cid,
-                    command.command_id,
-                    command.revision,
-                    command.action,
-                    stored_args,
-                ),
-            )
+            ),
+        )
         return project(db, cid, state)
 
 

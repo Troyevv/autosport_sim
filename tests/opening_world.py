@@ -10,6 +10,7 @@ from backend import components, domain, service, storage
 from backend.catalog import SEASON_LINEUP as world
 from backend.components.catalog import parts_for
 from backend.finance import facilities
+from backend.development_path import eligibility
 from backend.livery import GARAGE
 
 CASES = {
@@ -27,7 +28,12 @@ def audit(s):
     assets = list(s["estate"]["assets"].values())
     for oid in teams:
         owned = [a for a in assets if a["owner"] == oid]
-        assert {"hq", "warehouse"} <= {a["kind"] for a in owned}, oid
+        rented = [
+            s["estate"]["assets"][r["facility"]]
+            for r in s["estate"]["bookings"].values()
+            if r["org"] == oid
+        ]
+        assert {"hq", "warehouse"} <= {a["kind"] for a in owned + rented}, oid
         assert all(facilities.capacity(s, a) > 0 for a in owned), oid
         assert s["accounts"][oid]["cash_cents"] > 0
     assert all(
@@ -47,6 +53,19 @@ def audit(s):
         assert sum(payments) == d["sale_cents"]
         if d["partnership"] == "works":
             assert not payments
+    for grant in s["support"]:
+        deal = contracts[grant["agreement"]]
+        assert grant["entry"] in deal["entries"] and grant["client"] == deal["org"]
+        assert grant["employer"] == deal["sponsor"] and deal["support"]
+    assert all(
+        sum(shares.values()) == 10000 for shares in s["capital"]["shares"].values()
+    )
+    actual_crews = {}
+    for aid, seat in world["assignments"].items():
+        if seat["position"] == "driver" and seat["entry"]:
+            actual_crews.setdefault(seat["entry"], set()).add(
+                domain.occupant_on(s["seats"][aid], s["date"])
+            )
     series = {}
     installed = set()
     for champ in world["championships"]:
@@ -54,6 +73,17 @@ def audit(s):
         orgs = {e["org"] for e in entries}
         makers = set()
         for e in entries:
+            assert set(e["crew"]) == actual_crews[e["id"]]
+            assert all(
+                eligibility(
+                    s["people"][p],
+                    world["championships"][champ]["admission"],
+                    s["date"],
+                )
+                is None
+                for p in e["crew"]
+            )
+            assert s["capital"]["programs"][e["program"]]["status"] == "admitted"
             for axis, oid in world["cars"][e["car"]]["suppliers"].items():
                 assert by_entry[e["id"], axis]["sponsor"] == oid
                 makers.add(oid)
@@ -116,15 +146,24 @@ def run(role, until):
             ),
         )
 
-    c = step(c)
+    while c["date"] < until:
+        c = step(c)
     archive = service.export_save(c["id"])
     restored = service.import_save(archive)
     assert service.export_save(restored["id"])["sha256"] == archive["sha256"]
     assert service.load(c["id"])["revision"] == c["revision"]
     with storage.transaction() as db:
         s = storage.checkpoint(db, c["id"])
-    while s["date"] < until:
-        domain.apply(s, world, domain.BRIEFINGS[role] if s["pending"] else "advance")
+        ledger = storage.postings(db, c["id"])
+    balances = Counter()
+    outflow = Counter()
+    for row in ledger:
+        if row["org"] in s["accounts"]:
+            balances[row["org"]] += row["delta_cents"]
+            if row["delta_cents"] < 0:
+                outflow[row["source"]] -= row["delta_cents"]
+    assert all(balances[o] == a["cash_cents"] for o, a in s["accounts"].items())
+    assert not s["starts"]
     print(
         json.dumps(
             dict(
@@ -139,7 +178,7 @@ def run(role, until):
                     i.get("status") for i in s["finance"]["instalments"].values()
                 ),
                 negative_cash=sum(a["cash_cents"] < 0 for a in s["accounts"].values()),
-                postings=Counter(p["source"] for p in s["ledger"]),
+                outflow_eur={k: v // 100 for k, v in outflow.items()},
                 research={
                     k: len(v)
                     for k, v in s["research"].items()

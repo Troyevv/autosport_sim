@@ -1,10 +1,11 @@
 import type { Livery } from '../garage/model'
 import type { Role } from '../game'
-export type Organization = { country?: string; base_country?: string; base?: string; playable?: boolean; color: string; id: string; name: string; kind: string; programs: string[]; lines: string[] }
+export type Organization = { registration?: {legal_name:string; country:string; headquarters:string; source:string}; affiliations?: {label: string; source: string}[]; country?: string; base_country?: string; base?: string; playable?: boolean; color: string; id: string; name: string; kind: string; programs: string[]; lines: string[] }
 export type Championship = {
   id: string
   name: string
   discipline: string
+  previous_season?: { fact: string; source: string }
   playable?: boolean
   admission?: { min_age: number; max_age?: number; licence: string; licences?: string[]; age_basis?: string }
   short_name?: string

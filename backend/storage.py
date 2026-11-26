@@ -85,7 +85,8 @@ def dump(value):
 def transaction(write=False):
     root = data_dir()
     root.mkdir(parents=True, exist_ok=True)
-    db = sqlite3.connect(root / "world.sqlite3", isolation_level=None, timeout=10)
+    # Month-end settlement and fixture imports can overlap a different career's save.
+    db = sqlite3.connect(root / "world.sqlite3", isolation_level=None, timeout=45)
     db.row_factory = sqlite3.Row
     try:
         db.execute("PRAGMA foreign_keys=ON")

@@ -31,6 +31,7 @@ WORKS = {
         "supplier-red-bull-technology",
     },
     "team-bwt-alpine-f1-team": {"supplier-renault"},
+    "team-aston-martin-thor-team": {"supplier-aston-martin"},
     "team-toyota-gazoo-racing": {"supplier-toyota"},
     "team-ferrari-af-corse": {"supplier-ferrari"},
     "team-bmw-m-team-wrt": {"supplier-bmw"},
@@ -44,6 +45,19 @@ WORKS = {
     "team-birel-art-racing": {"supplier-birel-art"},
     "team-kr-motorsport": {"supplier-kart-republic"},
     "team-tony-kart-racing-team": {"supplier-otk-kart-group", "supplier-vortex"},
+}
+
+
+# Factory kart operations share the manufacturer's premises and workshop.
+# These are divisions with different sporting and supply duties.
+SHARED_BASE = {
+    "team-crg": "supplier-crg",
+    "team-energy-corse": "supplier-energy-corse",
+    "team-kr-motorsport": "supplier-kart-republic",
+    "team-parolin-motorsport": "supplier-parolin",
+    "team-birel-art-racing": "supplier-birel-art",
+    "team-tony-kart-racing-team": "supplier-otk-kart-group",
+    "supplier-vortex": "supplier-otk-kart-group",
 }
 
 
@@ -76,9 +90,17 @@ def venue_plan(org, entries, academy):
     elif series - {"kart-ok", "kart-okj"}:
         kinds.update(quality=1, factory=1)
         if series & {"f2", "f3", "wec", "dtm", "freca"}:
-            kinds.update(simulator=1, bench=1)
+            kinds.update(simulator=1, bench=1, research=1)
         if len(series) > 2:
-            kinds.update(bench=2, warehouse=2)
+            kinds.update(bench=2, warehouse=2, design=1)
+    if org["id"] == "team-moneygram-haas-f1-team":
+        kinds.update(factory=2, design=2, cfd=2)
+    if org["id"] in SHARED_BASE:
+        del kinds["hq"]
+    if org["id"] in SHARED_BASE.values():
+        divisions = list(SHARED_BASE.values()).count(org["id"])
+        kinds["hq"] += divisions
+        kinds["factory"] += divisions
     if academy:
         kinds["academy"] = 1
     return kinds
@@ -199,6 +221,19 @@ def populate(state, world):
                 ]
             ),
         )
+    for tenant, landlord in SHARED_BASE.items():
+        for kind in ("hq", "factory"):
+            key = f"shared-base:{tenant}:{kind}"
+            state["estate"]["bookings"][key] = dict(
+                id=key,
+                org=tenant,
+                facility=f"base:{landlord}:{kind}",
+                mode="lease",
+                start=day,
+                end="2026-01-01",
+                units=1,
+                cost_cents=0,
+            )
     for key, pair in teamwork.partnerships(state, world, day).items():
         if "player" in pair[1:3]:
             continue
@@ -210,7 +245,16 @@ def populate(state, world):
             spells=[dict(org=pair[3], start=first, end=day)],
         )
     contracts(state, world)
+    # Manthey's controlling shareholder was Porsche from 2013; the 2025 opening
+    # predates the later increase in its holding.
+    from ..finance.capital import owner_wallet
+
+    state["capital"]["shares"]["team-manthey-ema"] = {
+        owner_wallet("team-manthey-ema"): 4900,
+        "supplier-porsche": 5100,
+    }
     supplier_stock(state, world)
+    fund_academies(state, world)
 
 
 def date_days(start, end):
@@ -224,6 +268,9 @@ def contracts(state, world):
         eid, oid, series = entry["id"], entry["org"], entry["championship"]
         for axis, maker in world["cars"][entry["car"]]["suppliers"].items():
             works = maker in WORKS.get(entry["entrant_id"], set())
+            technical = (
+                series == "dtm" and maker == "supplier-mercedes" and axis != "tyre"
+            )
             key = f"grid:{entry['program']}:{maker}:{axis}" + (
                 ":works" if works else ""
             )
@@ -237,7 +284,11 @@ def contracts(state, world):
                     product=axis,
                     status="signed",
                     entries=[],
-                    partnership="works" if works else "client",
+                    partnership="works"
+                    if works
+                    else "technical"
+                    if technical
+                    else "client",
                     start=state["date"],
                     end="2026-01-01",
                     support=axis != "chassis",
@@ -349,3 +400,34 @@ def supplier_stock(state, world):
                 repaired=False,
                 fault=False,
             )
+
+
+def fund_academies(state, world):
+    from ..backing import enroll
+    from ..personnel import age_on
+
+    # Entry lists establish eligible places. Recipients and amounts are fictional.
+    for academy in state["academies"].values():
+        if any(s["academy"] == academy["id"] for s in state["scholarships"].values()):
+            continue
+        occupied = {s["person"] for s in state["scholarships"].values()}
+        candidates = [
+            (pid, e["org"])
+            for e in world["entries"].values()
+            if e["championship"] in ("f3", "f4-it", "f4-es", "f4-gb", "freca")
+            for pid in e["crew"]
+            if pid not in occupied and age_on(state["people"][pid], state["date"]) <= 21
+        ]
+        pid, team = min(candidates, key=lambda pair: sample(academy["id"] + pair[0]))
+        enroll(
+            state,
+            world,
+            academy,
+            pid,
+            min(360000, academy["budget_cents"] // 120),
+            state["date"],
+            "2025-12-01",
+            True,
+            False,
+            team,
+        )

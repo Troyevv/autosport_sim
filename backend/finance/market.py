@@ -184,11 +184,15 @@ def participants(world, state=None):
     if state is not None and state.get("market", {}).get("catalog") != 2:
         result = dict(BRANDS)
     for oid, r in world["organizations"].items():
-        if r["kind"] != "supplier" or not set(r["lines"]) & {
-            "engine",
-            "transmission",
-            "tyre",
-        }:
+        if r["kind"] != "supplier" or (
+            not world.get("opening")
+            and not set(r["lines"])
+            & {
+                "engine",
+                "transmission",
+                "tyre",
+            }
+        ):
             continue
         country = r.get("country") or COUNTRIES[oid.removeprefix("supplier-")]
         result[oid] = dict(
@@ -701,7 +705,10 @@ def initialize(state, world, *, legacy=False):
         )
         from .rights import start_rights, observed_entries
 
-        t = t.model_copy(update={"rights": start_rights(world, org, t.series, bid)})
+        brand_scope = entrant if org in aliases.values() else None
+        t = t.model_copy(
+            update={"rights": start_rights(world, org, t.series, bid, brand_scope)}
+        )
         deal = sign_sponsor(
             state,
             world,
@@ -713,11 +720,15 @@ def initialize(state, world, *, legacy=False):
         )
         if not legacy:
             deal["program_series"] = series
-            if entrant in aliases:
+            if brand_scope:
+                deal["entrant"] = entrant
+                observed = set(deal.get("car_entries") or ())
                 deal["car_entries"] = [
                     e["id"]
                     for e in world["entries"].values()
-                    if e.get("entrant_id") == entrant and e["championship"] in series
+                    if e.get("entrant_id") == entrant
+                    and e["championship"] in series
+                    and (not observed or e["id"] in observed)
                 ]
 
 
@@ -1273,7 +1284,7 @@ def projection(state, world):
             {
                 **d,
                 **(
-                    SEASON_EVIDENCE.get((d["org"], d["sponsor"]), {})
+                    SEASON_EVIDENCE.get((d.get("entrant", d["org"]), d["sponsor"]), {})
                     if d["source"]
                     else {}
                 ),

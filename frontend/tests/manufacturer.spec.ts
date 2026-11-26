@@ -26,7 +26,9 @@ test('Производитель поручает работу КБ и назн�
   await capture('catalog')
   await button('Исследования и разработки').click()
   await page.getByLabel('Целевой сезон').selectOption('2026')
+  const refreshed = page.waitForResponse(r => r.url().endsWith('/manufacturer') && r.request().method() === 'GET')
   await button('Разработка').click()
+  await refreshed
   await expect(page.getByText('Разработка · В очереди')).toBeVisible()
   await capture('design')
   await button('Консультанты').click()

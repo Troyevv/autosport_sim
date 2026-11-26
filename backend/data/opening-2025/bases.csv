@@ -2,7 +2,7 @@ org,country,base,base_country
 team-abt-sportsline,DE,Kempten,DE
 team-dorr-motorsport,DE,Frankfurt,DE
 team-schubert-motorsport,DE,Oschersleben,DE
-team-mercedes-amg-team-landgraf,DE,,DE
+team-mercedes-amg-team-landgraf,DE,Gensingen,DE
 team-land-motorsport,DE,Niederdreisbach,DE
 team-hrt-ford-performance,DE,Drees,DE
 team-paul-motorsport,DE,Dresden,DE
@@ -21,9 +21,8 @@ team-maffi-racing,CH,,CH
 team-tgi-team-lamborghini-by-grt,AT,Knittelfeld,AT
 team-oracle-red-bull-racing,AT,Milton Keynes,GB
 team-mercedes-amg-team-winward,US,,US
-team-aston-martin-thor-team,US,,US
 team-porsche-penske-motorsport,US,Mooresville,US
-team-heart-of-racing-team,US,,US
+team-heart-of-racing-team,US,Brackley,GB
 team-moneygram-haas-f1-team,US,Kannapolis,US
 team-mclaren-formula-1-team,GB,Woking,GB
 team-mercedes-amg-petronas-f1-team,GB,Brackley,GB
@@ -52,9 +51,9 @@ team-viola-formula-racing,IT,,IT
 team-cram-motorsport,IT,Erba,IT
 team-technorace-competition,IT,,IT
 team-cl-motorsport,IT,Brescia,IT
-team-kr-motorsport,IT,,IT
+team-kr-motorsport,IT,Due Carrare,IT
 team-parolin-motorsport,IT,Romano d’Ezzelino,IT
-team-energy-corse,IT,,IT
+team-energy-corse,IT,Seriate,IT
 team-crg,IT,Desenzano del Garda,IT
 team-tony-kart-racing-team,IT,Prevalle,IT
 team-birel-art-racing,IT,Lissone,IT
@@ -76,16 +75,12 @@ team-campos-racing,ES,Alzira,ES
 team-monlau-motorsport,ES,Barcelona,ES
 team-drivex,ES,Madrid,ES
 team-dxr,ES,,ES
-team-t-code-by-amtog,ES,,ES
 team-tecnicar-by-amtog,ES,,ES
-team-griffin-core,ES,,ES
 team-grs-team,ES,,ES
-team-dpk-racing,ES,,ES
+team-dpk-racing,ES,Bobes,ES
 team-karting-club-campillos,ES,Campillos,ES
 team-mp-motorsport,NL,Westmaas,NL
 team-van-amersfoort-racing,NL,Zeewolde,NL
-team-kcl-mp-motorsport,NL,,NL
-team-mp-kartracing,NL,,NL
 team-var-by-birel,NL,,NL
 team-rodin-motorsport,NZ,Farnham,GB
 team-aix-racing,DE,Gernsheim,DE
@@ -107,10 +102,10 @@ supplier-ferrari,IT,Maranello,IT
 supplier-abarth,IT,Turin,IT
 supplier-tatuus,IT,Lainate,IT
 supplier-iame,IT,Zingonia,IT
-supplier-kart-republic,IT,,IT
+supplier-kart-republic,IT,Due Carrare,IT
 supplier-tm-kart,IT,Pesaro,IT
 supplier-parolin,IT,Romano d’Ezzelino,IT
-supplier-energy-corse,IT,,IT
+supplier-energy-corse,IT,Seriate,IT
 supplier-otk-kart-group,IT,Prevalle,IT
 supplier-crg,IT,Desenzano del Garda,IT
 supplier-vortex,IT,Prevalle,IT

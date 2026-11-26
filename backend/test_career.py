@@ -21,6 +21,7 @@ def isolated(tmp_path, monkeypatch):
 
 
 def create(org=MCLAREN, role="manager", series="f1"):
+    # Published pre-opening scenarios double as replay fixtures for existing saves.
     return service.create(
         service.CareerInput(name="Алекс", role=role, org=org, series=series, seed=42),
         catalog=WORLD,

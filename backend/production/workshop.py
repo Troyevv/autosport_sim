@@ -27,13 +27,14 @@ def crew(state, org, inspection):
     name = "Надёжность" if inspection else "Механики и пит-бригада"
     if org.startswith("supplier-"):
         name = "Инженеры" if inspection else "Производственные рабочие"
+    names = {name}
+    if state.get("opening"):
+        names.add("Инженеры программы" if inspection else "Гоночные механики")
     return next(
         (
             g
             for g in state["collectives"].values()
-            if g["org"] == org
-            and g["name"]
-            in {name, "Инженеры программы" if inspection else "Гоночные механики"}
+            if g["org"] == org and g["name"] in names
         ),
         None,
     )

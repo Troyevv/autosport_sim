@@ -1,7 +1,43 @@
 {
-  "team-manthey-ema": ["Manthey", "team-manthey-junior-team", "team-manthey-1st-phorm", "team-iron-dames"],
-  "team-team-wrt": ["Team WRT", "team-bmw-m-team-wrt", "team-the-bend-team-wrt"],
-  "team-af-corse": ["AF Corse", "team-ferrari-af-corse", "team-vista-af-corse"],
-  "team-mercedes-amg-team-winward": ["Winward Racing", "team-mercedes-amg-team-mann-filter"],
-  "team-invicta-racing": ["Invicta Racing", "team-virtuosi-racing"]
+  "team-manthey-ema": [
+    "Manthey",
+    "team-manthey-junior-team",
+    "team-manthey-1st-phorm",
+    "team-iron-dames"
+  ],
+  "team-team-wrt": [
+    "Team WRT",
+    "team-bmw-m-team-wrt",
+    "team-the-bend-team-wrt"
+  ],
+  "team-af-corse": [
+    "AF Corse",
+    "team-ferrari-af-corse",
+    "team-vista-af-corse"
+  ],
+  "team-mercedes-amg-team-winward": [
+    "Winward Racing",
+    "team-mercedes-amg-team-mann-filter"
+  ],
+  "team-invicta-racing": [
+    "Invicta Racing",
+    "team-virtuosi-racing"
+  ],
+  "team-heart-of-racing-team": [
+    "Heart of Racing",
+    "team-aston-martin-thor-team"
+  ],
+  "team-mp-motorsport": [
+    "MP Motorsport",
+    "team-mp-kartracing",
+    "team-kcl-mp-motorsport"
+  ],
+  "team-tecnicar-by-amtog": [
+    "Tecnicar Motorsport",
+    "team-t-code-by-amtog"
+  ],
+  "team-campos-racing": [
+    "Campos Racing",
+    "team-griffin-core"
+  ]
 }

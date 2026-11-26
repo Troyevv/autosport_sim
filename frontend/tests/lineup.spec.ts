@@ -44,7 +44,7 @@ test('Менеджер согласует иерархию с обоими пи�
   await expect(page.locator('.staff-offer')).toContainText('Резервный пилот')
   await page.getByRole('button', { name: 'Продолжить' }).click()
   await expect(page.locator('.staff-offer')).toContainText('Подписан')
-  await page.getByRole('button', { name: 'Продолжить' }).click()
+  await expect(page.locator('.staff-offer')).toContainText('Назначение с 2026-01-01')
   await page.getByRole('button', { name: 'Состав пилотов', exact: true }).click()
   await page.getByRole('button', { name: 'Назначить симулятор' }).first().click()
   await expect(page.getByText(/Симулятор запланирован до/)).toBeVisible()

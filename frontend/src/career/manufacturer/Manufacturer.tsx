@@ -514,7 +514,7 @@ export function Manufacturer({
                               )
                             }
                           >
-                            Передать {i}
+                            Передать {d.inventory.find(item => item.id === i)?.serial ?? i}
                           </Button>
                         ))}
                       </>

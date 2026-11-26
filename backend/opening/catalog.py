@@ -192,4 +192,10 @@ def extend(original):
             seat["duty"] = aid.rsplit(":", 1)[-1]
         elif role in world["staff_rules"]["academy_positions"]:
             seat["academy"] = aid.rsplit(":", 1)[-1]
+    for item in values("registrations.csv"):
+        orgs[item.pop("org")]["registration"] = item
+    for item in values("affiliations.csv"):
+        orgs[item.pop("org")].setdefault("affiliations", []).append(item)
+    for record in values("history.csv"):
+        world["championships"][record.pop("series")]["previous_season"] = record
     return world

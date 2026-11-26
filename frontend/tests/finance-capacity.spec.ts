@@ -13,6 +13,7 @@ test('Аренда мощности и источник многосерийно
   await openCareer('team-mclaren-formula-1-team', 'f1', 'facilities')
   await page.getByRole('button', { name: 'Мощности', exact: true }).click()
   const research = page.locator('.capacity-card').filter({ hasText: 'Исследования' })
+  await expect(research.locator('dd')).toHaveCount(4)
   const initial = await research.locator('dd').allTextContents()
   await research.getByRole('button').click()
   const center = page.locator('.rights-row').filter({ hasText: 'Исследовательский центр' }).filter({hasText: 'Независимый оператор'})

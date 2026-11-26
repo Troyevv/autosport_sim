@@ -34,20 +34,20 @@ def config():
 
 @app.get("/api/world")
 def world(career: str | None = None):
-    WORLD = SEASON_LINEUP
+    catalog = SEASON_LINEUP
     if career:
         with storage.transaction() as db:
-            WORLD = lineup_for(storage.checkpoint(db, career))
+            catalog = lineup_for(storage.checkpoint(db, career))
     return {
         **{
             k: v
-            for k, v in WORLD.items()
+            for k, v in catalog.items()
             if k not in ("profiles", "reserve", "reserve_ages")
         },
         "staff_rules": {
-            k: v for k, v in WORLD["staff_rules"].items() if k != "training"
+            k: v for k, v in catalog["staff_rules"].items() if k != "training"
         },
-        "faces": {p: v["face"] for p, v in WORLD["profiles"].items()},
+        "faces": {p: v["face"] for p, v in catalog["profiles"].items()},
     }
 
 
