@@ -1,10 +1,12 @@
 import json
+from typing import Literal
 
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse, Response
 from fastapi.concurrency import run_in_threadpool
 
-from . import media, service
+from . import backing, employment, media, service, staff_desk, storage
+from .staff_input import Day
 from .catalog import WORLD
 from .domain import RuleError
 from .livery import GARAGE
@@ -34,6 +36,9 @@ def world():
             k: v
             for k, v in WORLD.items()
             if k not in ("profiles", "reserve", "reserve_ages")
+        },
+        "staff_rules": {
+            k: v for k, v in WORLD["staff_rules"].items() if k != "training"
         },
         "faces": {p: v["face"] for p, v in WORLD["profiles"].items()},
     }
@@ -65,7 +70,7 @@ async def read_upload(request, limit):
 
 @app.post("/api/careers/import", status_code=201)
 async def import_career(request: Request):
-    body = await read_upload(request, 4 * 1024 * 1024)
+    body = await read_upload(request, 16 * 1024 * 1024)
     try:
         document = json.loads(body)
     except (ValueError, UnicodeError, RecursionError):
@@ -76,6 +81,55 @@ async def import_career(request: Request):
 @app.get("/api/careers/{cid}")
 def load(cid: str):
     return service.load(cid)
+
+
+@app.get("/api/careers/{cid}/personnel")
+def personnel(cid: str):
+    with storage.transaction() as db:
+        return staff_desk.directory(storage.checkpoint(db, cid), WORLD)
+
+
+@app.get("/api/careers/{cid}/personnel/{pid}")
+def dossier(cid: str, pid: str, wet: bool = False):
+    with storage.transaction() as db:
+        return staff_desk.dossier(storage.checkpoint(db, cid), WORLD, pid, wet)
+
+
+@app.get("/api/careers/{cid}/personnel/{pid}/quote")
+def quote(
+    cid: str,
+    pid: str,
+    seat: str,
+    start: Day,
+    end: Day,
+    salary_cents: int = 0,
+    remit: Literal["supervised", "standard", "independent"] = "standard",
+):
+    with storage.transaction() as db:
+        state = storage.checkpoint(db, cid)
+        try:
+            terms = dict(
+                person=pid,
+                seat=seat,
+                start=start,
+                end=end,
+                salary_cents=salary_cents,
+                remit=remit,
+            )
+            fee = employment.quote(state, WORLD, terms)
+            comparison = employment.career_choice.assess(
+                state, WORLD, state["people"][pid], terms
+            )
+        except RuleError as exc:
+            return dict(buyout_cents=None, reason=str(exc))
+        support = backing.quote(state, pid, state["setup"]["org"], start)
+        return dict(
+            considerations=comparison["reasons"],
+            buyout_cents=fee,
+            support_cents=support,
+            net_cents=support - salary_cents,
+            reason=None,
+        )
 
 
 @app.get("/api/careers/{cid}/export")
@@ -91,6 +145,8 @@ def export(cid: str):
 
 @app.post("/api/careers/{cid}/commands")
 def command(cid: str, command: service.Command):
+    if command.action == "confirmed-work":
+        raise RuleError("Требуется подтверждение подсистемы-источника.", 403)
     return service.execute(cid, command)
 
 

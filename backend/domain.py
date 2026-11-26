@@ -157,13 +157,24 @@ def new_world(catalog, setup):
         state["ledger"].append(
             dict(org=oid, key="opening", date=START, delta_cents=cash, source="opening")
         )
+    if catalog["version"] == "2025-v3":
+        from .personnel import initialize
+
+        initialize(state, catalog)
+        from .professional import activate
+
+        activate(state)
     return state
 
 
 def next_date(state, catalog):
-    return next(
-        (e["start"] for e in catalog["events"] if e["start"] > state["date"]), None
-    )
+    dates = [e["start"] for e in catalog["events"]]
+    if "personnel_since" in state:
+        from .employment import HORIZON, dates as personnel_dates
+
+        dates.extend(d for d in personnel_dates(state) if d <= HORIZON)
+        dates.append(HORIZON)
+    return min((d for d in dates if d > state["date"]), default=None)
 
 
 def post_payroll(state, target):
@@ -190,16 +201,46 @@ def post_payroll(state, target):
             )
 
 
-def apply(state, catalog, action, paint=None):
+def apply(state, catalog, action, payload=None):
+    if action == "confirmed-work" and "growth_since" in state:
+        from .professional import Batch, record
+
+        for event in Batch.model_validate(payload).facts:
+            record(state, catalog, event)
+        state["revision"] += 1
+        return
     setup = state["setup"]
     office = setup["org"] + ":" + setup["role"]
     if occupant_on(state["seats"][office], state["date"]) != state["player_id"]:
         raise RuleError("Действующее назначение не даёт полномочий.", 403)
-    if action == "save-livery" and paint is not None:
+    if action == "save-livery" and payload is not None:
         from .livery import install
 
-        install(state, catalog, paint)
-    elif paint is not None:
+        install(state, catalog, payload)
+    elif (
+        action
+        in (
+            "offer-send",
+            "offer-withdraw",
+            "offer-accept",
+            "staff-release",
+            "staff-train",
+            "advisor-assign",
+            "scout-driver",
+            "manager-mandate",
+            "academy-enroll",
+            "academy-course",
+            "prepare-program",
+            "academy-right",
+            "funding-end",
+            "manufacturer-backing",
+        )
+        and "personnel_since" in state
+    ):
+        from .employment import command
+
+        command(state, catalog, action, payload)
+    elif payload is not None:
         raise RuleError("Лишние параметры команды.")
     elif action == "advance":
         if state["pending"]:
@@ -207,8 +248,13 @@ def apply(state, catalog, action, paint=None):
         target = next_date(state, catalog)
         if target is None:
             raise RuleError("Календарь сезона пройден.", 409)
-        post_payroll(state, target)
-        state["date"] = target
+        if "personnel_since" in state:
+            from .employment import advance
+
+            advance(state, catalog, target)
+        else:
+            post_payroll(state, target)
+            state["date"] = target
         programs = catalog["organizations"][setup["org"]]["programs"]
         state["pending"] = [
             e["id"]

@@ -25,6 +25,7 @@ export type Event = {
   org?: string
 }
 export type World = {
+  countries: Record<string,string>
   products: Record<string, { name: string }>
   engineering: {
     seasons: Record<string, { year: number; status: string; championship: string }>
@@ -68,16 +69,20 @@ export type Person = {
   name: string
   face: string | null
   origin: string
+  country: string
   nationality: string
   birth_date: string
   experience: number
   specialization: string
   skills: Record<string, number>
-  potential: number
+  potential?: number
+  management?: import("./staff/pathModel").Management
+  credentials?: {licences:string[];points:number}
   morale: number
   fatigue: number
 }
 export type Seat = {
+  academy?:string|null
   id: string
   org: string
   position: string
@@ -86,6 +91,14 @@ export type Seat = {
   occupant: Person | null
 }
 export type Career = Save & {
+  mandate: import('./staff/pathModel').Mandate | null
+  academies: import('./staff/pathModel').Academy[]
+  scholarships: import('./staff/pathModel').Scholarship[]
+  preparation_options: {id:string;name:string;facility:string;days:number;cost:number;load:number}[]
+  preparations:{id:string;kind:string;names:string[];start:string;end:string;status:string}[]
+  crews: Record<string, string[]>
+  offers: import("./staff/model").Offer[]
+  notices: {date: string; text: string}[]
   liveries: Record<string, Livery>
   garage_configurations: Record<
     string,
@@ -116,9 +129,19 @@ export type Career = Save & {
   next_date: string | null
   briefing_action: string
   collectives: {
+    development: import("./staff/Development").DevelopmentRecord
     id: string
     name: string
     size: number
+    precision: number
+    speed: number
+    pressure: number
+    motivation: number
+    cohesion: number
+    atmosphere: number
+    team_days: number
+    relationships: import('./staff/Teamwork').Relationship[]
+    capacity: number
     qualification: number
     workload: number
     fatigue: number

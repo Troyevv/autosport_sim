@@ -1,10 +1,10 @@
 import { useState } from 'react'
 import { CalendarDays, ChevronRight, Flag, MapPin } from 'lucide-react'
 import { dateLabel, millions } from '../game'
-import { Button, Dialog, Facts, Header, Panel, Stats, Table } from '../ui/components'
+import { Button, Facts, Header, Panel, Stats, Table } from '../ui/components'
 import { SeasonCalendar } from '../ui/SeasonCalendar'
-import { assetUrl, money, type World, type Career, type Seat, type Asset } from './api'
-import { Portrait } from './Portrait'
+import { assetUrl, money, type World, type Career, type Asset } from './api'
+export { People } from './staff/People'
 
 export type SectionProps = { world: World; c: Career; media: Asset[] }
 const labels = { manager: 'Штаб команды', owner: 'Штаб владельца', manufacturer: 'Штаб производителя' }
@@ -86,7 +86,7 @@ export function Overview({ world, c, media }: SectionProps) {
                 <small>
                   {c.role === 'manufacturer'
                     ? world.organizations[e.org].name
-                    : e.crew.map((id) => world.names[id]).join(' · ')}
+                    : (c.crews[e.id].map((id) => world.names[id]).join(' · ') || 'Вакантно')}
                 </small>
               </span>
             </div>
@@ -212,7 +212,7 @@ export function Championships({ world, c, media }: SectionProps) {
               e.number,
               world.organizations[e.org].name,
               world.cars[e.car].name,
-              e.crew.map((id) => world.names[id]).join(' · '),
+              (c.crews[e.id].map((id) => world.names[id]).join(' · ') || 'Вакантно'),
               Object.values(world.cars[e.car].suppliers)
                 .map((id) => world.organizations[id].name)
                 .join(' · '),
@@ -220,114 +220,6 @@ export function Championships({ world, c, media }: SectionProps) {
           }))}
         />
       </Panel>
-    </section>
-  )
-}
-export function People({ world, c, media }: SectionProps) {
-  const [selected, select] = useState<Seat | null>(null),
-    [query, search] = useState('')
-  const seats = c.assignments.filter((a) => a.occupant),
-    person = selected?.occupant
-  const matching = seats.filter((a) =>
-    (a.occupant!.name + ' ' + world.positions[a.position].name)
-      .toLowerCase()
-      .includes(query.trim().toLowerCase()),
-  )
-  return (
-    <section className="screen">
-      <Header
-        section={world.organizations[c.org].name}
-        title="Пилоты и персонал"
-        sub="Назначения в организации и коллективы. Характеристики и фонд оплаты — игровые оценки."
-      />
-      <label className="people-search">
-        <input
-          aria-label="Найти человека"
-          type="search"
-          placeholder="Имя или должность"
-          value={query}
-          onChange={(e) => search(e.target.value)}
-        />
-      </label>
-      <div className="career-roster">
-        {matching.map((a) => (
-          <button className="career-person" key={a.id} onClick={() => select(a)}>
-            <Portrait
-              person={a.occupant!}
-              org={a.org}
-              color={c.team_color}
-              driver={a.position === 'driver'}
-              media={media}
-            />
-            <span>
-              <small>{world.positions[a.position].name}</small>
-              <strong>{a.occupant!.name}</strong>
-              {a.series && <small>{world.championships[a.series].name}</small>}
-            </span>
-          </button>
-        ))}
-      </div>
-      {!matching.length && <p className="empty-state">Совпадений нет.</p>}
-      <Panel title="Коллективы">
-        <Table
-          label="Инженеры и рабочие"
-          columns={['Коллектив', 'Человек', 'Квалификация', 'Нагрузка', 'Усталость', 'ФОТ / месяц']}
-          rows={c.collectives.map((g) => ({
-            id: g.id,
-            cells: [
-              g.name,
-              g.size,
-              g.qualification,
-              g.workload + '%',
-              g.fatigue + '%',
-              money(g.payroll_cents),
-            ],
-          }))}
-        />
-      </Panel>
-      <details className="panel career-details">
-        <summary>Должности без опубликованного назначения</summary>
-        {c.assignments
-          .filter((a) => !a.occupant)
-          .map((a) => (
-            <div className="result" key={a.id}>
-              <span>{world.positions[a.position].name}</span>
-              <small>
-                {a.entry
-                  ? '№ ' + world.entries[a.entry]?.number
-                  : a.series
-                    ? world.championships[a.series].name
-                    : 'Организация'}
-              </small>
-            </div>
-          ))}
-      </details>
-      {selected && person && (
-        <Dialog title={person.name} onClose={() => select(null)}>
-          <div className="career-dossier">
-            <Portrait
-              person={person}
-              org={selected.org}
-              color={c.team_color}
-              driver={selected.position === 'driver'}
-              media={media}
-            />
-            <div>
-              <p className="eyebrow">{world.positions[selected.position].name}</p>
-              <h3>{world.organizations[c.org].name}</h3>
-              <p>{person.id === c.player_id ? 'Игрок' : 'Стартовый состав'}</p>
-            </div>
-          </div>
-          <Facts items={[
-            ['Гражданство', person.nationality],
-            ['Возраст', Number(c.date.slice(0, 4)) - Number(person.birth_date.slice(0, 4)) - Number(c.date.slice(5) < person.birth_date.slice(5))],
-            ['Дата рождения', new Date(person.birth_date + 'T12:00:00Z').toLocaleDateString('ru-RU', { timeZone: 'UTC' })],
-            ['Опыт, лет', person.experience], ['Специализация', person.specialization], ['Потенциал', person.potential],
-          ]} />
-          <Facts items={Object.entries(person.skills)} />
-          <small className="muted">Игровые оценки по шкале 0–100</small>
-        </Dialog>
-      )}
     </section>
   )
 }
@@ -358,7 +250,7 @@ export function Finance({ c, world }: SectionProps) {
               id: p.key,
               cells: [
                 dateLabel(p.date, true),
-                p.source === 'opening' ? 'Стартовый капитал' : 'Фонд оплаты коллективов',
+                ({ opening: 'Стартовый капитал', payroll: 'Фонд оплаты коллективов', 'staff-payroll': 'Зарплата сотрудников и коллективов', 'driver-backing':'Финансирование места пилота','backing-exit':'Компенсация за прекращение поддержки', signing: 'Бонус за подписание', buyout: 'Выкуп контракта', severance: 'Компенсация при расторжении' } as Record<string,string>)[p.source] || p.source,
                 money(p.delta_cents),
               ],
             }))}

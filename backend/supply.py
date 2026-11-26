@@ -104,3 +104,15 @@ def visible_channels(assignment, scope, day, employer, channels):
             "feedback",
         },
     )
+
+
+def support_on(state, advisor, day):
+    """Rehydrate the dated staff assignment for visible_channels."""
+    for row in state.get("support", []):
+        if row["advisor"] == advisor and row["start"] <= day < row["end"]:
+            data = dict(row)
+            data.pop("end")
+            return SupportAssignment(
+                **{**data, "channels": frozenset(data["channels"])}
+            )
+    return None
