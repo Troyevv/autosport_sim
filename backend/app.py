@@ -145,7 +145,7 @@ def export(cid: str):
 
 @app.post("/api/careers/{cid}/commands")
 def command(cid: str, command: service.Command):
-    if command.action == "confirmed-work":
+    if command.action in ("confirmed-work", "issued-licence", "season-classification"):
         raise RuleError("Требуется подтверждение подсистемы-источника.", 403)
     return service.execute(cid, command)
 

@@ -1,10 +1,15 @@
 import type { Livery } from '../garage/model'
 import type { Role } from '../game'
-export type Organization = { color: string; id: string; name: string; kind: string; programs: string[]; lines: string[] }
+export type Organization = { playable?: boolean; color: string; id: string; name: string; kind: string; programs: string[]; lines: string[] }
 export type Championship = {
   id: string
   name: string
   discipline: string
+  playable?: boolean
+  admission?: { min_age: number; max_age?: number; licence: string; licences?: string[]; age_basis?: string }
+  short_name?: string
+  technical_summary?: string
+  superlicence?: number[]
   classes: string[]
   tyre_market: Record<string, { mode: 'sole' | 'approved' | 'open'; approved_suppliers?: string[] }>
   crew: number[]

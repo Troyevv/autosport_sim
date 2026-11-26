@@ -9,9 +9,16 @@ from pydantic import BaseModel, ConfigDict, Field, ValidationError, model_valida
 from . import domain, storage
 from .livery import GARAGE, PaintOrder
 from .catalog import VERSION, WORLD
-from .roster_upgrade import original_world, previous_world, upgrade, upgrade_personnel
+from .roster_upgrade import (
+    original_world,
+    previous_world,
+    personnel_world,
+    upgrade,
+    upgrade_personnel,
+    upgrade_juniors,
+)
 from .staff_input import ORDERS
-from . import preparation, professional
+from . import preparation, professional, junior_path
 from .media_profile import COUNTRIES, initialize as initialize_identity
 from .development_path import public_person
 from .team_staff import department_capacity
@@ -26,6 +33,7 @@ VISUAL_CONCEPTS = {
         WORLD["cars"][entry["car"]]["concept"],
     ): GARAGE["entries"][entry["id"]]["geometry"]
     for entry in WORLD["entries"].values()
+    if entry["id"] in GARAGE["entries"]
 }
 
 
@@ -59,7 +67,12 @@ class Command(Strict):
     def check_action_payload(self):
         if (self.action == "save-livery") != (self.paint is not None):
             raise ValueError("Неверные параметры команды ливреи.")
-        orders = {**ORDERS, "confirmed-work": professional.Batch}
+        orders = {
+            **ORDERS,
+            "confirmed-work": professional.Batch,
+            "issued-licence": junior_path.LicenceDecision,
+            "season-classification": junior_path.SeasonClassification,
+        }
         if (self.action in orders) != (self.staff is not None):
             raise ValueError("Неверные параметры кадровой команды.")
         if self.staff is not None:
@@ -277,7 +290,7 @@ def import_save(document):
         or (
             type(document.get("version")) is not int
             or document["version"] != 1
-            or document.get("rules") not in ("2025-v1", "2025-v2", VERSION)
+            or document.get("rules") not in ("2025-v1", "2025-v2", "2025-v3", VERSION)
         )
     ):
         raise domain.RuleError("Неизвестный формат сохранения или версия правил.")
@@ -311,7 +324,14 @@ def import_save(document):
             appearance = {"player_face": face}
         spec = CareerInput.model_validate(setup)
         activation = saved.get("personnel_since")
-        modern = document["rules"] == VERSION
+        modern = document["rules"] in ("2025-v3", VERSION)
+        expanded = document["rules"] == VERSION
+        native = expanded and not saved.get("junior_migrated")
+        junior_since = saved.get("junior_since")
+        if expanded and (
+            type(junior_since) is not int or not 0 <= junior_since <= saved["revision"]
+        ):
+            raise ValueError
         if modern and (
             type(activation) is not int or not 0 <= activation <= saved["revision"]
         ):
@@ -325,7 +345,7 @@ def import_save(document):
             raise ValueError
         from .professional import activate
 
-        catalog = original_world() if legacy else previous_world()
+        catalog = WORLD if native else original_world() if legacy else previous_world()
         commands = payload["commands"]
         if not isinstance(commands, list):
             raise ValueError
@@ -334,12 +354,20 @@ def import_save(document):
         )
         seen = set()
         receipts = []
-        for item in commands:
-            if modern and activation == state["revision"]:
-                state = upgrade_personnel(state, historical=True)
-                catalog = WORLD
+
+        def apply_migrations():
+            nonlocal catalog
+            if not native and modern and activation == state["revision"]:
+                upgrade_personnel(state, historical=True)
+                catalog = personnel_world()
             if modern and growth == state["revision"]:
                 activate(state)
+            if expanded and not native and junior_since == state["revision"]:
+                upgrade_juniors(state)
+                catalog = WORLD
+
+        for item in commands:
+            apply_migrations()
             cmd = Command.model_validate(item)
             if cmd.command_id in seen or cmd.revision != state["revision"]:
                 raise ValueError
@@ -354,10 +382,7 @@ def import_save(document):
                     storage.dump(args) if args else None,
                 )
             )
-        if modern and activation == state["revision"]:
-            state = upgrade_personnel(state, historical=True)
-        if modern and growth == state["revision"]:
-            activate(state)
+        apply_migrations()
         state["ledger"].sort(key=lambda p: (p["date"], p["org"], p["key"]))
         if modern and "identity_schema" not in saved:
             saved = json.loads(storage.dump(saved))
@@ -370,6 +395,8 @@ def import_save(document):
             state = upgrade(state)
         if not modern:
             state = upgrade_personnel(state)
+        if not expanded:
+            upgrade_juniors(state)
     except (KeyError, TypeError, ValueError, RecursionError, ValidationError):
         raise domain.RuleError("Файл повреждён или нарушает правила мира.") from None
     cid = str(uuid4())

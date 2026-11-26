@@ -33,7 +33,12 @@ export function Library({ world, saves, media }: { world: World; saves: Save[]; 
   const [error, setError] = useState(''),
     [busy, setBusy] = useState(false)
   const organizations = Object.values(world.organizations)
-    .filter((o) => o.programs.includes(series) && o.kind === (role === 'manufacturer' ? 'supplier' : 'team'))
+    .filter(
+      (o) =>
+        o.playable !== false &&
+        o.programs.includes(series) &&
+        o.kind === (role === 'manufacturer' ? 'supplier' : 'team'),
+    )
     .sort((a, b) => a.name.localeCompare(b.name))
   const org = organizations.some((o) => o.id === chosen) ? chosen : organizations[0]?.id
   const create = async (e: FormEvent) => {
@@ -82,7 +87,7 @@ export function Library({ world, saves, media }: { world: World; saves: Save[]; 
         <section className="library-hero">
           <div className="eyebrow">Центр управления · сезон {world.origin.season}</div>
           <h1>Карьера в автоспорте</h1>
-          <p>Formula 1 · Formula 2 · Formula 3 · DTM · FIA WEC</p>
+          <p>Formula 1 · Formula 2 · Formula 3 · Formula Regional · Formula 4 · DTM · FIA WEC</p>
         </section>
         {error && (
           <p className="career-error" role="alert">
@@ -134,11 +139,13 @@ export function Library({ world, saves, media }: { world: World; saves: Save[]; 
                   <label>
                     Чемпионат
                     <select value={series} onChange={(e) => setSeries(e.target.value)}>
-                      {Object.values(world.championships).map((c) => (
-                        <option key={c.id} value={c.id}>
-                          {c.name}
-                        </option>
-                      ))}
+                      {Object.values(world.championships)
+                        .filter((c) => c.playable !== false)
+                        .map((c) => (
+                          <option key={c.id} value={c.id}>
+                            {c.name}
+                          </option>
+                        ))}
                     </select>
                   </label>
                   <label>
@@ -186,12 +193,7 @@ export function Library({ world, saves, media }: { world: World; saves: Save[]; 
               ) : (
                 <p className="panel-body muted">Здесь появятся ваши сохранения.</p>
               )}
-              <FileInput
-                label="Импортировать сохранение"
-                accept=".json"
-                busy={busy}
-                onFile={upload}
-              />
+              <FileInput label="Импортировать сохранение" accept=".json" busy={busy} onFile={upload} />
             </Panel>
             <Panel title="Локальная медиатека">
               <div className="panel-body">

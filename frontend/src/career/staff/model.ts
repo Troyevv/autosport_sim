@@ -30,6 +30,8 @@ type Contract = {
   buyout_cents?: number
 }
 export type Dossier = {
+  results: {session_id:string;series:string;day:string;entry:string;place:number|null}[]
+  classifications: {season:string;place:number;certified_points:number}[]
   development: import('./Development').DevelopmentRecord
   calendar_context: import('./MediaProfile').Audience[]
   relationships: import('./Teamwork').Relationship[]

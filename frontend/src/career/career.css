@@ -268,3 +268,47 @@
     flex-wrap: wrap;
   }
 }
+
+.org-link { padding: 0; background: transparent; border: 0; color: inherit; text-align: left; cursor: pointer; }
+.org-link:hover, .org-link:focus-visible { text-decoration: underline; }
+.supplier-links { display: flex; flex-wrap: wrap; gap: .35rem .65rem; }
+
+.program-hero .junior-grid-photo {
+  width: 68%;
+  right: 0;
+  object-fit: contain;
+  object-position: right center;
+}
+
+.screen select, .career-fields select {
+  min-width: 0;
+  max-width: 100%;
+}
+
+@media (max-width: 600px) {
+  .program-hero .junior-grid-photo {
+    width: 100%;
+    object-position: right bottom;
+  }
+}
+
+.org-programs h4 {
+  margin: 16px 0 6px;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+.org-programs ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.org-programs li {
+  display: grid;
+  grid-template-columns: 4rem 1fr;
+  align-items: center;
+  padding: 9px 0;
+  border-bottom: 1px solid #ffffff14;
+}
+.org-programs li > b { font-variant-numeric: tabular-nums; }
+.org-programs li small, .org-programs li strong { display: block; }
+.org-programs li small { color: var(--muted); margin-top: 2px; }

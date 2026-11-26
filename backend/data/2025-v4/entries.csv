@@ -1,0 +1,316 @@
+championship,number,entrant,model,constructor,engine,transmission,tyre,class,crew
+f4-es,1,KCL MP Motorsport,Tatuus F4-T421,Tatuus,Abarth,SADEV,Hankook,F4,junior-f4-es-1
+f4-es,2,Campos Racing,Tatuus F4-T421,Tatuus,Abarth,SADEV,Hankook,F4,junior-f4-es-2
+f4-es,4,MP Motorsport,Tatuus F4-T421,Tatuus,Abarth,SADEV,Hankook,F4,junior-f4-es-4
+f4-es,5,Campos Racing,Tatuus F4-T421,Tatuus,Abarth,SADEV,Hankook,F4,junior-f4-es-5
+f4-es,6,T-Code by Amtog,Tatuus F4-T421,Tatuus,Abarth,SADEV,Hankook,F4,junior-f4-es-6
+f4-es,8,Saintéloc Racing,Tatuus F4-T421,Tatuus,Abarth,SADEV,Hankook,F4,junior-f4-es-8
+f4-es,9,MP Motorsport,Tatuus F4-T421,Tatuus,Abarth,SADEV,Hankook,F4,junior-f4-es-9
+f4-es,10,KCL MP Motorsport,Tatuus F4-T421,Tatuus,Abarth,SADEV,Hankook,F4,junior-f4-es-10
+f4-es,11,KCL MP Motorsport,Tatuus F4-T421,Tatuus,Abarth,SADEV,Hankook,F4,junior-f4-es-11
+f4-es,14,Saintéloc Racing,Tatuus F4-T421,Tatuus,Abarth,SADEV,Hankook,F4,junior-f4-es-14
+f4-es,15,DXR,Tatuus F4-T421,Tatuus,Abarth,SADEV,Hankook,F4,junior-f4-es-15
+f4-es,17,Tecnicar by Amtog,Tatuus F4-T421,Tatuus,Abarth,SADEV,Hankook,F4,junior-f4-es-17
+f4-es,19,Griffin Core,Tatuus F4-T421,Tatuus,Abarth,SADEV,Hankook,F4,junior-f4-es-19
+f4-es,22,MP Motorsport,Tatuus F4-T421,Tatuus,Abarth,SADEV,Hankook,F4,junior-f4-es-22
+f4-es,23,Griffin Core,Tatuus F4-T421,Tatuus,Abarth,SADEV,Hankook,F4,junior-f4-es-23
+f4-es,24,Rodin Motorsport,Tatuus F4-T421,Tatuus,Abarth,SADEV,Hankook,F4,junior-f4-es-24
+f4-es,25,Monlau Motorsport,Tatuus F4-T421,Tatuus,Abarth,SADEV,Hankook,F4,junior-f4-es-25
+f4-es,27,Monlau Motorsport,Tatuus F4-T421,Tatuus,Abarth,SADEV,Hankook,F4,junior-f4-es-27
+f4-es,32,Tecnicar by Amtog,Tatuus F4-T421,Tatuus,Abarth,SADEV,Hankook,F4,junior-f4-es-32
+f4-es,33,Drivex,Tatuus F4-T421,Tatuus,Abarth,SADEV,Hankook,F4,junior-f4-es-33
+f4-es,37,Drivex,Tatuus F4-T421,Tatuus,Abarth,SADEV,Hankook,F4,junior-f4-es-37
+f4-es,39,TC Racing,Tatuus F4-T421,Tatuus,Abarth,SADEV,Hankook,F4,junior-f4-es-39
+f4-es,41,DXR,Tatuus F4-T421,Tatuus,Abarth,SADEV,Hankook,F4,junior-f4-es-41
+f4-es,46,Rodin Motorsport,Tatuus F4-T421,Tatuus,Abarth,SADEV,Hankook,F4,junior-f4-es-46
+f4-es,48,Drivex,Tatuus F4-T421,Tatuus,Abarth,SADEV,Hankook,F4,junior-f4-es-48
+f4-es,55,Rodin Motorsport,Tatuus F4-T421,Tatuus,Abarth,SADEV,Hankook,F4,junior-f4-es-55
+f4-es,57,DXR,Tatuus F4-T421,Tatuus,Abarth,SADEV,Hankook,F4,junior-f4-es-57
+f4-es,70,GRS Team,Tatuus F4-T421,Tatuus,Abarth,SADEV,Hankook,F4,junior-f4-es-70
+f4-es,71,GRS Team,Tatuus F4-T421,Tatuus,Abarth,SADEV,Hankook,F4,junior-f4-es-71
+f4-es,77,T-Code by Amtog,Tatuus F4-T421,Tatuus,Abarth,SADEV,Hankook,F4,junior-f4-es-77
+f4-es,78,TC Racing,Tatuus F4-T421,Tatuus,Abarth,SADEV,Hankook,F4,junior-f4-es-78
+f4-es,80,Saintéloc Racing,Tatuus F4-T421,Tatuus,Abarth,SADEV,Hankook,F4,junior-f4-es-80
+f4-es,81,Campos Racing,Tatuus F4-T421,Tatuus,Abarth,SADEV,Hankook,F4,junior-f4-es-81
+f4-es,88,TC Racing,Tatuus F4-T421,Tatuus,Abarth,SADEV,Hankook,F4,junior-f4-es-88
+f4-es,91,Monlau Motorsport,Tatuus F4-T421,Tatuus,Abarth,SADEV,Hankook,F4,junior-f4-es-91
+f4-es,99,Griffin Core,Tatuus F4-T421,Tatuus,Abarth,SADEV,Hankook,F4,junior-f4-es-99
+f4-gb,4,Hitech TGR,Tatuus F4-T421,Tatuus,Abarth,SADEV,Pirelli,F4,junior-f4-gb-4
+f4-gb,5,Hitech TGR,Tatuus F4-T421,Tatuus,Abarth,SADEV,Pirelli,F4,junior-f4-gb-5
+f4-gb,6,Hitech TGR,Tatuus F4-T421,Tatuus,Abarth,SADEV,Pirelli,F4,junior-f4-gb-6
+f4-gb,7,Hitech TGR,Tatuus F4-T421,Tatuus,Abarth,SADEV,Pirelli,F4,junior-f4-gb-7
+f4-gb,12,Rodin Motorsport,Tatuus F4-T421,Tatuus,Abarth,SADEV,Pirelli,F4,junior-f4-gb-12
+f4-gb,13,Phinsys by Argenti,Tatuus F4-T421,Tatuus,Abarth,SADEV,Pirelli,F4,junior-f4-gb-13
+f4-gb,14,Chris Dittmann Racing,Tatuus F4-T421,Tatuus,Abarth,SADEV,Pirelli,F4,junior-f4-gb-14
+f4-gb,20,Rodin Motorsport,Tatuus F4-T421,Tatuus,Abarth,SADEV,Pirelli,F4,junior-f4-gb-20
+f4-gb,21,Chris Dittmann Racing,Tatuus F4-T421,Tatuus,Abarth,SADEV,Pirelli,F4,junior-f4-gb-21
+f4-gb,22,JHR Developments,Tatuus F4-T421,Tatuus,Abarth,SADEV,Pirelli,F4,junior-f4-gb-22
+f4-gb,24,Virtuosi Racing,Tatuus F4-T421,Tatuus,Abarth,SADEV,Pirelli,F4,junior-f4-gb-24
+f4-gb,25,Phinsys by Argenti,Tatuus F4-T421,Tatuus,Abarth,SADEV,Pirelli,F4,junior-f4-gb-25
+f4-gb,26,Fortec Motorsport,Tatuus F4-T421,Tatuus,Abarth,SADEV,Pirelli,F4,junior-f4-gb-26
+f4-gb,27,Chris Dittmann Racing,Tatuus F4-T421,Tatuus,Abarth,SADEV,Pirelli,F4,junior-f4-gb-27
+f4-gb,32,JHR Developments,Tatuus F4-T421,Tatuus,Abarth,SADEV,Pirelli,F4,junior-f4-gb-32
+f4-gb,33,Xcel Motorsport,Tatuus F4-T421,Tatuus,Abarth,SADEV,Pirelli,F4,junior-f4-gb-33
+f4-gb,42,JHR Developments,Tatuus F4-T421,Tatuus,Abarth,SADEV,Pirelli,F4,junior-f4-gb-42
+f4-gb,47,Phinsys by Argenti,Tatuus F4-T421,Tatuus,Abarth,SADEV,Pirelli,F4,junior-f4-gb-47
+f4-gb,69,Xcel Motorsport,Tatuus F4-T421,Tatuus,Abarth,SADEV,Pirelli,F4,junior-f4-gb-69
+f4-gb,90,Xcel Motorsport,Tatuus F4-T421,Tatuus,Abarth,SADEV,Pirelli,F4,junior-f4-gb-90
+f4-gb,93,Rodin Motorsport,Tatuus F4-T421,Tatuus,Abarth,SADEV,Pirelli,F4,junior-f4-gb-93
+f4-it,3,Van Amersfoort Racing,Tatuus F4-T421,Tatuus,Abarth,SADEV,Pirelli,F4,junior-f4-it-3
+f4-it,4,US Racing,Tatuus F4-T421,Tatuus,Abarth,SADEV,Pirelli,F4,junior-f4-it-4
+f4-it,5,PHM Racing,Tatuus F4-T421,Tatuus,Abarth,SADEV,Pirelli,F4,junior-f4-it-5
+f4-it,7,US Racing,Tatuus F4-T421,Tatuus,Abarth,SADEV,Pirelli,F4,junior-f4-it-7
+f4-it,11,Real Racing,Tatuus F4-T421,Tatuus,Abarth,SADEV,Pirelli,F4,junior-f4-it-11
+f4-it,13,PHM Racing,Tatuus F4-T421,Tatuus,Abarth,SADEV,Pirelli,F4,junior-f4-it-13
+f4-it,19,US Racing,Tatuus F4-T421,Tatuus,Abarth,SADEV,Pirelli,F4,junior-f4-it-19
+f4-it,20,Jenzer Motorsport,Tatuus F4-T421,Tatuus,Abarth,SADEV,Pirelli,F4,junior-f4-it-20
+f4-it,21,Jenzer Motorsport,Tatuus F4-T421,Tatuus,Abarth,SADEV,Pirelli,F4,junior-f4-it-21
+f4-it,22,Maffi Racing,Tatuus F4-T421,Tatuus,Abarth,SADEV,Pirelli,F4,junior-f4-it-22
+f4-it,23,Jenzer Motorsport,Tatuus F4-T421,Tatuus,Abarth,SADEV,Pirelli,F4,junior-f4-it-23
+f4-it,26,Jenzer Motorsport,Tatuus F4-T421,Tatuus,Abarth,SADEV,Pirelli,F4,junior-f4-it-26
+f4-it,27,PREMA Racing,Tatuus F4-T421,Tatuus,Abarth,SADEV,Pirelli,F4,junior-f4-it-27
+f4-it,28,PREMA Racing,Tatuus F4-T421,Tatuus,Abarth,SADEV,Pirelli,F4,junior-f4-it-28
+f4-it,29,Viola Formula Racing,Tatuus F4-T421,Tatuus,Abarth,SADEV,Pirelli,F4,junior-f4-it-29
+f4-it,30,Viola Formula Racing,Tatuus F4-T421,Tatuus,Abarth,SADEV,Pirelli,F4,junior-f4-it-30
+f4-it,31,Maffi Racing,Tatuus F4-T421,Tatuus,Abarth,SADEV,Pirelli,F4,junior-f4-it-31
+f4-it,33,PREMA Racing,Tatuus F4-T421,Tatuus,Abarth,SADEV,Pirelli,F4,junior-f4-it-33
+f4-it,35,Viola Formula Racing,Tatuus F4-T421,Tatuus,Abarth,SADEV,Pirelli,F4,junior-f4-it-35
+f4-it,38,Van Amersfoort Racing,Tatuus F4-T421,Tatuus,Abarth,SADEV,Pirelli,F4,junior-f4-it-38
+f4-it,39,Cram Motorsport,Tatuus F4-T421,Tatuus,Abarth,SADEV,Pirelli,F4,junior-f4-it-39
+f4-it,41,R-ace GP,Tatuus F4-T421,Tatuus,Abarth,SADEV,Pirelli,F4,junior-f4-it-41
+f4-it,42,R-ace GP,Tatuus F4-T421,Tatuus,Abarth,SADEV,Pirelli,F4,junior-f4-it-42
+f4-it,44,R-ace GP,Tatuus F4-T421,Tatuus,Abarth,SADEV,Pirelli,F4,junior-f4-it-44
+f4-it,45,Maffi Racing,Tatuus F4-T421,Tatuus,Abarth,SADEV,Pirelli,F4,junior-f4-it-45
+f4-it,50,US Racing,Tatuus F4-T421,Tatuus,Abarth,SADEV,Pirelli,F4,junior-f4-it-50
+f4-it,51,PREMA Racing,Tatuus F4-T421,Tatuus,Abarth,SADEV,Pirelli,F4,junior-f4-it-51
+f4-it,52,R-ace GP,Tatuus F4-T421,Tatuus,Abarth,SADEV,Pirelli,F4,junior-f4-it-52
+f4-it,66,Van Amersfoort Racing,Tatuus F4-T421,Tatuus,Abarth,SADEV,Pirelli,F4,junior-f4-it-66
+f4-it,67,Van Amersfoort Racing,Tatuus F4-T421,Tatuus,Abarth,SADEV,Pirelli,F4,junior-f4-it-67
+f4-it,68,R-ace GP,Tatuus F4-T421,Tatuus,Abarth,SADEV,Pirelli,F4,junior-f4-it-68
+f4-it,71,US Racing,Tatuus F4-T421,Tatuus,Abarth,SADEV,Pirelli,F4,junior-f4-it-71
+f4-it,77,Jenzer Motorsport,Tatuus F4-T421,Tatuus,Abarth,SADEV,Pirelli,F4,junior-f4-it-77
+f4-it,78,US Racing,Tatuus F4-T421,Tatuus,Abarth,SADEV,Pirelli,F4,junior-f4-it-78
+f4-it,81,Real Racing,Tatuus F4-T421,Tatuus,Abarth,SADEV,Pirelli,F4,junior-f4-it-81
+f4-it,87,Technorace Competition,Tatuus F4-T421,Tatuus,Abarth,SADEV,Pirelli,F4,junior-f4-it-87
+f4-it,88,PREMA Racing,Tatuus F4-T421,Tatuus,Abarth,SADEV,Pirelli,F4,junior-f4-it-88
+f4-it,91,Maffi Racing,Tatuus F4-T421,Tatuus,Abarth,SADEV,Pirelli,F4,junior-f4-it-91
+f4-it,94,Van Amersfoort Racing,Tatuus F4-T421,Tatuus,Abarth,SADEV,Pirelli,F4,junior-f4-it-94
+f4-it,95,AS Motorsport,Tatuus F4-T421,Tatuus,Abarth,SADEV,Pirelli,F4,junior-f4-it-95
+f4-it,98,PREMA Racing,Tatuus F4-T421,Tatuus,Abarth,SADEV,Pirelli,F4,junior-f4-it-98
+freca,2,G4 Racing,Tatuus T-318,Tatuus,Renault,SADEV,Pirelli,FR,junior-freca-2
+freca,3,G4 Racing,Tatuus T-318,Tatuus,Renault,SADEV,Pirelli,FR,junior-freca-3
+freca,4,MP Motorsport,Tatuus T-318,Tatuus,Renault,SADEV,Pirelli,FR,junior-freca-4
+freca,5,Trident,Tatuus T-318,Tatuus,Renault,SADEV,Pirelli,FR,junior-freca-5
+freca,6,Van Amersfoort Racing,Tatuus T-318,Tatuus,Renault,SADEV,Pirelli,FR,junior-freca-6
+freca,7,Trident,Tatuus T-318,Tatuus,Renault,SADEV,Pirelli,FR,junior-freca-7
+freca,8,Trident,Tatuus T-318,Tatuus,Renault,SADEV,Pirelli,FR,junior-freca-8
+freca,10,Saintéloc Racing,Tatuus T-318,Tatuus,Renault,SADEV,Pirelli,FR,junior-freca-10
+freca,11,R-ace GP,Tatuus T-318,Tatuus,Renault,SADEV,Pirelli,FR,junior-freca-11
+freca,12,CL Motorsport,Tatuus T-318,Tatuus,Renault,SADEV,Pirelli,FR,junior-freca-12
+freca,14,PREMA Racing,Tatuus T-318,Tatuus,Renault,SADEV,Pirelli,FR,junior-freca-14
+freca,15,AKCEL GP,Tatuus T-318,Tatuus,Renault,SADEV,Pirelli,FR,junior-freca-15
+freca,16,AKCEL GP,Tatuus T-318,Tatuus,Renault,SADEV,Pirelli,FR,junior-freca-16
+freca,18,Saintéloc Racing,Tatuus T-318,Tatuus,Renault,SADEV,Pirelli,FR,junior-freca-18
+freca,19,ART Grand Prix,Tatuus T-318,Tatuus,Renault,SADEV,Pirelli,FR,junior-freca-19
+freca,20,MP Motorsport,Tatuus T-318,Tatuus,Renault,SADEV,Pirelli,FR,junior-freca-20
+freca,21,RPM,Tatuus T-318,Tatuus,Renault,SADEV,Pirelli,FR,junior-freca-21
+freca,22,Van Amersfoort Racing,Tatuus T-318,Tatuus,Renault,SADEV,Pirelli,FR,junior-freca-22
+freca,23,R-ace GP,Tatuus T-318,Tatuus,Renault,SADEV,Pirelli,FR,junior-freca-23
+freca,27,PREMA Racing,Tatuus T-318,Tatuus,Renault,SADEV,Pirelli,FR,junior-freca-27
+freca,31,R-ace GP,Tatuus T-318,Tatuus,Renault,SADEV,Pirelli,FR,junior-freca-31
+freca,33,MP Motorsport,Tatuus T-318,Tatuus,Renault,SADEV,Pirelli,FR,junior-freca-33
+freca,35,G4 Racing,Tatuus T-318,Tatuus,Renault,SADEV,Pirelli,FR,junior-freca-35
+freca,45,PREMA Racing,Tatuus T-318,Tatuus,Renault,SADEV,Pirelli,FR,junior-freca-45
+freca,50,Saintéloc Racing,Tatuus T-318,Tatuus,Renault,SADEV,Pirelli,FR,junior-freca-50
+freca,55,Van Amersfoort Racing,Tatuus T-318,Tatuus,Renault,SADEV,Pirelli,FR,junior-freca-55
+freca,74,RPM,Tatuus T-318,Tatuus,Renault,SADEV,Pirelli,FR,junior-freca-74
+freca,89,ART Grand Prix,Tatuus T-318,Tatuus,Renault,SADEV,Pirelli,FR,junior-freca-89
+freca,95,ART Grand Prix,Tatuus T-318,Tatuus,Renault,SADEV,Pirelli,FR,junior-freca-95
+freca,99,RPM,Tatuus T-318,Tatuus,Renault,SADEV,Pirelli,FR,junior-freca-99
+kart-ok,101,KR Motorsport,KR · IAME,KR,IAME,,Maxxis,OK,junior-kart-ok-101
+kart-ok,102,PREMA Racing,KR · IAME,KR,IAME,,Maxxis,OK,junior-kart-ok-102
+kart-ok,103,VDK Racing,KR · IAME,KR,IAME,,Maxxis,OK,junior-kart-ok-103
+kart-ok,104,Parolin Motorsport,Parolin · TM Kart,Parolin,TM Kart,,Maxxis,OK,junior-kart-ok-104
+kart-ok,105,KR Motorsport,KR · IAME,KR,IAME,,Maxxis,OK,junior-kart-ok-105
+kart-ok,106,Energy Corse,Energy Corse · IAME,Energy Corse,IAME,,Maxxis,OK,junior-kart-ok-106
+kart-ok,107,Forza Racing,Exprit · TM Kart,Exprit,TM Kart,,Maxxis,OK,junior-kart-ok-107
+kart-ok,108,Forza Racing,Exprit · TM Kart,Exprit,TM Kart,,Maxxis,OK,junior-kart-ok-108
+kart-ok,109,CRG,CRG · IAME,CRG,IAME,,Maxxis,OK,junior-kart-ok-109
+kart-ok,110,KR Motorsport,KR · IAME,KR,IAME,,Maxxis,OK,junior-kart-ok-110
+kart-ok,111,VictoryLane,KR · IAME,KR,IAME,,Maxxis,OK,junior-kart-ok-111
+kart-ok,112,DPK Racing,KR · IAME,KR,IAME,,Maxxis,OK,junior-kart-ok-112
+kart-ok,113,Tony Kart Racing Team,Tony Kart · Vortex,Tony Kart,Vortex,,Maxxis,OK,junior-kart-ok-113
+kart-ok,114,Ward Racing,Tony Kart · TM Kart,Tony Kart,TM Kart,,Maxxis,OK,junior-kart-ok-114
+kart-ok,115,Fusion Motorsport,KR · IAME,KR,IAME,,Maxxis,OK,junior-kart-ok-115
+kart-ok,116,KR Motorsport,KR · IAME,KR,IAME,,Maxxis,OK,junior-kart-ok-116
+kart-ok,117,DPK Racing,KR · IAME,KR,IAME,,Maxxis,OK,junior-kart-ok-117
+kart-ok,118,CRG,CRG · IAME,CRG,IAME,,Maxxis,OK,junior-kart-ok-118
+kart-ok,119,PREMA Racing,KR · IAME,KR,IAME,,Maxxis,OK,junior-kart-ok-119
+kart-ok,120,KRZ Motorsport,KR · TM Kart,KR,TM Kart,,Maxxis,OK,junior-kart-ok-120
+kart-ok,121,PREMA Racing,KR · IAME,KR,IAME,,Maxxis,OK,junior-kart-ok-121
+kart-ok,122,Ricky Flynn Motorsport,LN · TM Kart,LN,TM Kart,,Maxxis,OK,junior-kart-ok-122
+kart-ok,123,Ward Racing,Tony Kart · TM Kart,Tony Kart,TM Kart,,Maxxis,OK,junior-kart-ok-123
+kart-ok,124,VDK Racing,KR · IAME,KR,IAME,,Maxxis,OK,junior-kart-ok-124
+kart-ok,125,Energy Corse,Energy Corse · IAME,Energy Corse,IAME,,Maxxis,OK,junior-kart-ok-125
+kart-ok,126,Tony Kart Racing Team,Tony Kart · Vortex,Tony Kart,Vortex,,Maxxis,OK,junior-kart-ok-126
+kart-ok,127,Birel ART Racing,Birel Art · TM Kart,Birel Art,TM Kart,,Maxxis,OK,junior-kart-ok-127
+kart-ok,128,PREMA Racing,KR · IAME,KR,IAME,,Maxxis,OK,junior-kart-ok-128
+kart-ok,129,KR Motorsport,KR · IAME,KR,IAME,,Maxxis,OK,junior-kart-ok-129
+kart-ok,130,PREMA Racing,KR · IAME,KR,IAME,,Maxxis,OK,junior-kart-ok-130
+kart-ok,131,VDK Racing,KR · IAME,KR,IAME,,Maxxis,OK,junior-kart-ok-131
+kart-ok,132,MP Kartracing,Henza Kart · IAME,Henza Kart,IAME,,Maxxis,OK,junior-kart-ok-132
+kart-ok,133,VictoryLane,KR · IAME,KR,IAME,,Maxxis,OK,junior-kart-ok-133
+kart-ok,134,Forza Racing,Exprit · TM Kart,Exprit,TM Kart,,Maxxis,OK,junior-kart-ok-134
+kart-ok,135,Koski Motorsport,KR · IAME,KR,IAME,,Maxxis,OK,junior-kart-ok-135
+kart-ok,136,KR Motorsport,KR · IAME,KR,IAME,,Maxxis,OK,junior-kart-ok-136
+kart-ok,137,VAR by Birel,Birel Art · TM Kart,Birel Art,TM Kart,,Maxxis,OK,junior-kart-ok-137
+kart-ok,138,Tony Kart Racing Team,Tony Kart · Vortex,Tony Kart,Vortex,,Maxxis,OK,junior-kart-ok-138
+kart-ok,139,Tony Kart Racing Team,Tony Kart · Vortex,Tony Kart,Vortex,,Maxxis,OK,junior-kart-ok-139
+kart-ok,140,DPK Racing,KR · IAME,KR,IAME,,Maxxis,OK,junior-kart-ok-140
+kart-ok,141,Ricky Flynn Motorsport,LN · TM Kart,LN,TM Kart,,Maxxis,OK,junior-kart-ok-141
+kart-ok,142,Parolin Motorsport,Parolin · TM Kart,Parolin,TM Kart,,Maxxis,OK,junior-kart-ok-142
+kart-ok,143,Liqui-Moly Roli Motorsport,KR · TM Kart,KR,TM Kart,,Maxxis,OK,junior-kart-ok-143
+kart-ok,144,Fusion Motorsport,KR · IAME,KR,IAME,,Maxxis,OK,junior-kart-ok-144
+kart-ok,145,VictoryLane,KR · IAME,KR,IAME,,Maxxis,OK,junior-kart-ok-145
+kart-ok,146,DPK Racing,KR · IAME,KR,IAME,,Maxxis,OK,junior-kart-ok-146
+kart-ok,147,PREMA Racing,KR · IAME,KR,IAME,,Maxxis,OK,junior-kart-ok-147
+kart-ok,148,KR Motorsport,KR · IAME,KR,IAME,,Maxxis,OK,junior-kart-ok-148
+kart-ok,149,KRZ Motorsport,KR · TM Kart,KR,TM Kart,,Maxxis,OK,junior-kart-ok-149
+kart-ok,150,PREMA Racing,KR · IAME,KR,IAME,,Maxxis,OK,junior-kart-ok-150
+kart-ok,151,VictoryLane,KR · IAME,KR,IAME,,Maxxis,OK,junior-kart-ok-151
+kart-ok,152,Parolin Motorsport,Parolin · TM Kart,Parolin,TM Kart,,Maxxis,OK,junior-kart-ok-152
+kart-ok,153,Ward Racing,Tony Kart · TM Kart,Tony Kart,TM Kart,,Maxxis,OK,junior-kart-ok-153
+kart-ok,154,Fusion Motorsport,KR · IAME,KR,IAME,,Maxxis,OK,junior-kart-ok-154
+kart-ok,155,AKM Motorsport,KR · IAME,KR,IAME,,Maxxis,OK,junior-kart-ok-155
+kart-ok,156,AKM Motorsport,KR · IAME,KR,IAME,,Maxxis,OK,junior-kart-ok-156
+kart-ok,157,VictoryLane,KR · IAME,KR,IAME,,Maxxis,OK,junior-kart-ok-157
+kart-ok,158,DPK Racing,KR · IAME,KR,IAME,,Maxxis,OK,junior-kart-ok-158
+kart-ok,159,Birel ART Racing,Birel Art · TM Kart,Birel Art,TM Kart,,Maxxis,OK,junior-kart-ok-159
+kart-ok,160,KBK Competition,KR · TM Kart,KR,TM Kart,,Maxxis,OK,junior-kart-ok-160
+kart-ok,161,KR Motorsport,KR · IAME,KR,IAME,,Maxxis,OK,junior-kart-ok-161
+kart-ok,162,VictoryLane,KR · IAME,KR,IAME,,Maxxis,OK,junior-kart-ok-162
+kart-ok,163,MP Kartracing,Henza Kart · IAME,Henza Kart,IAME,,Maxxis,OK,junior-kart-ok-163
+kart-ok,164,KR Motorsport,KR · IAME,KR,IAME,,Maxxis,OK,junior-kart-ok-164
+kart-ok,165,VictoryLane,KR · IAME,KR,IAME,,Maxxis,OK,junior-kart-ok-165
+kart-ok,166,CRG,CRG · IAME,CRG,IAME,,Maxxis,OK,junior-kart-ok-166
+kart-ok,167,ASD Monster K Factory Team,Monster Kart · TM Kart,Monster Kart,TM Kart,,Maxxis,OK,junior-kart-ok-167
+kart-ok,168,VictoryLane,KR · IAME,KR,IAME,,Maxxis,OK,junior-kart-ok-168
+kart-ok,169,VDK Racing,KR · IAME,KR,IAME,,Maxxis,OK,junior-kart-ok-169
+kart-ok,170,Fusion Motorsport,KR · IAME,KR,IAME,,Maxxis,OK,junior-kart-ok-170
+kart-ok,171,Parolin Motorsport,Parolin · TM Kart,Parolin,TM Kart,,Maxxis,OK,junior-kart-ok-171
+kart-ok,172,Parolin Motorsport,Parolin · TM Kart,Parolin,TM Kart,,Maxxis,OK,junior-kart-ok-172
+kart-ok,173,Koski Motorsport,KR · IAME,KR,IAME,,Maxxis,OK,junior-kart-ok-173
+kart-ok,174,DPK Racing,KR · IAME,KR,IAME,,Maxxis,OK,junior-kart-ok-174
+kart-ok,175,KR Motorsport,KR · IAME,KR,IAME,,Maxxis,OK,junior-kart-ok-175
+kart-ok,176,DPK Racing,KR · IAME,KR,IAME,,Maxxis,OK,junior-kart-ok-176
+kart-ok,177,VictoryLane,KR · IAME,KR,IAME,,Maxxis,OK,junior-kart-ok-177
+kart-ok,178,Ricky Flynn Motorsport,LN · TM Kart,LN,TM Kart,,Maxxis,OK,junior-kart-ok-178
+kart-ok,179,Fusion Motorsport,KR · IAME,KR,IAME,,Maxxis,OK,junior-kart-ok-179
+kart-ok,180,KR Motorsport,KR · IAME,KR,IAME,,Maxxis,OK,junior-kart-ok-180
+kart-ok,181,Hagemann Racing,Exprit · TM Kart,Exprit,TM Kart,,Maxxis,OK,junior-kart-ok-181
+kart-ok,182,CL Racing Team,Birel Art · TM Kart,Birel Art,TM Kart,,Maxxis,OK,junior-kart-ok-182
+kart-ok,183,CRG,CRG · IAME,CRG,IAME,,Maxxis,OK,junior-kart-ok-183
+kart-ok,184,Birel ART Racing,Birel Art · TM Kart,Birel Art,TM Kart,,Maxxis,OK,junior-kart-ok-184
+kart-ok,185,Forza Racing,Exprit · TM Kart,Exprit,TM Kart,,Maxxis,OK,junior-kart-ok-185
+kart-ok,186,MP Kartracing,Henza Kart · IAME,Henza Kart,IAME,,Maxxis,OK,junior-kart-ok-186
+kart-ok,187,MP Kartracing,Henza Kart · IAME,Henza Kart,IAME,,Maxxis,OK,junior-kart-ok-187
+kart-ok,188,MP Kartracing,Henza Kart · IAME,Henza Kart,IAME,,Maxxis,OK,junior-kart-ok-188
+kart-ok,189,KBK Competition,KR · TM Kart,KR,TM Kart,,Maxxis,OK,junior-kart-ok-189
+kart-ok,190,KBK Competition,KR · IAME,KR,IAME,,Maxxis,OK,junior-kart-ok-190
+kart-ok,191,VDK Racing,KR · IAME,KR,IAME,,Maxxis,OK,junior-kart-ok-191
+kart-ok,192,VDK Racing,KR · IAME,KR,IAME,,Maxxis,OK,junior-kart-ok-192
+kart-ok,193,CRG,CRG · IAME,CRG,IAME,,Maxxis,OK,junior-kart-ok-193
+kart-ok,194,Forza Racing,Exprit · TM Kart,Exprit,TM Kart,,Maxxis,OK,junior-kart-ok-194
+kart-ok,195,Fusion Motorsport,KR · IAME,KR,IAME,,Maxxis,OK,junior-kart-ok-195
+kart-ok,196,KRZ Motorsport,KR · TM Kart,KR,TM Kart,,Maxxis,OK,junior-kart-ok-196
+kart-ok,197,MP Kartracing,Henza Kart · IAME,Henza Kart,IAME,,Maxxis,OK,junior-kart-ok-197
+kart-ok,301,Ward Racing,Tony Kart · TM Kart,Tony Kart,TM Kart,,Maxxis,OK,junior-kart-ok-301
+kart-okj,202,PREMA Racing,KR · IAME,KR,IAME,,Maxxis,OK-Junior,junior-kart-okj-202
+kart-okj,203,Ricky Flynn Motorsport,LN · TM Kart,LN,TM Kart,,Maxxis,OK-Junior,junior-kart-okj-203
+kart-okj,204,Tony Kart Racing Team,Tony Kart · Vortex,Tony Kart,Vortex,,Maxxis,OK-Junior,junior-kart-okj-204
+kart-okj,205,PREMA Racing,KR · IAME,KR,IAME,,Maxxis,OK-Junior,junior-kart-okj-205
+kart-okj,206,Forza Racing,Exprit · TM Kart,Exprit,TM Kart,,Maxxis,OK-Junior,junior-kart-okj-206
+kart-okj,207,Forza Racing,Exprit · TM Kart,Exprit,TM Kart,,Maxxis,OK-Junior,junior-kart-okj-207
+kart-okj,208,DPK Racing,KR · IAME,KR,IAME,,Maxxis,OK-Junior,junior-kart-okj-208
+kart-okj,209,KR Motorsport,KR · IAME,KR,IAME,,Maxxis,OK-Junior,junior-kart-okj-209
+kart-okj,210,Forza Racing,Exprit · TM Kart,Exprit,TM Kart,,Maxxis,OK-Junior,junior-kart-okj-210
+kart-okj,211,DPK Racing,KR · IAME,KR,IAME,,Maxxis,OK-Junior,junior-kart-okj-211
+kart-okj,212,VDK Racing,KR · IAME,KR,IAME,,Maxxis,OK-Junior,junior-kart-okj-212
+kart-okj,213,Ward Racing,Tony Kart · TM Kart,Tony Kart,TM Kart,,Maxxis,OK-Junior,junior-kart-okj-213
+kart-okj,214,Koski Motorsport,KR · IAME,KR,IAME,,Maxxis,OK-Junior,junior-kart-okj-214
+kart-okj,215,KR Motorsport,KR · IAME,KR,IAME,,Maxxis,OK-Junior,junior-kart-okj-215
+kart-okj,216,Koski Motorsport,KR · IAME,KR,IAME,,Maxxis,OK-Junior,junior-kart-okj-216
+kart-okj,217,KR Motorsport,KR · IAME,KR,IAME,,Maxxis,OK-Junior,junior-kart-okj-217
+kart-okj,218,VictoryLane,KR · IAME,KR,IAME,,Maxxis,OK-Junior,junior-kart-okj-218
+kart-okj,219,Fusion Motorsport,KR · IAME,KR,IAME,,Maxxis,OK-Junior,junior-kart-okj-219
+kart-okj,220,Ricky Flynn Motorsport,LN · TM Kart,LN,TM Kart,,Maxxis,OK-Junior,junior-kart-okj-220
+kart-okj,221,Fusion Motorsport,KR · IAME,KR,IAME,,Maxxis,OK-Junior,junior-kart-okj-221
+kart-okj,222,Fusion Motorsport,KR · IAME,KR,IAME,,Maxxis,OK-Junior,junior-kart-okj-222
+kart-okj,223,Fusion Motorsport,KR · IAME,KR,IAME,,Maxxis,OK-Junior,junior-kart-okj-223
+kart-okj,224,Ward Racing,Tony Kart · TM Kart,Tony Kart,TM Kart,,Maxxis,OK-Junior,junior-kart-okj-224
+kart-okj,225,AKM Motorsport,KR · IAME,KR,IAME,,Maxxis,OK-Junior,junior-kart-okj-225
+kart-okj,226,Parolin Motorsport,Parolin · TM Kart,Parolin,TM Kart,,Maxxis,OK-Junior,junior-kart-okj-226
+kart-okj,227,KR Motorsport,KR · IAME,KR,IAME,,Maxxis,OK-Junior,junior-kart-okj-227
+kart-okj,228,Parolin Motorsport,Parolin · TM Kart,Parolin,TM Kart,,Maxxis,OK-Junior,junior-kart-okj-228
+kart-okj,229,Tony Kart Racing Team,Tony Kart · Vortex,Tony Kart,Vortex,,Maxxis,OK-Junior,junior-kart-okj-229
+kart-okj,230,Ricky Flynn Motorsport,LN · TM Kart,LN,TM Kart,,Maxxis,OK-Junior,junior-kart-okj-230
+kart-okj,231,Forza Racing,Exprit · TM Kart,Exprit,TM Kart,,Maxxis,OK-Junior,junior-kart-okj-231
+kart-okj,232,Fusion Motorsport,KR · IAME,KR,IAME,,Maxxis,OK-Junior,junior-kart-okj-232
+kart-okj,233,Forza Racing,Exprit · TM Kart,Exprit,TM Kart,,Maxxis,OK-Junior,junior-kart-okj-233
+kart-okj,234,Hagemann Racing,Exprit · TM Kart,Exprit,TM Kart,,Maxxis,OK-Junior,junior-kart-okj-234
+kart-okj,235,Fusion Motorsport,KR · IAME,KR,IAME,,Maxxis,OK-Junior,junior-kart-okj-235
+kart-okj,236,Birel ART Racing,Birel Art · TM Kart,Birel Art,TM Kart,,Maxxis,OK-Junior,junior-kart-okj-236
+kart-okj,237,Parolin Motorsport,Parolin · TM Kart,Parolin,TM Kart,,Maxxis,OK-Junior,junior-kart-okj-237
+kart-okj,239,Tony Kart Racing Team,Tony Kart · Vortex,Tony Kart,Vortex,,Maxxis,OK-Junior,junior-kart-okj-239
+kart-okj,240,Tony Kart Racing Team,Tony Kart · Vortex,Tony Kart,Vortex,,Maxxis,OK-Junior,junior-kart-okj-240
+kart-okj,241,VictoryLane,KR · IAME,KR,IAME,,Maxxis,OK-Junior,junior-kart-okj-241
+kart-okj,242,Tony Kart Racing Team,Tony Kart · Vortex,Tony Kart,Vortex,,Maxxis,OK-Junior,junior-kart-okj-242
+kart-okj,243,Hagemann Racing,Exprit · TM Kart,Exprit,TM Kart,,Maxxis,OK-Junior,junior-kart-okj-243
+kart-okj,244,Tony Kart Racing Team,Tony Kart · Vortex,Tony Kart,Vortex,,Maxxis,OK-Junior,junior-kart-okj-244
+kart-okj,245,Parolin Motorsport,Parolin · TM Kart,Parolin,TM Kart,,Maxxis,OK-Junior,junior-kart-okj-245
+kart-okj,246,VictoryLane,KR · IAME,KR,IAME,,Maxxis,OK-Junior,junior-kart-okj-246
+kart-okj,247,Forza Racing,Exprit · TM Kart,Exprit,TM Kart,,Maxxis,OK-Junior,junior-kart-okj-247
+kart-okj,248,DPK Racing,KR · IAME,KR,IAME,,Maxxis,OK-Junior,junior-kart-okj-248
+kart-okj,249,VictoryLane,KR · IAME,KR,IAME,,Maxxis,OK-Junior,junior-kart-okj-249
+kart-okj,250,GE.LU.MI.NI,CRG · TM Kart,CRG,TM Kart,,Maxxis,OK-Junior,junior-kart-okj-250
+kart-okj,251,Fusion Motorsport,KR · IAME,KR,IAME,,Maxxis,OK-Junior,junior-kart-okj-251
+kart-okj,252,Forza Racing,Exprit · TM Kart,Exprit,TM Kart,,Maxxis,OK-Junior,junior-kart-okj-252
+kart-okj,253,Ricky Flynn Motorsport,LN · TM Kart,LN,TM Kart,,Maxxis,OK-Junior,junior-kart-okj-253
+kart-okj,254,DPK Racing,KR · IAME,KR,IAME,,Maxxis,OK-Junior,junior-kart-okj-254
+kart-okj,255,Ricky Flynn Motorsport,LN · TM Kart,LN,TM Kart,,Maxxis,OK-Junior,junior-kart-okj-255
+kart-okj,256,CRG,CRG · IAME,CRG,IAME,,Maxxis,OK-Junior,junior-kart-okj-256
+kart-okj,257,Birel ART Racing,Birel Art · TM Kart,Birel Art,TM Kart,,Maxxis,OK-Junior,junior-kart-okj-257
+kart-okj,258,Ward Racing,Tony Kart · TM Kart,Tony Kart,TM Kart,,Maxxis,OK-Junior,junior-kart-okj-258
+kart-okj,259,Energy Corse,Energy Corse · TM Kart,Energy Corse,TM Kart,,Maxxis,OK-Junior,junior-kart-okj-259
+kart-okj,260,VDK Racing,KR · IAME,KR,IAME,,Maxxis,OK-Junior,junior-kart-okj-260
+kart-okj,261,KRZ Motorsport,KR · TM Kart,KR,TM Kart,,Maxxis,OK-Junior,junior-kart-okj-261
+kart-okj,263,AKM Motorsport,KR · IAME,KR,IAME,,Maxxis,OK-Junior,junior-kart-okj-263
+kart-okj,264,Ricky Flynn Motorsport,LN · TM Kart,LN,TM Kart,,Maxxis,OK-Junior,junior-kart-okj-264
+kart-okj,265,AKM Motorsport,KR · IAME,KR,IAME,,Maxxis,OK-Junior,junior-kart-okj-265
+kart-okj,266,Birel ART Racing,Birel Art · TM Kart,Birel Art,TM Kart,,Maxxis,OK-Junior,junior-kart-okj-266
+kart-okj,267,Forza Racing,Exprit · TM Kart,Exprit,TM Kart,,Maxxis,OK-Junior,junior-kart-okj-267
+kart-okj,268,Energy Corse,Energy Corse · TM Kart,Energy Corse,TM Kart,,Maxxis,OK-Junior,junior-kart-okj-268
+kart-okj,269,VDK Racing,KR · IAME,KR,IAME,,Maxxis,OK-Junior,junior-kart-okj-269
+kart-okj,270,Ricky Flynn Motorsport,LN · TM Kart,LN,TM Kart,,Maxxis,OK-Junior,junior-kart-okj-270
+kart-okj,271,TEPZ Racing Team,Tony Kart · IAME,Tony Kart,IAME,,Maxxis,OK-Junior,junior-kart-okj-271
+kart-okj,272,MP Kartracing,Henza Kart · IAME,Henza Kart,IAME,,Maxxis,OK-Junior,junior-kart-okj-272
+kart-okj,273,VictoryLane,KR · IAME,KR,IAME,,Maxxis,OK-Junior,junior-kart-okj-273
+kart-okj,274,VictoryLane,KR · IAME,KR,IAME,,Maxxis,OK-Junior,junior-kart-okj-274
+kart-okj,275,VictoryLane,KR · IAME,KR,IAME,,Maxxis,OK-Junior,junior-kart-okj-275
+kart-okj,276,Parolin Motorsport,Parolin · TM Kart,Parolin,TM Kart,,Maxxis,OK-Junior,junior-kart-okj-276
+kart-okj,277,Ward Racing,Tony Kart · TM Kart,Tony Kart,TM Kart,,Maxxis,OK-Junior,junior-kart-okj-277
+kart-okj,278,DPK Racing,KR · IAME,KR,IAME,,Maxxis,OK-Junior,junior-kart-okj-278
+kart-okj,279,ASD Monster K Factory Team,Monster Kart · TM Kart,Monster Kart,TM Kart,,Maxxis,OK-Junior,junior-kart-okj-279
+kart-okj,280,CRG,CRG · IAME,CRG,IAME,,Maxxis,OK-Junior,junior-kart-okj-280
+kart-okj,281,DPK Racing,KR · IAME,KR,IAME,,Maxxis,OK-Junior,junior-kart-okj-281
+kart-okj,282,Energy Corse,Energy Corse · TM Kart,Energy Corse,TM Kart,,Maxxis,OK-Junior,junior-kart-okj-282
+kart-okj,283,Forza Racing,Exprit · TM Kart,Exprit,TM Kart,,Maxxis,OK-Junior,junior-kart-okj-283
+kart-okj,284,Fusion Motorsport,KR · IAME,KR,IAME,,Maxxis,OK-Junior,junior-kart-okj-284
+kart-okj,285,Koski Motorsport,KR · IAME,KR,IAME,,Maxxis,OK-Junior,junior-kart-okj-285
+kart-okj,286,KR Motorsport,KR · IAME,KR,IAME,,Maxxis,OK-Junior,junior-kart-okj-286
+kart-okj,287,MP Kartracing,Henza Kart · IAME,Henza Kart,IAME,,Maxxis,OK-Junior,junior-kart-okj-287
+kart-okj,288,PREMA Racing,KR · IAME,KR,IAME,,Maxxis,OK-Junior,junior-kart-okj-288
+kart-okj,289,Ricky Flynn Motorsport,LN · TM Kart,LN,TM Kart,,Maxxis,OK-Junior,junior-kart-okj-289
+kart-okj,290,Tony Kart Racing Team,Tony Kart · Vortex,Tony Kart,Vortex,,Maxxis,OK-Junior,junior-kart-okj-290
+kart-okj,291,VDK Racing,KR · IAME,KR,IAME,,Maxxis,OK-Junior,junior-kart-okj-291
+kart-okj,399,Karting Club Campillos,LN · TM Kart,LN,TM Kart,,Maxxis,OK-Junior,junior-kart-okj-399

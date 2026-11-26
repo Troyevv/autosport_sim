@@ -79,8 +79,27 @@ def dossier(state, world, pid, wet=False):
                 if k not in ("arrears", "paid_cents", "reserved_cents", "exit_cents")
             }
         )
+    profile = development_path.public_person(p)
+    if p["position"] == "driver":
+        from .junior_path import licences_on, points_on
+
+        credentials = p["credentials"]
+        profile["credentials"] = dict(
+            licences=sorted(licences_on(credentials, state["date"])),
+            points=points_on(credentials, state["date"]),
+        )
     return dict(
-        person=development_path.public_person(p),
+        person=profile,
+        results=[
+            dict(
+                session_id=key, **{k: v for k, v in result.items() if k != "session_id"}
+            )
+            for key, result in state["starts"].get(pid, {}).items()
+            if result.get("entry")
+        ],
+        classifications=list(
+            p.get("credentials", {}).get("classifications", {}).values()
+        ),
         calendar_context=media_profile.calendar_context(state, world, p),
         relationships=teamwork.links(state, world, pid, state["date"]),
         reports=state["reports"].get(state["setup"]["org"], {}).get(pid, []),

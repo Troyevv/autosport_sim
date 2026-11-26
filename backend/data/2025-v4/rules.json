@@ -1,0 +1,578 @@
+{
+  "f4-it": {
+    "name": "Italian F4 Championship",
+    "discipline": "Formula",
+    "playable": true,
+    "classes": [
+      "F4"
+    ],
+    "crew": [
+      1,
+      1
+    ],
+    "governing_body": "ACI Sport",
+    "sessions": {
+      "standard": [
+        "Две практики по 40 минут",
+        "Квалификация 1",
+        "Квалификация 2",
+        "Гонка 1",
+        "Гонка 2",
+        "Гонка 3"
+      ],
+      "groups": [
+        "Практики",
+        "Квалификация 1",
+        "Квалификация 2",
+        "Заезд B/C",
+        "Заезд A/B",
+        "Заезд A/C",
+        "Финал · 36 мест"
+      ],
+      "final": [
+        "Практики",
+        "Квалификация 1",
+        "Квалификация 2",
+        "Заезд B/C",
+        "Заезд A/B",
+        "Заезд A/C",
+        "Финал · 36 мест",
+        "Перенесённая гонка 2 Имолы"
+      ],
+      "imola": [
+        "Практики",
+        "Квалификация 1",
+        "Квалификация 2",
+        "Гонка 1",
+        "Гонка 3"
+      ]
+    },
+    "points": {
+      "race": [
+        25,
+        18,
+        15,
+        12,
+        10,
+        8,
+        6,
+        4,
+        2,
+        1
+      ]
+    },
+    "finish": "30 минут + 1 круг · групповые заезды по 25 минут + 1 круг",
+    "admission": {
+      "min_age": 15,
+      "licence": "ITD-C",
+      "min_points": 0,
+      "priority": 1,
+      "licences": [
+        "ACI-F4",
+        "ITD-C",
+        "ITC-C"
+      ],
+      "forbidden_licences": [
+        "ITA",
+        "ITB"
+      ]
+    },
+    "superlicence": [
+      12,
+      10,
+      7,
+      5,
+      3,
+      2,
+      1
+    ],
+    "tyre_market": {
+      "F4": {
+        "id": "f4-it-2025-tyres-v1",
+        "mode": "sole",
+        "approved_suppliers": [
+          "supplier-pirelli"
+        ],
+        "allocation_authority": "organizer",
+        "source": "f4-it"
+      }
+    },
+    "technical_summary": "Tatuus F4-T421 · Abarth 1.4 Turbo · SADEV · Pirelli",
+    "short_name": "Italian F4"
+  },
+  "f4-gb": {
+    "name": "Wera Tools British F4 Championship",
+    "discipline": "Formula",
+    "playable": true,
+    "classes": [
+      "F4"
+    ],
+    "crew": [
+      1,
+      1
+    ],
+    "governing_body": "Motorsport UK",
+    "sessions": {
+      "standard": [
+        "Практика 1",
+        "Практика 2",
+        "Квалификация",
+        "Гонка 1",
+        "Гонка 2 · реверс первых 12",
+        "Гонка 3"
+      ]
+    },
+    "points": {
+      "race": [
+        25,
+        18,
+        15,
+        12,
+        10,
+        8,
+        6,
+        4,
+        2,
+        1
+      ],
+      "reverse": [
+        15,
+        12,
+        10,
+        8,
+        6,
+        4,
+        2,
+        1
+      ],
+      "fastest_eligible": 1,
+      "reverse_position_gained": 1
+    },
+    "finish": "20 минут",
+    "admission": {
+      "min_age": 15,
+      "licence": "MSUK-F4",
+      "min_points": 0,
+      "priority": 1,
+      "licences": [
+        "MSUK-F4",
+        "ITD-C",
+        "ITC-C"
+      ]
+    },
+    "superlicence": [
+      12,
+      10,
+      7,
+      5,
+      3,
+      2,
+      1
+    ],
+    "tyre_market": {
+      "F4": {
+        "id": "f4-gb-2025-tyres-v1",
+        "mode": "sole",
+        "approved_suppliers": [
+          "supplier-pirelli"
+        ],
+        "allocation_authority": "organizer",
+        "source": "f4-gb"
+      }
+    },
+    "technical_summary": "Tatuus F4-T421 · Abarth 1.4 Turbo · SADEV · Pirelli",
+    "short_name": "British F4"
+  },
+  "f4-es": {
+    "name": "F4 Spanish Championship",
+    "discipline": "Formula",
+    "playable": true,
+    "classes": [
+      "F4"
+    ],
+    "crew": [
+      1,
+      1
+    ],
+    "governing_body": "RFEDA",
+    "sessions": {
+      "standard": [
+        "Практика · 40 мин",
+        "Квалификация 1 · 20 мин",
+        "Гонка 1 · 30 мин + круг",
+        "Квалификация 2 · 20 мин",
+        "Гонка 2 · 25 мин + круг",
+        "Гонка 3 · 30 мин + круг"
+      ]
+    },
+    "points": {
+      "race": [
+        25,
+        18,
+        15,
+        12,
+        10,
+        8,
+        6,
+        4,
+        2,
+        1
+      ],
+      "short": [
+        18,
+        15,
+        12,
+        10,
+        8,
+        6,
+        4,
+        2,
+        1
+      ],
+      "pole": 2,
+      "fastest_eligible": 1
+    },
+    "finish": "25 или 30 минут + 1 круг",
+    "admission": {
+      "min_age": 15,
+      "licence": "RFEDA-F4",
+      "min_points": 0,
+      "priority": 1,
+      "forbidden_licences": [
+        "ITA",
+        "ITB"
+      ],
+      "licences": [
+        "RFEDA-F4",
+        "ITD-C",
+        "ITC-C"
+      ],
+      "excluded_titles": [
+        "freca",
+        "f4-es",
+        "f1",
+        "f2",
+        "f3"
+      ],
+      "required_clearance": "RFEDA-F4",
+      "prior_season_limit": 3,
+      "series": "f4-es"
+    },
+    "superlicence": [
+      12,
+      10,
+      7,
+      5,
+      3,
+      2,
+      1
+    ],
+    "tyre_market": {
+      "F4": {
+        "id": "f4-es-2025-tyres-v1",
+        "mode": "sole",
+        "approved_suppliers": [
+          "supplier-hankook"
+        ],
+        "allocation_authority": "organizer",
+        "source": "f4-es"
+      }
+    },
+    "technical_summary": "Tatuus F4-T421 · Abarth 1.4 Turbo · SADEV · Hankook",
+    "short_name": "Spanish F4"
+  },
+  "freca": {
+    "name": "Formula Regional European Championship by Alpine",
+    "discipline": "Formula",
+    "playable": true,
+    "classes": [
+      "FR"
+    ],
+    "crew": [
+      1,
+      1
+    ],
+    "governing_body": "ACI Sport",
+    "sessions": {
+      "standard": [
+        "Коллективные тесты 1",
+        "Коллективные тесты 2",
+        "Квалификация 1 · группы A/B",
+        "Гонка 1",
+        "Квалификация 2 · группы A/B",
+        "Гонка 2"
+      ]
+    },
+    "points": {
+      "race": [
+        25,
+        18,
+        15,
+        12,
+        10,
+        8,
+        6,
+        4,
+        2,
+        1
+      ]
+    },
+    "finish": "30 минут + 1 круг",
+    "admission": {
+      "min_age": 16,
+      "licence": "ITC-C",
+      "min_points": 0,
+      "priority": 1,
+      "licences": [
+        "ITC-C",
+        "ITB"
+      ],
+      "excluded_starts": [
+        "f2"
+      ],
+      "excluded_titles": [
+        "freca"
+      ],
+      "prior_season_limit": 3,
+      "recent_excluded_places": {
+        "f3": 3,
+        "f2": 7
+      },
+      "series": "freca"
+    },
+    "superlicence": [
+      25,
+      20,
+      15,
+      10,
+      7,
+      5,
+      3,
+      2,
+      1
+    ],
+    "tyre_market": {
+      "FR": {
+        "id": "freca-2025-tyres-v1",
+        "mode": "sole",
+        "approved_suppliers": [
+          "supplier-pirelli"
+        ],
+        "allocation_authority": "organizer",
+        "source": "freca"
+      }
+    },
+    "technical_summary": "Tatuus T-318 · Renault 1.8 Turbo · SADEV · Pirelli",
+    "short_name": "FRECA"
+  },
+  "kart-ok": {
+    "name": "FIA Karting European Championship · OK",
+    "discipline": "Karting",
+    "playable": false,
+    "classes": [
+      "OK"
+    ],
+    "crew": [
+      1,
+      1
+    ],
+    "governing_body": "FIA Karting",
+    "sessions": {
+      "standard": [
+        "Свободные тренировки",
+        "Квалификация по группам",
+        "Отборочные заезды",
+        "Суперхиты",
+        "Финал"
+      ]
+    },
+    "points": {
+      "race": [
+        50,
+        44,
+        38,
+        34,
+        30,
+        26,
+        22,
+        18,
+        14,
+        10,
+        8,
+        6,
+        4,
+        2,
+        1
+      ],
+      "qualifying_heats": [
+        25,
+        22,
+        19,
+        17,
+        15,
+        13,
+        11,
+        9,
+        7,
+        6,
+        5,
+        4,
+        3,
+        2,
+        1
+      ],
+      "super_heats": [
+        25,
+        22,
+        19,
+        17,
+        15,
+        13,
+        11,
+        9,
+        7,
+        6,
+        5,
+        4,
+        3,
+        2,
+        1
+      ],
+      "best_rounds_per_phase": 3,
+      "fastest_final": 1
+    },
+    "finish": "Дистанция в кругах",
+    "admission": {
+      "min_age": 14,
+      "licence": "ITF",
+      "min_points": 0,
+      "priority": 1,
+      "age_basis": "calendar_year",
+      "licences": [
+        "ITE",
+        "ITF"
+      ]
+    },
+    "superlicence": [
+      3,
+      2,
+      1
+    ],
+    "tyre_market": {
+      "OK": {
+        "id": "kart-ok-2025-tyres-v1",
+        "mode": "sole",
+        "approved_suppliers": [
+          "supplier-maxxis"
+        ],
+        "allocation_authority": "organizer",
+        "source": "kart-ok"
+      }
+    },
+    "technical_summary": "Шасси CIK-FIA · 125 см³, 2 такта · прямой привод · 16 000 об/мин · от 150 кг с пилотом · Maxxis",
+    "short_name": "FIA Karting · OK"
+  },
+  "kart-okj": {
+    "name": "FIA Karting European Championship · OK-Junior",
+    "discipline": "Karting",
+    "playable": false,
+    "classes": [
+      "OK-Junior"
+    ],
+    "crew": [
+      1,
+      1
+    ],
+    "governing_body": "FIA Karting",
+    "sessions": {
+      "standard": [
+        "Свободные тренировки",
+        "Квалификация по группам",
+        "Отборочные заезды",
+        "Суперхиты",
+        "Финал"
+      ]
+    },
+    "points": {
+      "race": [
+        50,
+        44,
+        38,
+        34,
+        30,
+        26,
+        22,
+        18,
+        14,
+        10,
+        8,
+        6,
+        4,
+        2,
+        1
+      ],
+      "qualifying_heats": [
+        25,
+        22,
+        19,
+        17,
+        15,
+        13,
+        11,
+        9,
+        7,
+        6,
+        5,
+        4,
+        3,
+        2,
+        1
+      ],
+      "super_heats": [
+        25,
+        22,
+        19,
+        17,
+        15,
+        13,
+        11,
+        9,
+        7,
+        6,
+        5,
+        4,
+        3,
+        2,
+        1
+      ],
+      "best_rounds_per_phase": 3,
+      "fastest_final": 1
+    },
+    "finish": "Дистанция в кругах",
+    "admission": {
+      "min_age": 12,
+      "licence": "ITG",
+      "min_points": 0,
+      "priority": 1,
+      "age_basis": "calendar_year",
+      "max_age": 14
+    },
+    "superlicence": [
+      2,
+      1
+    ],
+    "tyre_market": {
+      "OK-Junior": {
+        "id": "kart-okj-2025-tyres-v1",
+        "mode": "sole",
+        "approved_suppliers": [
+          "supplier-maxxis"
+        ],
+        "allocation_authority": "organizer",
+        "source": "kart-okj"
+      }
+    },
+    "technical_summary": "Шасси CIK-FIA · 125 см³, 2 такта · прямой привод · 14 000 об/мин · от 140 кг с пилотом · Maxxis",
+    "short_name": "FIA Karting · OK-Junior"
+  }
+}

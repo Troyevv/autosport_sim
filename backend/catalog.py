@@ -10,7 +10,8 @@ from pathlib import Path
 from .engineering import technical_catalog
 from .supply import tyre_eligible
 
-VERSION = "2025-v3"
+VERSION = "2025-v4"
+JUNIORS = Path(__file__).with_name("data") / VERSION
 DATA = Path(__file__).with_name("data") / "2025-v1"
 ROSTER = DATA.parent / "2025-v2"
 
@@ -25,8 +26,13 @@ def rows(name, directory=DATA):
         return list(csv.DictReader(source))
 
 
-def load_catalog(*, legacy=False, previous=False):
-    version = "2025-v1" if legacy else ("2025-v2" if previous else VERSION)
+def load_catalog(*, legacy=False, previous=False, personnel=False):
+    version = (
+        "2025-v1"
+        if legacy
+        else ("2025-v2" if previous else "2025-v3" if personnel else VERSION)
+    )
+    expanded = version == VERSION
     palette = (
         {}
         if legacy
@@ -34,6 +40,10 @@ def load_catalog(*, legacy=False, previous=False):
     )
     products = json.loads((DATA / "products.json").read_text(encoding="utf-8"))
     rules = json.loads((DATA / "rules.json").read_text(encoding="utf-8"))
+    if expanded:
+        products["chassis"] = dict(name="Шасси", lead_position="chassis")
+        rules.update(json.loads((JUNIORS / "rules.json").read_text()))
+        palette.update(json.loads((JUNIORS / "colors.json").read_text()))
     positions = json.loads((DATA / "positions.json").read_text(encoding="utf-8"))
     organizations, names, entries, cars, events, assignments = {}, {}, {}, {}, [], {}
     programs = {}
@@ -80,7 +90,10 @@ def load_catalog(*, legacy=False, previous=False):
         names[pid] = name
         return pid
 
-    for row in rows("entries.csv", DATA if legacy else ROSTER):
+    grid = rows("entries.csv", DATA if legacy else ROSTER)
+    if expanded:
+        grid.extend(rows("entries.csv", JUNIORS))
+    for row in grid:
         series, number = row["championship"], row["number"]
         eid = series + "-" + number
         org = organization(row["entrant"], "team", series)
@@ -89,6 +102,18 @@ def load_catalog(*, legacy=False, previous=False):
             for key in products
             if row.get(key)
         }
+        if "superlicence" in rules[series]:
+            constructor = {
+                "KR": "Kart Republic",
+                "LN": "OTK Kart Group",
+                "Tony Kart": "OTK Kart Group",
+                "Exprit": "OTK Kart Group",
+                "Monster Kart": "Monster K",
+                "Birel Art": "Birel ART",
+            }.get(row["constructor"], row["constructor"])
+            components["chassis"] = organization(
+                constructor, "supplier", series, "chassis"
+            )
         policy = rules[series]["tyre_market"][row["class"]]
         if not tyre_eligible(policy, components["tyre"], homologated=True):
             raise ValueError(f"Недопустимый поставщик шин для {eid}")
@@ -119,13 +144,24 @@ def load_catalog(*, legacy=False, previous=False):
         )
         for driver in crew:
             seat(org, "driver", driver, series, eid)
-        seat(org, "race-engineer", series=series, entry=eid)
+        seat(
+            org,
+            "chief-mechanic"
+            if rules[series].get("playable") is False
+            else "race-engineer",
+            series=series,
+            entry=eid,
+        )
 
     for org, rec in organizations.items():
+        if rec["lines"] == ["chassis"]:
+            rec["playable"] = False
         if rec["kind"] == "team":
             for pos in ("manager", "owner", "chief-engineer", "scout"):
                 seat(org, pos)
             for series in rec["programs"]:
+                if rules[series].get("playable") is False:
+                    continue
                 for pos in (
                     "aero",
                     "chassis",
@@ -163,6 +199,8 @@ def load_catalog(*, legacy=False, previous=False):
         for key, assignment in assignments.items():
             if assignment["person"] is None:
                 assignment["person"] = "staff-" + sha256(key.encode()).hexdigest()[:12]
+        if expanded:
+            profiles.update(json.loads((JUNIORS / "people.json").read_text()))
         names = {pid: p["name"] for pid, p in profiles.items()}
         expected = {a["person"] for a in assignments.values()}
         if expected != names.keys():
@@ -183,8 +221,15 @@ def load_catalog(*, legacy=False, previous=False):
             )
         )
     rounds = dict.fromkeys(rules, 0)
-    for row in rows("calendar.csv"):
+    calendar = rows("calendar.csv")
+    if expanded:
+        calendar.extend(rows("calendar.csv", JUNIORS))
+        events.extend(json.loads((JUNIORS / "invitational.json").read_text()))
+    for row in calendar:
         series = row["series"]
+        if "layout" in row:
+            row["name"] = row["circuit"] + " · " + row["layout"]
+            row["layout_id"] = slug(row["circuit"]) + ":" + slug(row["layout"])
         rounds[series] += 1
         events.append(
             dict(
@@ -203,7 +248,7 @@ def load_catalog(*, legacy=False, previous=False):
         )
     if not legacy:
         for ser, rule in rules.items():
-            rule["governing_body"] = "DMSB" if ser == "dtm" else "FIA"
+            rule.setdefault("governing_body", "DMSB" if ser == "dtm" else "FIA")
         rules["dtm"]["organizer"] = "ADAC"
         rules["wec"]["organizer"] = "ACO"
     origin = json.loads((DATA / "sources.json").read_text(encoding="utf-8"))
@@ -233,10 +278,21 @@ def load_catalog(*, legacy=False, previous=False):
         events=sorted(events, key=lambda e: (e["start"], e["id"])),
     )
 
-    if version == VERSION:
+    if expanded:
+        for prospect in json.loads((JUNIORS / "intake.json").read_text()):
+            world["profiles"][prospect["id"]] = prospect
+            world["names"][prospect["id"]] = prospect["name"]
+    if version in ("2025-v3", VERSION):
         from .staff_catalog import extend
 
         extend(world)
+    if expanded:
+        world["origin"]["sources"].update(
+            json.loads((JUNIORS / "sources.json").read_text())
+        )
+        world["staff_rules"]["backing"].extend(
+            json.loads((JUNIORS / "backing.json").read_text())
+        )
     return world
 
 

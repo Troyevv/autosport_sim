@@ -6,12 +6,17 @@ from .domain import RuleError
 
 ROOT = Path(__file__).with_name("art")
 ASSETS = json.loads((ROOT / "catalog.json").read_text(encoding="utf-8"))
+ASSETS.extend(
+    json.loads((ROOT / "junior" / "catalog.json").read_text(encoding="utf-8"))
+)
 for asset in ASSETS:
     if asset["kind"] in {"uniform", "generated-head"}:
         asset.update(
             author="Autosport Sim / OpenAI ImageGen",
             license="MIT",
-            changes="Студийная обработка R3.2",
+            changes="Гардероб и индивидуальный контур"
+            if asset["path"].startswith("junior/")
+            else "Студийная обработка R3.2",
             source="https://github.com/Troyevv/autosport_sim",
         )
 BY_ID = {(asset["kind"], asset["entity"]): asset for asset in ASSETS}

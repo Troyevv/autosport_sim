@@ -1,0 +1,146 @@
+[
+  {
+    "person": "junior-f4-es-1",
+    "source": "family",
+    "monthly_cents": 80000,
+    "portable": true
+  },
+  {
+    "person": "junior-f4-es-32",
+    "source": "family",
+    "monthly_cents": 88500,
+    "portable": true
+  },
+  {
+    "person": "junior-f4-es-71",
+    "source": "family",
+    "monthly_cents": 97000,
+    "portable": true
+  },
+  {
+    "person": "junior-f4-gb-20",
+    "source": "family",
+    "monthly_cents": 105500,
+    "portable": true
+  },
+  {
+    "person": "junior-f4-gb-6",
+    "source": "family",
+    "monthly_cents": 114000,
+    "portable": true
+  },
+  {
+    "person": "junior-f4-it-27",
+    "source": "family",
+    "monthly_cents": 122500,
+    "portable": true
+  },
+  {
+    "person": "junior-f4-it-44",
+    "source": "family",
+    "monthly_cents": 131000,
+    "portable": true
+  },
+  {
+    "person": "junior-f4-it-81",
+    "source": "family",
+    "monthly_cents": 139500,
+    "portable": true
+  },
+  {
+    "person": "junior-freca-19",
+    "source": "family",
+    "monthly_cents": 148000,
+    "portable": true
+  },
+  {
+    "person": "junior-freca-6",
+    "source": "family",
+    "monthly_cents": 156500,
+    "portable": true
+  },
+  {
+    "person": "junior-kart-ok-107",
+    "source": "family",
+    "monthly_cents": 165000,
+    "portable": true
+  },
+  {
+    "person": "junior-kart-ok-120",
+    "source": "family",
+    "monthly_cents": 173500,
+    "portable": true
+  },
+  {
+    "person": "junior-kart-ok-133",
+    "source": "family",
+    "monthly_cents": 182000,
+    "portable": true
+  },
+  {
+    "person": "junior-kart-ok-146",
+    "source": "family",
+    "monthly_cents": 190500,
+    "portable": true
+  },
+  {
+    "person": "junior-kart-ok-159",
+    "source": "family",
+    "monthly_cents": 199000,
+    "portable": true
+  },
+  {
+    "person": "junior-kart-ok-172",
+    "source": "family",
+    "monthly_cents": 207500,
+    "portable": true
+  },
+  {
+    "person": "junior-kart-ok-185",
+    "source": "family",
+    "monthly_cents": 216000,
+    "portable": true
+  },
+  {
+    "person": "junior-kart-ok-301",
+    "source": "family",
+    "monthly_cents": 224500,
+    "portable": true
+  },
+  {
+    "person": "junior-kart-okj-214",
+    "source": "family",
+    "monthly_cents": 233000,
+    "portable": true
+  },
+  {
+    "person": "junior-kart-okj-227",
+    "source": "family",
+    "monthly_cents": 241500,
+    "portable": true
+  },
+  {
+    "person": "junior-kart-okj-241",
+    "source": "family",
+    "monthly_cents": 250000,
+    "portable": true
+  },
+  {
+    "person": "junior-kart-okj-254",
+    "source": "family",
+    "monthly_cents": 258500,
+    "portable": true
+  },
+  {
+    "person": "junior-kart-okj-268",
+    "source": "family",
+    "monthly_cents": 267000,
+    "portable": true
+  },
+  {
+    "person": "junior-kart-okj-281",
+    "source": "family",
+    "monthly_cents": 275500,
+    "portable": true
+  }
+]
