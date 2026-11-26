@@ -45,6 +45,20 @@ def test_starting_grid_and_calendar(series, org, count):
     assert service.import_save(service.export_save(c["id"]))["crews"] == c["crews"]
 
 
+def test_round_one_entrants():
+    grid = WORLD["entries"]
+    assert {grid["f4-es-" + n]["org"] for n in ("8", "14", "80")} == {
+        "team-sainteloc-racing"
+    }
+    assert grid["f4-es-11"]["org"] == "team-kcl-mp-motorsport"
+    assert {
+        e["number"]
+        for e in grid.values()
+        if e["championship"] == "freca" and e["org"] == "team-mp-motorsport"
+    } == {"4", "20", "33"}
+    assert grid["freca-18"]["org"] == "team-sainteloc-racing"
+
+
 def test_federation_decision_intake_and_calendar_year_boundary():
     c = create()
     state = snapshot(c)

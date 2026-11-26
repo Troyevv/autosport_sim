@@ -51,7 +51,7 @@ def test_seed_integrity():
         "f4-it": 41,
         "f4-gb": 21,
         "f4-es": 36,
-        "freca": 26,
+        "freca": 30,
         "kart-ok": 98,
         "kart-okj": 89,
     }
