@@ -1,3 +1,4 @@
+import { Development } from './Development'
 import { useState } from 'react'
 import { Button, Choices, Dialog, Facts, Progress } from '../../ui/components'
 import type { SectionProps } from '../Sections'
@@ -161,12 +162,9 @@ export function StaffFile(props: Props) {
 }
 type FileProps = Props & { data: Dossier }
 function CareerFile({ data, c, world, order, busy }: FileProps) {
-  const training = world.staff_rules.training
   const p = data.person,
     current = data.current
   const managed = current && current.org === c.org && data.options.some((o) => o.id === current.seat)
-  const skills = world.positions[p.position].skills.filter((k) => p.skills[k] < (p.potential ?? 100))
-  const [skill, choose] = useState(skills[0] || '')
   return (
     <>
       <div className="staff-subhead">
@@ -176,6 +174,7 @@ function CareerFile({ data, c, world, order, busy }: FileProps) {
       <Facts
         items={[
           ['Дата рождения', shortDate(p.birth_date)],
+          ...(p.reaction != null ? [['Реакция', p.reaction] as [string, number]] : []),
           ['Оценка потенциала', estimate(data)],
           ['Амбиции / лояльность', p.ambition + ' / ' + p.loyalty],
           ['Профессионализм', p.professionalism],
@@ -192,35 +191,7 @@ function CareerFile({ data, c, world, order, busy }: FileProps) {
           </div>
         ))}
       </div>
-      <h3>Подготовка</h3>
-      {p.training ? (
-        <p role="status">
-          Курс «{p.training.skill}» · до {shortDate(p.training.end)}
-        </p>
-      ) : managed ? (
-        <div className="staff-controls">
-          <label>
-            Навык для курса
-            <select value={skill} onChange={(e) => choose(e.target.value)}>
-              {skills.map((s) => (
-                <option key={s}>{s}</option>
-              ))}
-            </select>
-          </label>
-          <Button
-            disabled={busy || !skill || p.fatigue >= training.fatigue_limit}
-            onClick={() => order('staff-train', { seat: current.seat, skill })}
-          >
-            Начать курс · {training.days} дней
-          </Button>
-        </div>
-      ) : (
-        <p>Тренировку назначает руководитель сотрудника.</p>
-      )}
-      <p className="muted">
-        Завершено курсов · {p.courses}. Нагрузка в начале курса +{training.fatigue}. Порог допуска по
-        усталости — {training.fatigue_limit}.
-      </p>
+      <Development data={data.development} />
       <h3>История назначений</h3>
       {data.history.map((r, i) => (
         <article key={i} className="staff-timeline">
@@ -231,7 +202,10 @@ function CareerFile({ data, c, world, order, busy }: FileProps) {
           <strong>{world.organizations[r.org].name}</strong>
           <span>
             {r.series?.toUpperCase()} {r.entry && ' · № ' + world.entries[r.entry].number} ·{' '}
-            {money(r.salary_cents)} / мес.
+            {world.positions[r.position].name}
+            {r.salary_cents != null && ' · ' + money(r.salary_cents) + ' / мес.'}
+            {r.transfer_on && ' · Переход ' + shortDate(r.transfer_on)}
+            {r.agreed_end && r.end !== r.agreed_end && ' · Исходный срок до ' + shortDate(r.agreed_end)}
           </span>
         </article>
       ))}
@@ -363,6 +337,31 @@ function PeerSkills({
           <b>{second.profile.rating}</b>
         </div>
       </div>
+      {data.person.reaction != null && (
+        <div className="staff-compare">
+          <div>
+            <b>{data.person.reaction}</b>
+            <span>Базовая реакция</span>
+            <b>{second.person.reaction}</b>
+          </div>
+        </div>
+      )}
+      {Object.keys({ ...data.development.experience, ...second.development.experience }).length > 0 && (
+        <details className="staff-handling">
+          <summary>Сравнить подтверждённый опыт</summary>
+          <div className="staff-compare">
+            {Object.keys({ ...data.development.experience, ...second.development.experience })
+              .sort()
+              .map((k) => (
+                <div key={k}>
+                  <b>{data.development.experience[k] ?? '—'}</b>
+                  <span>{k}</span>
+                  <b>{second.development.experience[k] ?? '—'}</b>
+                </div>
+              ))}
+          </div>
+        </details>
+      )}
       <CompareWork left={data} right={second} />
       <details className="staff-handling">
         <summary>Сравнить публичные профили</summary>
@@ -429,6 +428,7 @@ function Terms({ data, c, world, busy, order, onSent }: FileProps) {
   const [seat, target] = useState(first?.id || ''),
     [salary, pay] = useState(String((first?.ask_cents || 0) / 100)),
     [bonus, signing] = useState('0')
+  const [remit, setRemit] = useState('standard')
   const firstStart = first?.available || daysAfter(c.date, 3)
   const seasonEnd = (date: string) => String(Number(date.slice(0, 4)) + 1) + '-01-01'
   const [start, from] = useState(firstStart),
@@ -436,6 +436,7 @@ function Terms({ data, c, world, busy, order, onSent }: FileProps) {
     [release, confirm] = useState(false)
   const expectation = options.find((o) => o.id === seat)?.ask_cents
   const query = new URLSearchParams({
+    remit,
     seat,
     start,
     end,
@@ -443,6 +444,7 @@ function Terms({ data, c, world, busy, order, onSent }: FileProps) {
   })
   const quote = usePersonnel<{
     buyout_cents: number | null
+    considerations?: string[]
     support_cents?: number
     net_cents?: number
     reason: string | null
@@ -459,9 +461,15 @@ function Terms({ data, c, world, busy, order, onSent }: FileProps) {
         <Facts
           items={[
             ['Работодатель', world.organizations[current.org].name],
-            ['Оклад / месяц', money(current.salary_cents)],
+            [
+              'Оклад / месяц',
+              current.salary_cents == null ? 'Закрытые условия' : money(current.salary_cents),
+            ],
             ['До', current.end ? shortDate(current.end) : 'Без срока'],
-            ['Выкуп / компенсация', money(current.buyout_cents)],
+            [
+              'Выкуп / компенсация',
+              current.buyout_cents == null ? 'Закрытые условия' : money(current.buyout_cents),
+            ],
           ]}
         />
       )}
@@ -469,7 +477,10 @@ function Terms({ data, c, world, busy, order, onSent }: FileProps) {
         <div className="staff-release">
           {release ? (
             <>
-              <p>Освободить место сегодня и выплатить {money(current.buyout_cents)}?</p>
+              <p>
+                Освободить место сегодня и выплатить{' '}
+                {current.buyout_cents == null ? 'Закрытые условия' : money(current.buyout_cents)}?
+              </p>
               <Button disabled={busy} onClick={() => confirm(false)}>
                 Отмена
               </Button>{' '}
@@ -496,6 +507,7 @@ function Terms({ data, c, world, busy, order, onSent }: FileProps) {
             e.preventDefault()
             if (
               await order('offer-send', {
+                remit,
                 person: data.person.id,
                 seat,
                 start,
@@ -530,6 +542,21 @@ function Terms({ data, c, world, busy, order, onSent }: FileProps) {
               ))}
             </select>
           </label>
+          {data.person.position !== 'driver' && (
+            <label>
+              Профессиональные полномочия
+              <select value={remit} onChange={(e) => setRemit(e.target.value)}>
+                <option value="standard">В рамках должности</option>
+                <option value="independent">Самостоятельное руководство</option>
+                <option value="supervised">Под контролем руководителя</option>
+              </select>
+            </label>
+          )}
+          {quote.data?.considerations?.map((v) => (
+            <p className="muted" key={v}>
+              {v}
+            </p>
+          ))}
           {quote.data?.reason && (
             <p className="staff-warning" role="status">
               {quote.data.reason}

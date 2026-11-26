@@ -1,3 +1,4 @@
+from datetime import date
 from copy import deepcopy
 import pytest
 from . import domain, employment, personnel, service, teamwork
@@ -44,7 +45,7 @@ def test_feedback_is_independent_of_pace_and_uses_private_evidence():
     assert all("potential" not in p for p in packets)
 
 
-def test_real_course_records_evidence_and_dated_pairs_survive_transfer():
+def test_driver_debrief_records_evidence_and_dated_pairs_survive_transfer():
     c = create()
     c = run(c, "staff-release", seat=SEAT)
     c = run(c, "offer-send", **terms(end="2025-04-01"))
@@ -57,15 +58,29 @@ def test_real_course_records_evidence_and_dated_pairs_survive_transfer():
         if r["kind"] == "feedback"
     ]
     assert sorted((r["active"], r["days"]) for r in links) == [(False, 4), (True, 0)]
-    p = state["people"][GT]
-    skill = min(p["skills"], key=p["skills"].get)
-    c = run(c, "staff-train", seat=SEAT, skill=skill)
+    engineer = next(r for r in links if r["active"])["peer"]
+    event = dict(
+        person=GT,
+        org=c["org"],
+        role="driver",
+        event_id="setup-review",
+        skills=["Обратная связь"],
+        kind="feedback",
+        difficulty=62,
+        result="completed",
+        context={"mentor": engineer},
+        date=c["date"],
+    )
+    c = service.confirm_work(c["id"], "work", c["revision"], [event])
     while c["date"] < "2025-02-12":
         c = run(c, c["briefing_action"] if c["pending"] else "advance")
     state = snapshot(c)
     peers = teamwork.links(state, WORLD, GT, c["date"])
     engineer = next(r for r in peers if r["active"] and r["kind"] == "feedback")
-    assert engineer["days"] == 7 and len(engineer["events"]) == 1
+    assert (
+        engineer["days"] == (date.fromisoformat(c["date"]) - date(2025, 2, 5)).days
+        and len(engineer["events"]) == 1
+    )
     decision = engineer["events"][0]
     assert decision["outcome"] in {"confirmed-feedback", "unclear-feedback"}
     old = next(r for r in peers if not r["active"] and r["kind"] == "feedback")

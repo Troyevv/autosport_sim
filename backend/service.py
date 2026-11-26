@@ -11,6 +11,7 @@ from .livery import GARAGE, PaintOrder
 from .catalog import VERSION, WORLD
 from .roster_upgrade import original_world, previous_world, upgrade, upgrade_personnel
 from .staff_input import ORDERS
+from . import preparation, professional
 from .media_profile import COUNTRIES, initialize as initialize_identity
 from .development_path import public_person
 from .team_staff import department_capacity
@@ -58,10 +59,11 @@ class Command(Strict):
     def check_action_payload(self):
         if (self.action == "save-livery") != (self.paint is not None):
             raise ValueError("Неверные параметры команды ливреи.")
-        if (self.action in ORDERS) != (self.staff is not None):
+        orders = {**ORDERS, "confirmed-work": professional.Batch}
+        if (self.action in orders) != (self.staff is not None):
             raise ValueError("Неверные параметры кадровой команды.")
         if self.staff is not None:
-            ORDERS[self.action].model_validate(self.staff)
+            orders[self.action].model_validate(self.staff)
         return self
 
     def payload(self):
@@ -133,7 +135,23 @@ def project(db, cid, state):
             for s in state["scholarships"].values()
             if state["academies"][s["academy"]]["org"] == org
         ],
-        offers=list(state["offers"].values()),
+        offers=[
+            o
+            for o in state["offers"].values()
+            if WORLD["assignments"][o["seat"]]["org"] == org
+        ],
+        preparation_options=preparation.options(state),
+        preparations=[
+            dict(
+                r,
+                names=[
+                    (state["people"].get(pid) or state["collectives"][pid])["name"]
+                    for pid in r["participants"]
+                ],
+            )
+            for r in state["preparations"].values()
+            if r["org"] == org
+        ],
         notices=state["notices"][-50:],
         liveries=state.get("liveries", {}),
         garage_configurations={
@@ -158,6 +176,7 @@ def project(db, cid, state):
         collectives=[
             dict(
                 v,
+                development=professional.projection(state, WORLD, v["id"]),
                 capacity=department_capacity(v),
                 **teamwork.group_view(state, WORLD, v, contacts),
             )
@@ -223,6 +242,20 @@ def execute(cid, command):
         return project(db, cid, state)
 
 
+def confirm_work(cid, command_id, revision, facts):
+    """Trusted producer entry point. Facts and the command receipt commit in the same SQLite transaction."""
+    batch = professional.Batch(facts=facts)
+    return execute(
+        cid,
+        Command(
+            command_id=command_id,
+            revision=revision,
+            action="confirmed-work",
+            staff=batch.model_dump(),
+        ),
+    )
+
+
 def export_save(cid):
     with storage.transaction() as db:
         state = storage.checkpoint(db, cid)
@@ -283,6 +316,15 @@ def import_save(document):
             type(activation) is not int or not 0 <= activation <= saved["revision"]
         ):
             raise ValueError
+        growth = saved.get("growth_since")
+        if growth is not None and (
+            not modern
+            or type(growth) is not int
+            or not activation <= growth <= saved["revision"]
+        ):
+            raise ValueError
+        from .professional import activate
+
         catalog = original_world() if legacy else previous_world()
         commands = payload["commands"]
         if not isinstance(commands, list):
@@ -294,8 +336,10 @@ def import_save(document):
         receipts = []
         for item in commands:
             if modern and activation == state["revision"]:
-                state = upgrade_personnel(state)
+                state = upgrade_personnel(state, historical=True)
                 catalog = WORLD
+            if modern and growth == state["revision"]:
+                activate(state)
             cmd = Command.model_validate(item)
             if cmd.command_id in seen or cmd.revision != state["revision"]:
                 raise ValueError
@@ -311,13 +355,17 @@ def import_save(document):
                 )
             )
         if modern and activation == state["revision"]:
-            state = upgrade_personnel(state)
+            state = upgrade_personnel(state, historical=True)
+        if modern and growth == state["revision"]:
+            activate(state)
         state["ledger"].sort(key=lambda p: (p["date"], p["org"], p["key"]))
         if modern and "identity_schema" not in saved:
             saved = json.loads(storage.dump(saved))
             initialize_identity(saved)
         if storage.dump(state) != storage.dump(saved):
             raise ValueError
+        if modern and growth is None:
+            activate(state)
         if legacy:
             state = upgrade(state)
         if not modern:

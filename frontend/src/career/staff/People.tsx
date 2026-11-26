@@ -6,7 +6,8 @@ import { CountryFlag, CountryOptions } from '../Country'
 import { Portrait } from '../Portrait'
 import type { SectionProps } from '../Sections'
 import { StaffFile } from './StaffFile'
-import { seatName, shortDate, statuses, usePersonnel, type Candidate, type Order } from './model'
+import { priorities, seatName, shortDate, statuses, usePersonnel, type Candidate, type Order } from './model'
+import { PreparationDesk } from './Development'
 import { GroupWork } from './Teamwork'
 import { Programs } from './Programs'
 import './staff.css'
@@ -16,6 +17,7 @@ const views = [
   ['market', 'Кадровый рынок'],
   ['offers', 'Переговоры'],
   ['groups', 'Коллективы'],
+  ['preparation', 'Подготовка'],
   ['programs', 'Руководство'],
 ] as const
 export function People({
@@ -156,6 +158,7 @@ export function People({
           {error}
         </p>
       )}
+      {tab === 'preparation' && <PreparationDesk {...{ c, order, busy }} />}
       {tab === 'programs' && (
         <Programs
           {...{ c, world, busy, order }}
@@ -409,6 +412,15 @@ export function People({
                     {shortDate(o.start)} — {shortDate(o.end)} · бонус {money(o.bonus_cents)}
                   </p>
                   <p>{o.message}</p>
+                  {o.assessment && (
+                    <details className="staff-handling">
+                      <summary>Что учёл кандидат</summary>
+                      <p>{priorities[o.assessment.priority]}</p>
+                      {o.assessment.reasons.map((r) => (
+                        <p key={r}>{r}</p>
+                      ))}
+                    </details>
+                  )}
                   {o.status === 'sent' && <strong>Ответ {shortDate(o.response)}</strong>}
                   {o.status === 'countered' && <strong>Ответьте до {shortDate(o.deadline)}</strong>}
                   {['countered', 'sent'].includes(o.status) && (

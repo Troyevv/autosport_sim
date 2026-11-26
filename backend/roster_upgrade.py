@@ -63,10 +63,14 @@ def upgrade(state):
     }
 
 
-def upgrade_personnel(state):
+def upgrade_personnel(state, *, historical=False):
     from .catalog import WORLD
     from .personnel import initialize
 
     state["rules"] = WORLD["version"]
     initialize(state, WORLD)
+    if not historical:
+        from .professional import activate
+
+        activate(state)
     return state

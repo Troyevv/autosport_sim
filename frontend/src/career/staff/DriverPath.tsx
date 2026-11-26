@@ -64,8 +64,7 @@ export function Scouting({ data, c, world, busy, order }: Props) {
 }
 export function DriverBacking(props: Props) {
   const { data, c, world, busy, order } = props
-  const [confirm, ask] = useState(''),
-    [skill, select] = useState(world.positions.driver.skills[0])
+  const [confirm, ask] = useState('')
   return (
     <>
       <h3>Финансирование пилота</h3>
@@ -90,8 +89,10 @@ export function DriverBacking(props: Props) {
               ['Статус', f.reason || (f.end <= c.date ? 'Завершён' : 'Действует')],
               ['Условия места', f.guarantee ? 'Место гарантировано' : 'Оплата за участие'],
               ['Перенос при переходе', f.portable ? 'Следует за пилотом' : 'Только исходная команда'],
-              ['Выплачено', money(f.paid_cents)],
-              ['Просрочено', money(Object.values(f.arrears).reduce((a, b) => a + b, 0))],
+              ...(f.paid_cents != null ? [['Выплачено', money(f.paid_cents)] as const] : []),
+              ...(f.arrears
+                ? [['Просрочено', money(Object.values(f.arrears).reduce((a, b) => a + b, 0))] as const]
+                : []),
               ...(f.minimum_starts
                 ? [
                     [
@@ -151,26 +152,6 @@ export function DriverBacking(props: Props) {
                 {s.org === c.org ? 'Использовать опцион' : 'Запросить окно переговоров'}
               </Button>
             )}
-          {s.end > c.date && s.org === c.org && c.role === 'owner' && (
-            <>
-              <label>
-                План тренера
-                <select value={skill} onChange={(e) => select(e.target.value)}>
-                  {world.positions.driver.skills.map((k) => (
-                    <option key={k}>{k}</option>
-                  ))}
-                </select>
-              </label>
-              <Button
-                disabled={busy || !!data.person.training}
-                onClick={() => order('academy-course', { agreement: s.id, skill })}
-              >
-                {data.person.training
-                  ? 'Курс идёт до ' + shortDate(data.person.training.end)
-                  : 'Назначить тренера'}
-              </Button>
-            </>
-          )}
         </article>
       ))}
       {c.role === 'owner' && c.academies.length > 0 && !data.scholarships.some((s) => s.end > c.date) && (

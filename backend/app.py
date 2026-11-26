@@ -1,4 +1,5 @@
 import json
+from typing import Literal
 
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse, Response
@@ -35,6 +36,9 @@ def world():
             k: v
             for k, v in WORLD.items()
             if k not in ("profiles", "reserve", "reserve_ages")
+        },
+        "staff_rules": {
+            k: v for k, v in WORLD["staff_rules"].items() if k != "training"
         },
         "faces": {p: v["face"] for p, v in WORLD["profiles"].items()},
     }
@@ -92,25 +96,35 @@ def dossier(cid: str, pid: str, wet: bool = False):
 
 
 @app.get("/api/careers/{cid}/personnel/{pid}/quote")
-def quote(cid: str, pid: str, seat: str, start: Day, end: Day, salary_cents: int = 0):
+def quote(
+    cid: str,
+    pid: str,
+    seat: str,
+    start: Day,
+    end: Day,
+    salary_cents: int = 0,
+    remit: Literal["supervised", "standard", "independent"] = "standard",
+):
     with storage.transaction() as db:
         state = storage.checkpoint(db, cid)
         try:
-            fee = employment.quote(
-                state,
-                WORLD,
-                dict(
-                    person=pid,
-                    seat=seat,
-                    start=start,
-                    end=end,
-                    salary_cents=salary_cents,
-                ),
+            terms = dict(
+                person=pid,
+                seat=seat,
+                start=start,
+                end=end,
+                salary_cents=salary_cents,
+                remit=remit,
+            )
+            fee = employment.quote(state, WORLD, terms)
+            comparison = employment.career_choice.assess(
+                state, WORLD, state["people"][pid], terms
             )
         except RuleError as exc:
             return dict(buyout_cents=None, reason=str(exc))
         support = backing.quote(state, pid, state["setup"]["org"], start)
         return dict(
+            considerations=comparison["reasons"],
             buyout_cents=fee,
             support_cents=support,
             net_cents=support - salary_cents,
@@ -131,6 +145,8 @@ def export(cid: str):
 
 @app.post("/api/careers/{cid}/commands")
 def command(cid: str, command: service.Command):
+    if command.action == "confirmed-work":
+        raise RuleError("Требуется подтверждение подсистемы-источника.", 403)
     return service.execute(cid, command)
 
 

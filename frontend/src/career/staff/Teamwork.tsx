@@ -1,3 +1,4 @@
+import { Development } from './Development'
 import { useState } from 'react'
 import { Panel, Progress } from '../../ui/components'
 import { shortDate, type Dossier } from './model'
@@ -213,6 +214,7 @@ export function GroupWork({ groups }: { groups: Career['collectives'] }) {
             </div>
           ))}
         </div>
+        <Development data={g.development} />
         <Connections rows={g.relationships} />
       </div>
     </Panel>

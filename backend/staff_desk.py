@@ -24,6 +24,12 @@ def dossier(state, world, pid, wet=False):
     if not p:
         raise RuleError("Сотрудник не найден.", 404)
     history = appointments(state, world)[pid]
+    from .professional import projection
+
+    for row in history:
+        if row["org"] != state["setup"]["org"]:
+            row.pop("salary_cents", None)
+            row.pop("buyout_cents", None)
     current = [r for r in history if people.active(r, state["date"])]
     seat = next(
         (r for r in current if r["org"] == state["setup"]["org"]),
@@ -54,15 +60,39 @@ def dossier(state, world, pid, wet=False):
                     ask_cents=employment.ask(state, world, p, a),
                 )
             )
+    org = state["setup"]["org"]
+    financing = []
+    for r in state["funding"].values():
+        if r["person"] != pid:
+            continue
+        private = (
+            r["payer"] == org
+            or r["team"] == org
+            or (r["portable"] and any(a["org"] == org for a in current))
+        )
+        financing.append(
+            dict(r)
+            if private
+            else {
+                k: v
+                for k, v in r.items()
+                if k not in ("arrears", "paid_cents", "reserved_cents", "exit_cents")
+            }
+        )
     return dict(
         person=development_path.public_person(p),
         calendar_context=media_profile.calendar_context(state, world, p),
         relationships=teamwork.links(state, world, pid, state["date"]),
         reports=state["reports"].get(state["setup"]["org"], {}).get(pid, []),
-        financing=[r for r in state["funding"].values() if r["person"] == pid],
+        financing=financing,
         scholarships=[
             dict(
-                s,
+                {
+                    k: v
+                    for k, v in s.items()
+                    if k != "reserved_cents"
+                    or state["academies"][s["academy"]]["org"] == org
+                },
                 org=state["academies"][s["academy"]]["org"],
                 name=state["academies"][s["academy"]]["name"],
             )
@@ -74,6 +104,7 @@ def dossier(state, world, pid, wet=False):
                 state, world, state["setup"]["org"], {"scout"}
             )
         ),
+        development=projection(state, world, pid),
         current=seat,
         history=sorted(history, key=lambda r: r["start"]),
         age=people.age_on(p, state["date"]),

@@ -26,7 +26,6 @@ export type Event = {
 }
 export type World = {
   countries: Record<string,string>
-  staff_rules: { training: { days: number; fatigue: number; fatigue_limit: number } }
   products: Record<string, { name: string }>
   engineering: {
     seasons: Record<string, { year: number; status: string; championship: string }>
@@ -95,6 +94,8 @@ export type Career = Save & {
   mandate: import('./staff/pathModel').Mandate | null
   academies: import('./staff/pathModel').Academy[]
   scholarships: import('./staff/pathModel').Scholarship[]
+  preparation_options: {id:string;name:string;facility:string;days:number;cost:number;load:number}[]
+  preparations:{id:string;kind:string;names:string[];start:string;end:string;status:string}[]
   crews: Record<string, string[]>
   offers: import("./staff/model").Offer[]
   notices: {date: string; text: string}[]
@@ -128,6 +129,7 @@ export type Career = Save & {
   next_date: string | null
   briefing_action: string
   collectives: {
+    development: import("./staff/Development").DevelopmentRecord
     id: string
     name: string
     size: number

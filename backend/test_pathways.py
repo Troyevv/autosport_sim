@@ -59,14 +59,13 @@ def test_academy_employment_scouting_and_renewal_are_independent():
         "scout",
         "academy-analyst",
     }
-    skill = min(state["people"][pid]["skills"], key=state["people"][pid]["skills"].get)
-    c = run(c, "academy-course", agreement=deal["id"], skill=skill)
+    c = run(c, "prepare-program", kind="academy")
+    trainee, coach = c["preparations"][0]["participants"]
     while c["date"] < "2025-03-01":
         c = run(c, c["briefing_action"] if c["pending"] else "advance")
     state = snapshot(c)
-    assert (
-        state["people"][pid]["skills"][skill] > before["people"][pid]["skills"][skill]
-    )
+    assert state["experience_by_skill"][trainee]["Повороты"]["work"] > 0
+    assert state["experience_by_skill"][coach]["Методика"]["work"] > 0
     assert state["academies"]["mclaren-development"]["spent_cents"] == 130000
     ledger = [
         v

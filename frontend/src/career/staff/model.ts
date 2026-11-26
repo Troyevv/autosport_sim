@@ -16,6 +16,9 @@ export type Candidate = Pick<Person, 'id' | 'name' | 'origin' | 'face'> & {
   tag: string
 }
 type Contract = {
+  agreed_end?: string | null
+  transfer_on?: string
+  position: string
   person: string
   seat: string
   org: string
@@ -23,10 +26,11 @@ type Contract = {
   series: string | null
   start: string
   end: string | null
-  salary_cents: number
-  buyout_cents: number
+  salary_cents?: number
+  buyout_cents?: number
 }
 export type Dossier = {
+  development: import('./Development').DevelopmentRecord
   calendar_context: import('./MediaProfile').Audience[]
   relationships: import('./Teamwork').Relationship[]
   reports: import('./pathModel').Report[]
@@ -47,8 +51,7 @@ export type Dossier = {
     reputation: number
     adaptation: Record<string, number>
     discipline_days: Record<string, number>
-    courses: number
-    training: { end: string; skill: string } | null
+    reaction?: number
   }
   age: number
   history: Contract[]
@@ -74,7 +77,14 @@ export type Dossier = {
   }
 }
 export type Order = (action: string, args: Record<string, string | number | boolean>) => Promise<boolean>
+export const priorities: Record<string, string> = {
+  sport: 'Спортивный результат',
+  security: 'Финансовая стабильность',
+  development: 'Профессиональное развитие',
+  autonomy: 'Самостоятельность',
+}
 export type Offer = {
+  assessment?: { priority: string; reasons: string[] }
   id: string
   person: string
   seat: string

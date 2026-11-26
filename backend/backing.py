@@ -292,13 +292,25 @@ def monthly(state, world):
             r.update(status="ended", reason="Срок договора истёк")
 
 
-def record_result(state, pid, event_id, day, *, place=None, licence_points=0):
+def record_result(
+    state, pid, event_id, day, *, place=None, licence_points=0, world=None, entry=None
+):
     """#8/#15 submit a classified result with points awarded by that event's rules."""
     if licence_points < 0 or (place is not None and place < 1):
         raise RuleError("Некорректная классификация.")
     person = state["people"][pid]
     records = state["starts"].setdefault(pid, {})
     result = dict(day=day, place=place, licence_points=licence_points)
+    if entry is not None:
+        car = world["entries"].get(entry) if world else None
+        if not car or not any(
+            world["assignments"][aid]["entry"] == entry and active(row, day)
+            for aid, row in bookings(state, pid)
+        ):
+            raise RuleError(
+                "Не подтверждено назначение в заявке на дату классификации."
+            )
+        result.update(org=car["org"], series=car["championship"], entry=entry)
     if event_id in records:
         if records[event_id] != result:
             raise RuleError("Результат этапа уже зафиксирован.")
@@ -533,7 +545,7 @@ def command(state, world, action, args):
         if not coaches:
             raise RuleError("Нужен тренер академии.")
         p = state["people"][s["person"]]
-        from .personnel import begin_course
+        from .legacy_courses import begin_course
 
         course_end = shifted(day, world["staff_rules"]["training"]["days"])
         if course_end > s["end"] or any(

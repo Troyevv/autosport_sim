@@ -42,8 +42,16 @@ def assigned_profiles(state, world, org, series, *, entry=None, wet=False):
             roster[aid] = dict(
                 person=pid,
                 position=seat["position"],
+                remit=next(
+                    r.get("remit", "standard")
+                    for r in state["seats"][aid]
+                    if r["person"] == pid
+                    and r["start"] <= state["date"]
+                    and (not r["end"] or state["date"] < r["end"])
+                ),
                 experience=person["experience"],
                 adaptability=person["adaptability"],
+                reaction=person.get("reaction"),
                 ambition=person["ambition"],
                 preferences=person.get("preferences", {}),
                 **evaluate(

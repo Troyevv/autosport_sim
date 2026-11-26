@@ -116,31 +116,26 @@ def test_counter_transfer_and_partial_month_settlement():
     assert service.export_save(service.import_save(archive)["id"]) == archive
 
 
-def test_traits_training_dates_recovery_and_save():
+def test_preparation_dates_work_recovery_and_save():
     c = create()
-    pid = WORLD["assignments"][SEAT]["person"]
+    c = run(c, "prepare-program", kind="simulator")
+    (session,) = c["preparations"]
+    (pid,) = session["participants"]
     original = snapshot(c)["people"][pid]
-    skill = min(original["skills"], key=original["skills"].get)
-    c = run(c, "staff-train", seat=SEAT, skill=skill)
+    assert original["fatigue"] == 9
+    with pytest.raises(domain.RuleError, match="зарезервирован"):
+        run(c, "prepare-program", kind="simulator")
     stored = service.export_save(c["id"])
     loaded = service.import_save(stored)
     assert stored == service.export_save(loaded["id"])
-    assert snapshot(c)["people"][pid]["fatigue"] == 18
-    for _ in range(2):
-        c = run(c, "advance")
-        if (
-            snapshot(c)["people"][pid]["courses"] == 1
-            and not snapshot(c)["people"][pid]["training"]
-        ):
-            assert c["date"] == "2025-02-08"
-            c = run(c, "staff-train", seat=SEAT, skill=skill)
-    while c["date"] < "2025-02-15":
-        c = run(c, c["briefing_action"] if c["pending"] else "advance")
-    p = snapshot(c)["people"][pid]
-    assert p["courses"] == 2 and p["training"] is None
-    assert p["skills"][skill] > original["skills"][skill]
-    assert p["skills"][skill] <= p["potential"]
-    assert {"focused", "practiced"} <= {t["id"] for t in p["traits"]}
+    c = run(c, "advance")
+    state = snapshot(c)
+    assert state["date"] == session["end"]
+    p = state["people"][pid]
+    assert p["fatigue"] < original["fatigue"]
+    assert set(state["experience_by_skill"][pid]) == {"Стабильность", "Торможение"}
+    assert p["skills"] == original["skills"]
+    skill = "Торможение"
     test_person = copy.deepcopy(p)
     test_person.update(
         specialization="Дождь",
@@ -321,12 +316,11 @@ def test_birthday_decay_fatigue_and_potential_ceiling():
     p = state["people"][GT]
     p["birth_date"] = "1988-02-02"
     p["skills"]["Дождь"] = p["potential"] - 1
-    p["training"] = dict(start="2025-02-01", end="2025-02-08", skill="Дождь")
     p["fatigue"] = 18
     stamina = p["skills"]["Выносливость"]
     employment.advance(state, WORLD, "2025-02-08")
-    assert p["skills"]["Выносливость"] == stamina - 1
-    assert p["skills"]["Дождь"] == p["potential"] and p["fatigue"] == 11
+    assert p["skills"]["Выносливость"] == stamina
+    assert p["skills"]["Дождь"] == p["potential"] - 1 and p["fatigue"] == 4
     employment.advance(state, WORLD, "2025-02-18")
     assert (
         p["fatigue"] == 0

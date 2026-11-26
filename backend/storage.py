@@ -35,6 +35,7 @@ MIGRATIONS = [
     ["ALTER TABLE receipt ADD COLUMN paint TEXT"],
     [],  # Dated contracts and personnel activation revision.
     [],  # Add country IDs and public profiles to existing v3 careers.
+    [],  # Professional event ledger and retirement of universal courses.
 ]
 
 
@@ -98,6 +99,15 @@ def transaction(write=False):
                 for row in db.execute("SELECT id,state FROM career").fetchall():
                     state = json.loads(row["state"])
                     initialize(state)
+                    db.execute(
+                        "UPDATE career SET state=? WHERE id=?", (dump(state), row["id"])
+                    )
+            if idx == 7:
+                from .professional import activate
+
+                for row in db.execute("SELECT id,state FROM career").fetchall():
+                    state = json.loads(row["state"])
+                    activate(state)
                     db.execute(
                         "UPDATE career SET state=? WHERE id=?", (dump(state), row["id"])
                     )

@@ -19,9 +19,9 @@ export type Funding = {
   source: string
   team: string | null
   monthly_cents: number
-  paid_cents: number
+  paid_cents?: number
   exit_cents: number
-  arrears: Record<string, number>
+  arrears?: Record<string, number>
   best_place: number | null
   minimum_starts: number
   portable: boolean

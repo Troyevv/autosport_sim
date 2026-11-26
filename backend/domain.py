@@ -161,6 +161,9 @@ def new_world(catalog, setup):
         from .personnel import initialize
 
         initialize(state, catalog)
+        from .professional import activate
+
+        activate(state)
     return state
 
 
@@ -199,6 +202,13 @@ def post_payroll(state, target):
 
 
 def apply(state, catalog, action, payload=None):
+    if action == "confirmed-work" and "growth_since" in state:
+        from .professional import Batch, record
+
+        for event in Batch.model_validate(payload).facts:
+            record(state, catalog, event)
+        state["revision"] += 1
+        return
     setup = state["setup"]
     office = setup["org"] + ":" + setup["role"]
     if occupant_on(state["seats"][office], state["date"]) != state["player_id"]:
@@ -220,6 +230,7 @@ def apply(state, catalog, action, payload=None):
             "manager-mandate",
             "academy-enroll",
             "academy-course",
+            "prepare-program",
             "academy-right",
             "funding-end",
             "manufacturer-backing",

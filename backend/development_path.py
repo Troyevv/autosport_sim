@@ -67,7 +67,7 @@ def eligibility(person, rules, day, assignment="race"):
     return None
 
 
-def set_mandate(state, args):
+def set_mandate(state, args, world):
     setup = state["setup"]
     if setup["role"] != "owner":
         raise RuleError("Мандат менеджера задаёт владелец.", 403)
@@ -90,6 +90,26 @@ def set_mandate(state, args):
         trust=max(0, min(100, m["trust"] + change)),
         satisfaction=max(0, min(100, m["satisfaction"] + change)),
     )
+    if "growth_since" in state and not any(
+        r["date"] == state["date"] for r in m["history"]
+    ):
+        from .professional import Activity, record
+
+        record(
+            state,
+            world,
+            Activity(
+                person=manager,
+                role="manager",
+                org=org,
+                kind="management",
+                skills=["Координация"],
+                date=state["date"],
+                event_id="mandate:" + org + ":" + state["date"],
+                difficulty=60,
+                result="completed",
+            ),
+        )
     m["history"].append(
         dict(date=state["date"], manager=manager, response=m["response"], **args)
     )
@@ -121,6 +141,14 @@ def available_staff(state, world, org, positions, academy=None):
         ):
             continue
         pid = occupant_on(state["seats"][a["id"]], state["date"])
+        if pid and "growth_since" in state:
+            from .preparation import busy
+
+            if (
+                busy(state, pid, state["date"], shifted(state["date"], 1))
+                or state["people"][pid]["fatigue"] >= 60
+            ):
+                continue
         if pid:
             found.append(state["people"][pid])
     return found
@@ -166,6 +194,47 @@ def scout(state, world, pid):
         scout=observer["id"],
     )
     reports.setdefault(pid, []).append(report)
+    if "growth_since" in state:
+        from .professional import Activity, record
+
+        key = "observation:" + pid + ":" + state["date"]
+        record(
+            state,
+            world,
+            Activity(
+                event_id=key,
+                person=observer["id"],
+                role="scout",
+                org=org,
+                date=state["date"],
+                kind="scouting",
+                skills=["Оценка потенциала", "Оценка навыков"],
+                difficulty=65,
+                result="completed",
+            ),
+        )
+        previous = next(
+            (r for r in reversed(last[:-1]) if r["scout"] == observer["id"]), None
+        )
+        if previous:
+            prior = "observation:" + pid + ":" + previous["date"]
+            if observer["id"] + "|" + prior in state["work_log"]:
+                record(
+                    state,
+                    world,
+                    Activity(
+                        event_id=key + ":review",
+                        person=observer["id"],
+                        role="scout",
+                        org=org,
+                        date=state["date"],
+                        kind="scout-review",
+                        skills=["Оценка потенциала"],
+                        difficulty=60,
+                        result="reviewed",
+                        context={"reviewed": prior},
+                    ),
+                )
     state["notices"].append(
         dict(date=state["date"], text="Готов скаутский отчёт · " + p["name"])
     )
