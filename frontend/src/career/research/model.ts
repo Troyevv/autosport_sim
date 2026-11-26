@@ -59,6 +59,7 @@ export type Report = {
   readers: Record<string, string>
 }
 export type Desk = {
+  inspections: { id: string; date: string; code: string; serial: string; version: string; batch: string | null; person: string }[]
   projects: Project[]
   reports: Report[]
   entries: Entry[]

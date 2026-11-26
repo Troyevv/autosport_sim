@@ -554,6 +554,10 @@ def advance(state, world, end):
             )
             for p in pending:
                 work(state, world, p, used)
+            if "production" in state:
+                from ..production.workshop import day as workshop_day
+
+                workshop_day(state, world, used)
             state["date"] = tomorrow
             state["research"]["next_work_day"] = tomorrow
     finally:

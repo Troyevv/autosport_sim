@@ -6,6 +6,7 @@ import { money, type Career } from '../api'
 import type { SectionProps } from '../Sections'
 import { useOrder } from '../finance/useOrder'
 import { usePersonnel } from '../staff/model'
+import { labels as workshopLabels } from '../production/model'
 import { priorities, outcomes, type Desk, type Priority, type Report } from './model'
 import './research.css'
 
@@ -246,6 +247,13 @@ function Memory({ data, order, manage }: { data: Desk; order: Order; manage: boo
           )
         })}
       </Panel>
+      {data.inspections.length > 0 && <Panel title="Протоколы контроля качества">
+        {data.inspections.map(h => <article key={h.id} className="research-card">
+          <small>{dateLabel(h.date)} · {h.person}</small>
+          <strong>{workshopLabels[h.code]} · {h.serial}</strong>
+          <p>{h.batch || 'Начальный парк'} · {h.version}</p>
+        </article>)}
+      </Panel>}
       {transfer && (
         <Dialog title="Передача инженерного опыта" onClose={() => setTransfer(null)}>
           <form

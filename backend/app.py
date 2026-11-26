@@ -324,6 +324,15 @@ def commercial_market(cid: str):
         return market.projection(storage.checkpoint(db, cid), WORLD)
 
 
+@app.get("/api/careers/{cid}/production")
+def production_desk(cid: str):
+    from .production.desk import projection
+    from .catalog import LINEUP_WORLD
+
+    with storage.transaction() as db:
+        return projection(storage.checkpoint(db, cid), LINEUP_WORLD)
+
+
 @app.get("/api/careers/{cid}/development")
 def development_desk(cid: str):
     from .development.desk import projection

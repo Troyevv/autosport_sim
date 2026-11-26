@@ -8,6 +8,7 @@ from ..components.catalog import OPENING
 from ..components.registry import drawing_for
 from ..domain import RuleError, occupant_on
 from ..finance import budget, facilities
+from ..finance.market import contracted_supplier
 from ..personnel import evaluate
 from ..research import admitted, record_work
 from ..research.model import METHODS, Priority, Reorder, evidence
@@ -58,15 +59,7 @@ def restriction(state, world, entry, axis):
         return "Изменения узла заморожены."
     if axis in car["suppliers"] and car["suppliers"][axis] != entry["org"]:
         return "Чертёж принадлежит утверждённому поставщику."
-    if any(
-        deal["org"] == entry["org"]
-        and deal["series"] == entry["championship"]
-        and deal["product"] == axis
-        and deal["status"] == "signed"
-        and deal["start"] <= state["date"] < deal["end"]
-        and deal["sponsor"] != entry["org"]
-        for deal in state["market"]["supplies"].values()
-    ):
+    if contracted_supplier(state, entry, axis) not in (None, entry["org"]):
         return "На этот период действует договор поставки узла."
     if not rule or axis not in rule["team_slots"]:
         return "Регламент разрешает только утверждённые спецификации."

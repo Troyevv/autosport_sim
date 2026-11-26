@@ -119,15 +119,30 @@ def stockroom(state, world, entry):
         iid
         for iid in [*OPENING.by_org[org], *additions]
         if iid not in mounted
+        and state.get("production", {})
+        .get("items", {})
+        .get(iid, {})
+        .get("status", "stock")
+        == "stock"
+        and installable_revision(state, iid)
         and compatible(state, world, entry, spec(state, iid))
         and serviceable(state, iid)
     ]
 
 
+def installable_revision(state, iid):
+    if "production" not in state:
+        return True
+    drawing = spec(state, iid)
+    project = state["development"]["projects"].get(drawing.get("reference"))
+    return not project or project.get("disposition") == "released"
+
+
 def serviceable(state, iid):
     current = condition(state, iid)
     return (
-        not current["damaged"]
+        not state.get("production", {}).get("items", {}).get(iid, {}).get("rejected")
+        and not current["damaged"]
         and current["wear_ppm"] < 10**6
         and remaining(state, iid) > 0
     )
@@ -222,6 +237,9 @@ def record_distribution(state, world, entry, iid, event_id, waiting, resource):
     recipient = next((s for s in seats if s["entry"] == entry["id"]), None)
     if not recipient:
         return
+    from ..production.planning import shortage_plan
+
+    plan = shortage_plan(state, entry["org"], drawing["id"])
     for seat in seats:
         if seat["entry"] not in waiting:
             continue
@@ -238,6 +256,7 @@ def record_distribution(state, world, entry, iid, event_id, waiting, resource):
                 evidence=f"Наряд {event_id}, машина №{entry['number']}.",
                 reason=f"Распределён дефицитный комплект «{drawing['title']}».",
                 severity=1,
+                **plan,
             ),
         )
 
@@ -276,6 +295,8 @@ def install(state, world, order, org):
             + "."
         )
     event_id = f"component-fit-{state['revision'] + 1}"
+    if "production" in state:
+        event_id += f"-{len(data['history']) + 1}"
     data["mounts"].setdefault(entry["id"], {})[slot] = iid
     fitted = mounting(state, entry["id"])
     data["history"].append(

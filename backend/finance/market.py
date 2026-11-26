@@ -395,6 +395,22 @@ def homologate(state, world, h):
     rows[h.reference] = h.model_dump()
 
 
+def contracted_supplier(state, entry, product):
+    """One signed supply per product, series and period (enforced by sign_supply)."""
+    return next(
+        (
+            deal["sponsor"]
+            for deal in state["market"]["supplies"].values()
+            if deal["org"] == entry["org"]
+            and deal["series"] == entry["championship"]
+            and deal["product"] == product
+            and deal["status"] == "signed"
+            and deal["start"] <= state["date"] < deal["end"]
+        ),
+        None,
+    )
+
+
 def supplier_eligible(state, world, entry, sponsor, product, start, end):
     initial = world["cars"][entry["car"]]["suppliers"].get(product) == sponsor
     certified = any(
