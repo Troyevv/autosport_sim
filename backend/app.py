@@ -222,7 +222,11 @@ def channel_range(
 
 @app.post("/api/careers/{cid}/commands")
 def command(cid: str, command: service.Command):
-    if command.action in ("confirmed-work", "issued-licence", "season-classification"):
+    if command.action in service.PRODUCERS or command.action in (
+        "confirmed-work",
+        "issued-licence",
+        "season-classification",
+    ):
         raise RuleError("Требуется подтверждение подсистемы-источника.", 403)
     return service.execute(cid, command)
 
@@ -246,4 +250,47 @@ def asset(kind: str, entity: str, v: str | None = None):
             if v == meta["sha256"]
             else "no-cache",
         },
+    )
+
+
+@app.get("/api/careers/{cid}/finance")
+def financial_statement(cid: str, scope: str = "organization"):
+    from .finance.reports import statement
+    from .catalog import WORLD
+    from . import storage
+
+    with storage.transaction() as db:
+        return statement(storage.checkpoint(db, cid), WORLD, db, cid, scope)
+
+
+@app.get("/api/careers/{cid}/finance/report.csv")
+def export_financial_statement(cid: str, scope: str = "organization"):
+    import csv
+    from io import StringIO
+    from fastapi.responses import Response
+
+    report = financial_statement(cid, scope)
+    output = StringIO()
+    writer = csv.writer(output)
+    writer.writerow(["EUR cents", "scope", report["scope"]])
+    for key in (
+        "opening_cents",
+        "cash_cents",
+        "available_cents",
+        "profit_cents",
+        "income_cents",
+        "expense_cents",
+        "cash_flow_cents",
+    ):
+        writer.writerow([key, report[key]])
+    for section in ("journal", "obligations", "forecast"):
+        writer.writerow([section])
+        rows = report[section]
+        if rows:
+            writer.writerow(rows[0].keys())
+            writer.writerows(row.values() for row in rows)
+    return Response(
+        output.getvalue().encode("utf-8-sig"),
+        media_type="text/csv",
+        headers={"Content-Disposition": 'attachment; filename="finance.csv"'},
     )

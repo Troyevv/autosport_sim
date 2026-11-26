@@ -40,6 +40,7 @@ MIGRATIONS = [
     [],  # Professional event ledger and retirement of universal courses.
     [],  # Regional series and karting activation on the current game date.
     STATISTICS_SCHEMA,
+    [],  # Finance opens previously unjournaled balances on the activation revision.
 ]
 
 
@@ -128,6 +129,15 @@ def transaction(write=False):
 
                 for row in db.execute("SELECT id,state FROM career"):
                     refresh(db, row["id"], json.loads(row["state"]))
+            if idx == 10:
+                from .finance import activate
+                from .catalog import WORLD
+
+                for row in db.execute("SELECT id FROM career").fetchall():
+                    cid = row["id"]
+                    state = checkpoint(db, cid)
+                    activate(state, WORLD, postings(db, cid))
+                    store(db, cid, state)
             db.execute(f"PRAGMA user_version={idx + 1}")
         yield db
         db.commit()
@@ -181,8 +191,12 @@ def receipts(db, cid):
         item = dict(row)
         paint = item.pop("paint")
         if paint is not None:
-            item["paint" if item["action"] == "save-livery" else "staff"] = json.loads(
-                paint
-            )
+            item[
+                "paint"
+                if item["action"] == "save-livery"
+                else "finance"
+                if item["action"].startswith("finance-")
+                else "staff"
+            ] = json.loads(paint)
         commands.append(item)
     return commands

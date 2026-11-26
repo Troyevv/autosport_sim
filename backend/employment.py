@@ -40,6 +40,12 @@ def notice(state, text, org=None):
 def post(state, org, key, amount, source):
     if not amount:
         return
+    if "finance" in state:
+        from . import finance
+
+        if amount < 0 and -amount > finance.available(state, org):
+            raise RuleError("Недостаточно свободных средств.", 409)
+        return finance.post(state, org, key, amount, source)
     a = state["accounts"][org]
     if a["cash_cents"] + amount < 0:
         raise RuleError("Недостаточно средств для исполнения договора.", 409)
@@ -54,6 +60,7 @@ def monthly_pay(state, catalog):
     end = date.fromisoformat(state["date"])
     start = date.fromisoformat(shifted(state["date"], -1)).replace(day=1)
     days = monthrange(start.year, start.month)[1]
+    personal = {}
     payroll = dict.fromkeys(state["accounts"], 0)
     for g in state["collectives"].values():
         payroll[g["org"]] += g["payroll_cents"]
@@ -68,8 +75,16 @@ def monthly_pay(state, catalog):
             earned = r["salary_cents"] * max(0, (right - left).days) // days
             payroll[catalog["assignments"][aid]["org"]] += earned
             if r["person"] == state["player_id"]:
-                state["player_cash_cents"] += earned
+                org = catalog["assignments"][aid]["org"]
+                personal[org] = personal.get(org, 0) + earned
+                if "finance" not in state:
+                    state["player_cash_cents"] += earned
     for org, amount in payroll.items():
+        if "finance" in state:
+            from .finance import payroll as settle_payroll
+
+            settle_payroll(state, org, amount, personal.get(org, 0))
+            continue
         post(state, org, "payroll-" + end.strftime("%Y-%m"), -amount, "staff-payroll")
 
 
@@ -292,6 +307,9 @@ def resolve(state, catalog, offer):
 
 
 def dates(state):
+    for row in state.get("finance", {}).get("instalments", {}).values():
+        if row["status"] == "pending":
+            yield row["due"]
     for r in state["funding"].values():
         if r["status"] == "active":
             yield r["end"]
@@ -336,6 +354,10 @@ def advance(state, catalog, target):
             monthly_pay(state, catalog)
             if "growth_since" in state and shifted(day, 3) < HORIZON:
                 fill_vacancies(state, catalog)
+        if "finance" in state:
+            from .finance import settle
+
+            settle(state)
         backing.condition_review(state, day)
         for offer in sorted(
             state["offers"].values(),

@@ -3,7 +3,8 @@ import { CalendarDays, ChevronRight, Flag, MapPin } from 'lucide-react'
 import { dateLabel, millions } from '../game'
 import { Button, Dialog, Facts, Header, Panel, Stats, Table } from '../ui/components'
 import { SeasonCalendar } from '../ui/SeasonCalendar'
-import { assetUrl, money, type World, type Career, type Asset } from './api'
+import { assetUrl, type World, type Career, type Asset } from './api'
+export { Finance } from './finance/Finance'
 export { People } from './staff/People'
 
 export type SectionProps = { world: World; c: Career; media: Asset[] }
@@ -69,7 +70,7 @@ export function Overview({ world, c, media }: SectionProps) {
       </section>
       <Stats
         items={[
-          ['Доступный остаток', millions(c.account.cash_cents), 'Средства организации'],
+          ['Доступный остаток', millions(c.available_cents), 'Средства организации'],
           ['Бюджет', millions(c.account.budget_cents), 'Утверждено на сезон'],
           ['Прогноз', millions(c.account.forecast_cents), 'После ближайшей выплаты'],
           [
@@ -315,53 +316,6 @@ export function Championships({ world, c, media }: SectionProps) {
           </div>
         </Dialog>
       )}
-    </section>
-  )
-}
-export function Finance({ c, world }: SectionProps) {
-  return (
-    <section className="screen">
-      <Header
-        section={world.organizations[c.org].name}
-        title="Финансы"
-        sub="Проводки организации в евро. Стартовый капитал, бюджет и зарплаты заданы игровыми правилами."
-      />
-      <Stats
-        items={[
-          ['Остаток', millions(c.account.cash_cents), money(c.account.cash_cents)],
-          ['Утверждённый бюджет', millions(c.account.budget_cents), 'На сезон'],
-          ['Прогноз остатка', millions(c.account.forecast_cents), 'После ближайшей выплаты'],
-          ['Личный капитал', money(c.player_cash_cents), c.name],
-        ]}
-      />
-      <Panel title="Журнал операций">
-        <Table
-          label="Проводки"
-          columns={['Дата', 'Операция', 'Сумма']}
-          rows={c.ledger
-            .slice()
-            .reverse()
-            .map((p) => ({
-              id: p.key,
-              cells: [
-                dateLabel(p.date, true),
-                (
-                  {
-                    opening: 'Стартовый капитал',
-                    payroll: 'Фонд оплаты коллективов',
-                    'staff-payroll': 'Зарплата сотрудников и коллективов',
-                    'driver-backing': 'Финансирование места пилота',
-                    'backing-exit': 'Компенсация за прекращение поддержки',
-                    signing: 'Бонус за подписание',
-                    buyout: 'Выкуп контракта',
-                    severance: 'Компенсация при расторжении',
-                  } as Record<string, string>
-                )[p.source] || p.source,
-                money(p.delta_cents),
-              ],
-            }))}
-        />
-      </Panel>
     </section>
   )
 }

@@ -6,7 +6,8 @@ from uuid import uuid4
 
 from pydantic import BaseModel, ConfigDict, Field, ValidationError, model_validator
 
-from . import domain, storage
+from . import domain, storage, finance
+from .finance.events import PRODUCERS
 from .livery import GARAGE, PaintOrder
 from .catalog import VERSION, WORLD
 from .roster_upgrade import (
@@ -63,6 +64,7 @@ class Command(Strict):
     action: str = Field(min_length=1, max_length=32)
     paint: PaintOrder | None = None
     staff: dict | None = None
+    finance: dict | None = None
 
     @model_validator(mode="after")
     def check_action_payload(self):
@@ -78,10 +80,21 @@ class Command(Strict):
             raise ValueError("Неверные параметры кадровой команды.")
         if self.staff is not None:
             orders[self.action].model_validate(self.staff)
+        finance_orders = {**finance.ORDERS, **PRODUCERS}
+        if (self.action in finance_orders) != (self.finance is not None):
+            raise ValueError("Неверные параметры финансовой команды.")
+        if self.finance is not None:
+            finance_orders[self.action].model_validate(self.finance)
         return self
 
     def payload(self):
-        return self.paint.model_dump() if self.paint else self.staff
+        return (
+            self.paint.model_dump()
+            if self.paint
+            else self.finance
+            if self.finance is not None
+            else self.staff
+        )
 
 
 def summary(cid, state):
@@ -184,6 +197,7 @@ def project(db, cid, state):
         player_id=state["player_id"],
         player_cash_cents=state["player_cash_cents"],
         account=state["accounts"][org],
+        available_cents=finance.available(state, org),
         team_color=WORLD["organizations"][org]["color"],
         assignments=people,
         ledger=history,
@@ -208,6 +222,7 @@ def create(spec):
     with storage.transaction(True) as db:
         setup = spec.model_dump(exclude_none=True)
         state = domain.new_world(WORLD, setup)
+        finance.activate(state, WORLD)
         cid = str(uuid4())
         storage.store(db, cid, state, create=True)
         statistics_personnel.refresh(db, cid, state)
@@ -369,6 +384,13 @@ def import_save(document, *, statistics_records=None):
             type(activation) is not int or not 0 <= activation <= saved["revision"]
         ):
             raise ValueError
+        finance_since = saved.get("finance", {}).get("since")
+        if finance_since is not None and (
+            type(finance_since) is not int
+            or not expanded
+            or not junior_since <= finance_since <= saved["revision"]
+        ):
+            raise ValueError
         growth = saved.get("growth_since")
         if growth is not None and (
             not modern
@@ -398,6 +420,8 @@ def import_save(document, *, statistics_records=None):
             if expanded and not native and junior_since == state["revision"]:
                 upgrade_juniors(state)
                 catalog = WORLD
+            if finance_since == state["revision"]:
+                finance.activate(state, catalog, state["ledger"])
 
         for item in commands:
             apply_migrations()
@@ -430,6 +454,7 @@ def import_save(document, *, statistics_records=None):
             state = upgrade_personnel(state)
         if not expanded:
             upgrade_juniors(state)
+        finance.activate(state, WORLD, state["ledger"])
     except (KeyError, TypeError, ValueError, RecursionError, ValidationError):
         raise domain.RuleError("Файл повреждён или нарушает правила мира.") from None
     cid = str(uuid4())

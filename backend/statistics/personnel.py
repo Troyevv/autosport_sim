@@ -81,6 +81,23 @@ def refresh(db, cid, state, previous=None, action=None, args=None):
         return emit("driver-result", [pid, session], data["day"], ctx, data)
 
     def records():
+        for term in state.get("finance", {}).get("instalments", {}).values():
+            for side in ("payer", "recipient"):
+                account = term[side]
+                if not account:
+                    continue
+                owner = account.removeprefix("group:").split(":")[0]
+                if owner in WORLD["organizations"]:
+                    ctx = dict(org=owner, contract=term["contract"])
+                    yield emit(
+                        "financial-obligation",
+                        [term["id"], side],
+                        term["due"],
+                        ctx,
+                        term,
+                        access="internal",
+                    )
+
         for key, b in assignments(state):
             if (
                 previous

@@ -248,11 +248,21 @@ def apply(state, catalog, action, payload=None):
             record(state, catalog, event)
         state["revision"] += 1
         return
+    from .finance.events import PRODUCERS, confirm
+
+    if action in PRODUCERS and "finance" in state:
+        confirm(state, catalog, action, payload)
+        state["revision"] += 1
+        return
     setup = state["setup"]
     office = setup["org"] + ":" + setup["role"]
     if occupant_on(state["seats"][office], state["date"]) != state["player_id"]:
         raise RuleError("Действующее назначение не даёт полномочий.", 403)
-    if action == "save-livery" and payload is not None:
+    if action.startswith("finance-") and "finance" in state:
+        from .finance import command
+
+        command(state, catalog, action, payload)
+    elif action == "save-livery" and payload is not None:
         from .livery import install
 
         install(state, catalog, payload)
