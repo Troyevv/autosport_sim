@@ -45,8 +45,6 @@ ORDERS = {
 
 
 def initialize(state):
-    if "manufacturer" in state:
-        return
     state.setdefault(
         "manufacturer",
         dict(
@@ -58,6 +56,9 @@ def initialize(state):
             standards={},
         ),
     )
+
+    if "market" not in state or state["date"] >= "2026-01-01":
+        return
 
     from ..catalog import LINEUP_WORLD as world
     from ..finance.market import Homologation, homologate
@@ -72,7 +73,7 @@ def initialize(state):
         reference = f"works-2025-{entry['id']}-engine"
         if reference in state["market"].get("homologations", {}):
             continue
-        if provider and entry["championship"] == "f1" and state["date"] < "2026-01-01":
+        if provider and entry["championship"] == "f1":
             homologate(
                 state,
                 world,
