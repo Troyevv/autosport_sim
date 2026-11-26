@@ -218,7 +218,7 @@ test('Мандат владельца, наблюдение скаута и до
     .selectOption({ label: 'Механики и пит-бригада' })
   await page.getByRole('combobox', { name: 'Сравнить подразделения' }).selectOption({ label: 'Шасси' })
   await expect(page.getByText('Атмосфера в подразделении', { exact: true })).toBeVisible()
-  await page.getByRole('heading', { name: 'Профессиональное взаимодействие' }).scrollIntoViewIfNeeded()
+  await page.locator('.unit-comparison').evaluate((el) => el.scrollIntoView({ block: 'center' }))
   await evidence('crew')
   expect(errors).toEqual([])
 })
