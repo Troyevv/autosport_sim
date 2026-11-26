@@ -514,7 +514,7 @@ export function Manufacturer({
                               )
                             }
                           >
-                            Передать {i}
+                            Передать {d.inventory.find(item => item.id === i)?.serial ?? i}
                           </Button>
                         ))}
                       </>
@@ -604,7 +604,6 @@ export function Manufacturer({
                           seat: d.advisor!.seat,
                           entry: client.entry,
                           product: client.axis,
-                          start: c.date,
                           ...v,
                         })
                       )
@@ -613,6 +612,9 @@ export function Manufacturer({
                   >
                     <h3>{d.advisor.name}</h3>
                     {clientSelect}
+                    <Field name="Начало назначения">
+                      <input name="start" type="date" required defaultValue={c.date} min={c.date} />
+                    </Field>
                     <Field name="Окончание назначения">
                       <input name="end" required type="date" min={c.date} />
                     </Field>

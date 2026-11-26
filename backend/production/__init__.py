@@ -6,7 +6,7 @@ from pydantic import Field
 
 from ..supplier_engineering import engineering_entry
 from .. import components, development, finance
-from ..components.catalog import OPENING
+from ..components.catalog import parts_for
 from ..components.registry import drawing_for
 from ..domain import RuleError
 from ..finance import budget, facilities
@@ -61,10 +61,10 @@ def permitted(state, world, entry, drawing, outsource, *, year=None):
         if (
             outsource
             or drawing["manufacturer"] != org
-            or drawing["interface"] != OPENING.interfaces[entry["id"]]
+            or drawing["interface"] != parts_for(state).interfaces[entry["id"]]
         ):
             return "Нет прав на изготовление этой редакции."
-        if drawing["id"] not in OPENING.specs and not development.released(
+        if drawing["id"] not in parts_for(state).specs and not development.released(
             state, org, drawing["id"]
         ):
             return "Чертёж ожидает выпуска или отозван."
@@ -73,7 +73,7 @@ def permitted(state, world, entry, drawing, outsource, *, year=None):
         state, world, entry, drawing, year=year, planning=True
     ):
         return "Узел несовместим, заморожен или не разрешён регламентом и договором поставки."
-    if drawing["id"] not in OPENING.specs and not development.released(
+    if drawing["id"] not in parts_for(state).specs and not development.released(
         state, org, drawing["id"]
     ):
         return "Редакция ожидает допуска или отозвана."
@@ -85,7 +85,7 @@ def permitted(state, world, entry, drawing, outsource, *, year=None):
         return "По действующему договору узел поставляет другой изготовитель."
     if not outsource:
         return "Серийный узел изготавливает утверждённый поставщик."
-    if drawing["id"] not in OPENING.rules[drawing["regulation"]]["approved"]:
+    if drawing["id"] not in parts_for(state).rules[drawing["regulation"]]["approved"]:
         return "Подрядчику недоступна утверждённая редакция."
     return None
 
@@ -213,7 +213,7 @@ def commission(state, world, org, key, order, *, target_year=None):
 
 def inventory(state, org):
     return [
-        *OPENING.by_org.get(org, ()),
+        *parts_for(state).by_org.get(org, ()),
         *(
             iid
             for iid, item in state["components"]["inventory"].items()
@@ -244,7 +244,7 @@ def storage_space(state, world, org):
         if b["org"] == org and not b["finished"]
     )
     # Opening racks fit the initial spares plus one replacement set for each entered car.
-    base = len(OPENING.by_org.get(org, ()))
+    base = len(parts_for(state).by_org.get(org, ()))
     day = state["date"]
     slots = sum(
         max(0, facilities.free(state, site, day, facilities.later(day, 1), buyer=org))
@@ -296,7 +296,7 @@ def disposition(state, world, org, order):
                 e
                 for e in world["entries"].values()
                 if e["org"] == org
-                and OPENING.interfaces[e["id"]] == drawing["interface"]
+                and parts_for(state).interfaces[e["id"]] == drawing["interface"]
                 and world["cars"][e["car"]]["regulation"] == drawing["regulation"]
             ),
             None,

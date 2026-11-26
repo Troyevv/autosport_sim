@@ -71,6 +71,7 @@ export type Plan = {
     reserved_cents: number
     lead: string | null
   }[]
+  documents: { reference: string; component: string; issuer: string; design: boolean }[]
   knowledge: { id: string; conclusion: string; confidence: number; applicable: number }[]
   certificates: Record<string, { date: string }>
   violations: { instance: string; decision: string }[]

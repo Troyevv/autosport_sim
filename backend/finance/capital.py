@@ -126,17 +126,17 @@ def initialize(state, world):
         programs={},
         changes={},
     )
+    from ..opening import VERSION as opening_version
+    from ..opening.investment import owner_endowment
+
     wallets = state["finance"]["pockets"]
     for org in sorted(state["accounts"]):
         owner = owner_wallet(org)
         wallets[owner] = 0
-        post(
-            state,
-            owner,
-            "capital-opening",
-            state["accounts"][org]["budget_cents"] // 2,
-            "opening",
-        )
+        wealth = state["accounts"][org]["budget_cents"] // 2
+        if state.get("opening") == opening_version:
+            wealth = owner_endowment(state, world, org)
+        post(state, owner, "capital-opening", wealth, "opening")
         s["shares"][org] = {owner: 10000}
     for wallet, amount in [(BANK, 100000000000), (INVESTOR, 30000000000)]:
         wallets[wallet] = 0

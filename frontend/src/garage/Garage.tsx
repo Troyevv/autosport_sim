@@ -190,7 +190,7 @@ function Studio({ c, world, catalog, updateCareer }: Props & { catalog: Catalog 
           <select value={entryId} disabled={saving} onChange={(e) => choose(e.target.value)}>
             {filtered.map((e) => (
               <option value={e.id} key={e.id}>
-                №{catalog.entries[e.id].livery.number} · {world.organizations[e.org].name}
+                №{catalog.entries[e.id].livery.number} · {e.entrant ?? world.organizations[e.org].name}
               </option>
             ))}
           </select>
@@ -476,7 +476,7 @@ function Studio({ c, world, catalog, updateCareer }: Props & { catalog: Catalog 
                       alt={world.cars[e.car].name}
                     />
                     <span>
-                      <b>№ {preset.livery.number}</b> {world.organizations[e.org].name}
+                      <b>№ {preset.livery.number}</b> {e.entrant ?? world.organizations[e.org].name}
                     </span>
                   </button>
                 )

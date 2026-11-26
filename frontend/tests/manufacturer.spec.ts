@@ -26,16 +26,25 @@ test('Производитель поручает работу КБ и назн�
   await capture('catalog')
   await button('Исследования и разработки').click()
   await page.getByLabel('Целевой сезон').selectOption('2026')
+  const refreshed = page.waitForResponse(r => r.url().endsWith('/manufacturer') && r.request().method() === 'GET')
   await button('Разработка').click()
+  await refreshed
   await expect(page.getByText('Разработка · В очереди')).toBeVisible()
   await capture('design')
   await button('Консультанты').click()
+  await page.getByLabel('Начало назначения').fill('2025-02-15')
   await page.getByLabel('Окончание назначения').fill('2025-03-01')
   await button('Назначить консультанта').click()
   await expect(page.getByText('Назначение зарегистрировано.')).toBeVisible()
   await page.reload()
   await button('Консультанты').click()
-  await expect(page.getByText(/2025-03-01 · 100%/)).toBeVisible()
+  const desk = await (await page.request.get('/api/careers/' + career.id + '/manufacturer')).json()
+  const assignment = desk.assignments.find((a: { start: string; end: string }) =>
+    a.start === '2025-02-15' && a.end === '2025-03-01')
+  expect(assignment.load).toBeGreaterThan(0)
+  expect(assignment.load).toBeLessThan(100)
+  expect(assignment.channels.length).toBeGreaterThan(0)
+  await expect(page.getByText('2025-02-15 — 2025-03-01 · ' + assignment.load + '%')).toBeVisible()
 })
 
 test('Менеджер передаёт требование о тепловыделении поставщику', async ({ page }) => {

@@ -27,11 +27,14 @@ def crew(state, org, inspection):
     name = "Надёжность" if inspection else "Механики и пит-бригада"
     if org.startswith("supplier-"):
         name = "Инженеры" if inspection else "Производственные рабочие"
+    names = {name}
+    if state.get("opening"):
+        names.add("Инженеры программы" if inspection else "Гоночные механики")
     return next(
         (
             g
             for g in state["collectives"].values()
-            if g["org"] == org and g["name"] == name
+            if g["org"] == org and g["name"] in names
         ),
         None,
     )
@@ -40,11 +43,7 @@ def crew(state, org, inspection):
 def booked_site(state, org, kind, day, end, contractor):
     """Assign one paid slot-day; other users of the capacity may have older unlinked grants."""
     bookings = state["estate"]["bookings"]
-    sites = sorted(
-        (a for a in state["estate"]["assets"].values() if a["kind"] == kind),
-        key=lambda a: (a["owner"] != org, a["id"]),
-    )
-    for site in sites:
+    for site in facilities.accessible_sites(state, org, kind, day):
         if facilities.free(state, site, day, end, buyer=org) < 1:
             continue
         if site["owner"] == org:

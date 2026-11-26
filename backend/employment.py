@@ -112,9 +112,16 @@ def ask(state, catalog, p, seat):
             interest += 70 - mandate["satisfaction"]
         if mandate["goal"] != p["management"]["style"]:
             interest += 20
-    return max(
+    demand = max(
         10000, (profile["rating"] * 45 + interest * 6 + p["reputation"] * 8) * 100
     )
+    from .opening import VERSION
+
+    if state.get("opening") == VERSION:
+        from .opening.workforce import race_salary
+
+        return race_salary(state, p, seat, demand)
+    return demand
 
 
 def intersects(row, start, end):
@@ -874,6 +881,7 @@ def assign_support(state, catalog, seat, row, args):
             or terms["maker"] != seat["org"]
             or any(
                 r["org"] == entry["org"]
+                and ("entries" not in r or entry["id"] in r["entries"])
                 and r["series"] == entry["championship"]
                 and r["product"] == product
                 and r["status"] == "signed"
@@ -908,6 +916,16 @@ def assign_support(state, catalog, seat, row, args):
     reference = f"support-{state['revision']}"
     if any(r["id"] == reference for r in state["support"]):
         reference += f"/{seat['org']}/{entry['id']}/{product}/{start}"
+    from .opening import VERSION
+
+    channels = frozenset({"distance", "temperature", "wear", "feedback"})
+    allocation = 100
+    if terms and state.get("opening") == VERSION:
+        from .opening.partners import support_access
+
+        channels, allocation = support_access(
+            terms["partnership"], seat["org"], product
+        )
     assignment = SupportAssignment(
         reference,
         row["person"],
@@ -917,9 +935,9 @@ def assign_support(state, catalog, seat, row, args):
         product,
         start,
         end,
-        frozenset({"distance", "temperature", "wear", "feedback"}),
+        channels,
         row["salary_cents"],
-        100,
+        allocation,
     )
     data = asdict(assignment)
     if terms:
@@ -932,4 +950,5 @@ def assign_support(state, catalog, seat, row, args):
         state["people"][row["person"]]["name"]
         + " · назначен клиенту "
         + catalog["organizations"][entry["org"]]["name"],
+        seat["org"],
     )

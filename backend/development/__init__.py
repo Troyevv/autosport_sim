@@ -4,7 +4,7 @@ from datetime import date
 from typing import Literal
 
 from .. import components
-from ..components.catalog import OPENING
+from ..components.catalog import parts_for
 from ..components.registry import drawing_for
 from ..domain import RuleError, occupant_on
 from ..finance import budget, facilities
@@ -65,7 +65,7 @@ def restriction(state, world, entry, axis, *, year=None, reliability=False):
         rule = bulletin(world, entry, year or int(state["date"][:4]))
         if rule["slot"] == axis and state["date"] >= rule["freeze"] and not reliability:
             return "Регламент заморозил разработку узла."
-    rule = OPENING.rules.get(config["regulation"])
+    rule = parts_for(state).rules.get(config["regulation"])
     if axis in state["components"]["locked_slots"].get(entry["id"], {}):
         return "Изменения узла заморожены."
     if axis in car["suppliers"] and car["suppliers"][axis] != entry["org"]:
@@ -79,7 +79,7 @@ def restriction(state, world, entry, axis, *, year=None, reliability=False):
 
 def versions(state, eid, axis, world=None):
     fitted = components.spec(state, components.mounting(state, eid)[axis])
-    org = OPENING.stock[OPENING.installed[eid][axis]]["org"]
+    org = parts_for(state).stock[parts_for(state).installed[eid][axis]]["org"]
     held = {
         item["spec"]
         for item in state["components"]["inventory"].values()
@@ -100,19 +100,19 @@ def versions(state, eid, axis, world=None):
                 d["id"]
                 for d in state["components"]["revisions"].values()
                 if d["slot"] == axis
-                and d["interface"] == OPENING.interfaces[eid]
+                and d["interface"] == parts_for(state).interfaces[eid]
                 and d["manufacturer"] == terms["maker"]
                 and released(state, terms["maker"], d["id"])
             }
     return sorted(
         (
             d
-            for pool in (OPENING.specs, state["components"]["revisions"])
+            for pool in (parts_for(state).specs, state["components"]["revisions"])
             for d in pool.values()
             if d["id"] in supplied
             or d["family"] == fitted["family"]
             and (
-                d["id"] in OPENING.specs
+                d["id"] in parts_for(state).specs
                 or d["id"] == fitted["id"]
                 or d["id"] in held
                 or d["manufacturer"] == org
@@ -178,10 +178,10 @@ def commission(state, world, org, key, order, *, target_year=None, objective=Non
     allowed = {d["id"] for d in versions(state, entry["id"], axis, world)}
     maker = "supplier_axis" in entry
     if maker:
-        family = OPENING.specs[entry["supplier_baseline"]]["family"]
+        family = parts_for(state).specs[entry["supplier_baseline"]]["family"]
         allowed = {
             d["id"]
-            for pool in (OPENING.specs, state["components"]["revisions"])
+            for pool in (parts_for(state).specs, state["components"]["revisions"])
             for d in pool.values()
             if d["family"] == family and d["manufacturer"] == org
         }
@@ -285,8 +285,8 @@ def commission(state, world, org, key, order, *, target_year=None, objective=Non
         p["skill"] = skill
         p["objective"] = objective or "output"
         p["assembly"] = {
-            s: OPENING.stock[i]["spec"]
-            for s, i in OPENING.installed[entry["id"]].items()
+            s: parts_for(state).stock[i]["spec"]
+            for s, i in parts_for(state).installed[entry["id"]].items()
         }
         if target_year is not None:
             p["target_year"] = target_year
@@ -476,7 +476,7 @@ def review(state, world, p, disposition, actor):
 
         year = p.get("target_year") or int(state["date"][:4])
         rule = bulletin(world, entry, year)
-        if rule["slot"] == p["axis"] and not within_limit(entry, drawing):
+        if rule["slot"] == p["axis"] and not within_limit(entry, drawing, state):
             raise RuleError("Чертёж превышает ограничение сезонного бюллетеня.")
         approved = state["components"]["admissions"].setdefault(
             drawing["regulation"], []

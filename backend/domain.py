@@ -58,6 +58,14 @@ def player_face(catalog, setup):
 
 def new_world(catalog, setup):
     role, org, series = setup["role"], setup["org"], setup["series"]
+    if org in catalog.get("entrant_operators", {}):
+        if not any(
+            e["entrant_id"] == org and e["championship"] == series
+            for e in catalog["entries"].values()
+        ):
+            raise RuleError("Марка не заявлена в этом чемпионате.")
+        org = catalog["entrant_operators"][org]
+        setup = dict(setup, org=org)
     rec = catalog["organizations"].get(org)
     if (
         not catalog["championships"].get(series, {}).get("playable", True)
@@ -85,6 +93,8 @@ def new_world(catalog, setup):
         ledger=[],
         checkpoint="start",
     )
+    if catalog.get("opening"):
+        state["opening"] = catalog["opening"]
     state["car_configurations"] = {
         cid: {
             key: car[key] for key in ("season", "generation", "concept", "regulation")
@@ -181,6 +191,10 @@ def new_world(catalog, setup):
     if catalog["version"] in ("2025-v3", "2025-v4"):
         from .personnel import initialize
 
+        if state.get("opening"):
+            from .opening.population import endow
+
+            endow(state, catalog)
         initialize(state, catalog)
         from .professional import activate
 
@@ -278,9 +292,9 @@ def apply(state, catalog, action, payload=None):
     from . import lineup
 
     if "lineup" in state:
-        from .catalog import LINEUP_WORLD
+        from .catalog import lineup_for
 
-        catalog = LINEUP_WORLD
+        catalog = lineup_for(state)
         if action in ("component-install", "component-usage") and "components" in state:
             from . import components
 

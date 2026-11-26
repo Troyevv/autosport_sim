@@ -42,6 +42,7 @@ def entries(state, world, deal):
         eid
         for eid, e in world["entries"].items()
         if e["org"] == deal["org"]
+        and (not deal.get("entrant") or e.get("entrant_id") == deal["entrant"])
         and (not deal.get("car_entries") or eid in deal["car_entries"])
         and e["championship"] in deal.get("program_series", [deal["series"]])
         and (
@@ -88,10 +89,14 @@ def catalog(state, world):
     }
 
 
-def start_rights(world, org, series, sponsor):
+def start_rights(world, org, series, sponsor, entrant=None):
     measures = defaultdict(list)
     for eid, e in world["entries"].items():
-        if e["org"] != org or e["championship"] != series:
+        if (
+            e["org"] != org
+            or e["championship"] != series
+            or (entrant and e["entrant_id"] != entrant)
+        ):
             continue
         for d in GARAGE["entries"].get(eid, {}).get("livery", {}).get("decals", []):
             if d["asset"] == sponsor:
@@ -113,8 +118,10 @@ def title_names(state, world, day):
     names = dict(BASE_NAMES)
     brands = market.participants(world)
     for d in state["market"]["contracts"].values():
-        if d["role"] != "title" or not d["start"] <= day < min(
-            d.get("ended", d["end"]), d["end"]
+        if (
+            d.get("entrant")
+            or d["role"] != "title"
+            or not d["start"] <= day < min(d.get("ended", d["end"]), d["end"])
         ):
             continue
         org = d["org"]
@@ -304,12 +311,12 @@ def release_payment(state, term):
         or (deal["advance_cents"] and term["id"] == deal["id"] + ":0")
     ):
         return True
-    from ..catalog import WORLD
+    from ..catalog import base_catalog
 
     if not market.active(deal, state["date"]):
         term.update(status="cancelled", cancelled=state["date"])
         return False
-    checks = audit(state, WORLD, deal)
+    checks = audit(state, base_catalog(state), deal)
     passed = bool(checks) and all(r["fulfilled"] for r in checks)
     if not passed:
         if "withheld" not in term:

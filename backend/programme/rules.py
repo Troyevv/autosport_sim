@@ -1,6 +1,6 @@
 """Season dossiers. The opening homologation is pinned. Later bulletins are career rules."""
 
-from ..components.catalog import OPENING, POLICIES
+from ..components.catalog import parts_for, POLICIES
 from ..components import mounting, spec
 from ..components.design import LABELS
 from ..domain import RuleError
@@ -19,10 +19,12 @@ LIMITS = {
 }
 
 
-def within_limit(entry, drawing):
+def within_limit(entry, drawing, state=None):
     metric, bound, percent, _ = LIMITS[drawing["slot"]]
-    opening = OPENING.specs[
-        OPENING.stock[OPENING.installed[entry["id"]][drawing["slot"]]]["spec"]
+    opening = parts_for(state).specs[
+        parts_for(state).stock[
+            parts_for(state).installed[entry["id"]][drawing["slot"]]
+        ]["spec"]
     ]
     reference = opening["parameters"][metric] * percent / 100
     actual = drawing["parameters"][metric]
@@ -128,7 +130,7 @@ def config_for(state, world, entry, year=None):
             season=plan["season"],
             generation=plan["generation"],
             regulation=plan["regulation"],
-            concept=f"{entry['org']}/{entry['supplier_axis']}/{OPENING.interfaces[entry['id']]}",
+            concept=f"{entry['org']}/{entry['supplier_axis']}/{parts_for(state).interfaces[entry['id']]}",
         )
     if "programme" not in state or (
         year is None
@@ -167,12 +169,15 @@ def certify(state, world, entry, year, version, actor):
     plan = dossier(state, world, entry, year)
     rule = plan["rule"]
     d = drawing_for(state, version)
-    if d["slot"] != rule["slot"] or d["interface"] != OPENING.interfaces[entry["id"]]:
+    if (
+        d["slot"] != rule["slot"]
+        or d["interface"] != parts_for(state).interfaces[entry["id"]]
+    ):
         raise RuleError("Сертификат не относится к указанному узлу.")
     base_rule = world["cars"][entry["car"]]["regulation"]
-    if not within_limit(entry, d):
+    if not within_limit(entry, d, state):
         raise RuleError("Спецификация нарушает размерное ограничение бюллетеня.")
-    original = d["id"] in OPENING.rules[base_rule]["approved"]
+    original = d["id"] in parts_for(state).rules[base_rule]["approved"]
     tested = any(
         p["org"] == entry["org"]
         and p.get("candidate") == version

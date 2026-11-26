@@ -239,10 +239,10 @@ def post(state, account, key, delta, source):
         dict(org=account, key=key, date=state["date"], delta_cents=delta, source=source)
     )
     if "control" in state:
-        from ..catalog import WORLD
+        from ..catalog import base_catalog
         from . import budget
 
-        budget.observe(state, WORLD, state["ledger"][-1])
+        budget.observe(state, base_catalog(state), state["ledger"][-1])
     if "economy" in state:
         from .economy import observe
 
@@ -302,7 +302,7 @@ def settle(state):
         if r["category"] == "driver-backing" and r["id"].endswith(":seat"):
             supply = state.get("market", {}).get("supplies", {}).get(r["contract"])
             if supply:
-                from ..catalog import WORLD
+                from ..catalog import base_catalog
                 from .market import audience, active
 
                 if supply["end"] <= day or supply["status"] != "signed":
@@ -310,7 +310,9 @@ def settle(state):
                     continue
                 if not active(supply, day) or not any(
                     p["id"] == supply["academy_person"]
-                    for p in audience(state, WORLD, supply["org"], supply["series"])
+                    for p in audience(
+                        state, base_catalog(state), supply["org"], supply["series"]
+                    )
                 ):
                     r.setdefault("withheld", day)
                     continue

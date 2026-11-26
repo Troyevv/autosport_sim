@@ -52,7 +52,7 @@ def initialize(state, world):
     )
     for aid, seat in world["assignments"].items():
         if seat.get("duty"):
-            state["seats"][aid] = []
+            state["seats"].setdefault(aid, [])
         elif seat["position"] == "driver":
             for row in state["seats"][aid]:
                 row["driver_status"] = "equal"

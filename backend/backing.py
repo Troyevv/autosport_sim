@@ -250,9 +250,15 @@ def monthly(state, world):
     """Settle the earned days by employment history, including mid-month moves and exits."""
     end = date.fromisoformat(state["date"])
     first = (end - timedelta(days=1)).replace(day=1)
+    seats_by_person = {}
+    for aid in sorted(state["seats"]):
+        for row in state["seats"][aid]:
+            seats_by_person.setdefault(row["person"], []).append((aid, row))
     for key, r in sorted(state["funding"].items()):
         owed = dict(r["arrears"])
-        for org, value in period_amounts(state, world, r, first, end).items():
+        for org, value in period_amounts(
+            state, world, r, first, end, seats_by_person.get(r["person"], [])
+        ).items():
             owed[org] = owed.get(org, 0) + value
         r["arrears"] = {}
         for org, amount in sorted(owed.items()):

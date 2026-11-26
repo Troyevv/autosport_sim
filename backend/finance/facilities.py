@@ -215,18 +215,43 @@ def resources(state, a):
     groups = [g for g in state["collectives"].values() if g["org"] == a["owner"]]
     time = sum(g["size"] * (100 - g["workload"]) for g in groups)
     qualified = sum(department_capacity(g) for g in groups)
-    reserved = 0
-    for b in sorted(
-        state["estate"]["assets"].values(), key=lambda b: (b["ready"], b["id"])
-    ):
-        if b["owner"] != a["owner"] or b["status"] != "active" or b["condition"] < 25:
-            continue
-        if b["id"] == a["id"]:
-            break
-        reserved += b["level"] * specification(b["kind"])[4] * 100
+    rank = a["ready"], a["id"]
+    reserved = sum(
+        b["level"] * specification(b["kind"])[4] * 100
+        for b in state["estate"]["assets"].values()
+        if b["owner"] == a["owner"]
+        and b["status"] == "active"
+        and b["condition"] >= 25
+        and (b["ready"], b["id"]) < rank
+    )
     slots = min(a["level"], max(0, time - reserved) // (need * 100))
     effective = slots * need * qualified * a["condition"] // max(1, time)
     return (slots, effective) if effective else (0, 0)
+
+
+def accessible_sites(state, org, kind, day):
+    """List owned sites first, then external sites with access on the first day.
+
+    free() still checks staffing, competing uses and entitlement across all days.
+    """
+    assets = state["estate"]["assets"]
+    owned = sorted(
+        (a for a in assets.values() if a["owner"] == org and a["kind"] == kind),
+        key=lambda a: a["id"],
+    )
+    yield from owned
+    leases = {
+        r["facility"]
+        for r in state["estate"]["bookings"].values()
+        if r["org"] == org
+        and r["mode"] in ("lease", "outsource")
+        and r.get("purpose") != "preparation"
+        and r["start"] <= day < r["end"]
+    }
+    for key in sorted(leases):
+        a = assets[key]
+        if a["kind"] == kind and a["owner"] != org:
+            yield a
 
 
 def free(state, a, start, end, *, buyer=None):
@@ -248,6 +273,8 @@ def free(state, a, start, end, *, buyer=None):
             ) - sum(
                 r["units"] for r in active if r["org"] == buyer and r["mode"] == "use"
             )
+            if entitlement <= 0:
+                return 0
             if "capacity_since" not in state["estate"]:
                 return entitlement
             occupied = sum(
@@ -272,7 +299,7 @@ def free(state, a, start, end, *, buyer=None):
 
 def quote(kind, country):
     _, cost, days, upkeep, staffing = specification(kind)
-    build, wages, local_services = LOCATIONS[country]
+    build, wages, local_services = LOCATIONS.get(country, (100, 100, 100))
     return dict(
         build_cents=cost * build // 100,
         days=days,
@@ -612,6 +639,11 @@ def capacity_window(
     )
     slots = installed = work = 0
     for a in assets.values():
+        if a["owner"] != org and not any(
+            r["org"] == org and r["facility"] == a["id"]
+            for r in state["estate"]["bookings"].values()
+        ):
+            continue
         capacity_slots, effective = resources(state, a)
         if a["owner"] == org and a["status"] == "active":
             installed += a["level"]
@@ -707,4 +739,6 @@ def travel_cost_index(state, org):
         for a in state.get("estate", {}).get("assets", {}).values()
         if a["owner"] == org and a["kind"] in ("hq", "logistics") and capacity(state, a)
     ]
-    return min((LOCATIONS[a["country"]][2] for a in sites), default=100)
+    return min(
+        (LOCATIONS.get(a["country"], (100, 100, 100))[2] for a in sites), default=100
+    )

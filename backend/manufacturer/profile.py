@@ -35,6 +35,9 @@ TARGETS = {
 
 
 def parameters(slot, base, life_m):
+    if "design_life_km" in base:
+        return dict(base)
+    # Original design cases retained for replay of older careers.
     mass = base["mass_kg"]
     values = {"design_life_km": life_m / 1000}
     if slot == "engine":

@@ -63,6 +63,7 @@ export function Capital({ c, world, updateCareer }: SectionProps & { updateCaree
       choose(k)
       direction(s)
     }
+  const controls = owner && !!v && (v.shares['owner:' + c.org] ?? 0) > 5000
   async function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
     const f = new FormData(e.currentTarget),
@@ -122,13 +123,14 @@ export function Capital({ c, world, updateCareer }: SectionProps & { updateCaree
                   : []),
                 ...Object.entries(v.shares).map(
                   ([k, n]) =>
-                    [k === 'capital:fund' ? 'Инвестиционный фонд' : 'Владелец', n / 100 + '%'] as const,
+                    [k === 'capital:fund' ? 'Инвестиционный фонд' : world.organizations[k]?.name ?? 'Частный владелец', n / 100 + '%'] as const,
                 ),
               ]}
             />
+            {owner && !controls && <p className="panel-body">Контрольный пакет принадлежит другому акционеру. Доступны вклад и погашение долга.</p>}
             {owner && (
               <div className="panel-body finance-actions">
-                {['invest', 'dividend', 'equity'].map((a) => (
+                {(controls ? ['invest', 'dividend', 'equity'] : ['invest']).map((a) => (
                   <Button key={a} onClick={() => open(a)}>
                     {labels[a]}
                   </Button>
@@ -138,7 +140,7 @@ export function Capital({ c, world, updateCareer }: SectionProps & { updateCaree
           </Panel>
           <Panel
             title="Кредитный портфель"
-            action={owner && <Button onClick={() => open('loan')}>Получить кредит</Button>}
+            action={controls && <Button onClick={() => open('loan')}>Получить кредит</Button>}
           >
             {!v.loans.length && <p className="panel-body">Организация ещё не привлекала кредиты.</p>}
             {v.loans.map((l) => (
@@ -154,7 +156,7 @@ export function Capital({ c, world, updateCareer }: SectionProps & { updateCaree
                 {owner && l.remaining_cents > 0 && (
                   <>
                     <Button onClick={() => open('repay', l.id)}>Погасить</Button>
-                    {!l.restructured && (
+                    {controls && !l.restructured && (
                       <Button onClick={() => open('restructure', l.id)}>Реструктурировать</Button>
                     )}
                   </>
@@ -165,7 +167,7 @@ export function Capital({ c, world, updateCareer }: SectionProps & { updateCaree
           <Panel
             title="Активы и программы"
             action={
-              owner &&
+              controls &&
               c.role !== 'manufacturer' && (
                 <Button onClick={() => open('program-launch')}>Учредить программу</Button>
               )
@@ -191,7 +193,7 @@ export function Capital({ c, world, updateCareer }: SectionProps & { updateCaree
             ].map((a) => (
               <div key={a.id} className="result">
                 <strong>{a.name}</strong>
-                {owner && (
+                {controls && (
                   <Button onClick={() => open(a.action, a.id, a.org === c.org ? 'sell' : 'buy')}>
                     {a.org === c.org ? 'Продать' : 'Приобрести'}
                   </Button>

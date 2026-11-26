@@ -46,7 +46,10 @@ test('КБ · новая редакция, сравнительные испыт
   await capture('brief')
   await button('Утвердить поручение').click()
   await expect(dialog).toHaveCount(0)
-  await advance()
+  for (let step = 0; step < 8; step++) {
+    const d = await advance()
+    if (d.projects.some((p: { worked: number }) => p.worked > 0)) break
+  }
   const card = page.locator('.development-card').first()
   await expect(card).toContainText('В работе')
   if (info.project.name === 'mobile') await card.scrollIntoViewIfNeeded()

@@ -5,7 +5,8 @@ from pathlib import Path
 from dataclasses import dataclass
 from hashlib import sha256
 
-from ..catalog import LINEUP_WORLD as WORLD, slug
+from ..catalog import LINEUP_WORLD as WORLD, SEASON_LINEUP, slug
+from ..opening.engineering import specification
 from .design import parameters
 
 VERSION = "2025-parts-v1"
@@ -84,6 +85,13 @@ def build(world):
             maker = car["suppliers"].get(slot, org if open_design else constructor)
             family = f"{reg}/{interface}/{maker}/{slot}"
             version = family + "/1"
+            life_m = (
+                specification(category, interface, maker, slot, physical)
+                if world.get("opening")
+                else 250000
+                if slot == "tyre"
+                else 5000000
+            )
             drawing = dict(
                 id=version,
                 family=family,
@@ -94,7 +102,7 @@ def build(world):
                 regulation=reg,
                 interface=interface,
                 parameters=physical,
-                life_m=250000 if slot == "tyre" else 5000000,
+                life_m=life_m,
                 visual=None,
                 title="Базовая спецификация",
             )
@@ -127,3 +135,8 @@ def build(world):
 
 
 OPENING = build(WORLD)
+SEASON_PARTS = build(SEASON_LINEUP)
+
+
+def parts_for(state):
+    return SEASON_PARTS if state and state.get("opening") else OPENING

@@ -2,7 +2,7 @@
 
 from hashlib import sha256
 
-from ..components.catalog import OPENING
+from ..components.catalog import parts_for
 from ..components.design import assembly, development_margin
 from ..components.registry import drawing_for, register_revision
 
@@ -72,7 +72,7 @@ def sample(seed, key, channel):
 
 
 def estimate(state, base):
-    if base["id"] in OPENING.specs:
+    if base["id"] in parts_for(state).specs:
         return base["parameters"]  # Published nominal opening drawing.
     project = (
         state.get("development", {}).get("projects", {}).get(base.get("reference"))
@@ -188,7 +188,7 @@ def finish_design(state, project, quality):
     ) * (1 if risk else 0.45)
     version = 1 + max(
         d["version"]
-        for pool in (OPENING.specs, state["components"]["revisions"])
+        for pool in (parts_for(state).specs, state["components"]["revisions"])
         for d in pool.values()
         if d["family"] == base["family"]
     )

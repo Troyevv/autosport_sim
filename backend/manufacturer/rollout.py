@@ -1,7 +1,7 @@
 """A common specification changes only when every contracted entry can receive a serial."""
 
 from .. import components, production, research
-from ..components.catalog import OPENING, POLICIES
+from ..components.catalog import parts_for, POLICIES
 from ..components.registry import drawing_for
 from ..domain import RuleError
 from ..supplier_engineering import agreement, equal_supply, supplier_baseline
@@ -14,7 +14,7 @@ def market_key(day, entry, org, axis):
 def standard(state, entry, org, axis):
     key = market_key(state["date"], entry, org, axis)
     return state["manufacturer"]["standards"].get(key) or supplier_baseline(
-        entry["id"], org, axis
+        entry["id"], org, axis, state
     )
 
 
@@ -31,7 +31,7 @@ def allocation(state, world, org, entry, version):
         raise RuleError("Для этого рынка совместное внедрение не предусмотрено.")
     if state["date"][:4] == "2025" and POLICIES[entry["championship"]] == "standard":
         raise RuleError("В стартовом монокубке предписана исходная спецификация.")
-    if axis not in OPENING.installed[entry["id"]]:
+    if axis not in parts_for(state).installed[entry["id"]]:
         raise RuleError("Узел отсутствует в этой заявке.")
     if version == standard(state, entry, org, axis):
         raise RuleError("Спецификация уже предоставлена клиентам.")
@@ -81,7 +81,9 @@ def allocation(state, world, org, entry, version):
         iid = min(
             allowed,
             key=lambda i: (
-                batches[state["production"]["items"][i]["batch"]].get("contract")
+                batches.get(state["production"]["items"][i]["batch"], {}).get(
+                    "contract"
+                )
                 != terms["id"],
                 i,
             ),

@@ -98,15 +98,15 @@ def commission(state, world, org, key, order, *, target_year=None):
     staff = components.specialists(state, world, entry)
     if not staff.get(role):
         raise RuleError("В программе нет ответственного специалиста.", 409)
-    from ..components.catalog import OPENING
+    from ..components.catalog import parts_for
 
     mounted = (
-        OPENING.installed[entry["id"]]
+        parts_for(state).installed[entry["id"]]
         if "supplier_axis" in entry
         else components.mounting(state, entry["id"])
     )
     drawing = (
-        OPENING.specs[entry["supplier_baseline"]]
+        parts_for(state).specs[entry["supplier_baseline"]]
         if "supplier_axis" in entry
         else components.spec(state, mounted[axis])
     )
@@ -304,11 +304,10 @@ def available_person(state, pid, day, end):
 
 
 def facility(state, org, day, end, kind="research"):
-    assets = (a for a in state["estate"]["assets"].values() if a["kind"] == kind)
     return next(
         (
             a
-            for a in sorted(assets, key=lambda a: (a["owner"] != org, a["id"]))
+            for a in facilities.accessible_sites(state, org, kind, day)
             if facilities.free(state, a, day, end, buyer=org) > 0
         ),
         None,

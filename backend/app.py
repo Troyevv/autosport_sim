@@ -9,7 +9,7 @@ from fastapi.concurrency import run_in_threadpool
 
 from . import backing, employment, media, service, staff_desk, storage
 from .staff_input import Day
-from .catalog import LINEUP_WORLD as WORLD
+from .catalog import SEASON_LINEUP, lineup_for
 from .domain import RuleError
 from .statistics import archive, facts, telemetry
 from .livery import GARAGE
@@ -33,17 +33,21 @@ def config():
 
 
 @app.get("/api/world")
-def world():
+def world(career: str | None = None):
+    catalog = SEASON_LINEUP
+    if career:
+        with storage.transaction() as db:
+            catalog = lineup_for(storage.checkpoint(db, career))
     return {
         **{
             k: v
-            for k, v in WORLD.items()
+            for k, v in catalog.items()
             if k not in ("profiles", "reserve", "reserve_ages")
         },
         "staff_rules": {
-            k: v for k, v in WORLD["staff_rules"].items() if k != "training"
+            k: v for k, v in catalog["staff_rules"].items() if k != "training"
         },
-        "faces": {p: v["face"] for p, v in WORLD["profiles"].items()},
+        "faces": {p: v["face"] for p, v in catalog["profiles"].items()},
     }
 
 
@@ -84,19 +88,22 @@ def load(cid: str):
 @app.get("/api/careers/{cid}/personnel")
 def personnel(cid: str):
     with storage.transaction() as db:
-        return staff_desk.directory(storage.checkpoint(db, cid), WORLD)
+        state = storage.checkpoint(db, cid)
+        return staff_desk.directory(state, lineup_for(state))
 
 
 @app.get("/api/careers/{cid}/lineup")
 def driver_lineup(cid: str):
     with storage.transaction() as db:
-        return service.lineup.desk(storage.checkpoint(db, cid), WORLD)
+        state = storage.checkpoint(db, cid)
+        return service.lineup.desk(state, lineup_for(state))
 
 
 @app.get("/api/careers/{cid}/personnel/{pid}")
 def dossier(cid: str, pid: str, wet: bool = False):
     with storage.transaction() as db:
-        return staff_desk.dossier(storage.checkpoint(db, cid), WORLD, pid, wet)
+        state = storage.checkpoint(db, cid)
+        return staff_desk.dossier(state, lineup_for(state), pid, wet)
 
 
 @app.get("/api/careers/{cid}/personnel/{pid}/quote")
@@ -126,9 +133,9 @@ def quote(
                 outside_starts=outside_starts,
                 combined_duties=combined_duties,
             )
-            fee = employment.quote(state, WORLD, terms)
+            fee = employment.quote(state, lineup_for(state), terms)
             comparison = employment.career_choice.assess(
-                state, WORLD, state["people"][pid], terms
+                state, lineup_for(state), state["people"][pid], terms
             )
         except RuleError as exc:
             return dict(buyout_cents=None, reason=str(exc))
@@ -275,11 +282,11 @@ def asset(kind: str, entity: str, v: str | None = None):
 @app.get("/api/careers/{cid}/finance")
 def financial_statement(cid: str, scope: str = "organization"):
     from .finance.reports import statement
-    from .catalog import LINEUP_WORLD as WORLD
     from . import storage
 
     with storage.transaction() as db:
-        return statement(storage.checkpoint(db, cid), WORLD, db, cid, scope)
+        state = storage.checkpoint(db, cid)
+        return statement(state, lineup_for(state), db, cid, scope)
 
 
 @app.get("/api/careers/{cid}/finance/report.csv")
@@ -318,131 +325,134 @@ def export_financial_statement(cid: str, scope: str = "organization"):
 @app.get("/api/careers/{cid}/commercial")
 def commercial_market(cid: str):
     from .finance import market
-    from .catalog import LINEUP_WORLD as WORLD
     from . import storage
 
     with storage.transaction() as db:
-        return market.projection(storage.checkpoint(db, cid), WORLD)
+        state = storage.checkpoint(db, cid)
+        return market.projection(state, lineup_for(state))
 
 
 @app.get("/api/careers/{cid}/manufacturer")
 def manufacturer_desk(cid: str):
     from .manufacturer.desk import projection
-    from .catalog import LINEUP_WORLD
 
     with storage.transaction() as db:
-        return projection(storage.checkpoint(db, cid), LINEUP_WORLD)
+        state = storage.checkpoint(db, cid)
+        return projection(state, lineup_for(state))
 
 
 @app.get("/api/careers/{cid}/programme")
 def programme_desk(cid: str):
     from .programme.desk import projection
-    from .catalog import LINEUP_WORLD
 
     with storage.transaction() as db:
-        return projection(storage.checkpoint(db, cid), LINEUP_WORLD)
+        state = storage.checkpoint(db, cid)
+        return projection(state, lineup_for(state))
 
 
 @app.get("/api/careers/{cid}/council")
 def council_desk(cid: str):
     from .council import projection
-    from .catalog import LINEUP_WORLD
 
     with storage.transaction() as db:
-        return projection(storage.checkpoint(db, cid), LINEUP_WORLD)
+        state = storage.checkpoint(db, cid)
+        return projection(state, lineup_for(state))
 
 
 @app.get("/api/careers/{cid}/production")
 def production_desk(cid: str):
     from .production.desk import projection
-    from .catalog import LINEUP_WORLD
 
     with storage.transaction() as db:
-        return projection(storage.checkpoint(db, cid), LINEUP_WORLD)
+        state = storage.checkpoint(db, cid)
+        return projection(state, lineup_for(state))
 
 
 @app.get("/api/careers/{cid}/development")
 def development_desk(cid: str):
     from .development.desk import projection
-    from .catalog import LINEUP_WORLD
 
     with storage.transaction() as db:
-        return projection(storage.checkpoint(db, cid), LINEUP_WORLD)
+        state = storage.checkpoint(db, cid)
+        return projection(state, lineup_for(state))
 
 
 @app.get("/api/careers/{cid}/research")
 def research_desk(cid: str):
     from .research.desk import projection
-    from .catalog import LINEUP_WORLD
 
     with storage.transaction() as db:
-        return projection(storage.checkpoint(db, cid), LINEUP_WORLD)
+        state = storage.checkpoint(db, cid)
+        return projection(state, lineup_for(state))
 
 
 @app.get("/api/careers/{cid}/components/{entry}")
 def component_desk(cid: str, entry: str):
     with storage.transaction() as db:
-        return service.components.desk(storage.checkpoint(db, cid), WORLD, entry)
+        state = storage.checkpoint(db, cid)
+        return service.components.desk(state, lineup_for(state), entry)
 
 
 @app.get("/api/careers/{cid}/garage")
 def career_garage(cid: str):
     from .finance.rights import catalog
-    from .catalog import LINEUP_WORLD as WORLD
     from . import storage
 
     with storage.transaction() as db:
-        return catalog(storage.checkpoint(db, cid), WORLD)
+        state = storage.checkpoint(db, cid)
+        return catalog(state, lineup_for(state))
 
 
 @app.get("/api/careers/{cid}/rights")
 def commercial_rights(cid: str):
     from .finance.rights import projection
-    from .catalog import LINEUP_WORLD as WORLD
     from . import storage
 
     with storage.transaction() as db:
-        return projection(storage.checkpoint(db, cid), WORLD)
+        state = storage.checkpoint(db, cid)
+        return projection(state, lineup_for(state))
 
 
 @app.get("/api/careers/{cid}/budget")
 def budget_control(cid: str, year: int | None = None):
     from .finance.budget import report
-    from .catalog import LINEUP_WORLD as WORLD
     from . import storage
 
     with storage.transaction() as db:
         state = storage.checkpoint(db, cid)
         return report(
-            state, WORLD, state["setup"]["org"], year or int(state["date"][:4])
+            state,
+            lineup_for(state),
+            state["setup"]["org"],
+            year or int(state["date"][:4]),
         )
 
 
 @app.get("/api/careers/{cid}/facilities")
 def facilities_overview(cid: str):
     from .finance.facilities import projection
-    from .catalog import LINEUP_WORLD as WORLD
     from . import storage
 
     with storage.transaction() as db:
-        return projection(storage.checkpoint(db, cid), WORLD)
+        state = storage.checkpoint(db, cid)
+        return projection(state, lineup_for(state))
 
 
 @app.get("/api/careers/{cid}/capital")
 def capital_overview(cid: str):
     from .finance.capital import projection
-    from .catalog import LINEUP_WORLD as WORLD
     from . import storage
 
     with storage.transaction() as db:
-        return projection(storage.checkpoint(db, cid), WORLD)
+        state = storage.checkpoint(db, cid)
+        return projection(state, lineup_for(state))
 
 
 @app.get("/api/careers/{cid}/economy")
 def economy_overview(cid: str):
     from .finance.economy import projection
-    from .catalog import LINEUP_WORLD as WORLD
     from . import storage
 
     with storage.transaction() as db:
-        return projection(storage.checkpoint(db, cid), WORLD)
+        state = storage.checkpoint(db, cid)
+        return projection(state, lineup_for(state))

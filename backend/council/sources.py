@@ -1,6 +1,6 @@
 """Resolve only material cited in the team's brief, for permanent minutes and later programmes."""
 
-from ..components.catalog import OPENING
+from ..components.catalog import parts_for
 from ..components.design import LABELS
 
 
@@ -34,7 +34,9 @@ def citation(state, org, entry, key):
                 work.get("hypothesis") or f"Заказано {work['quantity']} экз.",
                 section,
             )
-    drawing = OPENING.specs.get(key) or state["components"]["revisions"].get(key)
+    drawing = parts_for(state).specs.get(key) or state["components"]["revisions"].get(
+        key
+    )
     if drawing:
         return source(
             "Документация узла",
@@ -46,7 +48,7 @@ def citation(state, org, entry, key):
             "Концепция машины", f"Компоновка машины №{entry['number']}", "garage"
         )
     item = state["production"]["items"].get(key)
-    if key in OPENING.stock or item:
+    if key in parts_for(state).stock or item:
         return source(
             "Карточка экземпляра",
             item.get("reason") or key if item else key,

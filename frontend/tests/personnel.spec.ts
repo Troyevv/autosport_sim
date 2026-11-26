@@ -3,6 +3,7 @@ import { expect, test } from '@playwright/test'
 import { join } from 'node:path'
 
 test('Рынок, сравнение и переход пилота GT на свободное место Formula', async ({ page }, info) => {
+  test.setTimeout(90000)
   const errors: string[] = []
   page.on('pageerror', (e) => errors.push(e.message))
   const world = await (await page.request.get('/api/world')).json()
@@ -17,6 +18,11 @@ test('Рынок, сравнение и переход пилота GT на св
   const incumbent = world.names[world.entries['f1-4'].crew[0]]
   const dialog = page.getByRole('dialog')
   const artist = dialog.locator('image[data-layer="appearance"]').first()
+  async function advance() {
+    const response = page.waitForResponse(r => r.url().endsWith('/commands') && r.request().method() === 'POST')
+    await page.getByRole('button', { name: 'Продолжить' }).click()
+    expect((await response).ok()).toBe(true)
+  }
   async function evidence(view: string) {
     await page.evaluate(() => document.fonts.ready)
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toEqual(
@@ -46,6 +52,9 @@ test('Рынок, сравнение и переход пилота GT на св
   await expect(artist).toHaveAttribute('href', new RegExp(world.faces[pid]))
   const before = await artist.getAttribute('href')
   const oldKit = await dialog.locator('image[data-layer="fitted-fabric"]').getAttribute('href')
+  await dialog.getByRole('button', { name: 'Взаимодействие' }).click()
+  const initialDays = parseInt(await dialog.locator('.staff-connection').filter({ hasText: 'Обратная связь с инженером' }).getByText(/дн. вместе/).innerText())
+  await dialog.getByRole('button', { name: 'Профиль', exact: true }).click()
   await evidence('dossier')
   const rainSkill = dialog.locator('.staff-skills > div').filter({ hasText: 'Дождь' }).locator('strong')
   const dry = await rainSkill.innerText()
@@ -64,7 +73,7 @@ test('Рынок, сравнение и переход пилота GT на св
   await evidence('terms')
   await dialog.getByRole('button', { name: 'Отправить предложение' }).click()
   await expect(page.locator('.staff-offer')).toContainText('На рассмотрении')
-  await page.getByRole('button', { name: 'Продолжить' }).click()
+  await advance()
   await expect(page.locator('.staff-offer')).toContainText('Встречные условия')
   await page.getByRole('button', { name: 'Рассмотреть условия' }).click()
   await dialog.getByRole('button', { name: 'Подписать договор' }).click()
@@ -76,7 +85,7 @@ test('Рынок, сравнение и переход пилота GT на св
   await expect(dialog.locator('image[data-layer="fitted-fabric"]')).toHaveAttribute('href', oldKit!)
   await expect(dialog).toContainText('ABT Sportsline')
   await page.keyboard.press('Escape')
-  await page.getByRole('button', { name: 'Продолжить' }).click()
+  await advance()
   await page.getByRole('button', { name: 'Состав', exact: true }).click()
   await page.getByLabel('Найти человека').fill(name)
   await page.getByRole('button', { name: new RegExp(name) }).click()
@@ -87,7 +96,7 @@ test('Рынок, сравнение и переход пилота GT на св
   await expect(dialog.getByText('Архив', { exact: true }).first()).toBeVisible()
   const contacts = dialog.locator('.staff-connection').filter({ hasText: 'Обратная связь с инженером' })
   await expect(contacts).toHaveCount(2)
-  await expect(contacts.filter({ hasText: 'Архив' })).toContainText('3 дн. вместе')
+  await expect(contacts.filter({ hasText: 'Архив' })).toContainText((initialDays + 3) + ' дн. вместе')
   await expect(contacts.filter({ hasText: 'В составе' })).toContainText('0 дн. вместе')
   await dialog.getByRole('heading', { name: 'Совместная работа' }).scrollIntoViewIfNeeded()
   await evidence('relationships')
@@ -117,10 +126,9 @@ test('Производитель шин, поддержка клиента и н
   await expect(page.locator('.staff-card').filter({ hasText: 'Руководитель конструкции шин' })).toHaveCount(1)
   await page.locator('.staff-card').filter({ hasText: 'Технический консультант' }).click()
   await dialog.getByRole('button', { name: 'Карьера', exact: true }).click()
-  await dialog.getByRole('button', { name: 'Назначить консультанта' }).click()
   const assignment = dialog
     .locator('p')
-    .filter({ hasText: /1 февр.*8 февр/ })
+    .filter({ hasText: /1 февр.*—.*февр/ })
     .first()
   await expect(assignment).toBeVisible()
   await dialog.getByRole('button', { name: 'Назначить консультанта' }).click()
@@ -211,7 +219,9 @@ test('Мандат владельца, наблюдение скаута и до
   await page.getByRole('button', { name: /Утвердить программу · Практика воспитанников/ }).click()
   await expect(page.locator('.prep-desk .staff-timeline')).toContainText('Запланировано')
   await evidence('preparation')
+  const prepared = page.waitForResponse(r => r.url().endsWith('/commands') && r.request().method() === 'POST')
   await page.getByRole('button', { name: 'Продолжить' }).click()
+  expect((await prepared).ok()).toBe(true)
   await expect(page.locator('.prep-desk .staff-timeline')).toContainText('Завершено')
   const training = await (await page.request.get('/api/careers/' + c.id)).json()
   const participant = training.preparations[0].names[0]

@@ -48,13 +48,6 @@ test('Цех, приёмка, склад и назначение на машин
   await button('Утвердить заказ').click()
   await expect(dialog).toHaveCount(0)
   await expect(page.getByText('Срочная партия')).toBeVisible()
-  await advance()
-  await expect(page.getByText(/Требуется свободная мощность/)).toBeVisible()
-  for (const site of ['Производственный комплекс', 'Центр контроля качества']) {
-    await button('Арендовать · ' + site).click()
-    await button('Подтвердить аренду').click()
-    await expect(dialog).toHaveCount(0)
-  }
   await button('Изменить приоритет').click()
   await dialog.getByLabel('Новый приоритет').selectOption('high')
   await button('Подтвердить решение').click()

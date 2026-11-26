@@ -103,6 +103,25 @@ def initialize(state, catalog):
             row["salary_cents"] = min(
                 per_seat, (sum(p["skills"].values()) // len(p["skills"])) * 3500
             )
+            if state.get("opening"):
+                programmes = catalog["organizations"][org]["programs"]
+                scale = (
+                    4.5
+                    if "f1" in programmes
+                    else 1.8
+                    if set(programmes) & {"wec", "dtm"}
+                    else 1.0
+                )
+                weight = {
+                    "driver": 2.6,
+                    "manager": 2.0,
+                    "chief-engineer": 1.6,
+                    "manufacturer": 1.8,
+                    "owner": 0.6,
+                }.get(seat["position"], 1.0)
+                if seat.get("duty") in ("test", "reserve"):
+                    weight *= 0.45
+                row["salary_cents"] = round(row["salary_cents"] * scale * weight)
             row["buyout_cents"] = row["salary_cents"] * 2
             # Ownership and the player's mandate are open-ended.
             if (

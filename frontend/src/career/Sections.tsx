@@ -24,7 +24,7 @@ export function Overview({ world, c, media }: SectionProps) {
   )
   const photo = entries.map((e) => assetUrl(media, 'car', e.car)).find(Boolean)
   const gridPhoto =
-    series.superlicence && entries[0] && '/assets/garage/2025-v1/grid/' + entries[0].id + '.webp'
+    series.playable !== false && entries[0] && '/assets/garage/2025-v1/grid/' + entries[0].id + '.webp'
   return (
     <section className="screen">
       <Header
@@ -92,7 +92,7 @@ export function Overview({ world, c, media }: SectionProps) {
                 <strong>{world.cars[e.car].name}</strong>
                 <small>
                   {c.role === 'manufacturer'
-                    ? world.organizations[e.org].name
+                    ? e.entrant ?? world.organizations[e.org].name
                     : c.crews[e.id].map((id) => world.names[id]).join(' · ') || 'Вакантно'}
                 </small>
               </span>
@@ -167,6 +167,7 @@ export function Championships({ world, c, media }: SectionProps) {
     es = Object.values(world.entries).filter((e) => e.championship === series)
   const [organization, setOrganization] = useState('')
   const profile = world.organizations[organization]
+  const baseLocation = profile && [profile.base, world.countries[profile.base_country ?? '']].filter(Boolean).join(', ')
   const profileEntries = Object.values(world.entries).filter(
     (e) => e.org === organization || Object.values(world.cars[e.car].suppliers).includes(organization),
   )
@@ -248,6 +249,14 @@ export function Championships({ world, c, media }: SectionProps) {
           ]}
         />
       </Panel>
+      {r.previous_season && (
+        <Panel title="Архив сезона 2024">
+          <div className="panel-body">
+            <p>{r.previous_season.fact}</p>
+            <a href={r.previous_season.source} target="_blank" rel="noreferrer">Публикация организатора</a>
+          </div>
+        </Panel>
+      )}
       <Panel title={'Заявки · ' + es.length}>
         <Table
           label="Заявки чемпионата"
@@ -258,13 +267,13 @@ export function Championships({ world, c, media }: SectionProps) {
             cells: [
               e.number,
               <button className="subtle-link org-link" onClick={() => setOrganization(e.org)}>
-                {world.organizations[e.org].name}
+                {e.entrant ?? world.organizations[e.org].name}
               </button>,
               world.cars[e.car].name,
               c.crews[e.id].map((id) => world.names[id]).join(' · ') || 'Вакантно',
               <div className="supplier-links">
-                {Object.values(world.cars[e.car].suppliers).map((id) => (
-                  <button key={id} className="subtle-link org-link" onClick={() => setOrganization(id)}>
+                {Object.entries(world.cars[e.car].suppliers).map(([slot, id]) => (
+                  <button key={slot} title={world.products[slot]?.name} className="subtle-link org-link" onClick={() => setOrganization(id)}>
                     {world.organizations[id].name}
                   </button>
                 ))}
@@ -278,6 +287,13 @@ export function Championships({ world, c, media }: SectionProps) {
           <Facts
             items={[
               ['Организация', profile.kind === 'team' ? 'Гоночная команда' : 'Производитель'],
+              ...(profile.registration ? [
+                ['Регистрация', <a href={profile.registration.source} target="_blank" rel="noreferrer">{profile.registration.legal_name} · {world.countries[profile.registration.country]}</a>] as const,
+                ...(profile.registration.headquarters ? [['Адрес регистрации', profile.registration.headquarters] as const] : []),
+              ] : profile.domicile ? [['Юрисдикция оператора · оценка', world.countries[profile.domicile]] as const] : []),
+              ...(profile.country ? [['Страна программы', world.countries[profile.country] ?? profile.country] as const] : []),
+              ...(profile.base_country ? [[profile.base_estimated ? 'Район технической базы · оценка' : 'Техническая база', profile.base_source ? <a href={profile.base_source} target="_blank" rel="noreferrer">{baseLocation}</a> : baseLocation] as const] : []),
+              ...(profile.affiliations ?? []).map((a) => ['Связь организаций', <a href={a.source} target="_blank" rel="noreferrer">{a.label}</a>] as const),
               ['Чемпионаты', profile.programs.map((id) => world.championships[id].name).join(' · ')],
               ...(profile.lines.length
                 ? [['Продукция', profile.lines.map((line) => world.products[line].name).join(' · ')] as const]

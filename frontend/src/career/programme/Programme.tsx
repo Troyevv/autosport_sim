@@ -400,6 +400,16 @@ export function Programme({ c, world, updateCareer }: SectionProps & { updateCar
               </Panel>
               <Panel title="Техническая память">
                 <div className="programme-body">
+                  {plan.documents.length > 0 && (
+                    <details>
+                      <summary>Документация стартовой машины · {plan.documents.length}</summary>
+                      {plan.documents.map((doc) => (
+                        <p key={doc.reference}>
+                          {doc.component} · {doc.issuer} · {doc.design ? 'конструкторская документация' : 'монтажная документация'}
+                        </p>
+                      ))}
+                    </details>
+                  )}
                   {plan.knowledge.length === 0 ? (
                     <p>Исследовательских заключений пока нет.</p>
                   ) : (

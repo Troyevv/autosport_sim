@@ -182,7 +182,7 @@ export function Library({ world, saves, media }: { world: World; saves: Save[]; 
                 saves.map((s) => (
                   <a className="result" key={s.id} href={careerUrl(s.id)}>
                     <span>
-                      <strong>{world.organizations[s.org].name}</strong>
+                      <strong>{world.organizations[s.org]?.name ?? world.entrant_names?.[s.org] ?? s.org}</strong>
                       <small>
                         {s.name} · {roles[s.role].name} · {dateLabel(s.date, true)}
                       </small>
