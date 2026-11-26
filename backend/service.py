@@ -11,7 +11,7 @@ from .finance.events import PRODUCERS
 from .finance import market, rights, budget, economy, capital, facilities
 from .livery import GARAGE, PaintOrder
 from .catalog import VERSION, WORLD, LINEUP_WORLD
-from . import lineup, components
+from . import lineup, components, research
 from .roster_upgrade import (
     original_world,
     previous_world,
@@ -65,6 +65,7 @@ class Command(Strict):
     revision: int = Field(ge=0)
     action: str = Field(min_length=1, max_length=32)
     engineering: components.Install | components.Usage | None = None
+    research: dict | None = None
     paint: PaintOrder | None = None
     staff: dict | None = None
     finance: dict | None = None
@@ -83,6 +84,10 @@ class Command(Strict):
                 raise ValueError("Неверные параметры инженерной команды.")
         elif self.engineering is not None:
             raise ValueError("Лишние параметры инженерной команды.")
+        if (self.action in research.ORDERS) != (self.research is not None):
+            raise ValueError("Неверные параметры исследования.")
+        if self.research is not None:
+            research.ORDERS[self.action].model_validate(self.research)
         orders = {
             **ORDERS,
             **lineup.ORDERS,
@@ -112,6 +117,8 @@ class Command(Strict):
         return self
 
     def payload(self):
+        if self.research is not None:
+            return self.research
         if self.engineering is not None:
             return self.engineering.model_dump()
         return (
@@ -279,6 +286,7 @@ def create(spec):
         economy.initialize(state, WORLD)
         lineup.terms.initialize(state, LINEUP_WORLD)
         components.initialize(state)
+        research.initialize(state)
         cid = str(uuid4())
         storage.store(db, cid, state, create=True)
         statistics_personnel.refresh(db, cid, state)
@@ -313,6 +321,7 @@ def execute(cid, command):
                 raise domain.RuleError(
                     "Карьеру изменили в другом окне. Состояние обновлено.", 409
                 )
+            prior_reports = set(state["research"]["reports"])
             previous = statistics_personnel.mutable_state(state)
             domain.apply(state, WORLD, command.action, args)
             if command.action == "component-install":
@@ -321,6 +330,9 @@ def execute(cid, command):
                 )
             statistics_personnel.refresh(db, cid, state, previous, command.action, args)
             if command.action == "advance":
+                for key, report in state["research"]["reports"].items():
+                    if key not in prior_reports:
+                        research.write_fact(db, cid, LINEUP_WORLD, report)
                 from datetime import date
                 from .statistics.telemetry import get_policy, prune
 
@@ -514,6 +526,9 @@ def import_save(document, *, statistics_records=None):
             if saved.get("components", {}).get("since") == state["revision"]:
                 components.initialize(state)
 
+            if saved.get("research", {}).get("since") == state["revision"]:
+                research.initialize(state)
+
         for original in commands:
             item = original
             apply_migrations()
@@ -573,6 +588,7 @@ def import_save(document, *, statistics_records=None):
         facilities.migrate(state)
         lineup.terms.initialize(state, LINEUP_WORLD)
         components.initialize(state)
+        research.initialize(state)
     except (KeyError, TypeError, ValueError, RecursionError, ValidationError):
         raise domain.RuleError("Файл повреждён или нарушает правила мира.") from None
     cid = str(uuid4())
@@ -583,6 +599,8 @@ def import_save(document, *, statistics_records=None):
             "INSERT INTO receipt(career,command_id,revision,action,paint) VALUES(?,?,?,?,?)",
             [(cid, *row) for row in receipts],
         )
+        for report in state["research"]["reports"].values():
+            research.write_fact(db, cid, LINEUP_WORLD, report)
         for event in state["components"]["history"]:
             components.write_install_fact(db, cid, state, LINEUP_WORLD, event)
         from .statistics.archive import restore

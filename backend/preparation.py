@@ -20,6 +20,11 @@ def overlaps(a, b, x, y):
 
 
 def busy(state, pid, start, end):
+    if any(
+        start <= h["date"] < end and pid in (h["mentor"], h["recipient"])
+        for h in state.get("research", {}).get("handovers", {}).values()
+    ):
+        return True
     return any(
         r["status"] == "scheduled"
         and pid in r["participants"]

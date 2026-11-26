@@ -9,6 +9,7 @@ import {
   FolderOpen,
   Gauge,
   LayoutDashboard,
+  Microscope,
   Trophy,
   Users,
   Wallet,
@@ -25,6 +26,7 @@ import { Economy } from './finance/Economy'
 import { Rights } from './finance/Rights'
 import { Commercial } from './finance/Commercial'
 import { SeasonGarage } from '../garage/Garage'
+import { Research } from './research/Research'
 import { Brand } from './Library'
 const sections = [
   { id: 'overview', name: 'Штаб', icon: LayoutDashboard, view: Overview },
@@ -33,6 +35,7 @@ const sections = [
   { id: 'garage', name: 'Гараж', icon: CarFront, view: SeasonGarage },
   { id: 'world', name: 'Чемпионаты', icon: Trophy, view: Championships },
   { id: 'engineering', name: 'Техническая программа', icon: Gauge, view: Engineering },
+  { id: 'research', name: 'Исследования', icon: Microscope, view: Research },
   { id: 'rights', name: 'Рекламные права', icon: CarFront, view: Rights },
   { id: 'commercial', name: 'Коммерческий отдел', icon: Factory, view: Commercial },
   { id: 'finance', name: 'Финансы', icon: Wallet, view: Finance },
