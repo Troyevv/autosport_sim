@@ -59,7 +59,15 @@ def remaining(state, iid):
 
 
 def compatible(
-    state, world, entry, drawing, *, year=None, for_review=False, planning=False
+    state,
+    world,
+    entry,
+    drawing,
+    *,
+    year=None,
+    for_review=False,
+    planning=False,
+    rollout=False,
 ):
     car = world["cars"][entry["car"]]
     slot = drawing["slot"]
@@ -115,6 +123,22 @@ def compatible(
         ):
             return False
     if slot in car["suppliers"]:
+        from ..finance.market import contracted_supplier
+
+        if "manufacturer" in state and contracted_supplier(state, entry, slot) not in (
+            None,
+            drawing["manufacturer"],
+        ):
+            return False
+        if "manufacturer" in state and not (for_review or rollout):
+            from ..manufacturer.rollout import market_key
+
+            key = market_key(
+                str(year or state["date"][:4]), entry, drawing["manufacturer"], slot
+            )
+            standard = state["manufacturer"]["standards"].get(key)
+            if standard and drawing["id"] != standard:
+                return False
         return supplier_eligible(
             state,
             world,
@@ -238,6 +262,10 @@ def allocation(state, world, entry, iid, available, *, year=None, planned_entrie
 
 
 def specialists(state, world, entry):
+    if "supplier_axis" in entry:
+        from ..supplier_engineering import staff
+
+        return staff(state, entry)
     positions = {
         "chief-engineer",
         "chief-mechanic",

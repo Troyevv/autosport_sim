@@ -1,3 +1,4 @@
+import { submitCareer } from './createCareer'
 import { expect, test } from '@playwright/test'
 import { join } from 'node:path'
 
@@ -257,7 +258,7 @@ test('Национальность, флаги и публичный профи�
     .getByRole('combobox', { name: 'Национальность игрока' })
     .evaluate((el) => el.scrollIntoView({ block: 'center' }))
   await shot('country')
-  await page.getByRole('button', { name: 'Создать карьеру' }).click()
+  await submitCareer(page)
   await expect(page.getByRole('heading', { name: 'Штаб команды' })).toBeVisible()
   const id = new URL(page.url()).searchParams.get('career')!
   const rows = await (await page.request.get('/api/careers/' + id + '/personnel')).json()

@@ -91,7 +91,13 @@ def forecast(state, base, project, ability):
         if protocol["method"] != "calculation" and report["metric"] in values:
             values[report["metric"]] = report["b"]["value"]
     evidence, brief = project["evidence"], project["brief"]
-    primary, sign, coupled, penalty = TRADE[base["slot"]]
+    from ..manufacturer.profile import trade, parameters
+
+    primary, sign, coupled, penalty = (
+        trade(project) if project.get("objective") else TRADE[base["slot"]]
+    )
+    if project.get("objective"):
+        values = parameters(base["slot"], values, base["life_m"])
     belief = max((r["confidence"] for r in evidence), default=0)
     effort = (0.04 if brief == "performance" else 0.018) / (1 + base["refinements"])
     attitude = {"supported": 1, "inconclusive": 0, "rejected": -1}
@@ -152,7 +158,9 @@ def finish_design(state, project, quality):
     base = drawing_for(state, project["baseline"])
     seed, axis, key = state["setup"]["seed"], project["axis"], project["id"]
     margin = development_margin(seed, project["concept"], axis, base["refinements"])
-    primary, sign, coupled, penalty = TRADE[axis]
+    from ..manufacturer.profile import trade, parameters
+
+    primary, sign, coupled, penalty = trade(project)
     risk = project["brief"] == "performance"
     effect = margin * (quality / 100 + sample(seed, key, "solution") * 1.25 - 0.85)
     effect *= project["integration"]
@@ -170,6 +178,8 @@ def finish_design(state, project, quality):
     )
     nominal_life = drawing_for(state, base["family"] + "/1")["life_m"]
     params = dict(base["parameters"])
+    if project.get("objective"):
+        params = parameters(axis, params, base["life_m"])
     params[primary] *= 1 + sign * (
         effect * (1 if risk else 0.6) - defect * margin * 0.65
     )
@@ -188,7 +198,11 @@ def finish_design(state, project, quality):
         version=version,
         title=f"Проектная редакция {version}",
         parameters=params,
-        life_m=round(nominal_life * (0.82 if defect else 1)),
+        life_m=round(
+            params.get("design_life_km", nominal_life / 1000)
+            * 1000
+            * (0.82 if defect else 1)
+        ),
         visual=base["visual"],
         author=project["lead"],
         reference=key,
@@ -201,6 +215,8 @@ def finish_design(state, project, quality):
         )
         from ..programme.packages import PAIRS
 
+        if "skill" in project:
+            drawing.pop("programme_concept", None)
         dependency = project["assembly"].get(PAIRS[axis])
         if dependency in state["components"]["revisions"]:
             drawing["requires"] = {PAIRS[axis]: dependency}
@@ -213,7 +229,9 @@ def finish_design(state, project, quality):
 def measure(state, p, quality):
     method, axis = p["method"], p["axis"]
     seed, key = state["setup"]["seed"], p["id"]
-    primary = TRADE[axis][0]
+    from ..manufacturer.profile import trade, parameters
+
+    primary = trade(p)[0]
     parts = {
         slot: drawing_for(state, version) for slot, version in p["assembly"].items()
     }
@@ -228,7 +246,10 @@ def measure(state, p, quality):
         drawing = drawing_for(state, version)
         parts[axis] = drawing
         metric = primary
-        value = drawing["parameters"][primary]
+        values = drawing["parameters"]
+        if p.get("objective"):
+            values = parameters(axis, values, drawing["life_m"])
+        value = values[primary]
         q = None
         if method == "calculation":
             metric = ASSEMBLY_METRIC[axis]

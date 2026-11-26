@@ -55,6 +55,15 @@ def technical_catalog(rules, entries, cars, config):
 
 def project_target(world, program_id, season_id, generation_id, *, planning_year=None):
     program = world["programs"].get(program_id)
+    if not program and planning_year:
+        org, _, series = program_id.partition(":")
+        maker = world["organizations"].get(org, {})
+        if maker.get("kind") == "supplier" and series in maker["programs"]:
+            program = dict(
+                org=org,
+                championship=series,
+                classes=world["championships"][series]["classes"],
+            )
     engineering = world["engineering"]
     gen = engineering["generations"].get(generation_id)
     season = engineering["seasons"].get(season_id)

@@ -41,8 +41,8 @@ ACTIVITIES = {
     ),
     "diagnosis": (
         "Диагностика неисправности",
-        "race-engineer reliability chief-mechanic technical-advisor engines transmissions tyres tyre-construction",
-        "Диагностика Технические_знания Ресурс Износ Перегрев Прочность Предотвращение_отказов",
+        "race-engineer reliability chief-mechanic technical-advisor engines transmissions tyres tyre-construction chief-analyst",
+        "Диагностика Технические_знания Ресурс Износ Перегрев Прочность Предотвращение_отказов Дефекты",
     ),
     "strategy": (
         "Стратегическое решение",
@@ -52,12 +52,12 @@ ACTIVITIES = {
     "debrief": ("Анализ выполненной работы", "*", "*"),
     "research": (
         "Исследование инженерной концепции",
-        "aero chassis performance reliability chief-engineer",
+        "aero chassis performance reliability chief-engineer engines transmissions tyres analyst chief-analyst",
         "*",
     ),
     "component-test": (
         "Испытание спецификации",
-        "aero chassis performance reliability chief-engineer",
+        "aero chassis performance reliability chief-engineer engines transmissions tyres analyst chief-analyst",
         "*",
     ),
     "research-handover": ("Передача инженерного опыта", "*", "*"),
@@ -94,8 +94,8 @@ ACTIVITIES = {
     ),
     "assembly": (
         "Сборка и обслуживание",
-        "chief-mechanic mechanics",
-        "Сборка Ремонт Точность Скорость",
+        "chief-mechanic mechanics chief-engineer",
+        "Сборка Ремонт Точность Скорость Технические_знания",
     ),
     "pit-stop": (
         "Пит-стоп",

@@ -162,7 +162,7 @@ def projection(state, world):
             for h in reversed(state.get("production", {}).get("history", []))
             if h["code"]
             in ("accepted", "rejected", "batch-defect", "additional", "repaired")
-            and world["entries"][h["entry"]]["org"] == org
+            and h.get("org",world["entries"][h["entry"]]["org"]) == org
         ],
         projects=projects,
         reports=reports,

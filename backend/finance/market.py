@@ -757,7 +757,7 @@ def sign_supply(state, world, bid, reply, key):
     support = reply.support and s.support
     # Marginal costs and the support allocation are disclosed game estimates.
     cost = s.price_cents * (68 if support else 58) // 100
-    price = s.price_cents - discount
+    price = 0 if works and "manufacturer" in state else s.price_cents - discount
     rows = []
     for suffix, payee, paying, amt, category in [
         ("delivery", t.sponsor, t.org, price, "supply"),

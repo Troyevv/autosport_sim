@@ -4,6 +4,7 @@ from typing import Literal
 
 from pydantic import Field
 
+from ..supplier_engineering import engineering_entry
 from .. import components, development, finance
 from ..components.catalog import OPENING
 from ..components.registry import drawing_for
@@ -56,6 +57,18 @@ def permitted(state, world, entry, drawing, outsource, *, year=None):
     if not admitted(state, entry):
         return "Нет действующего допуска программы."
     org, slot = entry["org"], drawing["slot"]
+    if "supplier_axis" in entry:
+        if (
+            outsource
+            or drawing["manufacturer"] != org
+            or drawing["interface"] != OPENING.interfaces[entry["id"]]
+        ):
+            return "Нет прав на изготовление этой редакции."
+        if drawing["id"] not in OPENING.specs and not development.released(
+            state, org, drawing["id"]
+        ):
+            return "Чертёж ожидает выпуска или отозван."
+        return None
     if not components.compatible(
         state, world, entry, drawing, year=year, planning=True
     ):
@@ -91,10 +104,14 @@ def spend(state, world, org, key, cents):
     finance.transfer(state, org, None, key, cents, "production")
 
 
-def log(state, entry, version, code, actor, *, batch=None, instance=None):
+def log(
+    state, entry, version, code, actor, *, batch=None, instance=None, operator=None
+):
     history = state["production"]["history"]
+    owner = operator or state["production"]["batches"].get(batch, {}).get("org")
     history.append(
         dict(
+            **({"org": owner} if owner and owner.startswith("supplier-") else {}),
             id=f"workshop-{len(history) + 1}",
             date=state["date"],
             entry=entry,
@@ -122,15 +139,17 @@ def commission(state, world, org, key, order, *, target_year=None):
     year = target_year or int(state["date"][:4])
     if paused(state, org, year) and target_year is not None:
         raise RuleError("Развитие текущего поколения остановлено менеджером.", 409)
-    entry = world["entries"].get(order.entry)
+    drawing = drawing_for(state, order.specification)
+    entry = engineering_entry(state, world, order.entry, org, drawing["slot"])
     if not entry or entry["org"] != org:
         raise RuleError("Заявка вне полномочий команды.", 403)
-    drawing = drawing_for(state, order.specification)
     if reason := permitted(
         state, world, entry, drawing, order.outsource, year=target_year
     ):
         raise RuleError(reason)
-    lead = components.specialists(state, world, entry).get("chief-mechanic")
+    lead = components.specialists(state, world, entry).get(
+        "chief-engineer" if "supplier_axis" in entry else "chief-mechanic"
+    )
     if not lead:
         raise RuleError("Требуется назначенный главный механик.")
     if order.quantity > storage_space(state, world, org)["free"]:
@@ -140,7 +159,26 @@ def commission(state, world, org, key, order, *, target_year=None):
         )
     unit = quote(drawing, order.rush, order.outsource)
     cost = unit["cents"] * order.quantity
-    spend(state, world, org, key, cost)
+    credit = 0
+    contract = None
+    if "supplier_axis" in entry:
+        from ..supplier_engineering import agreement
+
+        terms = agreement(state, world, world["entries"][order.entry], drawing["slot"])
+        if terms and terms["signed"] and terms["maker"] == org:
+            contract = terms["id"]
+            paid = state["finance"]["instalments"].get(contract + ":production", {})
+            if paid and paid.get("status") != "paid":
+                raise RuleError("Договорный платёж за производство ещё не проведён.")
+            if paid:
+                used = sum(
+                    b.get("prepaid_cents", 0)
+                    for b in batches.values()
+                    if b.get("contract") == contract
+                )
+                credit = min(cost, max(0, paid["amount_cents"] - used))
+    if cost > credit:
+        spend(state, world, org, key, cost - credit)
     batch = dict(
         **order.model_dump(),
         id=key,
@@ -160,9 +198,11 @@ def commission(state, world, org, key, order, *, target_year=None):
         grants=[],
         participants={},
     )
+    if contract:
+        batch.update(contract=contract, prepaid_cents=credit)
     if target_year is not None:
         batch["target_year"] = target_year
-    if target_year is not None:
+    if target_year is not None and "supplier_axis" not in entry:
         from ..programme.rules import pin_concept
 
         pin_concept(state, world, entry, target_year)
@@ -247,7 +287,9 @@ def disposition(state, world, org, order):
     items = state["production"]["items"]
     drawing = components.spec(state, iid)
     if iid in items:
-        entry = world["entries"][items[iid]["entry"]]
+        entry = engineering_entry(
+            state, world, items[iid]["entry"], org, drawing["slot"]
+        )
     else:
         entry = next(
             (
@@ -261,7 +303,9 @@ def disposition(state, world, org, order):
         )
         if entry is None:
             raise RuleError("Не найдена программа обслуживания.")
-    lead = components.specialists(state, world, entry).get("chief-mechanic")
+    lead = components.specialists(state, world, entry).get(
+        "chief-engineer" if "supplier_axis" in entry else "chief-mechanic"
+    )
     if not lead:
         raise RuleError("Требуется назначенный главный механик.")
     if order.decision == "repair":
@@ -299,6 +343,7 @@ def disposition(state, world, org, order):
         lead,
         batch=item["batch"],
         instance=iid,
+        operator=org,
     )
 
 
@@ -336,6 +381,8 @@ def write_fact(db, cid, state, world, event):
 
     e = world["entries"][event["entry"]]
     drawing = drawing_for(state, event["version"])
+    if event.get("org") and event["org"] != e["org"]:
+        e = engineering_entry(state, world, e["id"], event["org"], drawing["slot"])
     facts.record(
         db,
         cid,

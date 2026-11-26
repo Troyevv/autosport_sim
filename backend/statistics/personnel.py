@@ -329,6 +329,36 @@ def refresh(db, cid, state, previous=None, action=None, args=None):
     office = org + ":" + state["setup"]["role"]
     if occupant_on(state["seats"].get(office, []), state["date"]) != state["player_id"]:
         org = None
+
+    def active_grant(assignment):
+        if (
+            assignment["employer"] != org
+            or not assignment["start"] <= state["date"] < assignment["end"]
+        ):
+            return False
+        if "manufacturer" not in state:
+            return True
+        from ..catalog import LINEUP_WORLD
+        from ..supplier_engineering import agreement
+
+        # Older opening assignments encoded the entry in their pinned agreement.
+        entry_id = (
+            assignment.get("entry")
+            or assignment["agreement"].removeprefix("2025:").rsplit(":", 1)[0]
+        )
+        entry = LINEUP_WORLD["entries"].get(entry_id)
+        terms = (
+            agreement(state, LINEUP_WORLD, entry, assignment["product"])
+            if entry
+            else None
+        )
+        return (
+            terms
+            and terms["maker"] == org
+            and terms["id"] == assignment["agreement"]
+            and terms["support"]
+        )
+
     db.execute(
         """INSERT INTO stat_reader VALUES(?,?,?,?,?) ON CONFLICT(career)
         DO UPDATE SET org=excluded.org,role=excluded.role,day=excluded.day,support=excluded.support""",
@@ -341,8 +371,7 @@ def refresh(db, cid, state, previous=None, action=None, args=None):
                 [
                     assignment
                     for assignment in state["support"]
-                    if assignment["employer"] == org
-                    and assignment["start"] <= state["date"] < assignment["end"]
+                    if active_grant(assignment)
                 ]
             ),
         ),

@@ -131,7 +131,7 @@ def projection(state, world):
     history = [
         event
         for event in data["history"]
-        if world["entries"][event["entry"]]["org"] == org
+        if event.get("org",world["entries"][event["entry"]]["org"]) == org
     ]
     for iid in inventory(state, org):
         item = data["items"].get(iid, {})

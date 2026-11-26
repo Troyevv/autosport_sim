@@ -19,6 +19,7 @@ from .evidence import preferred, protocols, replacement_due, verdict
 
 
 OCCASIONS = {
+    "client": "Разбор обращения клиента",
     "programme": "Программа сезона",
     "direction": "Выбор направления",
     "session": "Разбор сессии",
@@ -718,7 +719,8 @@ def resource_topics(state, world, org, staff_by_entry, studies, projects):
 def workshop_topics(state, world, org, entries, staff_by_entry):
     for iid, item in state["production"]["items"].items():
         if (
-            item["entry"] not in staff_by_entry
+            state["components"]["inventory"].get(iid, {}).get("org", org) != org
+            or item["entry"] not in staff_by_entry
             or not item.get("rejected")
             or item["status"] != "inspection"
         ):

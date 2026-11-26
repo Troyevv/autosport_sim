@@ -37,6 +37,19 @@ class Observation(Fields):
     unit: Id | None = None
     uncertainty: FiniteFloat | None = Field(default=None, ge=0)
     conditions: Id | None = None
+    track: Id | None = None
+    layout: Id | None = None
+    load_profile: Id | None = None
+    indicator: (
+        Literal[
+            "mount-out-of-tolerance",
+            "coolant-flow-low",
+            "load-limit-exceeded",
+            "service-procedure-deviation",
+            "outside-operating-window",
+        ]
+        | None
+    ) = None
     session_kind: Literal["test", "practice", "qualifying", "sprint", "race"] | None = (
         None
     )
@@ -55,6 +68,14 @@ class Observation(Fields):
         ):
             raise ValueError(
                 "Измерению нужны канал, значение, единица, погрешность и условия."
+            )
+        if any((self.track, self.layout, self.load_profile)) and not all(
+            (self.track, self.layout, self.load_profile)
+        ):
+            raise ValueError("Укажите трассу, конфигурацию и версию профиля нагрузки.")
+        if self.indicator and self.kind != "track-measurement":
+            raise ValueError(
+                "Диагностический признак требует измерения с условиями и погрешностью."
             )
         return self
 
@@ -77,8 +98,20 @@ def analyst_for(state, world, entry, fact):
         drawing["id"],
         fact["instance"],
     )
+    contract = entry_agreement(entry["id"], drawing["slot"])
+    if "manufacturer" in state:
+        from ..supplier_engineering import agreement
+
+        terms = agreement(state, world, entry, drawing["slot"], fact["day"])
+        if (
+            not terms
+            or not terms["support"]
+            or terms["maker"] != drawing["manufacturer"]
+        ):
+            return None
+        contract = terms["id"]
     for r in state["support"]:
-        if r["agreement"] != entry_agreement(entry["id"], drawing["slot"]):
+        if r["agreement"] != contract or r.get("entry", entry["id"]) != entry["id"]:
             continue
         grant = support_on(state, r["advisor"], fact["day"])
         if not grant or not visible_channels(
@@ -94,6 +127,9 @@ def analyst_for(state, world, entry, fact):
 def receive(state, world, fact: Observation):
     records = state["council"]["observations"]
     data = fact.model_dump()
+    for field in ("track", "layout", "load_profile", "indicator"):
+        if data[field] is None:
+            del data[field]
     if fact.reference in records:
         if records[fact.reference] != data:
             raise RuleError("Источник уже зарегистрирован с другим содержанием.", 409)

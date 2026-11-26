@@ -117,6 +117,7 @@ def support_on(state, advisor, day):
         if row["advisor"] == advisor and row["start"] <= day < row["end"]:
             data = dict(row)
             data.pop("end")
+            data.pop("entry", None)
             return SupportAssignment(
                 **{**data, "channels": frozenset(data["channels"])}
             )

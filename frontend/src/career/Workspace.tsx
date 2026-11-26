@@ -27,6 +27,7 @@ import { Rights } from './finance/Rights'
 import { Commercial } from './finance/Commercial'
 import { SeasonGarage } from '../garage/Garage'
 import { Development } from './development/Development'
+import { Manufacturer } from './manufacturer/Manufacturer'
 import { Programme } from './programme/Programme'
 import { Council } from './council/Council'
 import { Research } from './research/Research'
@@ -39,6 +40,7 @@ const sections = [
   { id: 'garage', name: 'Гараж', icon: CarFront, view: SeasonGarage },
   { id: 'world', name: 'Чемпионаты', icon: Trophy, view: Championships },
   { id: 'engineering', name: 'Техническая программа', icon: Gauge, view: Programme },
+  { id: 'manufacturer', name: 'Служба производителей', icon: Factory, view: Manufacturer },
   { id: 'council', name: 'Инженерный штаб', icon: Users, view: Council },
   { id: 'development', name: 'Разработка и испытания', icon: Gauge, view: Development },
   { id: 'production', name: 'Производственный центр', icon: Factory, view: Production },

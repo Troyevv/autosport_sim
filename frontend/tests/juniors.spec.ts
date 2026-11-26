@@ -1,3 +1,4 @@
+import { submitCareer } from './createCareer'
 import { expect, test } from '@playwright/test'
 import { join } from 'node:path'
 
@@ -23,7 +24,7 @@ for (const [series, org] of [
     expect(await picker.locator('option[value^="kart-"]').count()).toBe(0)
     await picker.selectOption(series)
     await page.getByRole('combobox', { name: 'Организация', exact: true }).selectOption(org)
-    await page.getByRole('button', { name: 'Создать карьеру' }).click()
+    await submitCareer(page)
     await expect(page.getByRole('heading', { name: 'Штаб команды' })).toBeVisible()
     const url = page.url().split('#')[0]
     await evidence('hq')

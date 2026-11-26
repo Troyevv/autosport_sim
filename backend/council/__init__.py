@@ -522,7 +522,7 @@ def day(state, world):
         if p["finished"] in (yesterday, day)
     )
     orgs.update(
-        world["entries"][h["entry"]]["org"]
+        h.get("org",world["entries"][h["entry"]]["org"])
         for h in state["production"]["history"]
         if h["date"] in (yesterday, day)
         and h["code"] in ("accepted", "rejected", "batch-defect", "cancelled")

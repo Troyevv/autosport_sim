@@ -7,6 +7,7 @@ from ..domain import RuleError, occupant_on
 from ..finance import budget, facilities
 from ..personnel import evaluate
 from ..team_staff import department_capacity
+from ..supplier_engineering import ROLES, engineering_entry
 from .model import (
     METHODS,
     LEGACY_AXES,
@@ -54,6 +55,10 @@ def public_source(world, entry):
 
 
 def admitted(state, entry):
+    if "supplier_axis" in entry:
+        return (
+            state["capital"]["crises"].get(entry["org"], {}).get("status") != "bankrupt"
+        )
     program = state["capital"]["programs"].get(entry["program"])
     return (
         program and program["status"] == "admitted" and program["org"] == entry["org"]
@@ -75,7 +80,7 @@ def commission(state, world, org, key, order, *, target_year=None):
     year = target_year or int(state["date"][:4])
     if paused(state, org, year):
         raise RuleError("Развитие текущего поколения остановлено менеджером.", 409)
-    entry = world["entries"].get(order.entry)
+    entry = engineering_entry(state, world, order.entry, org, order.axis)
     if (
         not entry
         or not admitted(state, entry)
@@ -88,16 +93,29 @@ def commission(state, world, org, key, order, *, target_year=None):
     config = config_for(state, world, entry, target_year)
     axis = order.axis
     role, _, question, hours, price = METHODS[axis]
+    if "supplier_axis" in entry:
+        role = ROLES[axis][0]
     staff = components.specialists(state, world, entry)
     if not staff.get(role):
         raise RuleError("В программе нет ответственного специалиста.", 409)
-    drawing = components.spec(state, components.mounting(state, entry["id"])[axis])
+    from ..components.catalog import OPENING
+
+    mounted = (
+        OPENING.installed[entry["id"]]
+        if "supplier_axis" in entry
+        else components.mounting(state, entry["id"])
+    )
+    drawing = (
+        OPENING.specs[entry["supplier_baseline"]]
+        if "supplier_axis" in entry
+        else components.spec(state, mounted[axis])
+    )
     source = dict(
         kind="design-file",
         reference=drawing["id"],
         label="Конструкторская документация · " + world["cars"][entry["car"]]["name"],
     )
-    if "development" in state:
+    if "development" in state and "supplier_axis" not in entry:
         question = question_for(state, world, entry, drawing, config=config)
     if "development" in state and drawing["manufacturer"] != org:
         source["label"] = (
@@ -173,10 +191,14 @@ def commission(state, world, org, key, order, *, target_year=None):
         from ..development import restriction
 
         project["integration_study"] = bool(restriction(state, world, entry, axis))
-        project["design_context"] = design_context(state, entry, axis)
+        project["design_context"] = (
+            "Исходная монтажная спецификация " + drawing["id"]
+            if "supplier_axis" in entry
+            else design_context(state, entry, axis)
+        )
     if target_year is not None:
         project["target_year"] = target_year
-    if target_year is not None:
+    if target_year is not None and "supplier_axis" not in entry:
         from ..programme.rules import pin_concept
 
         pin_concept(state, world, entry, target_year)
@@ -213,7 +235,8 @@ def handover(state, world, org, order):
     if not report or report["org"] != org:
         raise RuleError("Отчёт недоступен.", 403)
     mentor, recipient = order.mentor, order.recipient
-    entry = world["entries"][data["projects"][report["project"]]["entry"]]
+    project = data["projects"][report["project"]]
+    entry = engineering_entry(state, world, project["entry"], org, project["axis"])
     current = set(components.specialists(state, world, entry).values()) - {None}
     if not {mentor, recipient} <= current or mentor == recipient:
         raise RuleError("Для передачи нужны два действующих специалиста программы.")
@@ -338,7 +361,7 @@ def complete(state, world, p):
 def work(state, world, p, used):
     org, day = p["org"], state["date"]
     end = facilities.later(day, 1)
-    entry = world["entries"][p["entry"]]
+    entry = engineering_entry(state, world, p["entry"], org, p["axis"])
     staff = components.specialists(state, world, entry)
     lead = staff.get(p["role"])
     p.update(lead=lead, status="queued", allocated_on=day)
@@ -403,7 +426,9 @@ def work(state, world, p, used):
         )
         return
     axis = p["axis"]
-    skill = METHODS[axis][1]
+    skill = p.get("skill") or (
+        ROLES[axis][1] if "supplier_axis" in entry else METHODS[axis][1]
+    )
     person = state["people"][lead]
     ability = evaluate(person, world, day)["values"][skill]
     prior = (
@@ -425,12 +450,16 @@ def work(state, world, p, used):
     )
     chief = staff.get("chief-engineer")
     review = 0
-    department = {
-        "aero": "Аэродинамика",
-        "chassis": "Шасси",
-        "performance": "Силовая установка",
-        "reliability": "Надёжность",
-    }[p["role"]]
+    department = (
+        "Инженеры"
+        if "supplier_axis" in entry
+        else {
+            "aero": "Аэродинамика",
+            "chassis": "Шасси",
+            "performance": "Силовая установка",
+            "reliability": "Надёжность",
+        }[p["role"]]
+    )
     group = next(
         (
             g
@@ -477,7 +506,7 @@ def work(state, world, p, used):
             else department_capacity(group)
         )
         support_hours = min(support_hours, max(0, remaining_capacity) * 8 // 100)
-    if "kind" in p and group:
+    if "kind" in p and group and "supplier_axis" not in entry:
         peer_name = {
             "aero": "Шасси",
             "chassis": "Аэродинамика",
@@ -597,6 +626,16 @@ def advance(state, world, end):
                 council_day(state, world)
             else:
                 npc_plan(state, world)
+            if {
+                "manufacturer",
+                "council",
+                "programme",
+                "development",
+                "production",
+            } <= state.keys():
+                from ..manufacturer import day as manufacturer_day
+
+                manufacturer_day(state, world)
             queues = [state["research"]["projects"]]
             if "development" in state:
                 from .. import development
