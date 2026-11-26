@@ -150,7 +150,9 @@ export function People({
         </div>
       </div>
       <Choices
-        items={views.filter(([id]) => (id !== 'programs' || c.mandate) && (id !== 'lineup' || c.role !== 'manufacturer'))}
+        items={views.filter(
+          ([id]) => (id !== 'programs' || c.mandate) && (id !== 'lineup' || c.role !== 'manufacturer'),
+        )}
         active={tab}
         onChange={changeTab}
         label="Кадровый центр"
@@ -160,7 +162,15 @@ export function People({
           {error}
         </p>
       )}
-      {tab === 'lineup' && <Lineup {...{c,world,media,order,busy}} openMarket={()=>{changeTab('market'); profession('driver')}}/>}
+      {tab === 'lineup' && (
+        <Lineup
+          {...{ c, world, media, order, busy }}
+          openMarket={() => {
+            changeTab('market')
+            profession('driver')
+          }}
+        />
+      )}
       {tab === 'preparation' && <PreparationDesk {...{ c, order, busy }} />}
       {tab === 'programs' && (
         <Programs

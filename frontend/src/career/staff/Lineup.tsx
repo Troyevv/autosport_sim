@@ -48,6 +48,8 @@ type Driver = {
   start: string
   end: string | null
   grievances: number
+  simulator: { start: string; end: string } | null
+  work: { date: string; kind: string; reference: string }[]
   salary_cents: number
   absence: { reason: string; expected_return: string } | null
 }
@@ -81,7 +83,9 @@ function Replacement({
   return (
     <article className="lineup-row">
       <h4>{w.name}</h4>
-      <p>{world.names[w.principal]} · регистрация до {shortDate(w.deadline)}</p>
+      <p>
+        {world.names[w.principal]} · регистрация до {shortDate(w.deadline)}
+      </p>
       {w.cover ? (
         <strong>
           {world.names[w.cover.person]} · {shortDate(w.cover.start)} — {shortDate(w.cover.end)} (исключая)
@@ -237,7 +241,10 @@ export function Lineup({
                     <dt>Роли</dt>
                     <dd>{d.duties.map((r) => duties[r]).join(' · ')}</dd>
                     <dt>Фактические условия</dt>
-                    <dd>{d.observed && <strong>{d.observed} · </strong>}{d.actual?.message || 'Нет подтверждённых различий'}</dd>
+                    <dd>
+                      {d.observed && <strong>{d.observed} · </strong>}
+                      {d.actual?.message || 'Нет подтверждённых различий'}
+                    </dd>
                     {d.actual?.remedy && (
                       <>
                         <dt>Устранение</dt>
@@ -270,6 +277,30 @@ export function Lineup({
                   <p>
                     {d.absence ? reasons[d.absence.reason] : 'Доступен'} · с {shortDate(d.start)}
                   </p>
+                  {d.work.map((w) => (
+                    <p key={w.reference}>
+                      {shortDate(w.date)} ·{' '}
+                      {
+                        {
+                          simulator: 'Симулятор',
+                          practice: 'Официальная практика',
+                          'track-test': 'Трассовые испытания',
+                        }[w.kind]
+                      }
+                    </p>
+                  ))}
+                  {d.simulator ? (
+                    <p role="status">Симулятор запланирован до {shortDate(d.simulator.end)}</p>
+                  ) : (
+                    c.role === 'manager' && (
+                      <Button
+                        disabled={busy || !!d.absence}
+                        onClick={() => order('prepare-program', { kind: 'simulator', participant: d.person })}
+                      >
+                        Назначить симулятор
+                      </Button>
+                    )
+                  )}
                 </article>
               ))}
             {!drivers.some((d) => !d.entry) && (

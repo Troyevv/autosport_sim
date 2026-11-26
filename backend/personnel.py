@@ -214,6 +214,12 @@ def develop(state, catalog, target):
                 continue
             pid = r["person"]
             employed.add(pid)
+            if "lineup" in state and seat["position"] == "driver":
+                from .driver_availability import unavailable
+
+                if unavailable(state, pid, start):
+                    employed.discard(pid)
+                    continue
             if seat.get("duty"):
                 continue
             practiced.update((pid, d) for d in disciplines(catalog, seat))

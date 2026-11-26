@@ -617,7 +617,16 @@ def propose(state, catalog, args, org, role):
         ):
             from .driver_terms import contract
 
-            current = contract(state, seat, args["start"]) or {}
+            current = contract(state, seat, args["start"])
+            if not current:
+                current = next(
+                    (
+                        r
+                        for r in reversed(state["seats"][seat["id"]])
+                        if r["person"] == args["person"]
+                    ),
+                    {},
+                )
             args = {**args, "driver_status": current.get("driver_status", "equal")}
     buyout = quote(state, catalog, args)
     if any(
@@ -748,7 +757,9 @@ def command(state, catalog, action, args):
     if "growth_since" in state and action in ("staff-train", "academy-course"):
         raise RuleError("Универсальные курсы завершены. Доступны программы подготовки.")
     if action == "prepare-program" and "growth_since" in state:
-        return preparation.reserve(state, catalog, args["kind"])
+        return preparation.reserve(
+            state, catalog, args["kind"], participant=args.get("participant")
+        )
     if action == "scout-driver":
         return development_path.scout(state, catalog, args["person"])
     if action == "manager-mandate":

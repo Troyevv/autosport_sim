@@ -82,6 +82,8 @@ def test_equal_terms_actual_evidence_resolution_and_private_history():
         evidence="Обе карты комплектации",
         severity=2,
     )
+    c = run(c, "driver-decision", **dict(args, basis="condition", reference="wear"))
+    assert driver_lineup(c["id"])["drivers"][0]["actual"] is None
     justified = dict(
         **args,
         reference="diff-1",
@@ -333,6 +335,13 @@ def test_paid_reserve_combined_duties_and_approved_work():
             )
         ],
     )
+    assert driver_lineup(c["id"])["drivers"][-1]["work"][-1]["kind"] == "track-test"
+    c = run(c, "prepare-program", kind="simulator", participant=pid)
+    plan = c["preparations"][-1]
+    assert plan["names"] == [WORLD["names"][pid]]
+    while c["date"] < plan["end"]:
+        c = run(c, c["briefing_action"] if c["pending"] else "advance")
+    assert c["preparations"][-1]["status"] == "completed"
     c = run(c, "driver-absence", **absence(c, seat))
     w = registration(c, seat, [pid])
     c = run(c, "driver-registration", **w)

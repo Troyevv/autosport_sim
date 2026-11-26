@@ -27,6 +27,7 @@ class Decision(Fields):
     seat: Id
     favoured_seat: Id
     resource: Literal["specification", "spare", "development", "setup", "strategy"]
+    basis: Literal["allocation", "condition", "personal-setup", "pace"] = "allocation"
     reason: Id
     evidence: Id  # Information actually available to this driver
     exception: (
@@ -308,6 +309,18 @@ def observe(state, world, fact):
     ):
         raise RuleError("Для исключения нужны причина, план и срок устранения.")
     pid = row["person"]
+    if fact.basis != "allocation":
+        history(
+            state,
+            seat,
+            pid,
+            "observation",
+            fact.reason,
+            basis=fact.basis,
+            evidence=fact.evidence,
+            reference=fact.reference,
+        )
+        return
     resolved = {
         r["decision"] for r in state["lineup"]["history"] if r["kind"] == "restored"
     }
@@ -387,6 +400,8 @@ def restore(state, world, fact):
         raise RuleError("Не найдено исходное решение.")
     if any(r.get("decision") == fact.decision for r in state["lineup"]["history"]):
         raise RuleError("Исполнение уже подтверждено.")
+    if original["fact"]["basis"] != "allocation":
+        raise RuleError("Исходное наблюдение не относится к распределению ресурсов.")
     difference = next(
         r
         for r in state["lineup"]["history"]

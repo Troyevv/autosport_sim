@@ -89,6 +89,7 @@ class Coaching(Agreement):
 
 
 class Program(Fields):
+    participant: Id | None = None
     kind: Literal[
         "simulator", "fitness", "academy", "pit-drill", "debrief", "bench-test"
     ]

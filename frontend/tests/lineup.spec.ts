@@ -44,29 +44,40 @@ test('Менеджер согласует иерархию с обоими пи�
   await expect(page.locator('.staff-offer')).toContainText('Резервный пилот')
   await page.getByRole('button', { name: 'Продолжить' }).click()
   await expect(page.locator('.staff-offer')).toContainText('Подписан')
+  await page.getByRole('button', { name: 'Продолжить' }).click()
+  await page.getByRole('button', { name: 'Состав пилотов', exact: true }).click()
+  await page.getByRole('button', { name: 'Назначить симулятор' }).click()
+  await expect(page.getByText(/Симулятор запланирован до/)).toBeVisible()
   expect(errors).toEqual([])
 })
 
-test('Регистрация замены проверяет кандидата, затем допуск возвращает основной состав', async ({ page },info)=>{
+test('Регистрация замены проверяет кандидата, затем допуск возвращает основной состав', async ({
+  page,
+}, info) => {
   const { execFileSync } = await import('node:child_process')
   const { resolve } = await import('node:path')
-  const fixture=(...args:string[])=>execFileSync('uv',['run','--locked','python','-m','tests.lineup_fixture',...args],{cwd:resolve('..'),env:{...process.env,AUTOSPORT_DATA_DIR:resolve('test-results/careers')},encoding:'utf8'}).trim()
-  const cid=fixture()
-  await page.goto('/?career='+cid+'#people')
-  const open=()=>page.getByRole('button',{name:'Состав пилотов',exact:true}).click()
+  const fixture = (...args: string[]) =>
+    execFileSync('uv', ['run', '--locked', 'python', '-m', 'tests.lineup_fixture', ...args], {
+      cwd: resolve('..'),
+      env: { ...process.env, AUTOSPORT_DATA_DIR: resolve('test-results/careers') },
+      encoding: 'utf8',
+    }).trim()
+  const cid = fixture()
+  await page.goto('/?career=' + cid + '#people')
+  const open = () => page.getByRole('button', { name: 'Состав пилотов', exact: true }).click()
   await open()
   await expect(page.locator('.lineup-driver').first()).toContainText('Заболевание')
-  const choice=page.getByLabel('Кандидат на замену')
-  await choice.selectOption({index:1})
-  await expect(page.getByRole('button',{name:'Подтвердить замену'})).toBeDisabled()
+  const choice = page.getByLabel('Кандидат на замену')
+  await choice.selectOption({ index: 1 })
+  await expect(page.getByRole('button', { name: 'Подтвердить замену' })).toBeDisabled()
   await expect(page.locator('.lineup-row')).toContainText('Конфликт календаря')
   await choice.selectOption('agent-season25-1')
   await expect(page.locator('.lineup-row')).toContainText('Допуск подтверждён')
-  if(process.env.LINEUP_EVIDENCE){
-    await page.locator('.lineup-secondary').evaluate(el=>el.scrollIntoView({block:'start'}))
-    await page.screenshot({path:join(process.env.LINEUP_EVIDENCE,info.project.name+'-replacement.png')})
+  if (process.env.LINEUP_EVIDENCE) {
+    await page.locator('.lineup-secondary').evaluate((el) => el.scrollIntoView({ block: 'start' }))
+    await page.screenshot({ path: join(process.env.LINEUP_EVIDENCE, info.project.name + '-replacement.png') })
   }
-  await page.getByRole('button',{name:'Подтвердить замену'}).click()
+  await page.getByRole('button', { name: 'Подтвердить замену' }).click()
   await expect(page.locator('.lineup-event').first()).toContainText('Замена на этап')
   fixture(cid)
   await page.reload()

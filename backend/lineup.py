@@ -87,6 +87,26 @@ def desk(state, world):
                 end=row["end"],
                 salary_cents=row["salary_cents"],
                 absence=absence,
+                simulator=next(
+                    (
+                        p
+                        for p in state["preparations"].values()
+                        if p["kind"] == "simulator"
+                        and p["org"] == org
+                        and pid in p["participants"]
+                        and p["status"] == "scheduled"
+                    ),
+                    None,
+                ),
+                work=[
+                    dict(date=f["date"], kind=f["kind"], reference=f["event_id"])
+                    for r in state["work_log"].values()
+                    if (f := r["fact"])["person"] == pid
+                    and f["org"] == org
+                    and f["kind"] in ("simulator", "practice", "track-test")
+                ][-5:]
+                if seat.get("duty")
+                else [],
                 actual=reports[-1] if reports else None,
                 observed=(
                     "Приоритет этой заявки"
