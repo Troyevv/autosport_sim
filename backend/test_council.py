@@ -113,10 +113,16 @@ def test_modes_budget_reject_and_atomic_statistics(monkeypatch):
         decision="reject",
         reason="Сохраняем складской резерв.",
     )
-    assert (
-        proposal(c, "Заявка цеха")["status"] == "rejected"
-        and not checkpoint(c)["production"]["batches"]
+    stock = [
+        row
+        for row in council_desk(c["id"])["proposals"]
+        if row["occasion"] == "Заявка цеха"
+    ]
+    assert next(row for row in stock if row["id"] == p["id"])["status"] == "rejected"
+    assert any(
+        row["status"] == "open" and row["sources"] != p["sources"] for row in stock
     )
+    assert not checkpoint(c)["production"]["batches"]
     for mode in ["partial", "full"]:
         s = deepcopy(base)
         policy = dict(mode=mode, limit_cents=0, allow_rent=True, focus="readiness")

@@ -576,7 +576,14 @@ def fit_topics(state, world, e, staff, fitted):
         cond = components.condition(state, iid)
         if target["id"] == d["id"] and not replacement_due(state, iid):
             continue
-        stock = components.stockroom(state, world, e)
+        stock = sorted(
+            components.stockroom(state, world, e),
+            key=lambda instance: (
+                components.condition(state, instance)["wear_ppm"],
+                components.condition(state, instance)["distance_m"],
+                instance,
+            ),
+        )
         spare = next(
             (
                 i
@@ -756,6 +763,12 @@ def workshop_topics(state, world, org, entries, staff_by_entry):
                     and replacement_due(state, iid)
                 )
             )
+        key = identifier(org, e["id"], row["slot"], "stock", *sources)
+        if state["council"]["briefs"].get(key, {}).get("status") in (
+            "rejected",
+            "decided",
+        ):
+            continue
         yield build(
             state,
             world,
