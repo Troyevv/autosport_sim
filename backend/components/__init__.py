@@ -101,6 +101,12 @@ def compatible(
         "components"
     ]["admissions"].get(drawing["regulation"], [])
     own_design = slot in rule["team_slots"] and drawing["manufacturer"] == entry["org"]
+    if (
+        drawing.get("reference")
+        and for_review
+        and drawing["manufacturer"] == entry["org"]
+    ):
+        own_design = own_design or "supplier_axis" in entry
     if not (certified or own_design):
         return False
     fitted = mounting(state, entry["id"])
@@ -115,6 +121,13 @@ def compatible(
         ):
             return False
     if slot in car["suppliers"]:
+        from ..finance.market import contracted_supplier
+
+        if "manufacturer" in state and contracted_supplier(state, entry, slot) not in (
+            None,
+            drawing["manufacturer"],
+        ):
+            return False
         return supplier_eligible(
             state,
             world,
@@ -238,6 +251,10 @@ def allocation(state, world, entry, iid, available, *, year=None, planned_entrie
 
 
 def specialists(state, world, entry):
+    if "supplier_axis" in entry:
+        from ..manufacturer.context import staff
+
+        return staff(state, entry)
     positions = {
         "chief-engineer",
         "chief-mechanic",

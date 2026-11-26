@@ -4,6 +4,7 @@ from hashlib import sha256
 from datetime import date
 from typing import NamedTuple
 
+from ..manufacturer.context import engineering_entry
 from .. import components
 from ..components.registry import register_instance, drawing_for
 from ..programme.rules import dossier
@@ -24,6 +25,8 @@ def draw(state, key, purpose):
 
 def crew(state, org, inspection):
     name = "Надёжность" if inspection else "Механики и пит-бригада"
+    if org.startswith("supplier-"):
+        name = "Инженеры" if inspection else "Производственные рабочие"
     return next(
         (
             g
@@ -88,6 +91,8 @@ def shift(
     tomorrow = facilities.later(day, 1)
     inspection = kind == "quality"
     role = "reliability" if inspection else "chief-mechanic"
+    if "supplier_axis" in entry:
+        role = "chief-analyst" if inspection else "chief-engineer"
     lead = components.specialists(state, world, entry).get(role)
     if not admitted(state, entry):
         raise RuleError("Допуск программы приостановлен.")
@@ -157,6 +162,8 @@ def shift(
         fee = rental["cost_cents"] // (days * rental["units"])
     grant = facilities.grant(state, key)
     skill = "Диагностика" if inspection else "Ремонт" if repair else "Сборка"
+    if "supplier_axis" in entry:
+        skill = "Дефекты" if inspection else "Технические знания"
     ability = evaluate(state["people"][lead], world, day)["values"][skill]
     load = (group["workload"] + active * 100 // grant.staffed_capacity) // 2
     quality = (ability + group["qualification"] + grant.condition + (100 - load)) // 4
@@ -185,7 +192,13 @@ def fabricate(state, world, batch, used):
     if batch["finished"]:
         return
     batch["last_shift"] = state["date"]
-    entry = world["entries"][batch["entry"]]
+    entry = engineering_entry(
+        state,
+        world,
+        batch["entry"],
+        batch["org"],
+        drawing_for(state, batch["specification"])["slot"],
+    )
     version, key = batch["specification"], batch["id"]
     reason = permitted(
         state,
@@ -263,7 +276,7 @@ def fabricate(state, world, batch, used):
             batch["org"],
             key,
             "assembly",
-            "Сборка",
+            "Технические знания" if "supplier_axis" in entry else "Сборка",
             "completed",
             day,
         )
@@ -278,6 +291,12 @@ def service_item(state, world, iid, item, used):
         return
     repair = item["status"] == "repair"
     entry = world["entries"][item["entry"]]
+    owner = item.get("service_org") or state["components"]["inventory"].get(
+        iid, {}
+    ).get("org", entry["org"])
+    entry = engineering_entry(
+        state, world, item["entry"], owner, components.spec(state, iid)["slot"]
+    )
     key = f"{iid}/{item['status']}/{state['date']}"
     if key in state["estate"]["bookings"]:
         return
@@ -324,7 +343,9 @@ def service_item(state, world, iid, item, used):
         entry["org"],
         key,
         "assembly" if repair else "diagnosis",
-        "Ремонт" if repair else "Диагностика",
+        ("Технические знания" if repair else "Дефекты")
+        if "supplier_axis" in entry
+        else ("Ремонт" if repair else "Диагностика"),
         "completed",
     )
     log(

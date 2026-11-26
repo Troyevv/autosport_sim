@@ -77,8 +77,20 @@ def analyst_for(state, world, entry, fact):
         drawing["id"],
         fact["instance"],
     )
+    contract = entry_agreement(entry["id"], drawing["slot"])
+    if "manufacturer" in state:
+        from ..manufacturer.context import agreement
+
+        terms = agreement(state, world, entry, drawing["slot"], fact["day"])
+        if (
+            not terms
+            or not terms["support"]
+            or terms["maker"] != drawing["manufacturer"]
+        ):
+            return None
+        contract = terms["id"]
     for r in state["support"]:
-        if r["agreement"] != entry_agreement(entry["id"], drawing["slot"]):
+        if r["agreement"] != contract or r.get("entry",entry["id"]) != entry["id"]:
             continue
         grant = support_on(state, r["advisor"], fact["day"])
         if not grant or not visible_channels(

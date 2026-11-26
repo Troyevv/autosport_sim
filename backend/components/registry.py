@@ -44,8 +44,17 @@ def register_revision(
         raise RuleError("Требуется новая версия спецификации.")
     if author not in state["people"] or not reference:
         raise RuleError("Для чертежа нужны ответственный специалист и основание.")
+    expected = base["parameters"]
     if (
-        set(parameters) != set(base["parameters"])
+        base["manufacturer"].startswith("supplier-")
+        and base["slot"] in {"engine", "tyre", "transmission"}
+        and set(parameters) != set(expected)
+    ):
+        from ..manufacturer.profile import parameters as profile
+
+        expected = profile(base["slot"], expected, base["life_m"])
+    if (
+        set(parameters) != set(expected)
         or any(
             type(v) not in (int, float) or not isfinite(v) or v <= 0
             for v in parameters.values()

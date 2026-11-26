@@ -855,10 +855,42 @@ def assign_support(state, catalog, seat, row, args):
     start, end = args["start"], args["end"]
     entry = catalog["entries"].get(args["entry"])
     product = args["product"]
+    terms = None
+    if entry and "manufacturer" in state:
+        from .finance import facilities
+        from .manufacturer.context import agreement
+
+        terms = agreement(state, catalog, entry, product, start)
+        ending = (
+            agreement(state, catalog, entry, product, facilities.later(end, -1))
+            if end > start
+            else None
+        )
+        if (
+            not terms
+            or not ending
+            or ending["id"] != terms["id"]
+            or not terms["support"]
+            or terms["maker"] != seat["org"]
+            or any(
+                r["org"] == entry["org"]
+                and r["series"] == entry["championship"]
+                and r["product"] == product
+                and r["status"] == "signed"
+                and r["id"] != terms["id"]
+                and r["start"] < end
+                and r["end"] > start
+                for r in state["market"]["supplies"].values()
+            )
+        ):
+            raise RuleError(
+                "Период поддержки должен входить в действующий договор поставки."
+            )
     if (
         not entry
         or seat["position"] != "technical-advisor"
-        or catalog["cars"][entry["car"]]["suppliers"].get(product) != seat["org"]
+        or not terms
+        and catalog["cars"][entry["car"]]["suppliers"].get(product) != seat["org"]
     ):
         raise RuleError("Выберите клиента по действующей поставке.")
     if not state["date"] <= start < end <= min(row["end"] or HORIZON, HORIZON):
@@ -878,7 +910,7 @@ def assign_support(state, catalog, seat, row, args):
         row["person"],
         seat["org"],
         entry["org"],
-        entry_agreement(entry["id"], product),
+        terms["id"] if terms else entry_agreement(entry["id"], product),
         product,
         start,
         end,
@@ -887,6 +919,8 @@ def assign_support(state, catalog, seat, row, args):
         100,
     )
     data = asdict(assignment)
+    if terms:
+        data["entry"] = entry["id"]
     state["support"].append(
         dict(data, channels=sorted(data["channels"]), start=start, end=end)
     )

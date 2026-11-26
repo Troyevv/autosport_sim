@@ -1,0 +1,93 @@
+.maker-desk .tabs {
+  flex-wrap: wrap;
+}
+.maker-grid {
+  display: grid;
+  grid-template-columns: minmax(250px, 0.8fr) minmax(0, 1.4fr);
+  gap: 16px;
+}
+.maker-body,
+.maker-body form {
+  display: grid;
+  gap: 14px;
+  align-content: start;
+}
+.maker-body {
+  padding: 18px;
+  overflow-wrap: anywhere;
+}
+.maker-body label {
+  display: grid;
+  gap: 6px;
+  font-size: 0.85rem;
+}
+.maker-body select,
+.maker-body input {
+  max-width: 100%;
+  min-width: 0;
+  width: 100%;
+  background: #22272c;
+  color: #eee;
+  border: 1px solid #545a60;
+  padding: 9px;
+  border-radius: 4px;
+  font: inherit;
+}
+.maker-body h3,
+.maker-body p,
+.maker-body dl {
+  margin: 0;
+}
+.maker-body dl {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(165px, 1fr));
+  gap: 1px;
+  background: #363a40;
+}
+.maker-body dl > div,
+.maker-card {
+  background: #202429;
+  padding: 12px;
+}
+.maker-body dt,
+.maker-card small {
+  color: #bbbfc4;
+  font-size: 0.82rem;
+}
+.maker-body dd {
+  margin: 6px 0 0;
+  font-variant-numeric: tabular-nums;
+}
+.maker-card {
+  display: grid;
+  gap: 8px;
+  border-left: 2px solid #676d74;
+}
+.maker-body a {
+  color: inherit;
+  text-decoration: underline;
+}
+.maker-body .btn {
+  justify-self: start;
+}
+.maker-body :focus-visible {
+  outline: 2px solid #f08a78;
+  outline-offset: 2px;
+}
+@media (max-width: 760px) {
+  .maker-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .maker-body {
+    padding: 12px;
+  }
+  .maker-desk .tabs {
+    max-width: 100%;
+  }
+  .maker-body dl {
+    grid-template-columns: 1fr 1fr;
+  }
+  .maker-desk .panel {
+    min-width: 0;
+  }
+}

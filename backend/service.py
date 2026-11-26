@@ -11,7 +11,16 @@ from .finance.events import PRODUCERS
 from .finance import market, rights, budget, economy, capital, facilities
 from .livery import GARAGE, PaintOrder
 from .catalog import VERSION, WORLD, LINEUP_WORLD
-from . import lineup, components, research, development, production, council, programme
+from . import (
+    manufacturer,
+    lineup,
+    components,
+    research,
+    development,
+    production,
+    council,
+    programme,
+)
 from .roster_upgrade import (
     original_world,
     previous_world,
@@ -65,6 +74,7 @@ class Command(Strict):
     revision: int = Field(ge=0)
     action: str = Field(min_length=1, max_length=32)
     engineering: components.Install | components.Usage | None = None
+    manufacturer: dict | None = None
     programme: dict | None = None
     council: dict | None = None
     production: dict | None = None
@@ -88,6 +98,10 @@ class Command(Strict):
                 raise ValueError("Неверные параметры инженерной команды.")
         elif self.engineering is not None:
             raise ValueError("Лишние параметры инженерной команды.")
+        if (self.action in manufacturer.ORDERS) != (self.manufacturer is not None):
+            raise ValueError("Неверные параметры поручения производителя.")
+        if self.manufacturer is not None:
+            manufacturer.ORDERS[self.action].model_validate(self.manufacturer)
         if (self.action in programme.ORDERS) != (self.programme is not None):
             raise ValueError("Неверные параметры технической программы.")
         if self.programme is not None:
@@ -137,6 +151,8 @@ class Command(Strict):
         return self
 
     def payload(self):
+        if self.manufacturer is not None:
+            return self.manufacturer
         if self.programme is not None:
             return self.programme
         if self.council is not None:
@@ -319,6 +335,7 @@ def create(spec):
         production.initialize(state)
         council.initialize(state)
         programme.initialize(state)
+        manufacturer.initialize(state)
         cid = str(uuid4())
         storage.store(db, cid, state, create=True)
         statistics_personnel.refresh(db, cid, state)
@@ -353,6 +370,7 @@ def execute(cid, command):
                 raise domain.RuleError(
                     "Карьеру изменили в другом окне. Состояние обновлено.", 409
                 )
+            prior_maker = len(state.get("manufacturer", {}).get("events", []))
             prior_programme = len(state.get("programme", {}).get("decisions", []))
             prior_council = len(state.get("council", {}).get("history", []))
             prior_production = len(state.get("production", {}).get("history", []))
@@ -361,6 +379,10 @@ def execute(cid, command):
             prior_reports = set(state["research"]["reports"])
             previous = statistics_personnel.mutable_state(state)
             domain.apply(state, WORLD, command.action, args)
+            from .manufacturer.history import write_fact as maker_fact
+
+            for event in state["manufacturer"]["events"][prior_maker:]:
+                maker_fact(db, cid, state, LINEUP_WORLD, event)
             for event in state.get("programme", {}).get("decisions", [])[
                 prior_programme:
             ]:
@@ -583,6 +605,8 @@ def import_save(document, *, statistics_records=None):
                 council.initialize(state)
             if saved.get("programme", {}).get("since") == state["revision"]:
                 programme.initialize(state)
+            if saved.get("manufacturer", {}).get("since") == state["revision"]:
+                manufacturer.initialize(state)
 
         for original in commands:
             item = original
@@ -648,6 +672,7 @@ def import_save(document, *, statistics_records=None):
         production.initialize(state)
         council.initialize(state)
         programme.initialize(state)
+        manufacturer.initialize(state)
     except (KeyError, TypeError, ValueError, RecursionError, ValidationError):
         raise domain.RuleError("Файл повреждён или нарушает правила мира.") from None
     cid = str(uuid4())
@@ -658,6 +683,10 @@ def import_save(document, *, statistics_records=None):
             "INSERT INTO receipt(career,command_id,revision,action,paint) VALUES(?,?,?,?,?)",
             [(cid, *row) for row in receipts],
         )
+        from .manufacturer.history import write_fact as maker_fact
+
+        for event in state["manufacturer"]["events"]:
+            maker_fact(db, cid, state, LINEUP_WORLD, event)
         for event in state["programme"]["decisions"]:
             programme.write_fact(db, cid, LINEUP_WORLD, event)
         for event in state["council"]["history"]:

@@ -13,6 +13,7 @@ from ..personnel import evaluate
 from ..research import admitted, record_work
 from ..research.model import METHODS, Priority, Reorder, evidence
 from ..staff_input import Fields, Id
+from ..manufacturer.context import ROLES, engineering_entry
 from .physics import TESTS, finish_design, forecast, measure, methods
 
 
@@ -52,6 +53,10 @@ def initialize(state):
 
 
 def restriction(state, world, entry, axis, *, year=None, reliability=False):
+    if "supplier_axis" in entry:
+        from ..manufacturer.context import restriction as maker_restriction
+
+        return maker_restriction(state, world, entry, axis, year, reliability)
     car = world["cars"][entry["car"]]
     from ..programme.rules import bulletin
 
@@ -125,7 +130,7 @@ def test_inputs(state, org, specification):
     ]
 
 
-def commission(state, world, org, key, order, *, target_year=None):
+def commission(state, world, org, key, order, *, target_year=None, objective=None):
     projects = state["development"]["projects"]
     if key in projects:
         prior = projects[key]
@@ -141,14 +146,25 @@ def commission(state, world, org, key, order, *, target_year=None):
     year = target_year or int(state["date"][:4])
     if paused(state, org, year):
         raise RuleError("Развитие текущего поколения остановлено менеджером.", 409)
-    entry = world["entries"].get(order.entry)
+    base = drawing_for(state, order.baseline)
+    entry = engineering_entry(state, world, order.entry, org, base["slot"])
     if not entry or entry["org"] != org or not admitted(state, entry):
         raise RuleError("Нет допуска к этой программе.", 403)
-    base = drawing_for(state, order.baseline)
     axis = base["slot"]
     if axis not in components.mounting(state, entry["id"]):
         raise RuleError("Узел отсутствует в этой заявке.")
     allowed = {d["id"] for d in versions(state, entry["id"], axis)}
+    maker = "supplier_axis" in entry
+    if maker:
+        family = OPENING.stock[OPENING.installed[entry["id"]][axis]]["spec"].rsplit(
+            "/", 1
+        )[0]
+        allowed = {
+            d["id"]
+            for pool in (OPENING.specs, state["components"]["revisions"])
+            for d in pool.values()
+            if d["family"] == family and d["manufacturer"] == org
+        }
     from ..programme.rules import config_for
 
     config = config_for(state, world, entry, target_year)
@@ -178,12 +194,16 @@ def commission(state, world, org, key, order, *, target_year=None):
             year=target_year,
             reliability=order.brief == "reliability",
         )
-        if config["concept"] != world["cars"][entry["car"]]["concept"] and not any(
-            r["org"] == org
-            and r["axis"] == axis
-            and r["concept"] == config["concept"]
-            and r["regulation"] == config["regulation"]
-            for r in state["research"]["reports"].values()
+        if (
+            not maker
+            and config["concept"] != world["cars"][entry["car"]]["concept"]
+            and not any(
+                r["org"] == org
+                and r["axis"] == axis
+                and r["concept"] == config["concept"]
+                and r["regulation"] == config["regulation"]
+                for r in state["research"]["reports"].values()
+            )
         ):
             raise RuleError(
                 "Для новой компоновки сначала требуется заключение исследования.", 409
@@ -193,6 +213,8 @@ def commission(state, world, org, key, order, *, target_year=None):
     elif order.method not in methods(axis) or order.candidate not in allowed:
         raise RuleError("Метод или сравниваемая редакция несовместимы с узлом.")
     role, skill, _, hours, price = METHODS[axis]
+    if maker:
+        role, skill = ROLES[axis] if design else ("analyst", "Испытания")
     lead = components.specialists(state, world, entry).get(role)
     if not lead:
         raise RuleError("Вакансия ответственного специалиста.", 409)
@@ -232,7 +254,16 @@ def commission(state, world, org, key, order, *, target_year=None):
             for slot, iid in components.mounting(state, entry["id"]).items()
         },
     )
-    if (
+    if maker:
+        p["skill"] = skill
+        p["objective"] = objective or "output"
+        p["assembly"] = {
+            s: OPENING.stock[i]["spec"]
+            for s, i in OPENING.installed[entry["id"]].items()
+        }
+        if target_year is not None:
+            p["target_year"] = target_year
+    elif (
         target_year is not None
         or config["concept"] != world["cars"][entry["car"]]["concept"]
     ):
@@ -257,7 +288,7 @@ def commission(state, world, org, key, order, *, target_year=None):
         )
         if p.get("target_year"):
             charge(state, world, p, {}, reserve_only=True)
-    if target_year is not None:
+    if target_year is not None and not maker:
         from ..programme.rules import pin_concept
 
         pin_concept(state, world, entry, target_year)
@@ -381,13 +412,13 @@ def review(state, world, p, disposition, actor):
     if disposition == "released" and (
         p["findings"]
         or not any(
-            t.get("candidate") == p["specification"] and t.get("report")
+            t.get("candidate") == p["specification"] and t.get("report") and (not p.get("objective") or t["org"] == p["org"] and t["regulation"] == p["regulation"])
             for t in state["development"]["projects"].values()
         )
     ):
         raise RuleError("Выпуск требует испытанной редакции без выявленных дефектов.")
     if disposition == "released":
-        entry = world["entries"][p["entry"]]
+        entry = engineering_entry(state, world, p["entry"], p["org"], p["axis"])
         drawing = drawing_for(state, p["specification"])
         if (
             not admitted(state, entry)
@@ -399,13 +430,26 @@ def review(state, world, p, disposition, actor):
                 year=p.get("target_year"),
                 reliability=p.get("brief") == "reliability",
             )
-            or not components.compatible(
+            or "supplier_axis" not in entry
+            and not components.compatible(
                 state, world, entry, drawing, year=p.get("target_year"), for_review=True
             )
         ):
             raise RuleError(
                 "Редакция не соответствует действующей программе и допуску узла."
             )
+    if disposition == "released" and "supplier_axis" in entry:
+        from ..programme.rules import bulletin, within_limit
+
+        year = p.get("target_year") or int(state["date"][:4])
+        rule = bulletin(world, entry, year)
+        if rule["slot"] == p["axis"] and not within_limit(entry, drawing):
+            raise RuleError("Чертёж превышает ограничение сезонного бюллетеня.")
+        approved = state["components"]["admissions"].setdefault(
+            drawing["regulation"], []
+        )
+        if drawing["id"] not in approved:
+            approved.append(drawing["id"])
     p["disposition"] = disposition
     log(state, p, disposition, actor)
 

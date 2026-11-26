@@ -122,6 +122,14 @@ def pin_concept(state, world, entry, year):
 
 
 def config_for(state, world, entry, year=None):
+    if "supplier_axis" in entry:
+        plan = dossier(state, world, entry, year)
+        return dict(
+            season=plan["season"],
+            generation=plan["generation"],
+            regulation=plan["regulation"],
+            concept=f"{entry['org']}/{entry['supplier_axis']}/{OPENING.interfaces[entry['id']]}",
+        )
     if "programme" not in state or (
         year is None
         and state["date"][:4] == "2025"
