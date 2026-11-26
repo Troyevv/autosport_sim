@@ -188,7 +188,7 @@ def certify(state, world, entry, year, version, actor):
     )
     owner = entry["org"]
     if "manufacturer" in state and d["manufacturer"] != owner and not original:
-        from ..manufacturer.context import agreement
+        from ..supplier_engineering import agreement
 
         terms = agreement(state, world, entry, d["slot"])
         if terms and terms["maker"] == d["manufacturer"]:

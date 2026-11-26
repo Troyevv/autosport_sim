@@ -4,7 +4,7 @@ from .. import components, production, research
 from ..components.catalog import OPENING, POLICIES
 from ..components.registry import drawing_for
 from ..domain import RuleError
-from .context import agreement, equal_supply, supplier_baseline
+from ..supplier_engineering import agreement, equal_supply, supplier_baseline
 
 
 def market_key(day, entry, org, axis):

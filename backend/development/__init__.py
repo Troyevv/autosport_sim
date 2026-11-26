@@ -13,7 +13,7 @@ from ..personnel import evaluate
 from ..research import admitted, record_work
 from ..research.model import METHODS, Priority, Reorder, evidence
 from ..staff_input import Fields, Id
-from ..manufacturer.context import ROLES, engineering_entry
+from ..supplier_engineering import ROLES, engineering_entry
 from .physics import TESTS, finish_design, forecast, measure, methods
 
 
@@ -54,7 +54,7 @@ def initialize(state):
 
 def restriction(state, world, entry, axis, *, year=None, reliability=False):
     if "supplier_axis" in entry:
-        from ..manufacturer.context import restriction as maker_restriction
+        from ..supplier_engineering import restriction as maker_restriction
 
         return maker_restriction(state, world, entry, axis, year, reliability)
     car = world["cars"][entry["car"]]
@@ -92,7 +92,7 @@ def versions(state, eid, axis, world=None):
         and state["components"]["revisions"]
         and axis in ROLES
     ):
-        from ..manufacturer.context import agreement
+        from ..supplier_engineering import agreement
 
         terms = agreement(state, world, world["entries"][eid], axis)
         if terms:

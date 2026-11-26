@@ -5,7 +5,7 @@ from .. import components, development, production
 from ..domain import RuleError
 from ..finance import facilities
 from . import Work, commission, deliver, eligible_stock, lines
-from .context import agreement, equal_supply, person
+from ..supplier_engineering import agreement, equal_supply, person
 from .support import Request, Resolve, assigned, open_case, resolve, diagnosis
 from .profile import TARGETS
 

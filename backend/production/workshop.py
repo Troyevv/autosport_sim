@@ -4,7 +4,7 @@ from hashlib import sha256
 from datetime import date
 from typing import NamedTuple
 
-from ..manufacturer.context import engineering_entry
+from ..supplier_engineering import engineering_entry
 from .. import components
 from ..components.registry import register_instance, drawing_for
 from ..programme.rules import dossier

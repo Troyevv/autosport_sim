@@ -339,7 +339,7 @@ def refresh(db, cid, state, previous=None, action=None, args=None):
         if "manufacturer" not in state:
             return True
         from ..catalog import LINEUP_WORLD
-        from ..manufacturer.context import agreement
+        from ..supplier_engineering import agreement
 
         # Older opening assignments encoded the entry in their pinned agreement.
         entry_id = (

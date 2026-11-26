@@ -7,7 +7,7 @@ from ..domain import RuleError, occupant_on
 from ..finance import budget, facilities
 from ..personnel import evaluate
 from ..team_staff import department_capacity
-from ..manufacturer.context import ROLES, engineering_entry
+from ..supplier_engineering import ROLES, engineering_entry
 from .model import (
     METHODS,
     LEGACY_AXES,
@@ -626,7 +626,13 @@ def advance(state, world, end):
                 council_day(state, world)
             else:
                 npc_plan(state, world)
-            if "manufacturer" in state:
+            if {
+                "manufacturer",
+                "council",
+                "programme",
+                "development",
+                "production",
+            } <= state.keys():
                 from ..manufacturer import day as manufacturer_day
 
                 manufacturer_day(state, world)

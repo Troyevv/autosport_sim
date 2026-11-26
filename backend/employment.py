@@ -858,7 +858,7 @@ def assign_support(state, catalog, seat, row, args):
     terms = None
     if entry and "manufacturer" in state:
         from .finance import facilities
-        from .manufacturer.context import agreement
+        from .supplier_engineering import agreement
 
         terms = agreement(state, catalog, entry, product, start)
         ending = (

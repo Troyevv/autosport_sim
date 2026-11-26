@@ -7,7 +7,7 @@ from .catalog import LINEUP_WORLD as WORLD
 from .domain import RuleError
 from .finance import facilities
 from .manufacturer import support
-from .manufacturer.context import agreement
+from .supplier_engineering import agreement
 from .manufacturer.planning import review
 from .research import work
 from .production.workshop import day as factory_day
@@ -359,7 +359,7 @@ def test_equal_supply_switch_requires_stock_for_every_entry():
     from .components.catalog import OPENING
     from .components.registry import register_instance, register_revision
     from .manufacturer.rollout import publish
-    from .manufacturer.context import person
+    from .supplier_engineering import person
 
     org = "supplier-pirelli"
     s = checkpoint(create(org, "manufacturer", "f2"))

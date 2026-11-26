@@ -5,7 +5,7 @@ from ..components.catalog import OPENING
 from ..council import access
 from ..development.physics import estimate
 from . import eligible_stock
-from .context import (
+from ..supplier_engineering import (
     ROLES,
     agreement,
     equal_supply,

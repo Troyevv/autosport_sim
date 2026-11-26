@@ -7,7 +7,7 @@ from ..components.catalog import OPENING
 from ..components.registry import drawing_for
 from ..domain import RuleError
 from ..staff_input import Fields, Id
-from .context import ROLES, agreement, engineering_entry, equal_supply
+from ..supplier_engineering import ROLES, agreement, engineering_entry, equal_supply
 from .profile import TARGETS
 from .support import Request, Resolve, open_case, resolve
 
@@ -291,7 +291,7 @@ def day(state, world):
 
 
 def lines(world, org, state=None):
-    from .context import supplier_baseline
+    from ..supplier_engineering import supplier_baseline
 
     for e in world["entries"].values():
         for axis, maker in world["cars"][e["car"]]["suppliers"].items():

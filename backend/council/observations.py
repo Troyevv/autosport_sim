@@ -100,7 +100,7 @@ def analyst_for(state, world, entry, fact):
     )
     contract = entry_agreement(entry["id"], drawing["slot"])
     if "manufacturer" in state:
-        from ..manufacturer.context import agreement
+        from ..supplier_engineering import agreement
 
         terms = agreement(state, world, entry, drawing["slot"], fact["day"])
         if (

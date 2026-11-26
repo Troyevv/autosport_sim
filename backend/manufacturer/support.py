@@ -6,7 +6,7 @@ from ..domain import RuleError
 from ..finance import budget
 from ..staff_input import Fields, Id
 from ..supply import ObservationScope, visible_channels, support_on
-from .context import agreement, person
+from ..supplier_engineering import agreement, person
 from .profile import TARGETS
 
 
@@ -276,7 +276,7 @@ def diagnosis(state, world, row):
 
 def proposal(state, world, row, report):
     from ..council import agenda
-    from .context import ROLES, engineering_entry, staff
+    from ..supplier_engineering import ROLES, engineering_entry, staff
 
     entry = engineering_entry(state, world, row["entry"], row["supplier"], row["axis"])
     engineers = staff(state, entry)

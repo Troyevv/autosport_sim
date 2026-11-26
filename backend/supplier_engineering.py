@@ -1,11 +1,11 @@
 """Resolve the engineering owner separately from the racing entry used for fit checks."""
 
 from functools import lru_cache
-from ..components.catalog import OPENING, POLICIES
-from ..domain import RuleError, occupant_on
-from ..finance.market import supplier_eligible
-from ..finance.facilities import later
-from ..supply import entry_agreement
+from .components.catalog import OPENING, POLICIES
+from .domain import RuleError, occupant_on
+from .finance.market import supplier_eligible
+from .finance.facilities import later
+from .supply import entry_agreement
 
 ROLES = {
     "engine": ("engines", "Мощность"),
@@ -121,7 +121,7 @@ def staff(state, entry):
 
 
 def restriction(state, world, entry, axis, year, reliability):
-    from ..programme.rules import bulletin
+    from .programme.rules import bulletin
 
     year = year or int(state["date"][:4])
     rule = bulletin(world, entry, year)

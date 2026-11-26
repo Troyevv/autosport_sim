@@ -4,7 +4,7 @@ from typing import Literal
 
 from pydantic import Field
 
-from ..manufacturer.context import engineering_entry
+from ..supplier_engineering import engineering_entry
 from .. import components, development, finance
 from ..components.catalog import OPENING
 from ..components.registry import drawing_for
@@ -162,7 +162,7 @@ def commission(state, world, org, key, order, *, target_year=None):
     credit = 0
     contract = None
     if "supplier_axis" in entry:
-        from ..manufacturer.context import agreement
+        from ..supplier_engineering import agreement
 
         terms = agreement(state, world, world["entries"][order.entry], drawing["slot"])
         if terms and terms["signed"] and terms["maker"] == org:

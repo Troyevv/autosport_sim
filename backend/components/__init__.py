@@ -263,7 +263,7 @@ def allocation(state, world, entry, iid, available, *, year=None, planned_entrie
 
 def specialists(state, world, entry):
     if "supplier_axis" in entry:
-        from ..manufacturer.context import staff
+        from ..supplier_engineering import staff
 
         return staff(state, entry)
     positions = {
