@@ -100,7 +100,9 @@ def participation(state, world, entry_id, day):
         category="logistics",
         payer=org,
         recipient=None,
-        amount_cents=ROUND_COSTS[series] * facilities.freight_index(state, org) // 100,
+        amount_cents=ROUND_COSTS[series]
+        * facilities.travel_cost_index(state, org)
+        // 100,
     )
     register(state, Schedule(installments=[term]))
     settle(state)

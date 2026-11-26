@@ -17,19 +17,21 @@ type Asset = {
   free: number
   book_cents: number
   daily_cents: number
+  effective_person_days_x100: number
 }
 type Quote = {
   build_cents: number
   monthly_cents: number
   staff: number
   days: number
-  logistics_index: number
 }
 type Inventory = {
   types: Record<string, string>
   locations: string[]
   quotes: Record<string, Record<string, Quote>>
   staff: number
+  processes: Record<string, string>
+  windows: { process: string; installed_slots: number; available_slots: number; effective_person_days_x100: number; confirmed_queue: string[] }[]
   assets: Asset[]
   bookings: {
     id: string
@@ -37,10 +39,18 @@ type Inventory = {
     start: string
     end: string
     mode: string
+    purpose?: string
     units: number
     cost_cents: number
   }[]
 }
+const operations: Record<string, string> = {
+  research: 'Исследования', development: 'Разработка', production: 'Производство',
+  testing: 'Испытания', inspection: 'Контроль качества', storage: 'Хранение',
+  engineering: 'Испытания', preparation: 'Подготовка персонала',
+}
+const modes: Record<string, string> = {lease: 'Аренда', outsource: 'Аутсорсинг', use: 'Выделение мощности'}
+const personDays = (value: number) => (value / 100).toLocaleString('ru-RU', {maximumFractionDigits: 2})
 const states: Record<string, string> = {
   active: 'В эксплуатации',
   construction: 'Строительство',
@@ -81,7 +91,7 @@ export function Facilities({ c, world, updateCareer }: SectionProps & { updateCa
         sub="Объекты, производственные мощности и аренда"
       />
       <div className="finance-actions">
-        {['Организация', 'Аренда и аутсорсинг', 'Бронирования'].map((n) => (
+        {['Организация', 'Мощности', 'Аренда и аутсорсинг', 'Бронирования'].map((n) => (
           <Button key={n} primary={n === tab} onClick={() => setTab(n)}>
             {n}
           </Button>
@@ -105,14 +115,29 @@ export function Facilities({ c, world, updateCareer }: SectionProps & { updateCa
             )
           }
         >
-          {tab === 'Бронирования' ? (
+          {tab === 'Мощности' ? (
+            <div className="panel-body">
+              <p className="muted">Доступно на {c.date} с учётом аренды, бронирований, занятости коллективов и состояния оборудования.</p>
+              {v.windows.map((pool) => (
+                <section key={pool.process}>
+                  <h3>{operations[pool.process]}</h3>
+                  <Facts items={[
+                    ['Собственные проектные места', pool.installed_slots],
+                    ['Свободные места с учётом аренды', pool.available_slots],
+                    ['Доступно за день, чел.-дн.', personDays(pool.effective_person_days_x100)],
+                    ['Заказы в работе', pool.confirmed_queue.length],
+                  ]} />
+                </section>
+              ))}
+            </div>
+          ) : tab === 'Бронирования' ? (
             v.bookings.length ? (
               v.bookings.map((b) => (
                 <div className="result" key={b.id}>
                   <span>
                     <strong>{v.types[v.assets.find((a) => a.id === b.facility)?.kind ?? '']}</strong>
                     <small>
-                      {b.start} — {b.end} · {b.units} ед.
+                      {modes[b.mode]} · {b.purpose && operations[b.purpose]} {b.start} — {b.end} · {b.units} ед.
                     </small>
                   </span>
                   {money(b.cost_cents)}
@@ -143,10 +168,12 @@ export function Facilities({ c, world, updateCareer }: SectionProps & { updateCa
                           : 'Ввод ' + a.ready}
                       </small>
                       <small>
+                        {operations[v.processes[a.kind]] && operations[v.processes[a.kind]] + ' · '}
                         {a.owner === c.org
                           ? 'Оценка ' + money(a.book_cents) + ' · состояние ' + a.condition + '%'
                           : 'Ставка ' + money(a.daily_cents) + '/сут.'}
                       </small>
+                      {a.status === 'active' && <small>Уровень {a.level} · {personDays(a.effective_person_days_x100)} чел.-дн. в сутки</small>}
                     </span>
                     {a.status === 'active' && (a.owner !== c.org || c.role !== 'manager') && (
                       <Button
@@ -199,7 +226,7 @@ export function Facilities({ c, world, updateCareer }: SectionProps & { updateCa
                       ['Срок', q.days + ' дн.'],
                       ['Обслуживание в месяц', money(q.monthly_cents)],
                       ['Персонал', q.staff],
-                      ['Индекс логистики', q.logistics_index],
+                      ['Назначение', operations[v.processes[kind]] ?? 'Обеспечение организации'],
                     ]}
                   />
                 )}

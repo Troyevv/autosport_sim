@@ -43,7 +43,7 @@ def test_capital_sources_loan_restructure_and_payoff():
 def test_asset_program_sale_replacement_keeps_identity():
     c = create(role="owner")
     c = service.execute(
-        c["id"], command(c, "finance-build", kind="logistics", country="ES")
+        c["id"], command(c, "finance-build", kind="warehouse", country="ES")
     )
     a = capital_overview(c["id"])["assets"][0]
     c = service.execute(

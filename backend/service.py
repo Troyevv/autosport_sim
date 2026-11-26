@@ -462,24 +462,51 @@ def import_save(document, *, statistics_records=None):
             if finance_since == state["revision"]:
                 finance.activate(state, catalog, state["ledger"])
             if market_since == state["revision"]:
-                market.initialize(state, catalog)
+                market.initialize(
+                    state, catalog, legacy=saved["market"].get("catalog") != 2
+                )
             if saved.get("control", {}).get("since") == state["revision"]:
                 budget.initialize(state, catalog, state["ledger"])
             if saved.get("estate", {}).get("since") == state["revision"]:
-                facilities.initialize(state, catalog)
+                facilities.initialize(
+                    state,
+                    catalog,
+                    legacy="shared:warehouse" not in saved["estate"]["assets"],
+                )
+            if saved.get("estate", {}).get("capacity_since") == state["revision"]:
+                facilities.migrate(state)
             if saved.get("capital", {}).get("since") == state["revision"]:
                 capital.initialize(state, catalog)
             if saved.get("economy", {}).get("since") == state["revision"]:
                 economy.initialize(state, catalog)
 
-        for item in commands:
+        for original in commands:
+            item = original
             apply_migrations()
+            legacy_access = False
+            if "capacity_since" not in state.get("estate", {}) and item.get("finance"):
+                args = item["finance"]
+                if (
+                    item["action"] == "finance-build"
+                    and args.get("kind") == "logistics"
+                ):
+                    item = dict(item, finance=dict(args, kind="warehouse"))
+                if (
+                    item["action"] == "finance-facility-access"
+                    and args.get("purpose") == "logistics"
+                ):
+                    legacy_access = True
+                    item = dict(item, finance=dict(args, purpose="storage"))
             cmd = Command.model_validate(item)
             if cmd.command_id in seen or cmd.revision != state["revision"]:
                 raise ValueError
             seen.add(cmd.command_id)
             args = cmd.payload()
             domain.apply(state, catalog, cmd.action, args)
+            if legacy_access:
+                state["estate"]["bookings"][args["reference"]]["purpose"] = "logistics"
+            if item is not original:
+                args = original["finance"]
             receipts.append(
                 (
                     cmd.command_id,
@@ -509,6 +536,7 @@ def import_save(document, *, statistics_records=None):
         facilities.initialize(state, WORLD)
         capital.initialize(state, WORLD)
         economy.initialize(state, WORLD)
+        facilities.migrate(state)
     except (KeyError, TypeError, ValueError, RecursionError, ValidationError):
         raise domain.RuleError("Файл повреждён или нарушает правила мира.") from None
     cid = str(uuid4())

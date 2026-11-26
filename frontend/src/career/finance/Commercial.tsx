@@ -214,7 +214,7 @@ export function Commercial({ world, c, updateCareer }: SectionProps & { updateCa
                     {name(d.sponsor)} · {roles[d.role]}
                   </strong>
                   <small>
-                    {statuses[d.status]} · {d.end}
+                    {(d.program_series ?? [d.series]).map((s) => world.championships[s]?.name ?? s).join(' · ')} · {statuses[d.status]} · {d.end}
                   </small>
                 </span>
                 <b>{money(d.fixed_cents)}</b>
@@ -392,12 +392,15 @@ export function Commercial({ world, c, updateCareer }: SectionProps & { updateCa
       {deal && (
         <Dialog title={'Договор · ' + name(deal.sponsor)} onClose={close}>
           <div className="panel-body">
+            <p>{(deal.program_series ?? [deal.series]).map((s) => world.championships[s]?.name ?? s).join(' · ')}</p>
             <Conditions t={deal} />
+            {deal.evidence && <p>{deal.evidence}</p>}
             {deal.source && (
               <p>
                 <a href={deal.source} target="_blank" rel="noreferrer">
                   Источник партнёрства сезона 2025
                 </a>
+                {deal.additional_source && <> · <a href={deal.additional_source} target="_blank" rel="noreferrer">Дополнительный источник</a></>}
               </p>
             )}
             <p className="muted">Суммы и сроки расчётов заданы экономикой карьеры.</p>

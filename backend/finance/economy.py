@@ -374,7 +374,7 @@ def sponsorship(state, world, org, person, seed):
     if not programs:
         return
     series = programs[seed % len(programs)]["series"]
-    brands = market.participants(world)
+    brands = market.participants(world, state)
     candidates = sorted(
         (
             b
@@ -593,7 +593,7 @@ def manage(state, world, org, person, seed):
             org,
             key,
             facilities.Build(
-                kind="logistics" if person["ambition"] < 80 else "simulator",
+                kind="warehouse" if person["ambition"] < 80 else "simulator",
                 country=("GB", "IT", "DE", "FR", "US")[seed % 5],
             ),
         )
@@ -683,7 +683,7 @@ def renew_staff(state, world, org):
 
 
 def consumer_market(state, world, month):
-    brands = market.participants(world)
+    brands = market.participants(world, state)
     # Marketing resources are financed by actual spending from the same finite household sector.
     for i, b in enumerate(sorted(brands)):
         if i % 12 != month % 12 or b.startswith("supplier-"):

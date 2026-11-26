@@ -42,7 +42,8 @@ def entries(state, world, deal):
         eid
         for eid, e in world["entries"].items()
         if e["org"] == deal["org"]
-        and e["championship"] == deal["series"]
+        and (not deal.get("car_entries") or eid in deal["car_entries"])
+        and e["championship"] in deal.get("program_series", [deal["series"]])
         and (
             not deal.get("person")
             or any(
@@ -127,9 +128,29 @@ def title_names(state, world, day):
     return names
 
 
-def collision(state, world, t):
+def observed_entries(world, org, series, sponsor):
+    return sorted(
+        eid
+        for eid, e in world["entries"].items()
+        if e["org"] == org
+        and e["championship"] in series
+        and any(
+            d["asset"] == sponsor
+            for d in GARAGE["entries"].get(eid, {}).get("livery", {}).get("decals", [])
+        )
+    )
+
+
+def collision(state, world, t, car_entries=None):
     for requested in t.rights:
-        occupied = []
+        inventory = car_entries if requested.zone in CAR else None
+        if requested.zone in CAR and inventory is None:
+            inventory = [
+                eid
+                for eid, e in world["entries"].items()
+                if e["org"] == t.org and e["championship"] == t.series
+            ]
+        occupied = {eid: [] for eid in inventory or [None]}
         for deal in state["market"]["contracts"].values():
             if (
                 deal["org"] != t.org
@@ -139,19 +160,28 @@ def collision(state, world, t):
             ):
                 continue
             if requested.zone in CAR and (
-                deal["series"] != t.series
+                t.series not in deal.get("program_series", [deal["series"]])
                 or (t.person and deal["person"] and t.person != deal["person"])
             ):
                 continue
-            occupied.extend(r for r in deal["rights"] if r["zone"] == requested.zone)
-        if (
+            for eid, surfaces in occupied.items():
+                if (
+                    eid is None
+                    or not deal.get("car_entries")
+                    or eid in deal["car_entries"]
+                ):
+                    surfaces.extend(
+                        r for r in deal["rights"] if r["zone"] == requested.zone
+                    )
+        if any(
             any(
                 not (requested.shared and r["shared"])
                 and requested.offset < r.get("offset", 0) + r["share"]
                 and r.get("offset", 0) < requested.offset + requested.share
-                for r in occupied
+                for r in surfaces
             )
-            or sum(r["share"] for r in occupied) + requested.share > 100
+            or sum(r["share"] for r in surfaces) + requested.share > 100
+            for surfaces in occupied.values()
         ):
             return "Рекламная зона занята. Измените позицию, размер или условия совместного размещения."
 

@@ -1,0 +1,564 @@
+[
+  {
+    "org": "team-dams-lucas-oil",
+    "series": [
+      "f2",
+      "f3"
+    ],
+    "start": "2025-03-12",
+    "source": "https://damslucasoil.com/2025/03/12/dams-lucas-oil-gears-up-for-f2-and-f3-opener-in-melbourne/",
+    "evidence": "Команда перечисляет партнёров обеих программ перед Мельбурном.",
+    "partners": {
+      "lucas-oil": "title",
+      "omp": "technical",
+      "milwaukee": "technical",
+      "errea": "technical",
+      "8js": "partner",
+      "brm": "partner",
+      "koesio": "technical",
+      "run-aventure": "partner"
+    }
+  },
+  {
+    "org": "team-van-amersfoort-racing",
+    "series": [
+      "f2",
+      "f3",
+      "freca",
+      "f4-it"
+    ],
+    "start": "2025-04-30",
+    "source": "https://www.vanamersfoortracing.nl/news/2025/tricorp-workwear-and-van-amersfoort-racing-a-powerful-new-partnership/",
+    "evidence": "Экипировка всех четырёх программ VAR.",
+    "partners": {
+      "tricorp": "technical"
+    }
+  },
+  {
+    "org": "team-phinsys-by-argenti",
+    "series": [
+      "f4-gb"
+    ],
+    "start": "2025-02-01",
+    "source": "https://www.phinsys.com/charity/argenti-motorsport",
+    "evidence": "Phinsys подтверждает спонсорство британской программы Argenti. Название заявки есть в списке чемпионата.",
+    "partners": {
+      "phinsys": "title"
+    },
+    "additional_source": "https://fiaformula4.com/wp-content/uploads/2025/06/British-Grand-Prix-British-F4-Entry-List-v1.pdf"
+  },
+  {
+    "org": "team-invicta-racing",
+    "series": [
+      "f2"
+    ],
+    "start": "2025-02-01",
+    "source": "https://invictaracing.com/post/meet-the-team-invicta-racing-in-2025",
+    "evidence": "Техническая поддержка AVL RACETECH в сезоне 2025.",
+    "partners": {
+      "avl": "technical"
+    }
+  },
+  {
+    "org": "team-monlau-motorsport",
+    "series": [
+      "f4-es"
+    ],
+    "start": "2025-02-01",
+    "source": "https://monlau-motorsport.com/en/monlau-motul-ready-to-kick-off-the-2025-spanish-f4-season/",
+    "evidence": "Monlau объявляет три заявки Monlau Motul на сезон.",
+    "partners": {
+      "motul": "title"
+    }
+  },
+  {
+    "org": "team-liqui-moly-roli-motorsport",
+    "series": [
+      "kart-ok"
+    ],
+    "start": "2025-02-01",
+    "source": "https://backend.fiakarting.com/sites/default/files/xml_folder/2025/Campillos/Booklet_OK.pdf",
+    "evidence": "Именное партнёрство в официальной заявке №143; только класс OK.",
+    "partners": {
+      "liqui-moly": "title"
+    }
+  },
+  {
+    "org": "team-prema-racing",
+    "series": [
+      "kart-ok",
+      "kart-okj"
+    ],
+    "start": "2025-02-01",
+    "source": "https://www.kartxpress.com/ReadMore/kart-republic-and-prema-racing-double-up-in-portugal",
+    "evidence": "Совместная картинговая программа PREMA и Kart Republic, подтверждённая в обеих категориях в Портимане.",
+    "partners": {
+      "kart-republic": "technical"
+    },
+    "additional_source": "https://formularapida.net/en/prema-racing-launches-brand-new-karting-operation/"
+  },
+  {
+    "org": "team-abt-sportsline",
+    "series": [
+      "dtm"
+    ],
+    "start": "2025-02-01",
+    "source": "https://www.lamborghini.com/en-en/motorsport/news/lamborghini-squadra-corse-and-abt-sportsline-announce-dtm-partnership-for-2025",
+    "evidence": "Заводское партнёрство с ABT на двух автомобилях в DTM.",
+    "partners": {
+      "lamborghini": "technical"
+    }
+  },
+  {
+    "org": "team-abt-sportsline",
+    "series": [
+      "dtm"
+    ],
+    "start": "2025-02-01",
+    "source": "https://www.abt-sportsline.de/unternehmen/presse/pressemitteilungen?cHash=077367a8f021cc01625a5926c245b013&tx_news_pi1%5Baction%5D=detail&tx_news_pi1%5Bcontroller%5D=News&tx_news_pi1%5Bnews%5D=6742",
+    "evidence": "Презентация ABT называет основных, новых и технических партнёров.",
+    "partners": {
+      "sonax": "principal",
+      "schaeffler": "principal",
+      "sudpack": "principal",
+      "arburg": "partner",
+      "feser-graf": "partner",
+      "hr": "technical",
+      "man": "technical",
+      "ravenol": "technical",
+      "riedel": "technical",
+      "sabelt": "technical",
+      "metzner": "technical"
+    }
+  },
+  {
+    "org": "team-hrt-ford-performance",
+    "series": [
+      "dtm"
+    ],
+    "start": "2025-02-01",
+    "source": "https://www.fromtheroad.ford.com/us/en/articles/2024/ford-performance-motorsports-and-hrt-partner-for-mustang-gt3-dtm",
+    "evidence": "Ford и HRT объявляют заводскую программу Mustang GT3 в DTM.",
+    "partners": {
+      "ford": "technical"
+    }
+  },
+  {
+    "org": "team-mercedes-amg-team-landgraf",
+    "series": [
+      "dtm"
+    ],
+    "start": "2025-02-01",
+    "source": "https://www.bwt.com/en-us/bwt-windhager-landgraf-motorsport-kick-off-the-2025-dtm-season/",
+    "evidence": "Презентация проекта BWT и Windhager с Landgraf.",
+    "partners": {
+      "bwt": "partner",
+      "windhager": "partner"
+    }
+  },
+  {
+    "org": "team-schubert-motorsport",
+    "series": [
+      "dtm"
+    ],
+    "start": "2025-02-01",
+    "source": "https://www.press.bmwgroup.com/global/article/attachment/T0448958EN/629631",
+    "evidence": "Партнёры BMW представлены на машинах №11 и №33 соответственно.",
+    "partners": {
+      "schaeffler": "principal",
+      "robomarkets": "principal"
+    }
+  },
+  {
+    "org": "team-dorr-motorsport",
+    "series": [
+      "dtm"
+    ],
+    "start": "2025-02-01",
+    "source": "https://yukatrack.com/blogs/news/yukatrack-und-dorr-motorsport-gemeinsam-in-der-dtm-saison-2025",
+    "evidence": "YUKAtrack объявляет о партнёрстве с командой в DTM.",
+    "partners": {
+      "yukatrack": "partner"
+    }
+  },
+  {
+    "org": "team-porsche-penske-motorsport",
+    "series": [
+      "wec"
+    ],
+    "start": "2025-02-01",
+    "source": "https://newsroom.porsche.com/en/2025/motorsports/porsche-fia-wec-race-4-le-mans-strong-partners-39758.html",
+    "evidence": "Porsche описывает функции партнёров программы 963 в WEC.",
+    "partners": {
+      "ansys": "technical",
+      "tag-heuer": "partner",
+      "netapp": "technical",
+      "puma": "technical",
+      "loctite": "technical",
+      "multimatic": "technical"
+    }
+  },
+  {
+    "org": "team-manthey-1st-phorm",
+    "series": [
+      "wec"
+    ],
+    "start": "2025-02-01",
+    "source": "https://fiawec.alkamelsystems.com/Results/14_2025/01_LOSAIL/579_FIA%20WEC/Final%20Championships/05_2025_FIA_Endurance_Trophy__for_LMGT3_Teams_After_Qatar.pdf",
+    "evidence": "Именной партнёр в официальной классификации первого этапа LMGT3 в Катаре.",
+    "partners": {
+      "1st-phorm": "title"
+    }
+  },
+  {
+    "org": "team-akkodis-asp-team",
+    "series": [
+      "wec"
+    ],
+    "start": "2025-02-01",
+    "source": "https://fiawec.alkamelsystems.com/Results/14_2025/01_LOSAIL/579_FIA%20WEC/Final%20Championships/05_2025_FIA_Endurance_Trophy__for_LMGT3_Teams_After_Qatar.pdf",
+    "evidence": "Именной партнёр в официальной классификации первого этапа LMGT3 в Катаре.",
+    "partners": {
+      "akkodis": "title"
+    }
+  },
+  {
+    "org": "team-vista-af-corse",
+    "series": [
+      "wec"
+    ],
+    "start": "2025-02-01",
+    "source": "https://fiawec.alkamelsystems.com/Results/14_2025/01_LOSAIL/579_FIA%20WEC/Final%20Championships/05_2025_FIA_Endurance_Trophy__for_LMGT3_Teams_After_Qatar.pdf",
+    "evidence": "Именной партнёр в официальной классификации первого этапа LMGT3 в Катаре.",
+    "partners": {
+      "vista": "title"
+    }
+  },
+  {
+    "org": "team-the-bend-team-wrt",
+    "series": [
+      "wec"
+    ],
+    "start": "2025-02-01",
+    "source": "https://fiawec.alkamelsystems.com/Results/14_2025/01_LOSAIL/579_FIA%20WEC/Final%20Championships/05_2025_FIA_Endurance_Trophy__for_LMGT3_Teams_After_Qatar.pdf",
+    "evidence": "Именной партнёр в официальной классификации первого этапа LMGT3 в Катаре.",
+    "partners": {
+      "the-bend": "title"
+    }
+  },
+  {
+    "org": "team-peugeot-totalenergies",
+    "series": [
+      "wec"
+    ],
+    "start": "2025-02-01",
+    "source": "https://www.media.stellantis.com/em-en/peugeot-sport/press/the-team-peugeot-totalenergies-unveils-its-2025-driver-line-up",
+    "evidence": "Заводская команда Team Peugeot TotalEnergies в составе сезона 2025.",
+    "partners": {
+      "totalenergies": "title"
+    }
+  },
+  {
+    "org": "team-peugeot-totalenergies",
+    "series": [
+      "wec"
+    ],
+    "start": "2025-02-01",
+    "source": "https://www.media.stellantis.com/em-en/peugeot-sport/press/peugeot-sport-welcomes-point-s-as-a-key-partner-for-team-peugeot-totalenergies-in-fia-wec",
+    "evidence": "Point S объявлен партнёром программы 9X8 на весь сезон.",
+    "partners": {
+      "point-s": "partner"
+    }
+  },
+  {
+    "org": "team-peugeot-totalenergies",
+    "series": [
+      "wec"
+    ],
+    "start": "2025-02-06",
+    "source": "https://www.media.stellantis.com/em-en/peugeot-sport/press/peugeot-sport-and-capgemini-renew-their-partnership-to-tackle-technological-and-sustainable-challenges-in-sports-performance",
+    "evidence": "Peugeot Sport и Capgemini продлевают техническое партнёрство.",
+    "partners": {
+      "capgemini": "technical"
+    }
+  },
+  {
+    "org": "team-toyota-gazoo-racing",
+    "series": [
+      "wec"
+    ],
+    "start": "2025-02-01",
+    "source": "https://toyotagazooracing.com/wec/partners/2025/",
+    "evidence": "Официальный список партнёров Toyota в WEC за 2025 год. Mobil 1 — бренд ExxonMobil в пресс-ките.",
+    "partners": {
+      "denso": "partner",
+      "fujitsu": "partner",
+      "mobil-1": "partner",
+      "aisin": "partner",
+      "zent": "partner",
+      "rays": "partner",
+      "jfe": "partner",
+      "advics": "partner",
+      "toyota-industries": "partner",
+      "hayashi": "partner",
+      "jal": "partner",
+      "nsk": "partner",
+      "toyota-tsusho": "partner",
+      "togo": "partner",
+      "maeda": "partner",
+      "jtekt": "partner",
+      "arai-seisakusho": "partner",
+      "toyota-auto-body": "partner",
+      "toyoda-gosei": "partner",
+      "daihatsu": "partner",
+      "tokai-rika": "partner",
+      "npr": "partner",
+      "otics": "partner",
+      "gentex": "partner",
+      "supplier-michelin": "partner"
+    },
+    "additional_source": "https://media.toyota.fr/download/b71332b6-8234-48d3-85bc-381cbbdabf71/25wec-mediakit-e.pdf"
+  },
+  {
+    "org": "team-scuderia-ferrari",
+    "series": [
+      "f1"
+    ],
+    "start": "2025-02-01",
+    "source": "https://cdn.ferrari.com/cms/network/media/pdf/FN_PR_IBM_ENG.pdf",
+    "evidence": "IBM становится партнёром Scuderia Ferrari с 2025 года.",
+    "partners": {
+      "ibm": "technical"
+    }
+  },
+  {
+    "org": "team-scuderia-ferrari",
+    "series": [
+      "f1"
+    ],
+    "start": "2025-02-01",
+    "source": "https://cdn.ferrari.com/cms/network/media/pdf/2025_01_16-Partnership%20UniCredit%20-%20ENG.pdf",
+    "evidence": "Презентация партнёрства Scuderia Ferrari HP и UniCredit.",
+    "partners": {
+      "unicredit": "partner"
+    }
+  },
+  {
+    "org": "team-williams-racing",
+    "series": [
+      "f1"
+    ],
+    "start": "2025-02-01",
+    "source": "https://www.williamsf1.com/articles/baf22e7b-46bf-4adb-8695-f710bfc3eb53/santander-williams-official-partner",
+    "evidence": "Williams подтверждает Santander, Duracell, Gulf и Kraken на сезон 2025.",
+    "partners": {
+      "santander": "partner",
+      "duracell": "partner",
+      "gulf": "partner",
+      "kraken": "partner"
+    }
+  },
+  {
+    "org": "team-mercedes-amg-petronas-f1-team",
+    "series": [
+      "f1"
+    ],
+    "start": "2025-02-01",
+    "source": "https://www.mercedesamgf1.com/news/adidas-enters-f1-with-multi-year-mercedes-amg-petronas-f1-team-partnership",
+    "evidence": "Многолетний договор на командную экипировку вступает в силу в 2025 году.",
+    "partners": {
+      "adidas": "technical"
+    }
+  },
+  {
+    "org": "team-kick-sauber-f1-team",
+    "series": [
+      "f1"
+    ],
+    "start": "2025-02-01",
+    "source": "https://www.fia.com/sites/default/files/2025-officialmediakit_booklet-digital-final_11.14.25.pdf",
+    "evidence": "Официальное имя заявки Stake F1 Team KICK Sauber в 2025 году.",
+    "partners": {
+      "stake": "title",
+      "kick": "principal"
+    }
+  },
+  {
+    "org": "team-bwt-alpine-f1-team",
+    "series": [
+      "f1"
+    ],
+    "start": "2025-02-24",
+    "source": "https://media.alpinecars.com/a525-kicks-off-2025-on-track-action-in-bahrain-with-pierre-and-jack-at-the-wheel/?lang=fra",
+    "evidence": "Alpine перечисляет партнёров ливреи A525 на февральских тестах.",
+    "partners": {
+      "eni": "technical",
+      "msc": "principal",
+      "oakberry": "partner",
+      "mercado-libre": "partner",
+      "arctic-wolf": "partner",
+      "castore": "technical",
+      "modo": "partner"
+    }
+  },
+  {
+    "org": "team-aston-martin-aramco-f1-team",
+    "series": [
+      "f1"
+    ],
+    "start": "2025-02-01",
+    "source": "https://newsroom.arm.com/news/arm-aston-martin-aramco-f1-partnership",
+    "evidence": "Arm поставляет вычислительную платформу команде Aston Martin.",
+    "partners": {
+      "arm": "technical"
+    }
+  },
+  {
+    "org": "team-aston-martin-aramco-f1-team",
+    "series": [
+      "f1"
+    ],
+    "start": "2025-02-17",
+    "source": "https://www.astonmartinf1.com/en-GB/news/announcement/aston-martin-aramco-elevates-partnership-with-maaden",
+    "evidence": "Maaden получает статус главного партнёра.",
+    "partners": {
+      "maaden": "principal"
+    }
+  },
+  {
+    "org": "team-oracle-red-bull-racing",
+    "series": [
+      "f1"
+    ],
+    "start": "2025-02-11",
+    "source": "https://www.redbullracing.com/int-en/1password",
+    "evidence": "Oracle Red Bull Racing объявляет эксклюзивного партнёра по кибербезопасности.",
+    "partners": {
+      "1password": "technical"
+    }
+  },
+  {
+    "org": "team-moneygram-haas-f1-team",
+    "series": [
+      "f1"
+    ],
+    "start": "2025-02-01",
+    "source": "https://www.haasf1team.com/news/moneygram-haas-f1-team-enters-technical-partnership-toyota-gazoo-racing",
+    "evidence": "Технический договор с Toyota действует до перехода к титульному соглашению 2026 года.",
+    "partners": {
+      "supplier-toyota": "technical"
+    }
+  },
+  {
+    "org": "team-mclaren-formula-1-team",
+    "series": [
+      "f1"
+    ],
+    "start": "2025-02-01",
+    "source": "https://www.mclaren.com/racing/formula-1/2025/mclaren-racing-announces-okta-as-an-official-partner-of-the-mclaren-formula-1-team/",
+    "evidence": "McLaren объявляет Okta официальным партнёром.",
+    "partners": {
+      "okta": "partner"
+    }
+  },
+  {
+    "org": "team-mclaren-formula-1-team",
+    "series": [
+      "f1"
+    ],
+    "start": "2025-02-12",
+    "source": "https://www.mclaren.com/racing/formula-1/2025/mclaren-racing-announces-allwyn-as-an-official-partner/",
+    "evidence": "Allwyn и McLaren объявляют партнёрство сезона 2025.",
+    "partners": {
+      "allwyn": "partner"
+    }
+  },
+  {
+    "org": "team-mp-motorsport",
+    "series": [
+      "f2"
+    ],
+    "start": "2025-02-01",
+    "source": "https://www.mpmotorsport.com/news/mp-motorsport-extends-multi-year-partnership-with-prop-com-as-its-main-sponsor",
+    "evidence": "Prop.com поддерживал команду MP в F2 в 2025 году. Расширение на другие серии относится к 2026 году.",
+    "partners": {
+      "propcom": "partner"
+    }
+  },
+  {
+    "org": "team-tgi-team-lamborghini-by-grt",
+    "series": [
+      "dtm"
+    ],
+    "start": "2025-02-01",
+    "source": "https://www.grasser-racing.com/dtm-release-2025/",
+    "evidence": "GRT перечисляет трёх партнёров своей программы DTM.",
+    "partners": {
+      "tgi": "title",
+      "liqui-moly": "partner",
+      "grapos": "partner"
+    }
+  },
+  {
+    "org": "team-mercedes-amg-team-mann-filter",
+    "series": [
+      "dtm"
+    ],
+    "start": "2025-02-01",
+    "source": "https://www.mann-filter.com/my-en/news-stories/press-releases/2025/10-years-of-mann-filter-mamba-2025-season-highlights.html",
+    "evidence": "MANN-FILTER подтверждает участие машины Жюля Гунона в DTM.",
+    "partners": {
+      "mann": "title"
+    }
+  },
+  {
+    "org": "team-comtoyou-racing",
+    "series": [
+      "dtm"
+    ],
+    "start": "2025-03-18",
+    "source": "https://www.winmax.jp/en/news/winmax-extends-partnership-with-comtoyou-racing",
+    "evidence": "WinmaX подтверждает партнёрство с Comtoyou Racing и программу DTM.",
+    "partners": {
+      "winmax": "technical"
+    }
+  },
+  {
+    "org": "team-hrt-ford-performance",
+    "series": [
+      "dtm"
+    ],
+    "start": "2025-05-20",
+    "source": "https://media.hauptracingteam.de/en/detail/item/240.html",
+    "evidence": "HRT объявляет German Airways и Speedlink партнёрами машины №64.",
+    "partners": {
+      "german-airways": "partner",
+      "speedlink": "partner"
+    }
+  },
+  {
+    "org": "team-hrt-ford-performance",
+    "series": [
+      "dtm"
+    ],
+    "start": "2025-02-01",
+    "source": "https://www.fordracing.com/articles/series/road-racing/2025/03/hrt-dtm-line-up-2025",
+    "evidence": "Ford называет RAVENOL партнёром машины №36.",
+    "partners": {
+      "ravenol": "partner"
+    }
+  },
+  {
+    "org": "team-paul-motorsport",
+    "series": [
+      "dtm"
+    ],
+    "start": "2025-02-01",
+    "source": "https://www.sachsenring-circuit.com/media-service/sachsenring-news/paul-motorsport-startet-mit-neuen-zielen-in-zweite-dtmsaison",
+    "evidence": "Второй сезон команды с поддержкой MEYLE.",
+    "partners": {
+      "meyle": "partner"
+    },
+    "additional_source": "https://www.meyle.com/en/about-us/motorsport/dtm"
+  }
+]

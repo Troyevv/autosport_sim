@@ -51,6 +51,7 @@ MIGRATIONS = [
         json_extract(state,'$.setup'), json_extract(state,'$.date'),
         json_extract(state,'$.revision'), id)"""
     ],
+    [],  # Independent engineering resources and conversion of former depots.
 ]
 
 
@@ -193,6 +194,13 @@ def transaction(write=False):
                     state = checkpoint(db, cid)
                     economy.initialize(state, WORLD)
                     store(db, cid, state)
+            if idx == 17:
+                from .finance import facilities
+
+                for row in db.execute("SELECT id FROM career").fetchall():
+                    state = checkpoint(db, row["id"])
+                    facilities.migrate(state)
+                    store(db, row["id"], state)
             db.execute(f"PRAGMA user_version={idx + 1}")
         yield db
         db.commit()

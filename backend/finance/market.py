@@ -1,5 +1,6 @@
 """Shared finite commercial market. Bids are evaluated and signed against current resources."""
 
+from collections import Counter
 import csv
 import json
 from datetime import date, timedelta
@@ -22,16 +23,24 @@ from . import (
 )
 
 DATA = Path(__file__).resolve().parents[1] / "data" / "finance"
-with (DATA / "brands.csv").open(encoding="utf8") as stream:
-    BRANDS = {
-        r["id"]: dict(
-            r,
-            markets=r["markets"].split(),
-            series=r["series"].split(),
-            budget_cents=int(r["budget_eur"]) * 100,
-        )
-        for r in csv.DictReader(stream)
-    }
+
+
+def read_brands(filename):
+    with (DATA / filename).open(encoding="utf8") as stream:
+        return {
+            r["id"]: dict(
+                r,
+                markets=r["markets"].split(),
+                series=r["series"].split(),
+                budget_cents=int(r["budget_eur"]) * 100,
+            )
+            for r in csv.DictReader(stream)
+        }
+
+
+BRANDS = read_brands("brands.csv")
+SEASON_BRANDS = read_brands("season-brands.csv")
+SEASON_GROUPS = json.loads((DATA / "season-2025.json").read_text(encoding="utf8"))
 PARTNERS = json.loads((DATA / "partners.json").read_text())
 COUNTRIES = {
     "pirelli": "IT",
@@ -169,8 +178,10 @@ class End(Fields):
 ORDERS = {"finance-bid": Bid, "finance-bid-reply": Reply, "finance-end-deal": End}
 
 
-def participants(world):
-    result = dict(BRANDS)
+def participants(world, state=None):
+    result = {**BRANDS, **SEASON_BRANDS}
+    if state is not None and state.get("market", {}).get("catalog") != 2:
+        result = dict(BRANDS)
     for oid, r in world["organizations"].items():
         if r["kind"] != "supplier" or not set(r["lines"]) & {
             "engine",
@@ -408,7 +419,7 @@ def supplier_eligible(state, world, entry, sponsor, product, start, end):
 
 def validate(state, world, bid, *, signing=False):
     t = bid.terms
-    sponsors = participants(world)
+    sponsors = participants(world, state)
     if (
         t.sponsor not in sponsors
         or t.org not in world["organizations"]
@@ -464,8 +475,8 @@ def validate(state, world, bid, *, signing=False):
     return sponsors[t.sponsor]
 
 
-def conflict(state, world, terms):
-    category = participants(world)[terms.sponsor]["category"]
+def conflict(state, world, terms, car_entries=None):
+    category = participants(world, state)[terms.sponsor]["category"]
     for d in state["market"]["contracts"].values():
         if (
             d["status"] != "signed"
@@ -489,11 +500,13 @@ def conflict(state, world, terms):
 
     from .rights import collision
 
-    return collision(state, world, terms)
+    return collision(state, world, terms, car_entries)
 
 
-def sign_sponsor(state, world, terms, key, source=None, first_due=None):
-    err = conflict(state, world, terms)
+def sign_sponsor(
+    state, world, terms, key, source=None, first_due=None, car_entries=None
+):
+    err = conflict(state, world, terms, car_entries)
     if err:
         raise RuleError(err, 409)
     if terms.fixed_cents > funds(state, terms.sponsor):
@@ -517,14 +530,56 @@ def sign_sponsor(state, world, terms, key, source=None, first_due=None):
         fulfilled_events=[],
         end_reason=None,
     )
+    if car_entries:
+        row["car_entries"] = car_entries
     state["market"]["contracts"][key] = row
     return row
 
 
-def initialize(state, world):
+def season_deals(world):
+    for bid, org, role, start, source in PARTNERS:
+        series = world["organizations"][org]["programs"][:1]
+        if org == "team-hitech-tgr":
+            series = ["f2", "f3", "f4-gb"]
+            source = "https://www.hitechgp.co.uk/about/"
+        yield bid, org, role, start, source, series
+    for group in SEASON_GROUPS:
+        for brand, role in group["partners"].items():
+            yield (
+                brand,
+                group["org"],
+                role,
+                group["start"],
+                group["source"],
+                group["series"],
+            )
+
+
+SEASON_EVIDENCE = {
+    (group["org"], brand): {
+        k: group[k] for k in ("evidence", "additional_source") if k in group
+    }
+    for group in SEASON_GROUPS
+    for brand in group["partners"]
+}
+
+
+def opening_budgets():
+    # Redistribute the original finite commercial sector among the expanded catalogue.
+    weights = {k: b["budget_cents"] for k, b in (BRANDS | SEASON_BRANDS).items()}
+    total = sum(b["budget_cents"] for b in BRANDS.values())
+    denominator = sum(weights.values())
+    amounts = {k: w * total // denominator for k, w in weights.items()}
+    for k in sorted(weights, key=lambda k: (-(weights[k] * total % denominator), k))[
+        : total - sum(amounts.values())
+    ]:
+        amounts[k] += 1
+    return amounts
+
+
+def initialize(state, world, *, legacy=False):
     if "market" in state:
         return
-    players = participants(world)
     book = state["market"] = dict(
         since=state["revision"],
         budgets={},
@@ -533,9 +588,13 @@ def initialize(state, world):
         offers={},
         supplies={},
     )
+    if not legacy:
+        book["catalog"] = 2
+    players = participants(world, state)
+    allocations = {} if legacy else opening_budgets()
     for brand in players.values():
         bid = brand["id"]
-        cash = brand["budget_cents"]
+        cash = allocations.get(bid, brand["budget_cents"])
         if bid.startswith("supplier-"):
             cash = state["accounts"][bid]["cash_cents"] // 4
         else:
@@ -566,17 +625,37 @@ def initialize(state, world):
             min_reputation=35 + seed % 25,
             min_popularity=30 + seed % 35,
         )
-    for bid, org, role, start, url in PARTNERS:
+    deals = (
+        list(season_deals(world))
+        if not legacy
+        else [
+            (*row, world["organizations"][row[1]]["programs"][:1]) for row in PARTNERS
+        ]
+    )
+    weights = {"title": 8, "principal": 4, "technical": 2, "partner": 1}
+    portfolio = Counter()
+    for _, org, role, *_ in deals:
+        portfolio[org] += weights[role]
+    for bid, org, role, start, url, series in deals:
         start = max(start, state["date"])
         if start >= "2026-01-01":
             continue
         amount = min(
             book["budgets"][bid] // 5, state["accounts"][org]["payroll_cents"] * 2
         )
+        if not legacy:
+            # One cash envelope per team, shared by all its partner programmes.
+            amount = min(
+                amount,
+                state["accounts"][org]["payroll_cents"]
+                * 2
+                * weights[role]
+                // portfolio[org],
+            )
         t = Terms(
             sponsor=bid,
             org=org,
-            series=world["organizations"][org]["programs"][0],
+            series=series[0],
             role=role,
             start=start,
             end="2026-01-01",
@@ -586,22 +665,25 @@ def initialize(state, world):
             bonus_cents=amount // 20,
             podium=3,
             rights=[],
-            exclusive=True,
+            exclusive=legacy or role == "title",
             appearances=2,
             reputation=30,
             compensation_cents=amount // 8,
         )
-        from .rights import start_rights
+        from .rights import start_rights, observed_entries
 
         t = t.model_copy(update={"rights": start_rights(world, org, t.series, bid)})
-        sign_sponsor(
+        deal = sign_sponsor(
             state,
             world,
             t,
             "partner-2025:" + bid + ":" + org,
             url,
             first_due=max(start, "2025-03-31"),
+            car_entries=None if legacy else observed_entries(world, org, series, bid),
         )
+        if not legacy:
+            deal["program_series"] = series
 
 
 def sign_supply(state, world, bid, reply, key):
@@ -833,7 +915,9 @@ def respond(state, world, reply, actor, *, deferred=False):
     if not reply.sponsorship and not reply.supply:
         raise RuleError("Выберите принимаемые части пакета.")
     if reply.sponsorship:
-        score, limit, rep = assessment(state, world, participants(world)[t.sponsor], t)
+        score, limit, rep = assessment(
+            state, world, participants(world, state)[t.sponsor], t
+        )
         if limit < t.fixed_cents or rep < t.reputation:
             raise RuleError(
                 "Условия превышают доступный бюджет или требования репутации.", 409
@@ -956,7 +1040,7 @@ def tick(state, world):
         if d["status"] == "signed" and d["end"] <= day:
             d["status"] = "expired"
     player = state["setup"]["org"]
-    brands = participants(world)
+    brands = participants(world, state)
     if day[8:] == "01":
         invite(state, world, day, market, player)
         renewals(state, world, day)
@@ -1036,7 +1120,7 @@ def tick(state, world):
 
 def invite(state, world, day, market, player):
     # At most one sponsor-led search each month. Actual signed commitments constrain the shortlist.
-    brands = participants(world)
+    brands = participants(world, state)
     order = sorted(brands, key=lambda b: sha256((day + b).encode()).digest())
     for bid in order:
         brand = brands[bid]
@@ -1143,7 +1227,7 @@ def projection(state, world):
                 budget_cents=market["budgets"][b["id"]],
                 remaining_estimate_cents=funds(state, b["id"]) // 100000 * 100000,
             )
-            for b in participants(world).values()
+            for b in participants(world, state).values()
         ],
         offers=[
             o
@@ -1151,7 +1235,16 @@ def projection(state, world):
             if org in (o["terms"]["sponsor"], o["terms"]["org"])
         ],
         contracts=[
-            d for d in market["contracts"].values() if org in (d["org"], d["sponsor"])
+            {
+                **d,
+                **(
+                    SEASON_EVIDENCE.get((d["org"], d["sponsor"]), {})
+                    if d["source"]
+                    else {}
+                ),
+            }
+            for d in market["contracts"].values()
+            if org in (d["org"], d["sponsor"])
         ],
         supplies=[
             {k: v for k, v in d.items() if k != "cost_cents" or org == d["sponsor"]}
@@ -1191,7 +1284,8 @@ def result_bonus(state, world, pid, entry_id, event_id, day, place):
             not active(d, day)
             or not d["bonus_cents"]
             or d["org"] != entry["org"]
-            or d["series"] != entry["championship"]
+            or (d.get("car_entries") and entry_id not in d["car_entries"])
+            or entry["championship"] not in d.get("program_series", [d["series"]])
             or place > d["podium"]
             or (d["person"] and d["person"] != pid)
         ):

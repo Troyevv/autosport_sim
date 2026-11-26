@@ -60,7 +60,7 @@ export type Offer = Bid & {
   history: Bid[]
   deadline: string
 }
-export type Contract = Terms & { id: string; status: string; source: string | null }
+export type Contract = Terms & { id: string; status: string; source: string | null; program_series?: string[]; additional_source?: string; evidence?: string }
 export type Market = {
   scholars: string[]
   brands: Brand[]

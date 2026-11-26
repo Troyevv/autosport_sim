@@ -1,0 +1,86 @@
+id,name,country,category,markets,series,priority,budget_eur
+lucas-oil,Lucas Oil,US,lubricants,US GB IT DE,f2 f3,visibility,1200000
+omp,OMP Racing,IT,racewear,IT GB DE,f2 f3,technology,800000
+milwaukee,Milwaukee Tool,US,tools,US GB IT DE,f2 f3,technology,920000
+errea,Erreà,IT,teamwear,IT GB DE,f2 f3,visibility,480000
+8js,8JS,FR,travelwear,FR GB IT DE,f2 f3,visibility,220000
+brm,B.R.M Chronographes,FR,watches,FR GB IT DE,f2 f3,hospitality,300000
+koesio,Koesio,FR,office-equipment,FR GB IT DE,f2 f3,technology,350000
+run-aventure,Run Aventure,FR,footwear,FR GB IT DE,f2 f3,markets,150000
+tricorp,Tricorp Workwear,NL,workwear,NL GB IT DE,f2 f3 freca f4-it,technology,480000
+phinsys,Phinsys,GB,insurance-software,GB IT DE,f4-gb,markets,410000
+avl,AVL RACETECH,AT,engineering,AT GB IT DE,f2,technology,1000000
+motul,Motul,FR,lubricants,FR GB IT DE,f4-es,technology,1350000
+liqui-moly,LIQUI MOLY,DE,lubricants,DE GB IT,kart-ok,markets,1350000
+kart-republic,Kart Republic,IT,kart-chassis,IT GB DE,kart-ok kart-okj,juniors,500000
+lamborghini,Lamborghini,IT,automotive,IT DE AT,dtm,technology,1500000
+sudpack,SÜDPACK,DE,packaging,DE AT,dtm,markets,480000
+arburg,ARBURG,DE,machinery,DE AT,dtm,technology,600000
+feser-graf,Feser-Graf,DE,auto-retail,DE AT,dtm,markets,330000
+hr,H&R,DE,suspension,DE AT,dtm,technology,300000
+man,MAN,DE,commercial-vehicles,DE AT,dtm,markets,1100000
+riedel,Riedel Communications,DE,communications,DE AT,dtm,technology,600000
+sabelt,Sabelt,IT,safety-equipment,IT DE AT,dtm,technology,400000
+metzner,Metzner Maschinenbau,DE,machinery,DE AT,dtm,technology,280000
+ford,Ford Performance,US,automotive,US DE AT,dtm,technology,1600000
+windhager,Windhager,AT,heating,AT DE,dtm,markets,400000
+robomarkets,RoboMarkets,CY,brokerage,CY DE AT,dtm,markets,750000
+yukatrack,YUKAtrack,DE,telematics,DE AT,dtm,technology,250000
+ansys,Ansys,US,simulation,US JP FR,wec,technology,1200000
+tag-heuer,TAG Heuer,CH,watches,CH JP FR US,wec,hospitality,1500000
+netapp,NetApp,US,storage-it,US JP FR,wec,technology,1250000
+loctite,LOCTITE,US,adhesives,US JP FR,wec,technology,850000
+multimatic,Multimatic,CA,engineering,CA JP FR US,wec,technology,1000000
+1st-phorm,1st Phorm,US,nutrition,US JP FR,wec,hospitality,650000
+akkodis,Akkodis,CH,engineering,CH JP FR US,wec,hospitality,650000
+vista,Vista,MT,aviation,MT JP FR US,wec,hospitality,650000
+the-bend,The Bend Motorsport Park,AU,circuits,AU JP FR US,wec,hospitality,650000
+point-s,Point S,FR,tyre-retail,FR JP US,wec,markets,650000
+capgemini,Capgemini,FR,enterprise-it,FR JP US,wec,technology,1400000
+fujitsu,Fujitsu,JP,computing,JP FR US,wec,technology,1450000
+aisin,AISIN,JP,drivetrain,JP FR US,wec,technology,950000
+zent,ZENT,JP,entertainment,JP FR US,wec,visibility,550000
+rays,RAYS,JP,wheels,JP FR US,wec,technology,480000
+jfe,JFE Steel,JP,steel,JP FR US,wec,technology,680000
+advics,ADVICS,JP,brakes,JP FR US,wec,technology,600000
+toyota-industries,Toyota Industries,JP,machinery,JP FR US,wec,technology,800000
+hayashi,Hayashi Telempu,JP,interiors,JP FR US,wec,technology,450000
+jal,Japan Airlines,JP,airline,JP FR US,wec,markets,1100000
+nsk,NSK,JP,bearings,JP FR US,wec,technology,650000
+toyota-tsusho,Toyota Tsusho,JP,trading,JP FR US,wec,markets,700000
+togo,Togo Seisakusyo,JP,springs,JP FR US,wec,technology,350000
+maeda,Maeda Shell Service,JP,filtration,JP FR US,wec,technology,320000
+jtekt,JTEKT,JP,steering,JP FR US,wec,technology,650000
+arai-seisakusho,Arai Seisakusho,JP,seals,JP FR US,wec,technology,300000
+toyota-auto-body,Toyota Auto Body,JP,bodywork,JP FR US,wec,technology,700000
+toyoda-gosei,Toyoda Gosei,JP,materials,JP FR US,wec,technology,550000
+daihatsu,Daihatsu,JP,automotive,JP FR US,wec,markets,900000
+tokai-rika,Tokai Rika,JP,electronics,JP FR US,wec,technology,450000
+npr,Nippon Piston Ring,JP,engine-parts,JP FR US,wec,technology,360000
+otics,OTICS,JP,machining,JP FR US,wec,technology,360000
+gentex,Gentex,US,optics,US JP FR,wec,technology,550000
+duracell,Duracell,US,batteries,US GB IT DE,f1,visibility,1400000
+kraken,Kraken,US,crypto-exchange,US GB IT DE,f1,markets,1250000
+adidas,adidas,DE,apparel,DE GB IT,f1,visibility,2000000
+stake,Stake,AU,gaming,AU GB IT DE,f1,visibility,1800000
+kick,KICK,AU,streaming,AU GB IT DE,f1,visibility,1300000
+eni,Eni,IT,fuel,IT GB DE,f1,technology,1600000
+msc,MSC Cruises,CH,cruises,CH GB IT DE,f1,hospitality,1500000
+oakberry,OAKBERRY,BR,food,BR GB IT DE,f1,markets,650000
+mercado-libre,Mercado Libre,AR,ecommerce,AR GB IT DE,f1,markets,1200000
+arctic-wolf,Arctic Wolf,US,cybersecurity,US GB IT DE,f1,technology,1200000
+castore,Castore,GB,teamwear,GB IT DE,f1,visibility,1000000
+modo,MODO Casino,US,gaming,US GB IT DE,f1,visibility,800000
+arm,Arm,GB,semiconductors,GB IT DE,f1,technology,1350000
+maaden,Maaden,SA,mining,SA GB IT DE,f1,markets,1500000
+1password,1Password,CA,cybersecurity,CA GB IT DE,f1,technology,1100000
+okta,Okta,US,identity-software,US GB IT DE,f1,technology,950000
+allwyn,Allwyn,CH,lottery,CH GB IT DE,f1,visibility,1100000
+propcom,Prop.com,NL,trading,NL GB DE,f2,markets,450000
+tgi,TGI AG,LI,precious-metals,LI AT DE,dtm,hospitality,910000
+grapos,Grapos,AT,soft-drinks,AT DE IT,dtm,markets,430000
+mann,MANN-FILTER,DE,filtration,DE GB US,dtm,technology,950000
+winmax,WinmaX,JP,brakes,JP BE DE,dtm,technology,450000
+german-airways,German Airways,DE,airline,DE AT GB,dtm,hospitality,600000
+speedlink,Speedlink,DE,peripherals,DE GB AT,dtm,markets,370000
+meyle,MEYLE,DE,auto-parts,DE GB AT,dtm,technology,630000
