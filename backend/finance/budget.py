@@ -129,6 +129,9 @@ def open_year(state, org, year):
 
 
 def attributable_pay(state, world, org, day):
+    from ..catalog import career_catalog
+
+    world = career_catalog(state, world)
     end = date.fromisoformat(day)
     first = (end - timedelta(days=1)).replace(day=1)
     days = monthrange(first.year, first.month)[1]

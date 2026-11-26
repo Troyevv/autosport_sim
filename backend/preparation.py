@@ -29,6 +29,12 @@ def busy(state, pid, start, end):
 
 
 def eligible(state, world, pid, org, start, end, academy=False):
+    from .driver_availability import unavailable, occupied
+
+    if "lineup" in state and (
+        unavailable(state, pid, start) or occupied(state, pid, start, end)
+    ):
+        return False
     member = state["people"].get(pid) or state["collectives"][pid]
     if member["fatigue"] >= 60 or busy(state, pid, start, end):
         return False

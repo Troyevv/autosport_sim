@@ -580,6 +580,9 @@ def integration(state, world, e):
 
 
 def losses(state, world, org, all_staff=False):
+    from ..catalog import career_catalog
+
+    world = career_catalog(state, world)
     day = state["date"]
     seats = [
         (k, r)

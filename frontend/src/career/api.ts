@@ -87,6 +87,7 @@ export type Person = {
   fatigue: number
 }
 export type Seat = {
+  duty?: string
   academy?:string|null
   id: string
   org: string

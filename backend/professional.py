@@ -344,6 +344,9 @@ def threshold(level):
 
 def record(state, world, event: Activity, *, assignment_day=None):
     """Called inside the producer's transaction. A stable source ID may credit multiple named contributors."""
+    from .catalog import career_catalog
+
+    world = career_catalog(state, world)
     payload = event.model_dump()
     key = event.person + "|" + event.event_id
     log = state["work_log"]
@@ -370,14 +373,36 @@ def record(state, world, event: Activity, *, assignment_day=None):
         state, world, event.person, event.role, event.org, duty_day
     ):
         raise RuleError("Дата или действующее назначение не подтверждают участие.")
+    if "lineup" in state and event.role == "driver":
+        from .driver_availability import unavailable, participant
+
+        if unavailable(state, event.person, duty_day):
+            raise RuleError("Пилот недоступен в дату работы.")
+        if event.kind in ("race", "qualifying") and not any(
+            s["position"] == "driver"
+            and s["entry"]
+            and s["org"] == event.org
+            and (not event.context.series or s["series"] == event.context.series)
+            and participant(state, s["id"], duty_day) == event.person
+            for s in world["assignments"].values()
+        ):
+            raise RuleError("Пилот не входит в фактический состав.")
     p = state["people"].get(event.person) or state["collectives"][event.person]
     if (
         event.context.series
         and event.context.series not in world["organizations"][event.org]["programs"]
     ):
         raise RuleError("Неизвестная программа организации.")
+    substitute = any(
+        r["person"] == event.person
+        and r["start"] <= duty_day < r["end"]
+        and world["assignments"][r["seat"]]["series"] == event.context.series
+        and world["assignments"][r["seat"]]["org"] == event.org
+        for r in state.get("lineup", {}).get("covers", {}).values()
+    )
     if (
         event.context.series
+        and not substitute
         and event.kind in {"race", "practice", "qualifying", "track-test"}
         and not any(
             world["assignments"][aid]["series"] == event.context.series
@@ -387,6 +412,23 @@ def record(state, world, event: Activity, *, assignment_day=None):
         )
     ):
         raise RuleError("Участие в чемпионате не подтверждено назначением.")
+    if (
+        "lineup" in state
+        and event.role == "driver"
+        and event.context.series
+        and event.kind in ("practice", "track-test")
+    ):
+        from .development_path import eligibility
+
+        reason = eligibility(
+            p,
+            world["championships"][event.context.series]["admission"],
+            duty_day,
+            assignment="practice" if event.kind == "practice" else "test",
+            starts=state["starts"].get(event.person, {}).values(),
+        )
+        if reason:
+            raise RuleError(reason)
     prior = log.get(event.person + "|" + (event.context.reviewed or ""))
     if event.kind in ("debrief", "scout-review") and (
         not prior

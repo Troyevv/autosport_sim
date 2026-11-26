@@ -3,7 +3,7 @@
 from dataclasses import dataclass
 from itertools import islice
 
-from ..catalog import WORLD
+from ..catalog import LINEUP_WORLD as WORLD
 from ..storage import dump
 from .facts import INSERT, row
 
@@ -24,6 +24,7 @@ class SourceOffsets:
     work_count: int
     installments: dict
     economic_history: int
+    lineup_history: int
 
 
 def mutable_state(state):
@@ -37,6 +38,7 @@ def mutable_state(state):
             for k, r in state.get("finance", {}).get("instalments", {}).items()
         },
         len(state.get("capital", {}).get("history", [])),
+        len(state.get("lineup", {}).get("history", [])),
     )
 
 
@@ -88,6 +90,18 @@ def refresh(db, cid, state, previous=None, action=None, args=None):
         return emit("driver-result", [pid, session], data["day"], ctx, data)
 
     def records():
+        for decision in state.get("lineup", {}).get("history", [])[
+            previous.lineup_history if previous else 0 :
+        ]:
+            ctx = {k: decision[k] for k in ("org", "entry", "series", "person", "seat")}
+            yield emit(
+                "driver-lineup",
+                [decision["id"]],
+                decision["date"],
+                ctx,
+                decision,
+                access="internal",
+            )
         for r in state.get("capital", {}).get("history", [])[
             previous.economic_history if previous else 0 :
         ]:

@@ -7,6 +7,9 @@ from . import teamwork, media_profile
 
 
 def appointments(state, world):
+    from .catalog import career_catalog
+
+    world = career_catalog(state, world)
     result = defaultdict(list)
     for aid, rows in state["seats"].items():
         a = world["assignments"][aid]
@@ -20,6 +23,9 @@ def appointments(state, world):
 
 
 def dossier(state, world, pid, wet=False):
+    from .catalog import career_catalog
+
+    world = career_catalog(state, world)
     p = state["people"].get(pid)
     if not p:
         raise RuleError("Сотрудник не найден.", 404)
@@ -28,6 +34,10 @@ def dossier(state, world, pid, wet=False):
 
     for row in history:
         if row["org"] != state["setup"]["org"]:
+            for private_term in ("outside_starts", "combined_duties"):
+                row.pop(private_term, None)
+            row.pop("driver_status", None)
+            row.pop("appearance_cents", None)
             row.pop("salary_cents", None)
             row.pop("buyout_cents", None)
     current = [r for r in history if people.active(r, state["date"])]
@@ -43,7 +53,8 @@ def dossier(state, world, pid, wet=False):
     options = []
     for a in world["assignments"].values():
         if (
-            employment.authorized(state, a)
+            a.get("duty") != "relief"
+            and employment.authorized(state, a)
             and a["position"] == p["position"]
             and pid != "player"
         ):
@@ -97,6 +108,11 @@ def dossier(state, world, pid, wet=False):
             for key, result in state["starts"].get(pid, {}).items()
             if result.get("entry")
         ],
+        lineup_history=[
+            r
+            for r in state.get("lineup", {}).get("history", [])
+            if r["person"] == pid and r["org"] == org
+        ][::-1],
         classifications=list(
             p.get("credentials", {}).get("classifications", {}).values()
         ),

@@ -15,6 +15,7 @@ export type Relationship = {
   events: { date: string; outcome: string }[]
 }
 const activities: Record<string, string> = {
+  hierarchy: 'Доверие к менеджеру',
   feedback: 'Обратная связь с инженером',
   strategy: 'Работа со стратегом',
   teammates: 'Напарники',

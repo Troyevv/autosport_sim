@@ -160,6 +160,18 @@ def assess(state, world, p, offer):
                     veto = (
                         "Пилот хочет сохранить место в серии с более высоким допуском."
                     )
+    if "lineup" in state and p["position"] == "driver" and seat["entry"]:
+        from .driver_terms import assessment, LABELS
+
+        status = offer.get("driver_status") or "equal"
+        change, refusal = assessment(
+            state, p, org, status, contract.get("driver_status", "equal")
+        )
+        score += change
+        reasons.append("Предлагаемый статус · " + LABELS[status])
+        if refusal:
+            veto = refusal
+            reasons.append(refusal)
     remit = offer.get("remit", "standard")
     previous_remit = contract.get("remit", "standard")
     if p["position"] != "driver" and remit != previous_remit:

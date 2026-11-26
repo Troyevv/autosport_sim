@@ -41,7 +41,8 @@ def test_starting_grid_and_calendar(series, org, count):
         assert c["garage_configurations"][e["car"]]["geometry"] == (
             "tatuus-t318" if series == "freca" else "tatuus-t421"
         )
-    assert all(a["occupant"] for a in c["assignments"])
+    assert all(a["occupant"] for a in c["assignments"] if not a.get("duty"))
+    assert {a["duty"] for a in c["assignments"] if not a["occupant"]} == {"reserve", "test"}
     assert service.import_save(service.export_save(c["id"]))["crews"] == c["crews"]
 
 

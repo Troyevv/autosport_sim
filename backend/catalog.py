@@ -297,3 +297,34 @@ def load_catalog(*, legacy=False, previous=False, personnel=False):
 
 
 WORLD = load_catalog()
+
+
+def lineup_catalog(world):
+    """Optional posts belong to a career, separately from the published starting grid."""
+    assignments = dict(world["assignments"])
+    for program in world["programs"].values():
+        for duty in ("reserve", "test"):
+            aid = f"{program['id']}:{duty}"
+            assignments[aid] = dict(
+                id=aid,
+                position="driver",
+                org=program["org"],
+                series=program["championship"],
+                entry=None,
+                person=None,
+                duty=duty,
+            )
+    for seat in world["assignments"].values():
+        if seat["position"] == "driver" and seat["entry"]:
+            aid = seat["id"] + ":relief"
+            assignments[aid] = dict(
+                seat, id=aid, entry=None, person=None, duty="relief"
+            )
+    return dict(world, assignments=assignments)
+
+
+LINEUP_WORLD = lineup_catalog(WORLD)
+
+
+def career_catalog(state, world):
+    return LINEUP_WORLD if world is WORLD and "lineup" in state else world
