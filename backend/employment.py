@@ -874,6 +874,7 @@ def assign_support(state, catalog, seat, row, args):
             or terms["maker"] != seat["org"]
             or any(
                 r["org"] == entry["org"]
+                and ("entries" not in r or entry["id"] in r["entries"])
                 and r["series"] == entry["championship"]
                 and r["product"] == product
                 and r["status"] == "signed"
@@ -932,4 +933,5 @@ def assign_support(state, catalog, seat, row, args):
         state["people"][row["person"]]["name"]
         + " · назначен клиенту "
         + catalog["organizations"][entry["org"]]["name"],
+        seat["org"],
     )

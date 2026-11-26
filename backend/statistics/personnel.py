@@ -3,7 +3,7 @@
 from dataclasses import dataclass
 from itertools import islice
 
-from ..catalog import LINEUP_WORLD as WORLD
+from ..catalog import lineup_for
 from ..storage import dump
 from .facts import INSERT, row
 
@@ -45,9 +45,11 @@ def mutable_state(state):
 def refresh(db, cid, state, previous=None, action=None, args=None):
     from ..domain import START, occupant_on
 
+    world = lineup_for(state)
+
     def emit(kind, key, day, ctx, data, access="public", origin="simulation"):
         if ctx.get("org"):
-            ctx = dict(ctx, org_name=WORLD["organizations"][ctx["org"]]["name"])
+            ctx = dict(ctx, org_name=world["organizations"][ctx["org"]]["name"])
         return row(
             cid,
             "domain",
@@ -67,10 +69,10 @@ def refresh(db, cid, state, previous=None, action=None, args=None):
         entry = (
             {}
             if state.get("junior_migrated")
-            else WORLD["entries"].get(data.get("entry"), {})
+            else world["entries"].get(data.get("entry"), {})
         )
-        series = WORLD["championships"].get(data.get("series"), {}) if entry else {}
-        car = WORLD["cars"].get(entry.get("car"), {})
+        series = world["championships"].get(data.get("series"), {}) if entry else {}
+        car = world["cars"].get(entry.get("car"), {})
         ctx = dict(
             person=pid,
             org=data.get("org"),
@@ -85,7 +87,7 @@ def refresh(db, cid, state, previous=None, action=None, args=None):
             program=entry.get("program"),
             regulation=series.get("rules_id"),
             technical_regulation=car.get("regulation"),
-            layout_version=WORLD["version"] if data.get("layout_id") else None,
+            layout_version=world["version"] if data.get("layout_id") else None,
         )
         return emit("driver-result", [pid, session], data["day"], ctx, data)
 
@@ -140,7 +142,7 @@ def refresh(db, cid, state, previous=None, action=None, args=None):
                 if not account:
                     continue
                 owner = account.removeprefix("group:").split(":")[0]
-                if owner in WORLD["organizations"]:
+                if owner in world["organizations"]:
                     ctx = dict(org=owner, contract=term["contract"])
                     yield emit(
                         "financial-obligation",
@@ -159,7 +161,7 @@ def refresh(db, cid, state, previous=None, action=None, args=None):
             ):
                 continue
             seat, pid, start, offer = key
-            a = WORLD["assignments"][seat]
+            a = world["assignments"][seat]
             ctx = dict(
                 person=pid,
                 org=a["org"],
@@ -272,7 +274,7 @@ def refresh(db, cid, state, previous=None, action=None, args=None):
                     origin="initial",
                 )
             for ref, decision in credentials.get("issued", {}).items():
-                entry = WORLD["entries"].get(ref.removesuffix("-admitted-2025"), {})
+                entry = world["entries"].get(ref.removesuffix("-admitted-2025"), {})
                 initial = (
                     ref.endswith("-admitted-2025")
                     and pid in entry.get("crew", ())
@@ -338,7 +340,9 @@ def refresh(db, cid, state, previous=None, action=None, args=None):
             return False
         if "manufacturer" not in state:
             return True
-        from ..catalog import LINEUP_WORLD
+        from ..catalog import lineup_for
+
+        world = lineup_for(state)
         from ..supplier_engineering import agreement
 
         # Older opening assignments encoded the entry in their pinned agreement.
@@ -346,12 +350,8 @@ def refresh(db, cid, state, previous=None, action=None, args=None):
             assignment.get("entry")
             or assignment["agreement"].removeprefix("2025:").rsplit(":", 1)[0]
         )
-        entry = LINEUP_WORLD["entries"].get(entry_id)
-        terms = (
-            agreement(state, LINEUP_WORLD, entry, assignment["product"])
-            if entry
-            else None
-        )
+        entry = world["entries"].get(entry_id)
+        terms = agreement(state, world, entry, assignment["product"]) if entry else None
         return (
             terms
             and terms["maker"] == org

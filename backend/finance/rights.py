@@ -304,12 +304,12 @@ def release_payment(state, term):
         or (deal["advance_cents"] and term["id"] == deal["id"] + ":0")
     ):
         return True
-    from ..catalog import WORLD
+    from ..catalog import base_catalog
 
     if not market.active(deal, state["date"]):
         term.update(status="cancelled", cancelled=state["date"])
         return False
-    checks = audit(state, WORLD, deal)
+    checks = audit(state, base_catalog(state), deal)
     passed = bool(checks) and all(r["fulfilled"] for r in checks)
     if not passed:
         if "withheld" not in term:

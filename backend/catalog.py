@@ -305,6 +305,8 @@ def lineup_catalog(world):
     for program in world["programs"].values():
         for duty in ("reserve", "test"):
             aid = f"{program['id']}:{duty}"
+            if aid in assignments:
+                continue
             assignments[aid] = dict(
                 id=aid,
                 position="driver",
@@ -326,5 +328,21 @@ def lineup_catalog(world):
 LINEUP_WORLD = lineup_catalog(WORLD)
 
 
+from .opening.catalog import extend as opening_catalog  # noqa: E402
+
+SEASON = opening_catalog(WORLD)
+SEASON_LINEUP = lineup_catalog(SEASON)
+
+
+def base_catalog(state):
+    return SEASON if state.get("opening") else WORLD
+
+
+def lineup_for(state):
+    return SEASON_LINEUP if state.get("opening") else LINEUP_WORLD
+
+
 def career_catalog(state, world):
-    return LINEUP_WORLD if world is WORLD and "lineup" in state else world
+    if "lineup" in state:
+        return lineup_for(state)
+    return world

@@ -190,7 +190,7 @@ def participants(world, state=None):
             "tyre",
         }:
             continue
-        country = COUNTRIES[oid.removeprefix("supplier-")]
+        country = r.get("country") or COUNTRIES[oid.removeprefix("supplier-")]
         result[oid] = dict(
             id=oid,
             name=r["name"],
@@ -402,6 +402,7 @@ def contracted_supplier(state, entry, product):
             deal["sponsor"]
             for deal in state["market"]["supplies"].values()
             if deal["org"] == entry["org"]
+            and ("entries" not in deal or entry["id"] in deal["entries"])
             and deal["series"] == entry["championship"]
             and deal["product"] == product
             and deal["status"] == "signed"
@@ -654,11 +655,14 @@ def initialize(state, world, *, legacy=False):
             for row in PARTNERS
         ]
     )
+    aliases = world.get("entrant_operators", {})
     weights = {"title": 8, "principal": 4, "technical": 2, "partner": 1}
     portfolio = Counter()
     for _, org, role, *_ in deals:
-        portfolio[org] += weights[role]
+        portfolio[aliases.get(org, org)] += weights[role]
     for bid, org, role, start, url, series, end in deals:
+        entrant = org
+        org = aliases.get(org, org)
         start = max(start, state["date"])
         if start >= end or state["date"] >= "2026-01-01":
             continue
@@ -702,13 +706,19 @@ def initialize(state, world, *, legacy=False):
             state,
             world,
             t,
-            "partner-2025:" + bid + ":" + org,
+            "partner-2025:" + bid + ":" + entrant,
             url,
             first_due=max(start, "2025-03-31"),
             car_entries=None if legacy else observed_entries(world, org, series, bid),
         )
         if not legacy:
             deal["program_series"] = series
+            if entrant in aliases:
+                deal["car_entries"] = [
+                    e["id"]
+                    for e in world["entries"].values()
+                    if e.get("entrant_id") == entrant and e["championship"] in series
+                ]
 
 
 def sign_supply(state, world, bid, reply, key):

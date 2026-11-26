@@ -24,7 +24,7 @@ export function Overview({ world, c, media }: SectionProps) {
   )
   const photo = entries.map((e) => assetUrl(media, 'car', e.car)).find(Boolean)
   const gridPhoto =
-    series.superlicence && entries[0] && '/assets/garage/2025-v1/grid/' + entries[0].id + '.webp'
+    series.playable !== false && entries[0] && '/assets/garage/2025-v1/grid/' + entries[0].id + '.webp'
   return (
     <section className="screen">
       <Header
@@ -92,7 +92,7 @@ export function Overview({ world, c, media }: SectionProps) {
                 <strong>{world.cars[e.car].name}</strong>
                 <small>
                   {c.role === 'manufacturer'
-                    ? world.organizations[e.org].name
+                    ? e.entrant ?? world.organizations[e.org].name
                     : c.crews[e.id].map((id) => world.names[id]).join(' · ') || 'Вакантно'}
                 </small>
               </span>
@@ -258,13 +258,13 @@ export function Championships({ world, c, media }: SectionProps) {
             cells: [
               e.number,
               <button className="subtle-link org-link" onClick={() => setOrganization(e.org)}>
-                {world.organizations[e.org].name}
+                {e.entrant ?? world.organizations[e.org].name}
               </button>,
               world.cars[e.car].name,
               c.crews[e.id].map((id) => world.names[id]).join(' · ') || 'Вакантно',
               <div className="supplier-links">
-                {Object.values(world.cars[e.car].suppliers).map((id) => (
-                  <button key={id} className="subtle-link org-link" onClick={() => setOrganization(id)}>
+                {Object.entries(world.cars[e.car].suppliers).map(([slot, id]) => (
+                  <button key={slot} title={world.products[slot]?.name} className="subtle-link org-link" onClick={() => setOrganization(id)}>
                     {world.organizations[id].name}
                   </button>
                 ))}
@@ -278,6 +278,8 @@ export function Championships({ world, c, media }: SectionProps) {
           <Facts
             items={[
               ['Организация', profile.kind === 'team' ? 'Гоночная команда' : 'Производитель'],
+              ...(profile.country ? [['Страна программы', world.countries[profile.country] ?? profile.country] as const] : []),
+              ...(profile.base_country ? [['Техническая база', [profile.base, world.countries[profile.base_country]].filter(Boolean).join(', ')] as const] : []),
               ['Чемпионаты', profile.programs.map((id) => world.championships[id].name).join(' · ')],
               ...(profile.lines.length
                 ? [['Продукция', profile.lines.map((line) => world.products[line].name).join(' · ')] as const]

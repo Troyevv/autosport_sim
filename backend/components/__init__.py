@@ -8,7 +8,7 @@ from .. import driver_terms, lineup
 from ..domain import RuleError, occupant_on
 from ..finance.market import supplier_eligible
 from ..staff_input import Fields, Id
-from .catalog import OPENING, VERSION
+from .catalog import parts_for, VERSION
 from .registry import spec
 from .design import assembly, development_margin, LABELS
 
@@ -29,7 +29,7 @@ def initialize(state):
     state.setdefault(
         "components",
         dict(
-            catalog=VERSION,
+            catalog="2025-parts-v2" if state.get("opening") else VERSION,
             since=state["revision"],
             date=state["date"],
             revisions={},
@@ -45,7 +45,7 @@ def initialize(state):
 
 
 def mounting(state, eid):
-    return OPENING.installed[eid] | state["components"]["mounts"].get(eid, {})
+    return parts_for(state).installed[eid] | state["components"]["mounts"].get(eid, {})
 
 
 def condition(state, iid):
@@ -99,12 +99,12 @@ def compatible(
 
         if not installation_dependency(state, entry, drawing):
             return False
-    if drawing["interface"] != OPENING.interfaces[entry["id"]]:
+    if drawing["interface"] != parts_for(state).interfaces[entry["id"]]:
         return False
-    original = OPENING.installed[entry["id"]].get(slot)
+    original = parts_for(state).installed[entry["id"]].get(slot)
     if not original:
         return False
-    rule = OPENING.rules[car["regulation"]]
+    rule = parts_for(state).rules[car["regulation"]]
     certified = drawing["id"] in rule["approved"] or drawing["id"] in state[
         "components"
     ]["admissions"].get(drawing["regulation"], [])
@@ -166,7 +166,7 @@ def stockroom(state, world, entry):
     ]
     return [
         iid
-        for iid in [*OPENING.by_org[org], *additions]
+        for iid in [*parts_for(state).by_org.get(org, ()), *additions]
         if iid not in mounted
         and state.get("production", {})
         .get("items", {})
@@ -491,7 +491,7 @@ def concept_view(state, entry, staff, fitted):
     concept = state["car_configurations"][entry["car"]]["concept"]
     chief = state["people"].get(staff.get("chief-engineer"))
     regulation = state["car_configurations"][entry["car"]]["regulation"]
-    if not chief or not OPENING.rules[regulation]["team_slots"]:
+    if not chief or not parts_for(state).rules[regulation]["team_slots"]:
         return {}
     # The staff report can distinguish coarse bands only. Never project the latent ceiling.
     width = 0.05 if chief["skills"].get("Технические знания", 0) >= 75 else 0.1
@@ -539,9 +539,9 @@ def desk(state, world, eid):
         installation_block=installation_block(state, entry, staff),
         locked_slots=data["locked_slots"].get(eid, {}),
         development=concept_view(state, entry, staff, fitted),
-        policy=OPENING.rules[state["car_configurations"][entry["car"]]["regulation"]][
-            "mode"
-        ],
+        policy=parts_for(state).rules[
+            state["car_configurations"][entry["car"]]["regulation"]
+        ]["mode"],
         assembly=design_estimate(state, fitted),
         since=data["date"],
         specialists={

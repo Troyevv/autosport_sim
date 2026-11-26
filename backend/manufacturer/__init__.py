@@ -3,7 +3,7 @@
 from typing import Literal
 from pydantic import Field
 from .. import components, development, production, programme, research
-from ..components.catalog import OPENING
+from ..components.catalog import parts_for
 from ..components.registry import drawing_for
 from ..domain import RuleError
 from ..staff_input import Fields, Id
@@ -60,7 +60,9 @@ def initialize(state):
     if "market" not in state or state["date"] >= "2026-01-01":
         return
 
-    from ..catalog import LINEUP_WORLD as world
+    from ..catalog import lineup_for
+
+    world = lineup_for(state)
     from ..finance.market import Homologation, homologate
 
     # Verified opening pairs for the factory/client scenarios. #60 owns full coverage.
@@ -103,7 +105,10 @@ def commission(state, world, org, key, order):
     axis = order.axis
     initial = e["supplier_baseline"]
     d = drawing_for(state, order.specification or initial)
-    if d["manufacturer"] != org or d["family"] != OPENING.specs[initial]["family"]:
+    if (
+        d["manufacturer"] != org
+        or d["family"] != parts_for(state).specs[initial]["family"]
+    ):
         raise RuleError("Редакция принадлежит другой программе.", 403)
     if order.action == "research":
         project = research.commission(
@@ -209,6 +214,8 @@ def eligible_stock(state, world, org, e, axis):
         i
         for i in production.inventory(state, org)
         if components.spec(state, i)["slot"] == axis
+        and components.spec(state, i)["interface"]
+        == parts_for(state).interfaces[e["id"]]
         and not delivery_block(state, world, org, e, i)
     )
 
@@ -296,11 +303,11 @@ def lines(world, org, state=None):
 
     for e in world["entries"].values():
         for axis, maker in world["cars"][e["car"]]["suppliers"].items():
-            if axis not in ROLES or axis not in OPENING.installed[e["id"]]:
+            if axis not in ROLES or axis not in parts_for(state).installed[e["id"]]:
                 continue
             if maker == org:
                 yield e, axis
-            elif state and supplier_baseline(e["id"], org, axis):
+            elif state and supplier_baseline(e["id"], org, axis, state):
                 terms = agreement(state, world, e, axis)
                 if terms and terms["maker"] == org:
                     yield e, axis

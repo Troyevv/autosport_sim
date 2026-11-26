@@ -30,6 +30,7 @@ test('Производитель поручает работу КБ и назн�
   await expect(page.getByText('Разработка · В очереди')).toBeVisible()
   await capture('design')
   await button('Консультанты').click()
+  await page.getByLabel('Начало назначения').fill('2025-02-15')
   await page.getByLabel('Окончание назначения').fill('2025-03-01')
   await button('Назначить консультанта').click()
   await expect(page.getByText('Назначение зарегистрировано.')).toBeVisible()

@@ -1,7 +1,7 @@
 """Judgements over published nominal drawings and authorized A/B protocols."""
 
 from .. import components
-from ..components.catalog import OPENING
+from ..components.catalog import parts_for
 from ..components.registry import drawing_for
 from ..development.physics import TRADE
 
@@ -67,7 +67,7 @@ def preferred(state, world, entry, fitted):
     source = state["development"]["projects"].get(fitted.get("reference"), {})
     if source.get("disposition") == "withdrawn" or source.get("findings"):
         base = drawing_for(state, source["baseline"])
-        while base["id"] not in OPENING.specs and not development.released(
+        while base["id"] not in parts_for(state).specs and not development.released(
             state, org, base["id"]
         ):
             base = drawing_for(state, base["parent"])
@@ -83,7 +83,7 @@ def preferred(state, world, entry, fitted):
     }
     best, margin = fitted, 0.0
     for candidate in sorted(candidates):
-        if candidate not in OPENING.specs and not development.released(
+        if candidate not in parts_for(state).specs and not development.released(
             state, org, candidate
         ):
             continue
@@ -119,7 +119,7 @@ def preferred(state, world, entry, fitted):
 def replacement_due(state, iid):
     """The workshop sees mileage, wear and signed rejection, not the simulated design life of a prototype."""
     drawing = components.spec(state, iid)
-    nominal_life = OPENING.specs[drawing["family"] + "/1"]["life_m"]
+    nominal_life = parts_for(state).specs[drawing["family"] + "/1"]["life_m"]
     condition = components.condition(state, iid)
     return (
         condition["damaged"]

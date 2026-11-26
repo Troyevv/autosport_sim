@@ -1,7 +1,7 @@
 """One office projection. Internal documents stay with their engineering owner."""
 
 from .. import components, programme, production
-from ..components.catalog import OPENING
+from ..components.catalog import parts_for
 from ..council import access
 from ..development.physics import estimate
 from . import eligible_stock
@@ -30,16 +30,18 @@ def projection(state, world):
             continue
         for axis in ROLES:
             terms = agreement(state, world, e, axis)
-            if axis not in OPENING.installed[e["id"]]:
+            if axis not in parts_for(state).installed[e["id"]]:
                 continue
-            start = supplier_baseline(e["id"], org, axis) if maker else None
+            start = supplier_baseline(e["id"], org, axis, state) if maker else None
             if (
                 maker
                 and start
                 and start not in catalog
                 and (
-                    OPENING.specs[
-                        OPENING.stock[OPENING.installed[e["id"]][axis]]["spec"]
+                    parts_for(state).specs[
+                        parts_for(state).stock[
+                            parts_for(state).installed[e["id"]][axis]
+                        ]["spec"]
                     ]["manufacturer"]
                     == org
                     or terms
@@ -50,11 +52,11 @@ def projection(state, world):
                 ctx = engineering_entry(state, world, e["id"], org, axis)
                 editions = []
                 for d in [
-                    OPENING.specs[start],
+                    parts_for(state).specs[start],
                     *(
                         d
                         for d in state["components"]["revisions"].values()
-                        if d["family"] == OPENING.specs[start]["family"]
+                        if d["family"] == parts_for(state).specs[start]["family"]
                     ),
                 ]:
                     p = state["development"]["projects"].get(d.get("reference"), {})
@@ -65,7 +67,9 @@ def projection(state, world):
                             title=d["title"],
                             status=p.get("disposition", "opening"),
                             values=parameters(
-                                axis, estimate(state, d), OPENING.specs[start]["life_m"]
+                                axis,
+                                estimate(state, d),
+                                parts_for(state).specs[start]["life_m"],
                             ),
                             forecast=p.get("forecast"),
                             calculations=[
@@ -74,7 +78,7 @@ def projection(state, world):
                                     results=operating_point(
                                         axis,
                                         estimate(state, d),
-                                        OPENING.specs[start]["life_m"],
+                                        parts_for(state).specs[start]["life_m"],
                                         case,
                                     ),
                                 )

@@ -1,6 +1,6 @@
 import type { Livery } from '../garage/model'
 import type { Role } from '../game'
-export type Organization = { playable?: boolean; color: string; id: string; name: string; kind: string; programs: string[]; lines: string[] }
+export type Organization = { country?: string; base_country?: string; base?: string; playable?: boolean; color: string; id: string; name: string; kind: string; programs: string[]; lines: string[] }
 export type Championship = {
   id: string
   name: string
@@ -30,6 +30,7 @@ export type Event = {
   org?: string
 }
 export type World = {
+  entrant_names?: Record<string,string>
   countries: Record<string,string>
   products: Record<string, { name: string }>
   engineering: {
@@ -49,6 +50,7 @@ export type World = {
       org: string
       championship: string
       number: string
+      entrant?: string
       crew: string[]
       car: string
       category: string

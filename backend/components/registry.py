@@ -6,13 +6,13 @@ granting homologation and making physical parts belong to their respective produ
 
 from math import isfinite
 from ..domain import RuleError
-from .catalog import OPENING
+from .catalog import parts_for
 
 
 def drawing_for(state, version):
-    drawing = OPENING.specs.get(version) or state["components"]["revisions"].get(
-        version
-    )
+    drawing = parts_for(state).specs.get(version) or state["components"][
+        "revisions"
+    ].get(version)
     if drawing is None:
         raise RuleError("Неизвестная редакция чертежа.")
     return drawing
@@ -78,7 +78,7 @@ def register_revision(
         parent=parent,
         refinements=base["refinements"] + int(refinement),
     )
-    bind(OPENING.specs, state["components"]["revisions"], key, drawing)
+    bind(parts_for(state).specs, state["components"]["revisions"], key, drawing)
     return key
 
 
@@ -87,7 +87,7 @@ def register_instance(state, *, instance, version, org, reference):
     if org not in state["accounts"] or not instance or not reference:
         raise RuleError("Требуются владелец, экземпляр и основание постановки на учёт.")
     bind(
-        OPENING.stock,
+        parts_for(state).stock,
         state["components"]["inventory"],
         instance,
         dict(spec=version, org=org, reference=reference),
@@ -95,7 +95,7 @@ def register_instance(state, *, instance, version, org, reference):
 
 
 def spec(state, iid):
-    item = OPENING.stock.get(iid) or state["components"]["inventory"].get(iid)
+    item = parts_for(state).stock.get(iid) or state["components"]["inventory"].get(iid)
     if not item:
         raise RuleError("Неизвестный экземпляр.")
     return drawing_for(state, item["spec"])

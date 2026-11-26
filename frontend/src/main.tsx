@@ -42,7 +42,7 @@ function Bootstrap() {
         if (!demo) {
           const opts = { signal: controller.signal }
           const [world, saves, career, media] = await Promise.all([
-            api<World>('world', opts),
+            api<World>(cid ? 'world?career=' + encodeURIComponent(cid) : 'world', opts),
             api<Save[]>('careers', opts),
             cid ? api<Career>('careers/' + encodeURIComponent(cid), opts) : null,
             api<Asset[]>('media', opts),

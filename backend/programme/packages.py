@@ -3,7 +3,7 @@
 from math import ceil
 from ..domain import RuleError
 from .. import components, development, production
-from ..components.catalog import OPENING
+from ..components.catalog import parts_for
 from ..components.design import LABELS
 from ..components.registry import drawing_for
 from ..council import agenda
@@ -555,7 +555,10 @@ def assembly_for(state, world, entry, year):
         ):
             continue
         d = drawing_for(state, p["specification"])
-        if d["interface"] == OPENING.interfaces[entry["id"]] and d["slot"] in selected:
+        if (
+            d["interface"] == parts_for(state).interfaces[entry["id"]]
+            and d["slot"] in selected
+        ):
             selected[d["slot"]] = d["id"]
     return selected
 

@@ -31,7 +31,9 @@ def crew(state, org, inspection):
         (
             g
             for g in state["collectives"].values()
-            if g["org"] == org and g["name"] == name
+            if g["org"] == org
+            and g["name"]
+            in {name, "Инженеры программы" if inspection else "Гоночные механики"}
         ),
         None,
     )

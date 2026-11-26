@@ -1,7 +1,7 @@
 """Resolve the engineering owner separately from the racing entry used for fit checks."""
 
 from functools import lru_cache
-from .components.catalog import OPENING, POLICIES
+from .components.catalog import parts_for, POLICIES
 from .domain import RuleError, occupant_on
 from .finance.market import supplier_eligible
 from .finance.facilities import later
@@ -20,6 +20,7 @@ def agreement(state, world, e, axis, day=None):
         r
         for r in state["market"]["supplies"].values()
         if r["org"] == e["org"]
+        and ("entries" not in r or e["id"] in r["entries"])
         and r["series"] == e["championship"]
         and r["product"] == axis
         and r["start"] <= day
@@ -55,17 +56,18 @@ def agreement(state, world, e, axis, day=None):
 
 
 @lru_cache(maxsize=None)
-def supplier_baseline(eid, org, axis):
-    original = OPENING.installed[eid].get(axis)
+def _baseline(eid, org, axis, edition):
+    state = {"opening": edition}
+    original = parts_for(state).installed[eid].get(axis)
     if not original:
         return None
-    drawing = OPENING.specs[OPENING.stock[original]["spec"]]
+    drawing = parts_for(state).specs[parts_for(state).stock[original]["spec"]]
     if drawing["manufacturer"] == org:
         return drawing["id"]
     return next(
         (
             d["id"]
-            for d in OPENING.specs.values()
+            for d in parts_for(state).specs.values()
             if d["slot"] == axis
             and d["manufacturer"] == org
             and d["interface"] == drawing["interface"]
@@ -73,6 +75,10 @@ def supplier_baseline(eid, org, axis):
         ),
         None,
     )
+
+
+def supplier_baseline(eid, org, axis, state=None):
+    return _baseline(eid, org, axis, (state or {}).get("opening"))
 
 
 def engineering_entry(state, world, eid, org, axis):
@@ -87,7 +93,7 @@ def engineering_entry(state, world, eid, org, axis):
         or axis not in maker["lines"]
     ):
         raise RuleError("Направление находится вне полномочий организации.", 403)
-    base = supplier_baseline(eid, org, axis)
+    base = supplier_baseline(eid, org, axis, state)
     if not base:
         raise RuleError(
             "У производителя нет исходного чертежа для этого интерфейса.", 403

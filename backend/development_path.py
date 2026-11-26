@@ -28,7 +28,7 @@ def initialize(state, world):
             if world["championships"][a["series"]].get("superlicence"):
                 if licence == "ITF" and 2025 - int(p["birth_date"][:4]) >= 16:
                     licence = "ITE"
-                reference = a["entry"] + "-admitted-2025"
+                reference = (a["entry"] or a["id"]) + "-admitted-2025"
                 p["credentials"].update(
                     licences=[],
                     issued={

@@ -10,7 +10,7 @@ from . import domain, storage, finance
 from .finance.events import PRODUCERS
 from .finance import market, rights, budget, economy, capital, facilities
 from .livery import GARAGE, PaintOrder
-from .catalog import VERSION, WORLD, LINEUP_WORLD
+from .catalog import VERSION, WORLD, SEASON, base_catalog, lineup_for
 from . import (
     manufacturer,
     lineup,
@@ -207,7 +207,7 @@ def list_careers():
 def project(db, cid, state):
     from . import teamwork
 
-    world = LINEUP_WORLD if "lineup" in state else WORLD
+    world = lineup_for(state) if "lineup" in state else base_catalog(state)
     org = state["setup"]["org"]
     people = []
     for aid in sorted(world["assignments"]):
@@ -318,17 +318,17 @@ def project(db, cid, state):
     )
 
 
-def create(spec):
+def create(spec, *, catalog=SEASON):
     with storage.transaction(True) as db:
         setup = spec.model_dump(exclude_none=True)
-        state = domain.new_world(WORLD, setup)
-        finance.activate(state, WORLD)
-        market.initialize(state, WORLD)
-        budget.initialize(state, WORLD, state["ledger"])
-        facilities.initialize(state, WORLD)
-        capital.initialize(state, WORLD)
-        economy.initialize(state, WORLD)
-        lineup.terms.initialize(state, LINEUP_WORLD)
+        state = domain.new_world(catalog, setup)
+        finance.activate(state, base_catalog(state))
+        market.initialize(state, base_catalog(state))
+        budget.initialize(state, base_catalog(state), state["ledger"])
+        facilities.initialize(state, base_catalog(state))
+        capital.initialize(state, base_catalog(state))
+        economy.initialize(state, base_catalog(state))
+        lineup.terms.initialize(state, lineup_for(state))
         components.initialize(state)
         research.initialize(state)
         development.initialize(state)
@@ -336,6 +336,10 @@ def create(spec):
         council.initialize(state)
         programme.initialize(state)
         manufacturer.initialize(state)
+        if state.get("opening"):
+            from .opening.population import populate
+
+            populate(state, lineup_for(state))
         cid = str(uuid4())
         storage.store(db, cid, state, create=True)
         statistics_personnel.refresh(db, cid, state)
@@ -378,30 +382,30 @@ def execute(cid, command):
             prior_events = len(state.get("development", {}).get("history", []))
             prior_reports = set(state["research"]["reports"])
             previous = statistics_personnel.mutable_state(state)
-            domain.apply(state, WORLD, command.action, args)
+            domain.apply(state, base_catalog(state), command.action, args)
             from .manufacturer.history import write_fact as maker_fact
 
             for event in state["manufacturer"]["events"][prior_maker:]:
-                maker_fact(db, cid, state, LINEUP_WORLD, event)
+                maker_fact(db, cid, state, lineup_for(state), event)
             for event in state.get("programme", {}).get("decisions", [])[
                 prior_programme:
             ]:
-                programme.write_fact(db, cid, LINEUP_WORLD, event)
+                programme.write_fact(db, cid, lineup_for(state), event)
             for event in state.get("council", {}).get("history", [])[prior_council:]:
-                council.write_fact(db, cid, state, LINEUP_WORLD, event)
+                council.write_fact(db, cid, state, lineup_for(state), event)
             for event in state.get("development", {}).get("history", [])[prior_events:]:
-                development.write_fact(db, cid, state, LINEUP_WORLD, event)
+                development.write_fact(db, cid, state, lineup_for(state), event)
             for event in state.get("production", {}).get("history", [])[
                 prior_production:
             ]:
-                production.write_fact(db, cid, state, LINEUP_WORLD, event)
+                production.write_fact(db, cid, state, lineup_for(state), event)
             for event in state["components"]["history"][prior_fits:]:
-                components.write_install_fact(db, cid, state, LINEUP_WORLD, event)
+                components.write_install_fact(db, cid, state, lineup_for(state), event)
             statistics_personnel.refresh(db, cid, state, previous, command.action, args)
             if command.action == "advance":
                 for key, report in state["research"]["reports"].items():
                     if key not in prior_reports:
-                        research.write_fact(db, cid, LINEUP_WORLD, report)
+                        research.write_fact(db, cid, lineup_for(state), report)
                 from datetime import date
                 from .statistics.telemetry import get_policy, prune
 
@@ -521,6 +525,12 @@ def import_save(document, *, statistics_records=None):
             type(junior_since) is not int or not 0 <= junior_since <= saved["revision"]
         ):
             raise ValueError
+        if (
+            saved.get("opening") not in (None, SEASON["opening"])
+            or saved.get("opening")
+            and not native
+        ):
+            raise ValueError
         if modern and (
             type(activation) is not int or not 0 <= activation <= saved["revision"]
         ):
@@ -548,7 +558,13 @@ def import_save(document, *, statistics_records=None):
             raise ValueError
         from .professional import activate
 
-        catalog = WORLD if native else original_world() if legacy else previous_world()
+        catalog = (
+            base_catalog(saved)
+            if native
+            else original_world()
+            if legacy
+            else previous_world()
+        )
         commands = payload["commands"]
         if not isinstance(commands, list):
             raise ValueError
@@ -590,7 +606,7 @@ def import_save(document, *, statistics_records=None):
                 economy.initialize(state, catalog)
 
             if saved.get("lineup", {}).get("since") == state["revision"]:
-                lineup.terms.initialize(state, LINEUP_WORLD)
+                lineup.terms.initialize(state, lineup_for(state))
 
             if saved.get("components", {}).get("since") == state["revision"]:
                 components.initialize(state)
@@ -607,6 +623,10 @@ def import_save(document, *, statistics_records=None):
                 programme.initialize(state)
             if saved.get("manufacturer", {}).get("since") == state["revision"]:
                 manufacturer.initialize(state)
+                if state.get("opening") and state["revision"] == 0:
+                    from .opening.population import populate
+
+                    populate(state, lineup_for(state))
 
         for original in commands:
             item = original
@@ -658,14 +678,14 @@ def import_save(document, *, statistics_records=None):
             state = upgrade_personnel(state)
         if not expanded:
             upgrade_juniors(state)
-        finance.activate(state, WORLD, state["ledger"])
-        market.initialize(state, WORLD)
-        budget.initialize(state, WORLD, state["ledger"])
-        facilities.initialize(state, WORLD)
-        capital.initialize(state, WORLD)
-        economy.initialize(state, WORLD)
+        finance.activate(state, base_catalog(state), state["ledger"])
+        market.initialize(state, base_catalog(state))
+        budget.initialize(state, base_catalog(state), state["ledger"])
+        facilities.initialize(state, base_catalog(state))
+        capital.initialize(state, base_catalog(state))
+        economy.initialize(state, base_catalog(state))
         facilities.migrate(state)
-        lineup.terms.initialize(state, LINEUP_WORLD)
+        lineup.terms.initialize(state, lineup_for(state))
         components.initialize(state)
         research.initialize(state)
         development.initialize(state)
@@ -686,19 +706,19 @@ def import_save(document, *, statistics_records=None):
         from .manufacturer.history import write_fact as maker_fact
 
         for event in state["manufacturer"]["events"]:
-            maker_fact(db, cid, state, LINEUP_WORLD, event)
+            maker_fact(db, cid, state, lineup_for(state), event)
         for event in state["programme"]["decisions"]:
-            programme.write_fact(db, cid, LINEUP_WORLD, event)
+            programme.write_fact(db, cid, lineup_for(state), event)
         for event in state["council"]["history"]:
-            council.write_fact(db, cid, state, LINEUP_WORLD, event)
+            council.write_fact(db, cid, state, lineup_for(state), event)
         for event in state["production"]["history"]:
-            production.write_fact(db, cid, state, LINEUP_WORLD, event)
+            production.write_fact(db, cid, state, lineup_for(state), event)
         for event in state["development"]["history"]:
-            development.write_fact(db, cid, state, LINEUP_WORLD, event)
+            development.write_fact(db, cid, state, lineup_for(state), event)
         for report in state["research"]["reports"].values():
-            research.write_fact(db, cid, LINEUP_WORLD, report)
+            research.write_fact(db, cid, lineup_for(state), report)
         for event in state["components"]["history"]:
-            components.write_install_fact(db, cid, state, LINEUP_WORLD, event)
+            components.write_install_fact(db, cid, state, lineup_for(state), event)
         from .statistics.archive import restore
 
         if statistics_records is not None and "statistics_v1" in payload:

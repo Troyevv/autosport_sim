@@ -263,7 +263,9 @@ def activate(state):
             )
         if p["position"] == "driver":
             p["reaction"] = p["skills"]["Старт"]
-    from .catalog import WORLD
+    from .catalog import base_catalog
+
+    world = base_catalog(state)
 
     for aid, rows in state["seats"].items():
         for row in rows:
@@ -271,7 +273,7 @@ def activate(state):
                 "agreed_end",
                 state["offers"].get(row.get("offer"), {}).get("end", row["end"]),
             )
-            row.setdefault("position", WORLD["assignments"][aid]["position"])
+            row.setdefault("position", world["assignments"][aid]["position"])
 
 
 GROUP_SKILLS = {
