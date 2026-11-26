@@ -3,7 +3,7 @@ lucas-oil,Lucas Oil,US,lubricants,US GB IT DE,f2 f3,visibility,1200000
 omp,OMP Racing,IT,racewear,IT GB DE,f2 f3,technology,800000
 milwaukee,Milwaukee Tool,US,tools,US GB IT DE,f2 f3,technology,920000
 errea,Erreà,IT,teamwear,IT GB DE,f2 f3,visibility,480000
-8js,8JS,FR,travelwear,FR GB IT DE,f2 f3,visibility,220000
+8js,8JS,CH,travelwear,CH GB IT DE,f2 f3,visibility,220000
 brm,B.R.M Chronographes,FR,watches,FR GB IT DE,f2 f3,hospitality,300000
 koesio,Koesio,FR,office-equipment,FR GB IT DE,f2 f3,technology,350000
 run-aventure,Run Aventure,FR,footwear,FR GB IT DE,f2 f3,markets,150000
@@ -21,7 +21,7 @@ hr,H&R,DE,suspension,DE AT,dtm,technology,300000
 man,MAN,DE,commercial-vehicles,DE AT,dtm,markets,1100000
 riedel,Riedel Communications,DE,communications,DE AT,dtm,technology,600000
 sabelt,Sabelt,IT,safety-equipment,IT DE AT,dtm,technology,400000
-metzner,Metzner Maschinenbau,DE,machinery,DE AT,dtm,technology,280000
+metzner,Metzner Software Engineering,DE,engineering-software,DE AT,dtm,technology,280000
 ford,Ford Performance,US,automotive,US DE AT,dtm,technology,1600000
 windhager,Windhager,AT,heating,AT DE,dtm,markets,400000
 robomarkets,RoboMarkets,CY,brokerage,CY DE AT,dtm,markets,750000
@@ -84,3 +84,8 @@ winmax,WinmaX,JP,brakes,JP BE DE,dtm,technology,450000
 german-airways,German Airways,DE,airline,DE AT GB,dtm,hospitality,600000
 speedlink,Speedlink,DE,peripherals,DE GB AT,dtm,markets,370000
 meyle,MEYLE,DE,auto-parts,DE GB AT,dtm,technology,630000
+mclaren-auto,McLaren Automotive,GB,automotive,GB FR US,wec,technology,950000
+corvette,Corvette Racing,US,automotive,US FR GB,wec,technology,950000
+aston-martin,Aston Martin,GB,automotive,GB FR US,wec,technology,1000000
+cheops,Cheops Technology,FR,enterprise-it,FR BE GB,wec,technology,650000
+joyn,Joyn,DE,streaming,DE AT,dtm,visibility,650000

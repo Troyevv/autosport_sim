@@ -15,6 +15,7 @@ from . import (
     Instalment,
     Schedule,
     available,
+    sponsorship_spend,
     post,
     register,
     settle,
@@ -517,9 +518,18 @@ def sign_sponsor(
             ("driver:" + terms.person) if terms.person else ("academy:" + terms.academy)
         )
         state["finance"]["pockets"].setdefault(receiver, 0)
-    register(
-        state, Schedule(installments=installments(terms, key, receiver, first_due))
-    )
+    schedule = installments(terms, key, receiver, first_due)
+    if state["market"].get("catalog") == 2:
+        annual = Counter()
+        for row in schedule:
+            annual[row.due[:4]] += row.amount_cents
+        for year, amount in annual.items():
+            committed = sponsorship_spend(
+                state, payer(terms.sponsor), year, include_pending=True
+            )
+            if committed + amount > state["market"]["budgets"][terms.sponsor]:
+                raise RuleError("График выплат превышает годовой бюджет партнёра.", 409)
+    register(state, Schedule(installments=schedule))
     row = dict(
         **terms.model_dump(),
         id=key,
@@ -536,13 +546,7 @@ def sign_sponsor(
     return row
 
 
-def season_deals(world):
-    for bid, org, role, start, source in PARTNERS:
-        series = world["organizations"][org]["programs"][:1]
-        if org == "team-hitech-tgr":
-            series = ["f2", "f3", "f4-gb"]
-            source = "https://www.hitechgp.co.uk/about/"
-        yield bid, org, role, start, source, series
+def season_deals():
     for group in SEASON_GROUPS:
         for brand, role in group["partners"].items():
             yield (
@@ -552,6 +556,7 @@ def season_deals(world):
                 group["start"],
                 group["source"],
                 group["series"],
+                group.get("end", "2026-01-01"),
             )
 
 
@@ -626,19 +631,20 @@ def initialize(state, world, *, legacy=False):
             min_popularity=30 + seed % 35,
         )
     deals = (
-        list(season_deals(world))
+        list(season_deals())
         if not legacy
         else [
-            (*row, world["organizations"][row[1]]["programs"][:1]) for row in PARTNERS
+            (*row, world["organizations"][row[1]]["programs"][:1], "2026-01-01")
+            for row in PARTNERS
         ]
     )
     weights = {"title": 8, "principal": 4, "technical": 2, "partner": 1}
     portfolio = Counter()
     for _, org, role, *_ in deals:
         portfolio[org] += weights[role]
-    for bid, org, role, start, url, series in deals:
+    for bid, org, role, start, url, series, end in deals:
         start = max(start, state["date"])
-        if start >= "2026-01-01":
+        if start >= end or state["date"] >= "2026-01-01":
             continue
         amount = min(
             book["budgets"][bid] // 5, state["accounts"][org]["payroll_cents"] * 2
@@ -652,13 +658,15 @@ def initialize(state, world, *, legacy=False):
                 * weights[role]
                 // portfolio[org],
             )
+            days = (date.fromisoformat(end) - date.fromisoformat(start)).days
+            amount = max(1, amount * min(334, days) // 334)
         t = Terms(
             sponsor=bid,
             org=org,
             series=series[0],
             role=role,
             start=start,
-            end="2026-01-01",
+            end=end,
             fixed_cents=amount,
             advance_cents=0,
             interval=3,
@@ -666,9 +674,10 @@ def initialize(state, world, *, legacy=False):
             podium=3,
             rights=[],
             exclusive=legacy or role == "title",
-            appearances=2,
+            appearances=0 if end < "2026-01-01" else 2,
             reputation=30,
             compensation_cents=amount // 8,
+            renew=end >= "2026-01-01",
         )
         from .rights import start_rights, observed_entries
 

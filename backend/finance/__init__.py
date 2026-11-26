@@ -159,11 +159,14 @@ def indexed(state):
     rows = state.get("finance", {}).get("instalments", {})
     by_payer = defaultdict(list)
     active = {}
+    sponsorship = defaultdict(list)
     for k, r in rows.items():
+        if r["category"] == "sponsorship":
+            sponsorship[r["payer"]].append(r)
         if r["status"] == "pending":
             active[k] = r
             by_payer[r["payer"]].append(r)
-    token = _index.set((rows, active, by_payer))
+    token = _index.set((rows, active, by_payer, sponsorship))
     try:
         yield
     finally:
@@ -181,6 +184,26 @@ def pending(state, payer=None):
         r
         for r in source
         if r["status"] == "pending" and (payer is None or r["payer"] == payer)
+    )
+
+
+def sponsorship_spend(state, account, year, *, include_pending):
+    """Paid and optionally scheduled marketing expenditure in the given calendar year."""
+    rows = state["finance"]["instalments"]
+    index = _index.get()
+    records = index[3].get(account, ()) if index and index[0] is rows else rows.values()
+    return sum(
+        r["amount_cents"]
+        for r in records
+        if r["payer"] == account
+        and r["category"] == "sponsorship"
+        and (
+            r["status"] == "paid"
+            and r["paid"][:4] == year
+            or include_pending
+            and r["status"] == "pending"
+            and r["due"][:4] == year
+        )
     )
 
 
@@ -267,6 +290,8 @@ def register(state, schedule: Schedule):
         index[1].update(new)
         for r in new.values():
             index[2][r["payer"]].append(r)
+            if r["category"] == "sponsorship":
+                index[3][r["payer"]].append(r)
 
 
 def settle(state):
@@ -293,6 +318,15 @@ def settle(state):
         if r["category"] == "sponsorship" and "market" in state:
             from .rights import release_payment
 
+            if state["market"].get("catalog") == 2:
+                deal = state["market"]["contracts"].get(r["contract"])
+                if deal:
+                    limit = state["market"]["budgets"][deal["sponsor"]]
+                    paid = sponsorship_spend(
+                        state, r["payer"], day[:4], include_pending=False
+                    )
+                    if paid + r["amount_cents"] > limit:
+                        continue  # The earned liability remains payable next period.
             if not release_payment(state, r):
                 continue
         if available(state, r["payer"], ignore=r["id"]) < r["amount_cents"]:

@@ -31,7 +31,13 @@ type Inventory = {
   quotes: Record<string, Record<string, Quote>>
   staff: number
   processes: Record<string, string>
-  windows: { process: string; installed_slots: number; available_slots: number; effective_person_days_x100: number; confirmed_queue: string[] }[]
+  windows: {
+    process: string
+    installed_slots: number
+    available_slots: number
+    effective_person_days_x100: number
+    confirmed_queue: string[]
+  }[]
   assets: Asset[]
   bookings: {
     id: string
@@ -45,12 +51,17 @@ type Inventory = {
   }[]
 }
 const operations: Record<string, string> = {
-  research: 'Исследования', development: 'Разработка', production: 'Производство',
-  testing: 'Испытания', inspection: 'Контроль качества', storage: 'Хранение',
-  engineering: 'Испытания', preparation: 'Подготовка персонала',
+  research: 'Исследования',
+  development: 'Разработка',
+  production: 'Производство',
+  testing: 'Испытания',
+  inspection: 'Контроль качества',
+  storage: 'Хранение',
+  engineering: 'Испытания',
+  preparation: 'Подготовка персонала',
 }
-const modes: Record<string, string> = {lease: 'Аренда', outsource: 'Аутсорсинг', use: 'Выделение мощности'}
-const personDays = (value: number) => (value / 100).toLocaleString('ru-RU', {maximumFractionDigits: 2})
+const modes: Record<string, string> = { lease: 'Аренда', outsource: 'Аутсорсинг', use: 'Выделение мощности' }
+const personDays = (value: number) => (value / 100).toLocaleString('ru-RU', { maximumFractionDigits: 2 })
 const states: Record<string, string> = {
   active: 'В эксплуатации',
   construction: 'Строительство',
@@ -63,7 +74,8 @@ export function Facilities({ c, world, updateCareer }: SectionProps & { updateCa
   const [tab, setTab] = useState('Организация'),
     [dialog, open] = useState<Asset | 'build' | null>(null),
     [kind, select] = useState('simulator'),
-    [country, locate] = useState('GB')
+    [country, locate] = useState('GB'),
+    [assetFilter, filterAssets] = useState('')
   const q = v?.quotes[kind][country]
   async function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -117,18 +129,35 @@ export function Facilities({ c, world, updateCareer }: SectionProps & { updateCa
         >
           {tab === 'Мощности' ? (
             <div className="panel-body">
-              <p className="muted">Доступно на {c.date} с учётом аренды, бронирований, занятости коллективов и состояния оборудования.</p>
-              {v.windows.map((pool) => (
-                <section key={pool.process}>
-                  <h3>{operations[pool.process]}</h3>
-                  <Facts items={[
-                    ['Собственные проектные места', pool.installed_slots],
-                    ['Свободные места с учётом аренды', pool.available_slots],
-                    ['Доступно за день, чел.-дн.', personDays(pool.effective_person_days_x100)],
-                    ['Заказы в работе', pool.confirmed_queue.length],
-                  ]} />
-                </section>
-              ))}
+              <p className="muted">
+                Доступно на {c.date} с учётом аренды, бронирований, занятости коллективов и состояния
+                оборудования.
+              </p>
+              <div className="capacity-grid">
+                {v.windows.map((pool) => (
+                  <section className="capacity-card" key={pool.process}>
+                    <h3>{operations[pool.process]}</h3>
+                    <Facts
+                      items={[
+                        ['Собственные проектные места', pool.installed_slots],
+                        ['Свободные места с учётом аренды', pool.available_slots],
+                        ['Доступно за день, чел.-дн.', personDays(pool.effective_person_days_x100)],
+                        ['Заказы в работе', pool.confirmed_queue.length],
+                      ]}
+                    />
+                    <Button
+                      onClick={() => {
+                        filterAssets(
+                          Object.keys(v.processes).find((k) => v.processes[k] === pool.process) ?? '',
+                        )
+                        setTab('Аренда и аутсорсинг')
+                      }}
+                    >
+                      Подобрать объект
+                    </Button>
+                  </section>
+                ))}
+              </div>
             </div>
           ) : tab === 'Бронирования' ? (
             v.bookings.length ? (
@@ -137,7 +166,8 @@ export function Facilities({ c, world, updateCareer }: SectionProps & { updateCa
                   <span>
                     <strong>{v.types[v.assets.find((a) => a.id === b.facility)?.kind ?? '']}</strong>
                     <small>
-                      {modes[b.mode]} · {b.purpose && operations[b.purpose]} {b.start} — {b.end} · {b.units} ед.
+                      {modes[b.mode]} · {b.purpose && operations[b.purpose]} {b.start} — {b.end} · {b.units}{' '}
+                      ед.
                     </small>
                   </span>
                   {money(b.cost_cents)}
@@ -151,9 +181,26 @@ export function Facilities({ c, world, updateCareer }: SectionProps & { updateCa
               {tab === 'Организация' && (
                 <p className="panel-body">Доступный штат коллективов · {v.staff} чел.</p>
               )}
+              {tab === 'Аренда и аутсорсинг' && (
+                <div className="finance-tools">
+                  <label>
+                    Тип объекта
+                    <select value={assetFilter} onChange={(e) => filterAssets(e.target.value)}>
+                      <option value="">Все типы</option>
+                      {Object.entries(v.types).map(([k, n]) => (
+                        <option key={k} value={k}>
+                          {n}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                </div>
+              )}
               {v.assets
                 .filter((a) =>
-                  tab === 'Организация' ? a.owner === c.org : a.owner !== c.org && a.status === 'active',
+                  tab === 'Организация'
+                    ? a.owner === c.org
+                    : a.owner !== c.org && a.status === 'active' && (!assetFilter || assetFilter === a.kind),
                 )
                 .map((a) => (
                   <div className="result rights-row" key={a.id}>
@@ -173,7 +220,11 @@ export function Facilities({ c, world, updateCareer }: SectionProps & { updateCa
                           ? 'Оценка ' + money(a.book_cents) + ' · состояние ' + a.condition + '%'
                           : 'Ставка ' + money(a.daily_cents) + '/сут.'}
                       </small>
-                      {a.status === 'active' && <small>Уровень {a.level} · {personDays(a.effective_person_days_x100)} чел.-дн. в сутки</small>}
+                      {a.status === 'active' && (
+                        <small>
+                          Уровень {a.level} · {personDays(a.effective_person_days_x100)} чел.-дн. в сутки
+                        </small>
+                      )}
                     </span>
                     {a.status === 'active' && (a.owner !== c.org || c.role !== 'manager') && (
                       <Button

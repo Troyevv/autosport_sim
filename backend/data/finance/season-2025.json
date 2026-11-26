@@ -1,5 +1,151 @@
 [
   {
+    "org": "team-scuderia-ferrari",
+    "series": [
+      "f1"
+    ],
+    "start": "2025-02-01",
+    "source": "https://www.ferrari.com/content/dam/ferrari-fcom/old/pdf/Partnership20Release_04242420FINAL_ENG.pdf",
+    "partners": {
+      "hp": "title"
+    }
+  },
+  {
+    "org": "team-mclaren-formula-1-team",
+    "series": [
+      "f1"
+    ],
+    "start": "2025-02-01",
+    "source": "https://www.mclaren.com/racing/formula-1/2024/mclaren-racing-and-google-announce-partnership-expansion/",
+    "partners": {
+      "chrome": "technical"
+    }
+  },
+  {
+    "org": "team-williams-racing",
+    "series": [
+      "f1"
+    ],
+    "start": "2025-02-11",
+    "source": "https://www.williamsf1.com/articles/a9f04a92-c632-4234-b09d-b985a4e9f0e0/williams-and-atlassian-announce-title-partnership-to-form-atlassian-williams-racing",
+    "partners": {
+      "atlassian": "title"
+    }
+  },
+  {
+    "org": "team-abt-sportsline",
+    "series": [
+      "dtm"
+    ],
+    "start": "2025-02-01",
+    "source": "https://dtm.com/en/news/Abt-Sportsline-lines-up-with-the-DTM-title-holder-and-a-world-champion",
+    "partners": {
+      "redbull": "principal"
+    }
+  },
+  {
+    "org": "team-cadillac-hertz-team-jota",
+    "series": [
+      "wec"
+    ],
+    "start": "2025-02-01",
+    "source": "https://www.fiawec.com/en/news/covers-come-off-first-cadillac-hertz-team-jota-hypercar/8186",
+    "partners": {
+      "hertz": "title"
+    }
+  },
+  {
+    "org": "team-porsche-penske-motorsport",
+    "series": [
+      "wec"
+    ],
+    "start": "2025-02-01",
+    "source": "https://newsroom.porsche.com/en/2025/motorsports/porsche-fia-wec-race-4-le-mans-strong-partners-39758.html",
+    "partners": {
+      "mobil-1": "technical"
+    }
+  },
+  {
+    "org": "team-hitech-tgr",
+    "series": [
+      "f2",
+      "f3",
+      "f4-gb"
+    ],
+    "start": "2025-02-01",
+    "source": "https://www.hitechgp.co.uk/about/",
+    "partners": {
+      "supplier-toyota": "technical"
+    }
+  },
+  {
+    "org": "team-oracle-red-bull-racing",
+    "series": [
+      "f1"
+    ],
+    "start": "2025-02-01",
+    "source": "https://www.formula1.com/en/latest/article/in-photos-every-2025-f1-car-livery-after-their-spectacular-f1-75-live.2BZTh37ifdxAASqub3X1HK",
+    "partners": {
+      "oracle": "title"
+    }
+  },
+  {
+    "org": "team-aston-martin-aramco-f1-team",
+    "series": [
+      "f1"
+    ],
+    "start": "2025-02-01",
+    "source": "https://www.formula1.com/en/latest/article/in-photos-every-2025-f1-car-livery-after-their-spectacular-f1-75-live.2BZTh37ifdxAASqub3X1HK",
+    "partners": {
+      "aramco": "title"
+    }
+  },
+  {
+    "org": "team-bwt-alpine-f1-team",
+    "series": [
+      "f1"
+    ],
+    "start": "2025-02-01",
+    "source": "https://www.formula1.com/en/latest/article/in-photos-every-2025-f1-car-livery-after-their-spectacular-f1-75-live.2BZTh37ifdxAASqub3X1HK",
+    "partners": {
+      "bwt": "title"
+    }
+  },
+  {
+    "org": "team-mercedes-amg-petronas-f1-team",
+    "series": [
+      "f1"
+    ],
+    "start": "2025-02-01",
+    "source": "https://www.formula1.com/en/latest/article/in-photos-every-2025-f1-car-livery-after-their-spectacular-f1-75-live.2BZTh37ifdxAASqub3X1HK",
+    "partners": {
+      "petronas": "title"
+    }
+  },
+  {
+    "org": "team-visa-cash-app-racing-bulls",
+    "series": [
+      "f1"
+    ],
+    "start": "2025-02-01",
+    "source": "https://www.formula1.com/en/latest/article/in-photos-every-2025-f1-car-livery-after-their-spectacular-f1-75-live.2BZTh37ifdxAASqub3X1HK",
+    "partners": {
+      "visa": "title",
+      "cash-app": "principal"
+    }
+  },
+  {
+    "org": "team-moneygram-haas-f1-team",
+    "series": [
+      "f1"
+    ],
+    "start": "2025-02-01",
+    "source": "https://www.formula1.com/en/latest/article/in-photos-every-2025-f1-car-livery-after-their-spectacular-f1-75-live.2BZTh37ifdxAASqub3X1HK",
+    "partners": {
+      "moneygram": "title"
+    }
+  },
+  {
     "org": "team-dams-lucas-oil",
     "series": [
       "f2",
@@ -560,5 +706,129 @@
       "meyle": "partner"
     },
     "additional_source": "https://www.meyle.com/en/about-us/motorsport/dtm"
+  },
+  {
+    "org": "team-iron-lynx",
+    "series": [
+      "wec"
+    ],
+    "start": "2025-02-01",
+    "source": "https://www.ironlynx.com/news/iron-lynx-joins-forces-with-mercedes-amg-for-2025-fia-wec-programme/",
+    "evidence": "Iron Lynx и Mercedes-AMG объявляют совместную программу LMGT3.",
+    "partners": {
+      "supplier-mercedes": "technical"
+    }
+  },
+  {
+    "org": "team-iron-dames",
+    "series": [
+      "wec"
+    ],
+    "start": "2025-02-01",
+    "source": "https://newsroom.porsche.com/en_US/2024/motorsport/porsche-iron-dames-collaboration-project-development-38013.html",
+    "evidence": "Техническое партнёрство Porsche и Iron Dames охватывает WEC 2025.",
+    "partners": {
+      "supplier-porsche": "technical"
+    }
+  },
+  {
+    "org": "team-united-autosports",
+    "series": [
+      "wec"
+    ],
+    "start": "2025-02-01",
+    "source": "https://www.fiawec.com/en/news/united-autosports-joins-papaya-party-with-statement-look-for-milestone-mclaren-campaign/8207",
+    "evidence": "McLaren Automotive называет United Autosports своим гоночным партнёром в WEC.",
+    "partners": {
+      "mclaren-auto": "technical"
+    }
+  },
+  {
+    "org": "team-tf-sport",
+    "series": [
+      "wec"
+    ],
+    "start": "2025-02-01",
+    "source": "https://www.tfsport.co.uk/news-details.php?id=309",
+    "evidence": "TF Sport и Corvette Racing подтверждают совместную программу 2025.",
+    "partners": {
+      "corvette": "technical"
+    }
+  },
+  {
+    "org": "team-bmw-m-team-wrt",
+    "series": [
+      "wec"
+    ],
+    "start": "2025-02-01",
+    "source": "https://www.w-racingteam.com/racing/wrt",
+    "evidence": "WRT выступает официальной командой BMW M Motorsport в Hypercar.",
+    "partners": {
+      "supplier-bmw": "technical"
+    }
+  },
+  {
+    "org": "team-aston-martin-thor-team",
+    "series": [
+      "wec"
+    ],
+    "start": "2025-02-01",
+    "source": "https://www.theheartofracing.com/news/hor-set-for-global-hypercar-program-with-aston-martin",
+    "evidence": "Heart of Racing и Aston Martin объявляют совместную программу Valkyrie.",
+    "partners": {
+      "aston-martin": "technical"
+    }
+  },
+  {
+    "org": "team-alpine-endurance-team",
+    "series": [
+      "wec"
+    ],
+    "start": "2025-04-01",
+    "source": "https://media.alpinecars.com/cheops-technology-becomes-an-official-partner-of-alpine-endurance-team/?lang=eng",
+    "evidence": "Alpine объявляет Cheops Technology партнёром на сезоны 2025–2027.",
+    "partners": {
+      "cheops": "partner"
+    },
+    "end": "2028-01-01"
+  },
+  {
+    "org": "team-land-motorsport",
+    "series": [
+      "dtm"
+    ],
+    "start": "2025-07-04",
+    "end": "2025-07-07",
+    "source": "https://land-motorsport.de/en/2025/07/joyn-us-media-partnership-with-prosieben/",
+    "evidence": "Медийная кооперация с ProSieben. Ливрея Joyn на этапе Норисринг 4–6 июля.",
+    "partners": {
+      "joyn": "partner"
+    }
+  },
+  {
+    "org": "team-visa-cash-app-racing-bulls",
+    "series": [
+      "f1"
+    ],
+    "start": "2025-02-01",
+    "source": "https://www.tudorwatch.com/en/tudor-mag/sport/visa-cash-app-racing-bulls-livery-drops",
+    "additional_source": "https://www.motorsportmagazine.com/archive/article/september-2025/34/tudor-watch-follows-in-the-f1-tyre-tracks-of-racing-bulls/",
+    "evidence": "TUDOR и Racing Bulls сотрудничали в сезоне 2025, включая совместную активацию в Остине.",
+    "partners": {
+      "tudor": "partner"
+    }
+  },
+  {
+    "org": "team-tony-kart-racing-team",
+    "series": [
+      "kart-ok",
+      "kart-okj"
+    ],
+    "start": "2025-02-01",
+    "source": "https://www.us.ompracing.com/press-release/racing-force-group-strengthens-partnership-with-otk-kart-group-omp-kartwear-joined-by-bell-racing-helmets/",
+    "evidence": "Racing Force Group подтверждает экипировку заводского Tony Kart Racing Team от OMP с 2016 года и продление соглашения в 2025 году. Шлемы Bell входят в пакет с 2026 года.",
+    "partners": {
+      "omp": "technical"
+    }
   }
 ]

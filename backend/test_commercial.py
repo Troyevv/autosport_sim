@@ -174,3 +174,109 @@ def test_bid_cannot_spend_twice_or_change_supply_by_counterpart():
     )
     r = commercial_market(c["id"])
     assert any(len(o["history"]) > 1 for o in r["offers"])
+
+
+def test_season_portfolios_and_entry_scoped_rights():
+    from collections import Counter
+    from backend.finance import rights
+
+    c = create()
+    with storage.transaction() as db:
+        state = storage.checkpoint(db, c["id"])
+    deals = state["market"]["contracts"]
+    budgets = state["market"]["budgets"]
+    registered = [(brand, org) for brand, org, *_ in market.season_deals()]
+    assert len(set(registered)) == len(registered)
+    assert {(d["sponsor"], d["org"]) for d in deals.values()} == set(registered)
+    committed = Counter()
+    coverage = set()
+    for d in deals.values():
+        assert d["source"].startswith("https://")
+        assert set(d["program_series"]) <= set(
+            WORLD["organizations"][d["org"]]["programs"]
+        )
+        coverage.update(d["program_series"])
+        schedule = [
+            r
+            for r in state["finance"]["instalments"].values()
+            if r["contract"] == d["id"]
+        ]
+        assert sum(r["amount_cents"] for r in schedule) == d["fixed_cents"]
+        committed[d["sponsor"]] += d["fixed_cents"]
+    assert coverage == set(WORLD["championships"])
+    assert all(cents <= budgets[k] for k, cents in committed.items())
+    assert sum(market.opening_budgets().values()) == sum(
+        b["budget_cents"] for b in market.BRANDS.values()
+    )
+    tricorp = [
+        d
+        for d in deals.values()
+        if d["sponsor"] == "tricorp" and d["org"] == "team-van-amersfoort-racing"
+    ]
+    assert len(tricorp) == 1 and len(tricorp[0]["program_series"]) == 4
+    for b, eid in (("bwt", "dtm-22"), ("windhager", "dtm-84")):
+        d = deals["partner-2025:" + b + ":team-mercedes-amg-team-landgraf"]
+        assert rights.entries(state, WORLD, d) == [eid]
+        assert {r["entry"] for r in rights.audit(state, WORLD, d)} == {eid}
+    state["date"] = "2025-04-01"
+    market.tick(state, WORLD)
+    from backend.finance import settle
+
+    settle(state)
+    journal = list(state["ledger"])
+    settle(state)
+    assert state["ledger"] == journal
+
+
+def test_calendar_year_marketing_ceiling_preserves_earned_bonus():
+    from backend.finance import settle, sponsorship_spend
+
+    c = create()
+    with storage.transaction() as db:
+        s = storage.checkpoint(db, c["id"])
+    sponsor = "seiko"
+    wallet = market.payer(sponsor)
+    s["market"]["budgets"][sponsor] = 10000
+    t = market.Terms(
+        **terms(
+            sponsor=sponsor,
+            fixed_cents=10000,
+            advance_cents=10000,
+            bonus_cents=500,
+            rights=[],
+            appearances=0,
+        )
+    )
+    market.sign_sponsor(s, WORLD, t, "limited")
+    settle(s)
+    market.result_bonus(s, WORLD, "driver", "f1-4", "result", s["date"], 1)
+    bonus = s["finance"]["instalments"]["limited:bonus:f1-4:result"]
+    assert bonus["status"] == "pending"
+    assert sponsorship_spend(s, wallet, "2025", include_pending=False) == 10000
+    s["date"] = "2026-01-01"
+    settle(s)
+    settle(s)
+    assert bonus["status"] == "paid"
+    assert sponsorship_spend(s, wallet, "2026", include_pending=False) == 500
+
+
+def test_two_future_contracts_cannot_sell_one_annual_budget_twice():
+    c = create()
+    with storage.transaction() as db:
+        s = storage.checkpoint(db, c["id"])
+    s["market"]["budgets"]["seiko"] = 10000
+    t = market.Terms(
+        **terms(
+            sponsor="seiko",
+            start="2026-01-01",
+            end="2026-12-31",
+            fixed_cents=8000,
+            advance_cents=0,
+        )
+    )
+    market.sign_sponsor(s, WORLD, t, "first")
+    with pytest.raises(domain.RuleError, match="годовой бюджет"):
+        market.sign_sponsor(
+            s, WORLD, t.model_copy(update={"org": "team-scuderia-ferrari"}), "second"
+        )
+    assert "second" not in s["market"]["contracts"]

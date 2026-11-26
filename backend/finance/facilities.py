@@ -5,6 +5,7 @@ from typing import Literal
 from pydantic import Field
 from ..team_staff import department_capacity
 from ..domain import RuleError
+from ..engineering import resource_scope
 from ..staff_input import Fields, Id, Day
 from . import Instalment, Schedule, register, settle, transfer, available
 from .budget import authorize
@@ -238,7 +239,7 @@ def free(state, a, start, end, *, buyer=None):
     def remaining(d):
         active = [r for r in records if r["start"] <= d < r["end"]]
         if buyer and buyer != a["owner"]:
-            return sum(
+            entitlement = sum(
                 r["units"]
                 for r in active
                 if r["org"] == buyer
@@ -247,6 +248,14 @@ def free(state, a, start, end, *, buyer=None):
             ) - sum(
                 r["units"] for r in active if r["org"] == buyer and r["mode"] == "use"
             )
+            if "capacity_since" not in state["estate"]:
+                return entitlement
+            occupied = sum(
+                r["units"]
+                for r in active
+                if r["mode"] == "use" or r.get("purpose") == "preparation"
+            )
+            return max(0, min(entitlement, capacity(state, a) - occupied))
         return capacity(state, a) - sum(
             r["units"] for r in active if r["mode"] != "use" or r["org"] == a["owner"]
         )
@@ -394,6 +403,12 @@ def consume(
 
 def access(state, world, event):
     program = world["programs"].get(event.program)
+    if "capacity_since" in state["estate"] and "capital" in state:
+        admitted = state["capital"]["programs"].get(event.program)
+        if admitted:
+            if admitted["status"] != "admitted":
+                raise RuleError("У программы нет действующего допуска.")
+            program = {"org": admitted["org"], "championship": admitted["series"]}
     organization = world["organizations"].get(event.org, {})
     if (
         not program
@@ -443,6 +458,21 @@ def access(state, world, event):
             or event.start != state["date"]
         ):
             raise RuleError("Требуется подтверждённая квота проекта F1.")
+        if "capacity_since" in state["estate"]:
+            pool = resource_scope(world, event.org, event.start)
+            if (
+                not pool
+                or project["pool"] != pool["pool_id"]
+                or later(event.start, event.days) > pool["period"]["end_exclusive"]
+            ):
+                raise RuleError("Выбранные даты выходят за период квоты проекта.")
+            metrics = (
+                ("runs", "wind_on_minutes", "occupancy_minutes")
+                if a["kind"] == "tunnel"
+                else ("cfd_geometries", "cfd_milli_mauh")
+            )
+            if not any(project["terms"]["atr"].get(metric, 0) for metric in metrics):
+                raise RuleError("Квота проекта не покрывает выбранный вид оборудования.")
         if any(
             r.get("authority") == event.authorization
             and r["id"] != event.reference
@@ -612,7 +642,7 @@ def projection(state, world):
                 a,
                 capacity=capacity(state, a),
                 effective_person_days_x100=resources(state, a)[1],
-                free=free(state, a, today, later(today, 1)),
+                free=max(0, free(state, a, today, later(today, 1))),
                 daily_cents=quote(a["kind"], a["country"])["daily_cents"],
             )
             for a in state["estate"]["assets"].values()
@@ -629,6 +659,7 @@ def projection(state, world):
 
 class ResourceGrant(Fields):
     reference: Id
+    org: Id
     facility: Id
     start: Day
     end: Day
@@ -650,6 +681,7 @@ def grant(state, key) -> ResourceGrant:
         raise RuleError("Для технической программы нужен подтверждённый слот.")
     return ResourceGrant(
         reference=key,
+        org=row["org"],
         facility=a["id"],
         start=row["start"],
         end=row["end"],

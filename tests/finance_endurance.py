@@ -44,6 +44,11 @@ def run(years, series, seed):
     sporting_before = {k: dict(v) for k, v in s["starts"].items()}
     seen = set()
     balances = Counter()
+    sponsor_wallets = {market.payer(b): b for b in s["market"]["budgets"]}
+    marketing_paid = Counter()
+    operating_cash = Counter()
+    from backend.finance import CAPITAL
+
     t = monotonic()
     total = sum(wallets(s).values())
     for i in range(12 * years):
@@ -52,6 +57,20 @@ def run(years, series, seed):
             key = p["org"], p["key"]
             assert key not in seen, key
             seen.add(key)
+            if p["org"] in s["accounts"] and p["source"] not in CAPITAL:
+                operating_cash[p["org"]] += p["delta_cents"]
+            sponsor = sponsor_wallets.get(p["org"])
+            if sponsor and p["source"] == "sponsorship" and p["delta_cents"] < 0:
+                marketing_paid[(sponsor, p["date"][:4])] -= p["delta_cents"]
+                assert (
+                    marketing_paid[(sponsor, p["date"][:4])]
+                    <= s["market"]["budgets"][sponsor]
+                ), (
+                    p,
+                    marketing_paid[(sponsor, p["date"][:4])],
+                    s["market"]["budgets"][sponsor],
+                )
+
             balances[p["org"]] += p["delta_cents"]
         s["ledger"] = []
         actual = wallets(s)
@@ -89,10 +108,15 @@ def run(years, series, seed):
                         ),
                         licenses=len(s["economy"]["licenses"]),
                         money_cents=total,
+                        sponsorship_paid_cents=sum(marketing_paid.values()),
+                        negative_operating_cash=sum(
+                            v < 0 for v in operating_cash.values()
+                        ),
                     )
                 ),
                 flush=True,
             )
+            operating_cash.clear()
 
 
 if __name__ == "__main__":
