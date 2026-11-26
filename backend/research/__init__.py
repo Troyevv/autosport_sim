@@ -9,8 +9,11 @@ from ..personnel import evaluate
 from ..team_staff import department_capacity
 from .model import (
     METHODS,
+    LEGACY_AXES,
+    question_for,
+    design_context,
     ORDERS,
-    RANK,
+    queue_position,
     Commission,
     Handover,
     Reorder,
@@ -83,6 +86,12 @@ def commission(state, world, org, key, order):
         reference=drawing["id"],
         label="Конструкторская документация · " + world["cars"][entry["car"]]["name"],
     )
+    if "development" in state:
+        question = question_for(state, world, entry, drawing)
+    if "development" in state and drawing["manufacturer"] != org:
+        source["label"] = (
+            "Монтажная документация · " + world["cars"][entry["car"]]["name"]
+        )
     comparable = True
     if order.rival_entry:
         rival = world["entries"].get(order.rival_entry)
@@ -95,6 +104,8 @@ def commission(state, world, org, key, order):
             raise RuleError("Нужна публичная заявка соперника того же класса.")
         source = public_source(world, rival)
         product = {"cooling": "engine", "tyre": "tyre"}.get(axis)
+        if "development" in state and axis in ("engine", "transmission"):
+            product = axis
         own_car = world["cars"][entry["car"]]
         own_supplier = own_car["suppliers"].get(product)
         comparable = (
@@ -146,6 +157,12 @@ def commission(state, world, org, key, order):
         reason="Ожидает распределения мощности.",
         days=0,
     )
+    if "development" in state:
+        project["commission_revision"] = state["revision"]
+        from ..development import restriction
+
+        project["integration_study"] = bool(restriction(state, world, entry, axis))
+        project["design_context"] = design_context(state, entry, axis)
     projects[key] = project
     return project
 
@@ -246,8 +263,8 @@ def available_person(state, pid, day, end):
     )
 
 
-def facility(state, org, day, end):
-    assets = (a for a in state["estate"]["assets"].values() if a["kind"] == "research")
+def facility(state, org, day, end, kind="research"):
+    assets = (a for a in state["estate"]["assets"].values() if a["kind"] == kind)
     return next(
         (
             a
@@ -314,33 +331,56 @@ def work(state, world, p, used):
     if not lead or lead in used or not available_person(state, lead, day, end):
         p["reason"] = "Вакансия или занят ответственный специалист."
         return
-    site = facility(state, org, day, end)
+    from .. import development
+
+    kind = p.get("site_kind", "research")
+    if "kind" in p:
+        config = state["car_configurations"][entry["car"]]
+        if config["regulation"] != p["regulation"] or config["concept"] != p["concept"]:
+            p["reason"] = "Изменились концепция или регламент программы."
+            return
+        if p["kind"] == "design" and (
+            reason := development.restriction(state, world, entry, p["axis"])
+        ):
+            p["reason"] = reason
+            return
+    site = facility(state, org, day, end, kind)
     if not site and (
         org != state["setup"]["org"] or state["setup"]["role"] != "manager"
     ):
         # The manager rents only for a day on which the assigned specialist can work.
         try:
+            if p.get("kind") == "test":
+                development.check_rental(state, world, p, entry)
             facilities.act(
                 state,
                 world,
                 org,
                 p["id"] + "/lease/" + day,
                 facilities.Lease(
-                    facility="shared:research", start=day, days=1, units=1, mode="lease"
+                    facility="shared:" + kind, start=day, days=1, units=1, mode="lease"
                 ),
             )
-            site = state["estate"]["assets"]["shared:research"]
+            site = state["estate"]["assets"]["shared:" + kind]
         except RuleError as error:
             p["reason"] = str(error)
             return
     if not site:
-        p["reason"] = "Нет свободного слота исследовательского центра."
+        p["reason"] = (
+            "Нет свободного слота исследовательского центра."
+            if kind == "research"
+            else "Нет свободного слота: " + facilities.TYPES[kind][0] + "."
+        )
         return
     axis = p["axis"]
     skill = METHODS[axis][1]
     person = state["people"][lead]
     ability = evaluate(person, world, day)["values"][skill]
-    prior = evidence(state, org, axis, p["concept"], p["regulation"])
+    prior = (
+        p["evidence"]
+        if "evidence" in p
+        else evidence(state, org, axis, p["concept"], p["regulation"])
+    )
     familiarity = max((r["confidence"] for r in prior), default=0)
     # Private experience travels with the specialist, without copying a former employer's reports.
     personal = state["research"]["personal"].get(lead, {})
@@ -377,24 +417,57 @@ def work(state, world, p, used):
         )["review_quality"]
         contributors.append((chief, "Координация", 2))
     key = f"{p['id']}/{day}"
-    facilities.consume(
-        state,
-        org,
-        key,
-        site,
-        day,
-        end,
-        1,
-        "research",
-        p["id"],
-        program=p["program"],
-        regulation=p["regulation"],
-    )
+    if p.get("kind") == "test":
+        if not development.book_test(state, world, p, site, key):
+            return
+    else:
+        facilities.consume(
+            state,
+            org,
+            key,
+            site,
+            day,
+            end,
+            1,
+            "development" if kind == "design" else "research",
+            p["id"],
+            program=p["program"],
+            regulation=p["regulation"],
+        )
+    if "grants" in p:
+        p["grants"].append(key)
     grant = facilities.grant(state, key)
     support_hours = grant.effective_person_days_x100 * 8 // 100
     # Site operators and the team's own department must both have time for analysis.
     if group:
         support_hours = min(support_hours, department_capacity(group) * 8 // 100)
+    if "kind" in p and group:
+        peer_name = {
+            "aero": "Шасси",
+            "chassis": "Аэродинамика",
+            "reliability": "Силовая установка",
+            "performance": "Надёжность",
+        }[p["role"]]
+        peer = next(
+            (
+                g
+                for g in state["collectives"].values()
+                if g["org"] == org and g["name"] == peer_name
+            ),
+            None,
+        )
+        if peer:
+            handover = teamwork.professional_action(
+                state,
+                world,
+                ("handover", peer["id"], group["id"], org)
+                if p["role"] in ("reliability", "chassis")
+                else ("handover", group["id"], peer["id"], org),
+                day,
+                evidence=ability,
+            )["handover_quality"]
+            review = (review + handover) // 2
+            support_hours = min(support_hours, department_capacity(peer) * 8 // 100)
     hours = sum(h for _, _, h in contributors)
     quality = min(
         96,
@@ -421,7 +494,10 @@ def work(state, world, p, used):
         quality_sum=p["quality_sum"] + quality * work_done,
     )
     if p["worked"] == p["required"]:
-        complete(state, world, p)
+        if "kind" in p:
+            development.complete(state, world, p)
+        else:
+            complete(state, world, p)
 
 
 def npc_plan(state, world):
@@ -440,7 +516,8 @@ def npc_plan(state, world):
     if any(p["org"] == org and not p["finished"] for p in data["projects"].values()):
         return
     entry = next(e for _, e in sorted(world["entries"].items()) if e["org"] == org)
-    axes = [a for a in METHODS if a in components.mounting(state, entry["id"])]
+    topics = METHODS if "development" in state else LEGACY_AXES
+    axes = [a for a in topics if a in components.mounting(state, entry["id"])]
     axis = axes[(ordinal // 4 + ordinal // (4 * len(orgs))) % len(axes)]
     key = f"study-{org}-{day}"
     try:
@@ -464,14 +541,16 @@ def advance(state, world, end):
             day = state["date"]
             tomorrow = facilities.later(day, 1)
             npc_plan(state, world)
+            queues = [state["research"]["projects"]]
+            if "development" in state:
+                from .. import development
+
+                development.npc_plan(state, world)
+                queues.append(state["development"]["projects"])
             used = {}
             pending = sorted(
-                (
-                    p
-                    for p in state["research"]["projects"].values()
-                    if not p["finished"]
-                ),
-                key=lambda p: (RANK[p["priority"]], p["commissioned"], p["id"]),
+                (p for queue in queues for p in queue.values() if not p["finished"]),
+                key=queue_position,
             )
             for p in pending:
                 work(state, world, p, used)

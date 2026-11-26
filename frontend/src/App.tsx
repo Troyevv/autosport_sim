@@ -62,7 +62,6 @@ function Navigation({ route }: { route: Route }) {
               >
                 <r.icon aria-hidden="true" size={18} />
                 {r.name}
-                {r.id === 'development' && <span className="nav-counter">{state.projects.length}</span>}
                 {r.id === 'race' && <span className="nav-live" />}
               </button>
             </Fragment>

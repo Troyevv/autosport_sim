@@ -1,0 +1,37 @@
+.development-card {
+  overflow-wrap: anywhere;
+}
+.development-card details {
+  padding-block: 0.3rem;
+}
+.measurement {
+  border-left: 3px solid var(--accent, #b14b62);
+  padding: 0.2rem 0.9rem;
+  background: #181e27;
+}
+.measurement h4 {
+  margin: 0.5rem 0;
+}
+.measurement-pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+.measurement-pair strong,
+.measurement-pair small {
+  display: block;
+}
+.measurement-pair strong {
+  font-variant-numeric: tabular-nums;
+  font-size: 1.25rem;
+}
+.measurement-pair strong small {
+  display: inline;
+  font-size: 0.8rem;
+}
+.development-desk .research-layout {
+  margin-top: 1rem;
+}
+.development-desk aside h3 {
+  font-size: 1rem;
+}

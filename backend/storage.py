@@ -55,6 +55,7 @@ MIGRATIONS = [
     [],  # Negotiated driver terms, support appointments and temporary lineups.
     [],  # Open the version-pinned component inventory at the current revision.
     [],  # Open the research archive on the current career date.
+    [],  # Activate design and metrology at this checkpoint.
 ]
 
 
@@ -229,6 +230,16 @@ def transaction(write=False):
                     for report in state["research"]["reports"].values():
                         write_fact(db, row["id"], LINEUP_WORLD, report)
                     store(db, row["id"], state)
+            if idx == 21:
+                from .catalog import LINEUP_WORLD
+                from .development import initialize, write_fact
+
+                for row in db.execute("SELECT id FROM career").fetchall():
+                    state = checkpoint(db, row["id"])
+                    initialize(state)
+                    for event in state["development"]["history"]:
+                        write_fact(db, row["id"], state, LINEUP_WORLD, event)
+                    store(db, row["id"], state)
             db.execute(f"PRAGMA user_version={idx + 1}")
         yield db
         db.commit()
@@ -287,6 +298,8 @@ def receipts(db, cid):
                 if item["action"] == "save-livery"
                 else "finance"
                 if item["action"].startswith("finance-")
+                else "development"
+                if item["action"].startswith("development-")
                 else "research"
                 if item["action"].startswith("research-")
                 else "engineering"

@@ -3,42 +3,6 @@ import { useGame, useUI } from '../ui/context'
 import { Facts } from '../ui/components'
 import type { GameState } from '../game'
 
-export function Engineers() {
-  const { state, send } = useGame(),
-    { close } = useUI(),
-    [values, set] = useState(state.engineers)
-  const total = Object.values(values).reduce((sum, v) => sum + v, 0)
-  const labels = { aero: 'Аэродинамика', power: 'Силовая установка', reliability: 'Надёжность' }
-  return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault()
-        send({ type: 'engineers', values })
-        close()
-      }}
-    >
-      {(Object.keys(labels) as (keyof typeof labels)[]).map((k) => (
-        <label className="field" key={k}>
-          {labels[k]} · {values[k]}
-          <input
-            type="range"
-            min="0"
-            max="40"
-            disabled={state.role !== 'manager'}
-            value={values[k]}
-            onChange={(e) => set({ ...values, [k]: +e.target.value })}
-          />
-        </label>
-      ))}
-      <p aria-live="polite">Назначено {total} из 60 специалистов.</p>
-      {state.role === 'manager' && (
-        <button className="btn btn-primary" disabled={total > 60}>
-          Сохранить назначения
-        </button>
-      )}
-    </form>
-  )
-}
 export function Mandates() {
   const { state, send } = useGame(),
     { close } = useUI(),

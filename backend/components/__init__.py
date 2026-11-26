@@ -377,6 +377,17 @@ def serial(iid):
     return sha256(iid.encode()).hexdigest()[:12].upper()
 
 
+def nominal_drawing(state, iid):
+    from ..development.physics import estimate
+
+    drawing = spec(state, iid)
+    return dict(drawing, parameters=estimate(state, drawing))
+
+
+def design_estimate(state, fitted):
+    return assembly({slot: nominal_drawing(state, iid) for slot, iid in fitted.items()})
+
+
 def describe(state, iid):
     drawing = spec(state, iid)
     return dict(
@@ -386,7 +397,7 @@ def describe(state, iid):
         version=drawing["version"],
         title=drawing["title"],
         slot=drawing["slot"],
-        parameters=drawing["parameters"],
+        parameters=nominal_drawing(state, iid)["parameters"],
         remaining_m=remaining(state, iid),
         **condition(state, iid),
     )
@@ -447,7 +458,7 @@ def desk(state, world, eid):
         policy=OPENING.rules[state["car_configurations"][entry["car"]]["regulation"]][
             "mode"
         ],
-        assembly=snapshot(state, fitted),
+        assembly=design_estimate(state, fitted),
         since=data["date"],
         specialists={
             role: state["people"][pid]["name"] if pid else None
@@ -472,7 +483,7 @@ def desk(state, world, eid):
                     for k, v in e["fitted"].items()
                 },
                 mechanic=state["people"][e["mechanic"]]["name"],
-                assembly=snapshot(state, e["fitted"]),
+                assembly=design_estimate(state, e["fitted"]),
             )
             for e in events
         ],

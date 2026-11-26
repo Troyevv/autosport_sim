@@ -86,7 +86,7 @@ function Commission({ data, order, close }: { data: Desk; order: Order; close: (
             <PriorityOptions />
           </select>
         </label>
-        <p>{method.hypothesis}</p>
+        <p>{entry.questions[axis]}</p>
         <Facts
           items={[
             ['Ответственный', lead || 'Должность вакантна'],
@@ -212,6 +212,7 @@ function Memory({ data, order, manage }: { data: Desk; order: Order; manage: boo
                     ['Дата поручения', dateLabel(project.commissioned)],
                     ['Стоимость работы', money(project.cost_cents)],
                     ['Регистрационный номер', r.id],
+                    ...(r.citations.length ? [['Использовано в инженерных делах', r.citations.join(', ')] as [string,string]] : []),
                     ...Object.values(r.participants).map((c): [string, string] => [
                       c.name,
                       c.skill + ' · ' + c.hours + ' чел.-ч',

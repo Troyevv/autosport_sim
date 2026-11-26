@@ -11,7 +11,7 @@ from .finance.events import PRODUCERS
 from .finance import market, rights, budget, economy, capital, facilities
 from .livery import GARAGE, PaintOrder
 from .catalog import VERSION, WORLD, LINEUP_WORLD
-from . import lineup, components, research
+from . import lineup, components, research, development
 from .roster_upgrade import (
     original_world,
     previous_world,
@@ -65,6 +65,7 @@ class Command(Strict):
     revision: int = Field(ge=0)
     action: str = Field(min_length=1, max_length=32)
     engineering: components.Install | components.Usage | None = None
+    development: dict | None = None
     research: dict | None = None
     paint: PaintOrder | None = None
     staff: dict | None = None
@@ -84,6 +85,10 @@ class Command(Strict):
                 raise ValueError("Неверные параметры инженерной команды.")
         elif self.engineering is not None:
             raise ValueError("Лишние параметры инженерной команды.")
+        if (self.action in development.ORDERS) != (self.development is not None):
+            raise ValueError("Неверные параметры разработки.")
+        if self.development is not None:
+            development.ORDERS[self.action].model_validate(self.development)
         if (self.action in research.ORDERS) != (self.research is not None):
             raise ValueError("Неверные параметры исследования.")
         if self.research is not None:
@@ -117,6 +122,8 @@ class Command(Strict):
         return self
 
     def payload(self):
+        if self.development is not None:
+            return self.development
         if self.research is not None:
             return self.research
         if self.engineering is not None:
@@ -287,6 +294,7 @@ def create(spec):
         lineup.terms.initialize(state, LINEUP_WORLD)
         components.initialize(state)
         research.initialize(state)
+        development.initialize(state)
         cid = str(uuid4())
         storage.store(db, cid, state, create=True)
         statistics_personnel.refresh(db, cid, state)
@@ -321,9 +329,12 @@ def execute(cid, command):
                 raise domain.RuleError(
                     "Карьеру изменили в другом окне. Состояние обновлено.", 409
                 )
+            prior_events = len(state.get("development", {}).get("history", []))
             prior_reports = set(state["research"]["reports"])
             previous = statistics_personnel.mutable_state(state)
             domain.apply(state, WORLD, command.action, args)
+            for event in state.get("development", {}).get("history", [])[prior_events:]:
+                development.write_fact(db, cid, state, LINEUP_WORLD, event)
             if command.action == "component-install":
                 components.write_install_fact(
                     db, cid, state, LINEUP_WORLD, state["components"]["history"][-1]
@@ -528,6 +539,8 @@ def import_save(document, *, statistics_records=None):
 
             if saved.get("research", {}).get("since") == state["revision"]:
                 research.initialize(state)
+            if saved.get("development", {}).get("since") == state["revision"]:
+                development.initialize(state)
 
         for original in commands:
             item = original
@@ -589,6 +602,7 @@ def import_save(document, *, statistics_records=None):
         lineup.terms.initialize(state, LINEUP_WORLD)
         components.initialize(state)
         research.initialize(state)
+        development.initialize(state)
     except (KeyError, TypeError, ValueError, RecursionError, ValidationError):
         raise domain.RuleError("Файл повреждён или нарушает правила мира.") from None
     cid = str(uuid4())
@@ -599,6 +613,8 @@ def import_save(document, *, statistics_records=None):
             "INSERT INTO receipt(career,command_id,revision,action,paint) VALUES(?,?,?,?,?)",
             [(cid, *row) for row in receipts],
         )
+        for event in state["development"]["history"]:
+            development.write_fact(db, cid, state, LINEUP_WORLD, event)
         for report in state["research"]["reports"].values():
             research.write_fact(db, cid, LINEUP_WORLD, report)
         for event in state["components"]["history"]:

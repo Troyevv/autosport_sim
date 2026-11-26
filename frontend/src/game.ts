@@ -1,6 +1,5 @@
-import type { GameCatalog, Role, Series, ProjectSpec } from './catalog'
+import type { GameCatalog, Role, Series } from './catalog'
 export type { Role, Series, Person } from './catalog'
-export type Project = ProjectSpec & { installed: boolean }
 export type Offer = {
   id: string
   name: string
@@ -16,14 +15,11 @@ export interface GameState {
   balanceCents: number
   ledger: Entry[]
   offers: Offer[]
-  projects: Project[]
   read: string[]
   shares: Record<Series, number>
   orders: string[]
   load: number
   inspected: string[]
-  specs: string[]
-  engineers: Record<'aero' | 'power' | 'reliability', number>
   shifts: number
   terms: Record<string, { cents: number; support: string }>
   compact: boolean
@@ -44,8 +40,7 @@ export type Command =
   | { type: 'advance' | 'reset' | 'nextFrame' }
   | { type: 'motion'; enabled: boolean }
   | { type: 'offer'; offer: Offer }
-  | { type: 'project' | 'install' | 'order' | 'inspect' | 'spec'; id: string }
-  | { type: 'engineers'; values: GameState['engineers'] }
+  | { type: 'order' | 'inspect'; id: string }
   | { type: 'mandates'; values: GameState['mandates'] }
   | { type: 'terms'; id: string; cents: number; support: string }
   | { type: 'shifts'; value: number }

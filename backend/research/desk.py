@@ -7,7 +7,7 @@ from ..components.design import LABELS
 from ..domain import RuleError, occupant_on
 from ..finance import facilities
 from . import admitted, public_source
-from .model import METHODS, RANK, applicability
+from .model import METHODS, queue_position, applicability, question_for
 
 
 def projection(state, world):
@@ -48,6 +48,10 @@ def projection(state, world):
                 axes=[
                     a for a in METHODS if a in components.mounting(state, entry["id"])
                 ],
+                questions={
+                    a: question_for(state, world, entry, components.spec(state, iid))
+                    for a, iid in components.mounting(state, entry["id"]).items()
+                },
                 rivals=[
                     public_source(world, other)
                     for other in world["entries"].values()
@@ -116,7 +120,7 @@ def projection(state, world):
                 else None,
             )
         )
-    projects.sort(key=lambda p: (RANK[p["priority"]], p["commissioned"], p["id"]))
+    projects.sort(key=queue_position)
     reports = []
     for r in data["reports"].values():
         if r["org"] != org:
@@ -124,6 +128,12 @@ def projection(state, world):
         reports.append(
             dict(
                 r,
+                citations=[
+                    p["id"]
+                    for p in state.get("development", {}).get("projects", {}).values()
+                    if p["org"] == org
+                    and any(source["report"] == r["id"] for source in p["evidence"])
+                ],
                 applicability={
                     t["id"]: applicability(r, t["concept"], t["regulation"])
                     for t in targets
