@@ -11,6 +11,12 @@ import { modes } from '../council/model'
 import { type Desk, type Plan, type Proposal, priorities, strategies, kinds, leads } from './model'
 import './programme.css'
 
+const deploymentLabels: Record<string, string> = {
+  installed: 'Установлен', allocated: 'Выделен со склада', waiting: 'Ожидает экземпляр',
+  priority: 'Ожидает по приоритету пилотов', incompatible: 'Несовместим',
+  shared: 'Учтено в другом пакете',
+}
+
 function Packages({
   plan,
   people,
@@ -41,7 +47,7 @@ function Packages({
             <p className="programme-meta">
               <CalendarDays size={15} /> {dateLabel(pkg.due, true)} · {pkg.stage}
             </p>
-            <p>{pkg.advice}</p>
+            <p>{pkg.advice} Установлено {pkg.installed} из {pkg.required} экземпляров.</p>
             <div className="programme-parts">
               {pkg.parts.map((part) => (
                 <article key={part.axis}>
@@ -71,9 +77,13 @@ function Packages({
                         {units[key]?.[0] || key} · {fmt(lo)}–{fmt(hi)} {units[key]?.[1]}
                       </p>
                     ))}
-                    {part.ready && (
+                    {part.targets.length > 0 && (
                       <>
-                        <p>Пригодных экземпляров в организации · {part.serials.length}</p>
+                        {part.targets.map((t) => <p key={t.entry}>№{t.number} · {deploymentLabels[t.status]}</p>)}
+                        <p>Выделено со склада для пакета · {part.serials.length}</p>
+                        <p>По этой спецификации в организации: на складе · {part.inventory.stock || 0},
+                          установлено · {part.inventory.installed || 0}, на контроле · {part.inventory.inspection || 0},
+                          в ремонте · {part.inventory.repair || 0}, списано · {part.inventory.scrapped || 0}.</p>
                         <a href="#production">Экземпляры и распределение по заявкам</a>
                       </>
                     )}

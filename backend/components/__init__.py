@@ -185,7 +185,7 @@ def seats_for(world, entry):
     ]
 
 
-def allocation(state, world, entry, iid, available):
+def allocation(state, world, entry, iid, available, *, year=None, planned_entries=None):
     seats = seats_for(world, entry)
     # Allocate access to this scarce drawing, independent of its physical trade-offs.
     drawing = spec(state, iid)
@@ -193,7 +193,7 @@ def allocation(state, world, entry, iid, available):
     for seat in seats:
         other = world["entries"][seat["entry"]]
         if driver_terms.contract(state, seat, state["date"]) and compatible(
-            state, world, other, drawing
+            state, world, other, drawing, year=year
         ):
             eligible[other["id"]] = mounting(state, other["id"])[drawing["slot"]]
     needed = {
@@ -208,6 +208,10 @@ def allocation(state, world, entry, iid, available):
             if spec(state, previous)["family"] == drawing["family"]
             and spec(state, previous)["version"] < drawing["version"]
         }
+    if planned_entries is not None:
+        # A future grid has no installations yet; each eligible entered car needs a unit.
+        resource = "specification"
+        needed = planned_entries.intersection(eligible)
     copies = [key for key in available if spec(state, key)["id"] == drawing["id"]]
     if len(copies) >= len(needed):
         # An optional exchange cannot consume the last copy needed by a teammate.
@@ -322,6 +326,10 @@ def install(state, world, order, org):
     event_id = f"component-fit-{state['revision'] + 1}"
     if "production" in state:
         event_id += f"-{len(data['history']) + 1}"
+    if "programme" in state and spec(state, previous)["id"] != drawing["id"]:
+        from ..programme.packages import pin_before_fit
+
+        pin_before_fit(state, world, entry, slot)
     data["mounts"].setdefault(entry["id"], {})[slot] = iid
     fitted = mounting(state, entry["id"])
     from ..programme.rules import config_for

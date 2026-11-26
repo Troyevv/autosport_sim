@@ -204,7 +204,10 @@ def test_partial_package_and_homologation_effective_freeze_specific_serial():
     card = packages.evaluate_package(
         s, WORLD, e, plan, pkg, list(packages.work_for(s, WORLD, e, plan))
     )
-    assert card["ready"] == 1 and len(card["parts"]) == 2
+    floor = next(p for p in card["parts"] if p["axis"] == axis)
+    assert card["ready"] == 0 and card["required"] == 4 and len(floor["serials"]) == 1
+    assert floor["inventory"]["installed"] == 2 and not floor["fits"]
+    assert floor["action"]["payload"]["quantity"] == 1
     alien = deepcopy(components.registry.drawing_for(s, base))
     alien["interface"] = "another-mount"
     assert not components.compatible(s, WORLD, e, alien, year=2026)

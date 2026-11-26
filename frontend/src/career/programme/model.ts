@@ -18,6 +18,8 @@ export type Part = {
   next_cost_cents: number
   fits: { entry: string; instance: string; label: string }[]
   serials: string[]
+  targets: { entry: string; number: string; status: string }[]
+  inventory: Record<string, number>
   forecast: Record<string, [number, number]>
   cost_cents: number
 }
@@ -42,6 +44,8 @@ export type Plan = {
     advice: string
     parts: Part[]
     ready: number
+    installed: number
+    required: number
     cost_cents: number
   }[]
   rule: {

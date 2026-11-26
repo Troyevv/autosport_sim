@@ -13,6 +13,7 @@ from ..finance import facilities
 from ..research.model import METHODS, INTERACTIONS, applicability
 from . import work_year, paused, policy
 from .rules import dossier, admitted_version
+from .deployment import Deployment
 
 PAIRS = {
     "floor": "suspension",
@@ -121,6 +122,16 @@ def package(state, world, e, plan):
     )
 
 
+def pin_before_fit(state, world, entry, slot):
+    """Preserve the reference assembly when a garage order changes the planning car."""
+    if not any(e["id"] == entry["id"] for e in entries_for(world, entry["org"])):
+        return
+    plan = dossier(state, world, entry)
+    pkg = package(state, world, entry, plan)
+    if slot in pkg["axes"]:
+        state["programme"]["packages"].setdefault(pkg["id"], pkg)
+
+
 def work_for(state, world, e, plan):
     org = e["org"]
     model = world["cars"][e["car"]]["concept"]
@@ -147,7 +158,7 @@ def work_for(state, world, e, plan):
                 yield p.get("kind", kind), p
 
 
-def component(state, world, e, plan, pkg, axis, works):
+def component(state, world, e, plan, pkg, axis, works, cars, deployment):
     """Follow the project's parent, protocol, release and batch. Never sort candidates by version."""
     base = pkg["baselines"][axis]
     relevant = [
@@ -184,25 +195,10 @@ def component(state, world, e, plan, pkg, axis, works):
     allowed = admitted_version(
         state, world, e, drawing_for(state, version), plan["year"]
     )
-    # Stock is organization-wide. A batch on the lathe or a serial awaiting acceptance is not ready.
     org = e["org"]
-    stock = [
-        iid
-        for iid in [
-            *OPENING.by_org[org],
-            *(
-                i
-                for i, r in state["components"]["inventory"].items()
-                if r["org"] == org
-            ),
-        ]
-        if components.spec(state, iid)["id"] == version
-        and components.serviceable(state, iid)
-        and state["production"]["items"].get(iid, {}).get("status", "stock") == "stock"
-    ]
-    compatible = components.compatible(
-        state, world, e, drawing_for(state, version), year=plan["year"]
-    )
+    targets = []
+    inventory = {}
+    fits = []
     action = None
     status = "План исследования"
     risk = "Срок зависит от доступности специалиста и мощности."
@@ -298,40 +294,58 @@ def component(state, world, e, plan, pkg, axis, works):
             "Регистрация относится к этой модели и сезону.",
             dict(specification=version),
         )
-    elif not compatible:
-        status, risk = "Несовместим", "Отложить внедрение до согласования интерфейсов."
-    elif stock:
-        status = "Готов к применению"
-    elif batches and any(not b["finished"] for b in batches):
-        status = "Изготовление"
-    elif any(
-        item["batch"] in {b["id"] for b in batches}
-        and item["status"] == "inspection"
-        and not item["rejected"]
-        for item in state["production"]["items"].values()
-    ):
-        status = "Контроль качества"
     else:
-        status = "Требуется изготовление"
-        outsource = drawing_for(state, version)["manufacturer"] != org
-        unit = production.quote(drawing_for(state, version), False, outsource)
-        action = agenda.option(
-            "produce",
-            "Изготовить экземпляр",
-            "Передать один экземпляр на контроль качества.",
-            "Возможен брак при приёмке.",
-            dict(
-                entry=e["id"],
-                specification=version,
-                quantity=1,
-                priority="normal",
-                rush=False,
-                outsource=outsource,
-            ),
-            "factory",
-            unit["hours"],
-            unit["cents"],
-        )
+        drawing = drawing_for(state, version)
+        targets, fits = deployment.distribute(cars, plan, pkg, drawing)
+        inventory = {
+            phase: len(ids) for phase, ids in deployment.supply(version).items()
+        }
+        states = [r["status"] for r in targets]
+        missing = sum(x in ("waiting", "priority") for x in states)
+        if not missing:
+            if "incompatible" in states:
+                status, risk = "Несовместим", "Проверить интерфейсы обозначенных машин."
+            elif "shared" in states:
+                status = "Общее требование другого пакета"
+            else:
+                status = (
+                    "Установлен"
+                    if all(x == "installed" for x in states)
+                    else "Готов к применению"
+                )
+        else:
+            shortage, expected = deployment.expected(version, batches, missing)
+            if shortage:
+                status = "Требуется изготовление"
+                outsource = drawing["manufacturer"] != org
+                unit = production.quote(drawing, False, outsource)
+                quantity = min(shortage, 24)
+                evidence.append(f"demand:{quantity}")
+                action = agenda.option(
+                    "produce",
+                    "Изготовить недостающие экземпляры",
+                    f"Передать на контроль качества: {quantity} шт.",
+                    "Возможен брак при приёмке.",
+                    dict(
+                        entry=e["id"],
+                        specification=version,
+                        quantity=quantity,
+                        priority="normal",
+                        rush=False,
+                        outsource=outsource,
+                    ),
+                    "factory",
+                    unit["hours"] * quantity,
+                    unit["cents"] * quantity,
+                )
+            else:
+                status = (
+                    "Изготовление"
+                    if expected["produce"]
+                    else "Контроль качества"
+                    if expected["inspection"]
+                    else "Ремонт"
+                )
     relevant_projects = [*studies, *designs, *tests, *batches]
     return dict(
         axis=axis,
@@ -339,8 +353,11 @@ def component(state, world, e, plan, pkg, axis, works):
         specification=version,
         status=status,
         risk=risk,
-        ready=status == "Готов к применению",
-        serials=sorted(stock) if compatible else [],
+        ready=status in ("Готов к применению", "Установлен"),
+        serials=[r["instance"] for r in targets if r["status"] == "allocated"],
+        targets=targets,
+        inventory=inventory,
+        fits=fits,
         cost_cents=sum(expenses(state, p)[0] for p in relevant_projects),
         forecast=design.get("forecast", {}),
         next_cost_cents=action["cost_cents"] if action else 0,
@@ -352,57 +369,83 @@ def component(state, world, e, plan, pkg, axis, works):
     )
 
 
-def evaluate_package(state, world, e, plan, pkg, works):
-    parts = [component(state, world, e, plan, pkg, a, works) for a in pkg["axes"]]
-    for part in parts:
-        part["fits"] = []
-        if not part["ready"] or plan["year"] != int(state["date"][:4]):
-            continue
-        axis = part["axis"]
-        for car in sorted(world["entries"].values(), key=lambda x: x["id"]):
-            if car["org"] != e["org"] or car["program"] != e["program"]:
-                continue
-            installed = components.mounting(state, car["id"]).get(axis)
-            if not installed or (
-                components.spec(state, installed)["id"] == part["specification"]
-                and components.serviceable(state, installed)
-            ):
-                continue
-            stock = components.stockroom(state, world, car)
-            for iid in sorted(set(stock).intersection(part["serials"])):
-                target, _, _ = components.allocation(state, world, car, iid, stock)
-                if not target and not components.installation_block(
-                    state, car, components.specialists(state, world, car)
-                ):
-                    part["fits"].append(
-                        dict(
-                            entry=car["id"],
-                            instance=iid,
-                            label=f"№{car['number']} · {components.serial(iid)}",
-                        )
-                    )
+def evaluate_package(state, world, e, plan, pkg, works, *, deployment=None):
+    deployment = deployment or Deployment(state, world, e["org"])
+    model = world["cars"][e["car"]]["concept"]
+    cars = sorted(
+        (
+            car
+            for car in world["entries"].values()
+            if car["org"] == e["org"]
+            and car["program"] == e["program"]
+            and world["cars"][car["car"]]["concept"] == model
+        ),
+        key=lambda car: car["id"],
+    )
+    parts = [
+        component(state, world, e, plan, pkg, a, works, cars, deployment)
+        for a in pkg["axes"]
+    ]
     ready = sum(p["ready"] for p in parts)
+    installed = sum(r["status"] == "installed" for p in parts for r in p["targets"])
+    required = len(cars) * len(parts)
     return dict(
         pkg,
         parts=parts,
         ready=ready,
+        installed=installed,
+        required=required,
         cost_cents=sum(p["cost_cents"] for p in parts),
-        advice="Допущены оба узла."
+        advice="Пакет установлен на все целевые машины."
+        if installed == required
+        else "Пакет частично внедрён."
+        if installed
+        else "Детали готовы для всех целевых машин."
         if ready == len(parts)
-        else "Возможна отдельная установка допущенного узла после проверки на выбранной машине."
-        if ready
+        else "Возможна отдельная установка допущенного узла."
+        if any(p["fits"] for p in parts)
         else "Сохранить сборку до проверки и приёмки.",
     )
 
 
-def topics(state, world, e, staff):
+def portfolios(state, world, org):
     year = int(state["date"][:4])
-    for target in (year, year + 1):
-        plan = dossier(state, world, e, target)
-        pkg = package(state, world, e, plan)
-        works = list(work_for(state, world, e, plan))
-        for axis in pkg["axes"]:
-            part = component(state, world, e, plan, pkg, axis, works)
+    years = (
+        (year + 1, year)
+        if policy(state, org) in ("next", "stop-current")
+        else (year, year + 1)
+    )
+    deployment = Deployment(state, world, org)
+    for target in years:
+        for e in entries_for(world, org):
+            plan = dossier(state, world, e, target)
+            works = list(work_for(state, world, e, plan))
+            active = package(state, world, e, plan)
+            others = sorted(
+                (
+                    p
+                    for p in state["programme"]["packages"].values()
+                    if p["plan"] == plan["id"] and p["id"] != active["id"]
+                ),
+                key=lambda p: (p["due"], p["id"]),
+            )
+            cards = [
+                evaluate_package(state, world, e, plan, p, works, deployment=deployment)
+                for p in [active, *others]
+            ]
+            yield e, plan, works, cards
+
+
+def topics(state, world, org, staff_by_entry):
+    year = int(state["date"][:4])
+    for e, plan, _, cards in portfolios(state, world, org):
+        staff = staff_by_entry.get(e["id"])
+        if not staff:
+            continue
+        target = plan["year"]
+        pkg = cards[0]
+        for part in pkg["parts"]:
+            axis = part["axis"]
             choice = part["action"]
             if not choice or not staff.get(METHODS[axis][0]):
                 continue

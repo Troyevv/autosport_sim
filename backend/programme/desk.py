@@ -4,8 +4,8 @@ from .. import components, council, research
 from ..research.model import METHODS
 from ..finance import budget, facilities
 from . import policy
-from .rules import dossier, inspection
-from .packages import entries_for, evaluate_package, package, work_for, timing
+from .rules import inspection
+from .packages import portfolios, package, timing
 
 
 def projection(state, world):
@@ -14,81 +14,69 @@ def projection(state, world):
     live = council.refresh(state, world, org)
     board = state["programme"]
     plans = []
-    for e in entries_for(world, org):
+    for e, plan, works, packages in portfolios(state, world, org):
         staff = components.specialists(state, world, e)
-        for target in (year, year + 1):
-            plan = dossier(state, world, e, target)
-            works = list(work_for(state, world, e, plan))
-            pkg = package(state, world, e, plan)
-            packages = {
-                p["id"]: p
-                for p in board["packages"].values()
-                if p["plan"] == plan["id"]
-            }
-            packages.setdefault(pkg["id"], pkg)
-            packages = [
-                evaluate_package(state, world, e, plan, p, works)
-                for p in packages.values()
-            ]
-            proposals = [
-                dict(
-                    id=r["id"],
-                    title=r["options"][0]["title"],
-                    axis=r["axis"],
-                    risk=r["options"][0]["risk"],
-                    cost_cents=r["options"][0]["cost_cents"],
-                    blocked=r.get("blocked"),
-                    status=r["status"],
-                    result=r["options"][0]["result"],
-                    positions=r["positions"],
-                )
-                for r in live.values()
-                if r.get("plan") == plan["id"]
-            ]
-            reports = [
-                dict(
-                    id=r["id"],
-                    axis=r["axis"],
-                    confidence=r["confidence"],
-                    applicable=research.applicability(
-                        r, plan["concept"], plan["regulation"]
-                    ),
-                    conclusion=r["conclusion"],
-                )
-                for r in sorted(
-                    state["research"]["reports"].values(), key=lambda r: r["id"]
-                )
-                if r["org"] == org
-            ]
-            calendar = [timing(state, k, p) for k, p in works]
-            plans.append(
-                dict(
-                    **plan,
-                    entry=e["id"],
-                    category=e["category"],
-                    series=e["championship"],
-                    name=world["cars"][e["car"]]["name"],
-                    staff=staff,
-                    concept_costs={
-                        strategy: sum(
-                            METHODS[a][4]
-                            for a in package(
-                                state, world, e, dict(plan, strategy=strategy)
-                            )["axes"]
-                        )
-                        for strategy in ("revise", "replace")
-                    },
-                    admitted=bool(research.admitted(state, e)),
-                    packages=packages,
-                    proposals=proposals,
-                    knowledge=reports,
-                    certificates=board["certificates"].get(plan["id"], {}),
-                    violations=inspection(state, world, e) if target == year else [],
-                    calendar=calendar,
-                    spent_cents=sum(r["cost_cents"] for r in calendar),
-                    reserved_cents=sum(r["reserved_cents"] for r in calendar),
-                )
+        target = plan["year"]
+        proposals = [
+            dict(
+                id=r["id"],
+                title=r["options"][0]["title"],
+                axis=r["axis"],
+                risk=r["options"][0]["risk"],
+                cost_cents=r["options"][0]["cost_cents"],
+                blocked=r.get("blocked"),
+                status=r["status"],
+                result=r["options"][0]["result"],
+                positions=r["positions"],
             )
+            for r in live.values()
+            if r.get("plan") == plan["id"]
+        ]
+        reports = [
+            dict(
+                id=r["id"],
+                axis=r["axis"],
+                confidence=r["confidence"],
+                applicable=research.applicability(
+                    r, plan["concept"], plan["regulation"]
+                ),
+                conclusion=r["conclusion"],
+            )
+            for r in sorted(
+                state["research"]["reports"].values(), key=lambda r: r["id"]
+            )
+            if r["org"] == org
+        ]
+        calendar = [timing(state, k, p) for k, p in works]
+        plans.append(
+            dict(
+                **plan,
+                entry=e["id"],
+                category=e["category"],
+                series=e["championship"],
+                name=world["cars"][e["car"]]["name"],
+                staff=staff,
+                concept_costs={
+                    strategy: sum(
+                        METHODS[a][4]
+                        for a in package(
+                            state, world, e, dict(plan, strategy=strategy)
+                        )["axes"]
+                    )
+                    for strategy in ("revise", "replace")
+                },
+                admitted=bool(research.admitted(state, e)),
+                packages=packages,
+                proposals=proposals,
+                knowledge=reports,
+                certificates=board["certificates"].get(plan["id"], {}),
+                violations=inspection(state, world, e) if target == year else [],
+                calendar=calendar,
+                spent_cents=sum(r["cost_cents"] for r in calendar),
+                reserved_cents=sum(r["reserved_cents"] for r in calendar),
+            )
+        )
+    plans.sort(key=lambda p: (p["entry"], p["year"]))
     people = {
         pid: state["people"][pid]["name"]
         for plan in plans

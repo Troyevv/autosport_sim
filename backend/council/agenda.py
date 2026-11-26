@@ -287,9 +287,7 @@ def topics(state, world, org):
             yield from allocation_topic(
                 state, world, leader, staff_by_entry[leader["id"]]
             )
-        for e in entries_for(world, org):
-            if e["id"] in staff_by_entry:
-                yield from programme_topics(state, world, e, staff_by_entry[e["id"]])
+        yield from programme_topics(state, world, org, staff_by_entry)
     if entries:
         yield from resource_topics(state, world, org, staff_by_entry, studies, projects)
         yield from workshop_topics(state, world, org, entries, staff_by_entry)
