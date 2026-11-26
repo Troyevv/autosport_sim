@@ -111,6 +111,9 @@ def test_competing_projects_actual_budget_grants_and_private_public_sources():
     # The player's studies cannot issue a drawing. Independently funded NPC offices can.
     current = dict(s["components"])
     revisions = current.pop("revisions")
+    current["inventory"] = {
+        i: v for i, v in current["inventory"].items() if v["org"] == MCLAREN
+    }
     assert current == {k: value for k, value in original.items() if k != "revisions"}
     assert revisions and all(
         d["manufacturer"] != MCLAREN and d["reference"] in s["development"]["projects"]

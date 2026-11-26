@@ -71,7 +71,11 @@ def test_research_design_test_revision_and_replay():
         c = advance(c)
     c = rent(c, "design")
     state = checkpoint(c)
-    inventory = deepcopy(state["components"]["inventory"])
+    inventory = {
+        i: deepcopy(v)
+        for i, v in state["components"]["inventory"].items()
+        if v["org"] == MCLAREN
+    }
     mounts = mounting(state, "f1-4")
     base = development.versions(state, "f1-4", "rear-wing")[0]["id"]
     c = design(c, base)
@@ -107,7 +111,10 @@ def test_research_design_test_revision_and_replay():
     s = checkpoint(c)
     assert (
         drawing_for(s, version) == original
-        and s["components"]["inventory"] == inventory
+        and {
+            i: v for i, v in s["components"]["inventory"].items() if v["org"] == MCLAREN
+        }
+        == inventory
     )
     assert mounting(s, "f1-4") == mounts
     assert all(
@@ -423,7 +430,9 @@ def test_each_component_has_a_scoped_study_and_a_matching_test():
     research.advance(s, WORLD, facilities.later(s["date"], 10))
     reports = projection(s, WORLD)["projects"]
     assert {p["axis"] for p in reports if p.get("report")} == set(axes)
-    assert s["components"]["inventory"] == {}
+    assert not any(
+        item["org"] == MCLAREN for item in s["components"]["inventory"].values()
+    )
     assert not any(
         p.get("org") == MCLAREN and p["kind"] == "design"
         for p in s["development"]["projects"].values()

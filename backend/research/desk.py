@@ -149,6 +149,21 @@ def projection(state, world):
     center = state["estate"]["assets"]["shared:research"]
     return dict(
         opened=data["opened"],
+        inspections=[
+            dict(
+                id=h["id"],
+                date=h["date"],
+                code=h["code"],
+                serial=components.serial(h["instance"]),
+                version=h["version"],
+                batch=h["batch"],
+                person=state["people"][h["person"]]["name"],
+            )
+            for h in reversed(state.get("production", {}).get("history", []))
+            if h["code"]
+            in ("accepted", "rejected", "batch-defect", "additional", "repaired")
+            and world["entries"][h["entry"]]["org"] == org
+        ],
         projects=projects,
         reports=reports,
         entries=entries,

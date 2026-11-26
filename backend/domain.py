@@ -205,6 +205,24 @@ def next_date(state, catalog):
         dates.extend(d for d in personnel_dates(state) if d <= HORIZON)
         dates.append(HORIZON)
         if (
+            "production" in state
+            and state["setup"]["role"] == "manager"
+            and state["date"] < HORIZON
+        ):
+            from .finance.facilities import later
+
+            book = state["production"]
+            org = state["setup"]["org"]
+            if any(
+                b["org"] == org and not b["finished"] for b in book["batches"].values()
+            ) or any(
+                catalog["entries"][i["entry"]]["org"] == org
+                and i["status"] in ("inspection", "repair")
+                and (not i.get("rejected") or i["status"] == "repair")
+                for i in book["items"].values()
+            ):
+                dates.append(later(state["date"], 1))
+        if (
             state["setup"]["role"] == "manager"
             and state["date"] < HORIZON
             and any(
@@ -269,6 +287,15 @@ def apply(state, catalog, action, payload=None):
             if action == "component-install":
                 if state["setup"]["role"] != "manager":
                     raise RuleError("Установку согласует менеджер команды.", 403)
+                if (
+                    "production" in state
+                    and occupant_on(
+                        state["seats"][state["setup"]["org"] + ":manager"],
+                        state["date"],
+                    )
+                    != state["player_id"]
+                ):
+                    raise RuleError("Назначение менеджера завершено.", 403)
                 components.install(
                     state,
                     catalog,
@@ -317,7 +344,12 @@ def apply(state, catalog, action, payload=None):
 
     from . import research
 
-    from . import development
+    from . import development, production
+
+    if action in production.ORDERS and "production" in state:
+        production.command(state, catalog, action, payload)
+        state["revision"] += 1
+        return
 
     if action in development.ORDERS and "development" in state:
         development.command(state, catalog, action, payload)
