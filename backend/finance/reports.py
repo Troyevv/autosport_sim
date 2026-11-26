@@ -84,6 +84,15 @@ def statement(state, world, db, cid, scope="organization"):
             expense += max(0, -value)
             activity[source] += value
 
+    for entry in state.get("capital", {}).get("history", []):
+        if entry["org"] in accounts and entry.get("profit_cents"):
+            value = entry["profit_cents"]
+            income += max(0, value)
+            expense += max(0, -value)
+            activity[
+                "depreciation" if entry["kind"] == "depreciation" else "disposal"
+            ] += value
+
     def direction(row):
         return int(row["recipient"] in accounts) - int(row["payer"] in accounts)
 

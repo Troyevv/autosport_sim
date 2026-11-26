@@ -266,6 +266,12 @@ def apply(state, catalog, action, payload=None):
         facilities.command(state, catalog, action, payload)
         state["revision"] += 1
         return
+    from .finance import capital
+
+    if action in capital.ORDERS and "capital" in state:
+        capital.command(state, catalog, action, payload)
+        state["revision"] += 1
+        return
     if action in budget.ORDERS and "control" in state:
         budget.command(state, catalog, action, payload)
     elif action == "finance-mount" and "market" in state:

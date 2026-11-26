@@ -34,6 +34,7 @@ export type Statement = {
 }
 const categories: Record<string, string> = {
   opening: 'Начальный капитал',
+  depreciation:'Амортизация',disposal:'Результат продажи актива',
   allocation: 'Внутренний перевод',
   payroll: 'Оплата коллективов',
   'staff-payroll': 'Зарплаты',

@@ -347,3 +347,13 @@ def facilities_overview(cid: str):
 
     with storage.transaction() as db:
         return projection(storage.checkpoint(db, cid), WORLD)
+
+
+@app.get("/api/careers/{cid}/capital")
+def capital_overview(cid: str):
+    from .finance.capital import projection
+    from .catalog import WORLD
+    from . import storage
+
+    with storage.transaction() as db:
+        return projection(storage.checkpoint(db, cid), WORLD)

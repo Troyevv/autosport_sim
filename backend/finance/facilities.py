@@ -375,6 +375,17 @@ def tick(state, world):
         )
         serviced = available(state, a["owner"]) >= amount
         register(state, Schedule(installments=[term]))
+        if "capital" in state:
+            from .capital import history
+
+            history(
+                state,
+                a["owner"],
+                term.id,
+                "depreciation",
+                asset=a["id"],
+                profit_cents=a["book_cents"] * 995 // 1000 - a["book_cents"],
+            )
         a.update(
             condition=max(0, a["condition"] - (1 if serviced else 8)),
             book_cents=a["book_cents"] * 995 // 1000,

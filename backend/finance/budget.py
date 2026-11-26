@@ -359,6 +359,11 @@ def report(state, world, org, year):
 def authorize(state, world, org, category, amount, day, *, plan_only=False):
     if "control" not in state or org not in state["accounts"] or category not in GROUPS:
         return
+    if (
+        state.get("capital", {}).get("crises", {}).get(org, {}).get("status")
+        == "bankrupt"
+    ):
+        raise RuleError("Покупки остановлены в процедуре банкротства.", 409)
     view = report(state, world, org, day[:4])
     plan = view["plan"]
     if not plan:

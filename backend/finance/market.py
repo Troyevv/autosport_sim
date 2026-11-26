@@ -337,6 +337,18 @@ def validate(state, world, bid, *, signing=False):
         or world["organizations"][t.org]["kind"] != "team"
     ):
         raise RuleError("Неизвестный партнёр или гоночная программа.")
+    if (
+        state.get("capital", {}).get("crises", {}).get(t.org, {}).get("status")
+        == "bankrupt"
+        or state.get("capital", {}).get("crises", {}).get(t.sponsor, {}).get("status")
+        == "bankrupt"
+    ):
+        raise RuleError("Организация не допущена к сделкам.")
+    if "capital" in state and not any(
+        p["org"] == t.org and p["series"] == t.series and p["status"] == "admitted"
+        for p in state["capital"]["programs"].values()
+    ):
+        raise RuleError("Коммерческий договор требует допущенной программы.")
     if t.end <= state["date"] or (not signing and t.start < state["date"]):
         raise RuleError("Срок предложения истёк.")
     if t.person and t.person not in {
@@ -929,7 +941,10 @@ def invite(state, world, day, market, player):
         )
         if conflict(state, world, term):
             continue
-        propose(state, world, Bid(terms=term), bid)
+        try:
+            propose(state, world, Bid(terms=term), bid)
+        except RuleError:
+            continue
         break
 
 

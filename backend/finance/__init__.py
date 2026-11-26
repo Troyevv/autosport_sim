@@ -268,7 +268,11 @@ def portfolio(state, world):
     org = state["setup"]["org"]
     return [
         org,
-        *(org + ":" + s for s in world["organizations"][org]["programs"]),
+        *(
+            [k for k, p in state["capital"]["programs"].items() if p["org"] == org]
+            if "capital" in state
+            else [org + ":" + s for s in world["organizations"][org]["programs"]]
+        ),
         *(["group:" + org] if state["setup"]["role"] == "owner" else []),
         *(
             "academy:" + a["id"]

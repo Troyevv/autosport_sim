@@ -4,7 +4,7 @@ from typing import Literal
 from pydantic import Field
 from ..staff_input import Day, Fields, Id
 from ..domain import RuleError
-from . import budget, facilities
+from . import budget, facilities, capital
 from .market import Appearance, appearance
 from .series import PromotionAwards, award
 from . import Instalment, Schedule, balance, register, settle, cancel
@@ -46,6 +46,7 @@ class Cancellation(Fields):
 PRODUCERS = {
     **budget.PRODUCERS,
     **facilities.PRODUCERS,
+    **capital.PRODUCERS,
     "finance-appearance": Appearance,
     "finance-promotion-awards": PromotionAwards,
     "finance-confirm": CommercialEvidence,
@@ -85,7 +86,10 @@ def participation(state, world, entry_id, day):
     )
     if not weekend:
         return
-    org = entry["org"]
+    program = state.get("capital", {}).get("programs", {}).get(entry["program"])
+    if program and program["status"] != "admitted":
+        raise RuleError("Программа не имеет допуска.")
+    org = program["org"] if program else entry["org"]
     term = Instalment(
         id="logistics:" + weekend["id"] + ":" + entry_id,
         contract=entry["program"],
@@ -102,7 +106,9 @@ def participation(state, world, entry_id, day):
 
 def confirm(state, world, action, payload):
     event = PRODUCERS[action].model_validate(payload)
-    if isinstance(event, facilities.Access):
+    if isinstance(event, (capital.Admission, capital.OrganizationChange)):
+        capital.integration(state, world, event)
+    elif isinstance(event, facilities.Access):
         facilities.access(state, world, event)
     elif isinstance(event, budget.ProjectCost):
         budget.project(state, world, event)

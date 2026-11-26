@@ -389,6 +389,10 @@ def advance(state, catalog, target):
             from .finance import budget
 
             budget.tick(state, catalog)
+        if "capital" in state:
+            from .finance import capital
+
+            capital.tick(state, catalog)
         if "estate" in state:
             from .finance import facilities
 
@@ -561,6 +565,11 @@ def fill_vacancies(state, catalog):
     for seat in catalog["assignments"].values():
         role = career_choice.office(catalog, seat)
         org = seat["org"]
+        if state.get("capital", {}).get("crises", {}).get(org, {}).get("status") in (
+            "insolvent",
+            "bankrupt",
+        ):
+            continue
         recruiter = occupant_on(state["seats"].get(org + ":" + role, []), day)
         if (
             not recruiter
