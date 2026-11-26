@@ -194,6 +194,10 @@ def extend(original):
             seat["academy"] = aid.rsplit(":", 1)[-1]
     for item in values("registrations.csv"):
         orgs[item.pop("org")]["registration"] = item
+    for org in orgs.values():
+        # Sporting country is a documented modelling proxy when the legal operator is unknown.
+        registration = org.get("registration")
+        org["domicile"] = registration["country"] if registration else org["country"]
     for item in values("affiliations.csv"):
         orgs[item.pop("org")].setdefault("affiliations", []).append(item)
     for record in values("history.csv"):

@@ -167,6 +167,7 @@ export function Championships({ world, c, media }: SectionProps) {
     es = Object.values(world.entries).filter((e) => e.championship === series)
   const [organization, setOrganization] = useState('')
   const profile = world.organizations[organization]
+  const baseLocation = profile && [profile.base, world.countries[profile.base_country ?? '']].filter(Boolean).join(', ')
   const profileEntries = Object.values(world.entries).filter(
     (e) => e.org === organization || Object.values(world.cars[e.car].suppliers).includes(organization),
   )
@@ -288,10 +289,10 @@ export function Championships({ world, c, media }: SectionProps) {
               ['Организация', profile.kind === 'team' ? 'Гоночная команда' : 'Производитель'],
               ...(profile.registration ? [
                 ['Регистрация', <a href={profile.registration.source} target="_blank" rel="noreferrer">{profile.registration.legal_name} · {world.countries[profile.registration.country]}</a>] as const,
-                ...(profile.registration.headquarters ? [['Штаб-квартира', profile.registration.headquarters] as const] : []),
-              ] : []),
+                ...(profile.registration.headquarters ? [['Адрес регистрации', profile.registration.headquarters] as const] : []),
+              ] : profile.domicile ? [['Юрисдикция оператора · оценка', world.countries[profile.domicile]] as const] : []),
               ...(profile.country ? [['Страна программы', world.countries[profile.country] ?? profile.country] as const] : []),
-              ...(profile.base_country ? [['Техническая база', [profile.base, world.countries[profile.base_country]].filter(Boolean).join(', ')] as const] : []),
+              ...(profile.base_country ? [['Техническая база', profile.base_source ? <a href={profile.base_source} target="_blank" rel="noreferrer">{baseLocation}</a> : baseLocation] as const] : []),
               ...(profile.affiliations ?? []).map((a) => ['Связь организаций', <a href={a.source} target="_blank" rel="noreferrer">{a.label}</a>] as const),
               ['Чемпионаты', profile.programs.map((id) => world.championships[id].name).join(' · ')],
               ...(profile.lines.length

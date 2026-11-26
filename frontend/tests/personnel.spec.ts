@@ -215,7 +215,7 @@ test('Мандат владельца, наблюдение скаута и до
   await evidence('preparation')
   const prepared = page.waitForResponse(r => r.url().endsWith('/commands') && r.request().method() === 'POST')
   await page.getByRole('button', { name: 'Продолжить' }).click()
-  await expect(await prepared).toBeOK()
+  expect((await prepared).ok()).toBe(true)
   await expect(page.locator('.prep-desk .staff-timeline')).toContainText('Завершено')
   const training = await (await page.request.get('/api/careers/' + c.id)).json()
   const participant = training.preparations[0].names[0]

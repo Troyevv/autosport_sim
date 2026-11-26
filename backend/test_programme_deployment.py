@@ -106,7 +106,7 @@ def test_rollout_two_cars_shortage_fit_removal_workshop_and_portable_save(monkey
     assert card["installed"] == card["required"] == 4 and card["ready"] == 2
     assert [r["instance"] for r in part["targets"]] == [first, second]
     assert not part["fits"] and not part["serials"]
-    old = components.OPENING.installed["f1-4"]["floor"]
+    old = components.parts_for(checkpoint(c)).installed["f1-4"]["floor"]
     c = service.execute(c["id"], fit(c, old))
     card, part = coverage(c)
     assert card["installed"] == 3 and part["serials"] == [first]

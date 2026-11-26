@@ -47,6 +47,27 @@ def projection(state, world):
             )
             if r["org"] == org
         ]
+        documents = []
+        if state.get("opening") and target == 2025:
+            parts = components.parts_for(state)
+            versions = (
+                [e["supplier_baseline"]]
+                if "supplier_axis" in e
+                else [parts.stock[i]["spec"] for i in parts.installed[e["id"]].values()]
+            )
+            for version in versions:
+                drawing = parts.specs[version]
+                maker = drawing["manufacturer"]
+                documents.append(
+                    dict(
+                        reference=version,
+                        component=components.LABELS[drawing["slot"]],
+                        issuer=world["organizations"]
+                        .get(maker, {})
+                        .get("name", world["cars"][e["car"]]["constructor"]),
+                        design=maker == org,
+                    )
+                )
         calendar = [timing(state, k, p) for k, p in works]
         plans.append(
             dict(
@@ -69,6 +90,7 @@ def projection(state, world):
                 packages=packages,
                 proposals=proposals,
                 knowledge=reports,
+                documents=documents,
                 certificates=board["certificates"].get(plan["id"], {}),
                 violations=inspection(state, world, e) if target == year else [],
                 calendar=calendar,

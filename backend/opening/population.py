@@ -40,6 +40,7 @@ WORKS = {
     "team-peugeot-totalenergies": {"supplier-peugeot"},
     "team-alpine-endurance-team": {"supplier-alpine"},
     "team-crg": {"supplier-crg"},
+    "team-asd-monster-k-factory-team": {"supplier-monster-k"},
     "team-parolin-motorsport": {"supplier-parolin"},
     "team-energy-corse": {"supplier-energy-corse"},
     "team-birel-art-racing": {"supplier-birel-art"},
@@ -52,6 +53,7 @@ WORKS = {
 # These are divisions with different sporting and supply duties.
 SHARED_BASE = {
     "team-crg": "supplier-crg",
+    "team-asd-monster-k-factory-team": "supplier-monster-k",
     "team-energy-corse": "supplier-energy-corse",
     "team-kr-motorsport": "supplier-kart-republic",
     "team-parolin-motorsport": "supplier-parolin",
@@ -93,6 +95,9 @@ def venue_plan(org, entries, academy):
             kinds.update(simulator=1, bench=1, research=1)
         if len(series) > 2:
             kinds.update(bench=2, warehouse=2, design=1)
+    else:
+        # Kart engines and chassis are bought homologated. The workshop can inspect them.
+        kinds["quality"] = 1
     if org["id"] == "team-moneygram-haas-f1-team":
         kinds.update(factory=2, design=2, cfd=2)
     if org["id"] in SHARED_BASE:

@@ -1,145 +1,145 @@
-org,country,base,base_country
-team-abt-sportsline,DE,Kempten,DE
-team-dorr-motorsport,DE,Frankfurt,DE
-team-schubert-motorsport,DE,Oschersleben,DE
-team-mercedes-amg-team-landgraf,DE,Gensingen,DE
-team-land-motorsport,DE,Niederdreisbach,DE
-team-hrt-ford-performance,DE,Drees,DE
-team-paul-motorsport,DE,Dresden,DE
-team-manthey-ema,DE,Meuspath,DE
-team-proton-competition,DE,Ummendorf,DE
-team-us-racing,DE,Kerpen,DE
-team-phm-racing,DE,,DE
-team-hagemann-racing,CZ,,CZ
-team-comtoyou-racing,BE,Gembloux,BE
-team-team-wrt,BE,Baudour,BE
-team-vdk-racing,BE,,BE
-team-emil-frey-racing,CH,Safenwil,CH
-team-kick-sauber-f1-team,CH,Hinwil,CH
-team-jenzer-motorsport,CH,Lyss,CH
-team-maffi-racing,CH,,CH
-team-tgi-team-lamborghini-by-grt,AT,Knittelfeld,AT
-team-oracle-red-bull-racing,AT,Milton Keynes,GB
-team-mercedes-amg-team-winward,US,,US
-team-porsche-penske-motorsport,US,Mooresville,US
-team-heart-of-racing-team,US,Brackley,GB
-team-moneygram-haas-f1-team,US,Kannapolis,US
-team-mclaren-formula-1-team,GB,Woking,GB
-team-mercedes-amg-petronas-f1-team,GB,Brackley,GB
-team-aston-martin-aramco-f1-team,GB,Silverstone,GB
-team-williams-racing,GB,Grove,GB
-team-invicta-racing,GB,Attleborough,GB
-team-hitech-tgr,GB,Silverstone,GB
-team-cadillac-hertz-team-jota,GB,Tunbridge Wells,GB
-team-tf-sport,GB,Redhill,GB
-team-united-autosports,GB,Wakefield,GB
-team-phinsys-by-argenti,GB,,GB
-team-chris-dittmann-racing,GB,Tewkesbury,GB
-team-jhr-developments,GB,Dronfield,GB
-team-fortec-motorsport,GB,Daventry,GB
-team-forza-racing,GB,,GB
-team-fusion-motorsport,GB,,GB
-team-ricky-flynn-motorsport,GB,,GB
-team-visa-cash-app-racing-bulls,IT,Faenza,IT
-team-scuderia-ferrari,IT,Maranello,IT
-team-prema-racing,IT,Grisignano di Zocco,IT
-team-trident,IT,Ozzano Monferrato,IT
-team-af-corse,IT,Piacenza,IT
-team-iron-lynx,IT,Cesena,IT
-team-real-racing,IT,,IT
-team-viola-formula-racing,IT,,IT
-team-cram-motorsport,IT,Erba,IT
-team-technorace-competition,IT,,IT
-team-cl-motorsport,IT,Brescia,IT
-team-kr-motorsport,IT,Due Carrare,IT
-team-parolin-motorsport,IT,Romano d’Ezzelino,IT
-team-energy-corse,IT,Seriate,IT
-team-crg,IT,Desenzano del Garda,IT
-team-tony-kart-racing-team,IT,Prevalle,IT
-team-birel-art-racing,IT,Lissone,IT
-team-akm-motorsport,IT,,IT
-team-asd-monster-k-factory-team,IT,,IT
-team-ge-lu-mi-ni,IT,,IT
-team-cl-racing-team,IT,,IT
-team-bwt-alpine-f1-team,FR,Enstone,GB
-team-dams-lucas-oil,FR,Ruaudin,FR
-team-art-grand-prix,FR,Villeneuve-la-Guyard,FR
-team-racing-spirit-of-leman,FR,La Roche-sur-Foron,FR
-team-alpine-endurance-team,FR,Bourges,FR
-team-akkodis-asp-team,FR,Saint-Sulpice-la-Pointe,FR
-team-peugeot-totalenergies,FR,Satory,FR
-team-sainteloc-racing,FR,Saint-Étienne,FR
-team-r-ace-gp,FR,Fontenay-le-Comte,FR
-team-victorylane,FR,,FR
-team-campos-racing,ES,Alzira,ES
-team-monlau-motorsport,ES,Barcelona,ES
-team-drivex,ES,Madrid,ES
-team-dxr,ES,,ES
-team-tecnicar-by-amtog,ES,,ES
-team-grs-team,ES,,ES
-team-dpk-racing,ES,Bobes,ES
-team-karting-club-campillos,ES,Campillos,ES
-team-mp-motorsport,NL,Westmaas,NL
-team-van-amersfoort-racing,NL,Zeewolde,NL
-team-var-by-birel,NL,,NL
-team-rodin-motorsport,NZ,Farnham,GB
-team-aix-racing,DE,Gernsheim,DE
-team-toyota-gazoo-racing,JP,Cologne,DE
-team-tc-racing,FR,Madrid,ES
-team-xcel-motorsport,AE,,AE
-team-akcel-gp,AE,,AE
-team-as-motorsport,SI,,SI
-team-g4-racing,CH,Barcelona,ES
-team-rpm,IE,,IE
-team-ward-racing,SE,,SE
-team-krz-motorsport,PL,,PL
-team-kbk-competition,PL,,PL
-team-koski-motorsport,FI,,FI
-team-liqui-moly-roli-motorsport,EE,,EE
-team-tepz-racing-team,CZ,,CZ
-supplier-pirelli,IT,Milan,IT
-supplier-ferrari,IT,Maranello,IT
-supplier-abarth,IT,Turin,IT
-supplier-tatuus,IT,Lainate,IT
-supplier-iame,IT,Zingonia,IT
-supplier-kart-republic,IT,Due Carrare,IT
-supplier-tm-kart,IT,Pesaro,IT
-supplier-parolin,IT,Romano d’Ezzelino,IT
-supplier-energy-corse,IT,Seriate,IT
-supplier-otk-kart-group,IT,Prevalle,IT
-supplier-crg,IT,Desenzano del Garda,IT
-supplier-vortex,IT,Prevalle,IT
-supplier-birel-art,IT,Lissone,IT
-supplier-monster-k,IT,,IT
-supplier-lamborghini,IT,Sant’Agata Bolognese,IT
-supplier-dallara,IT,Varano de’ Melegari,IT
-supplier-bmw,DE,Munich,DE
-supplier-porsche,DE,Weissach,DE
-supplier-mercedes,DE,Brixworth,GB
-supplier-audi,DE,Neuburg,DE
-supplier-honda-rbpt,JP,Sakura,JP
-supplier-toyota,JP,Toyota City,JP
-supplier-lexus,JP,,JP
-supplier-renault,FR,Viry-Châtillon,FR
-supplier-mecachrome,FR,Aubigny-sur-Nère,FR
-supplier-3mo,FR,Laval,FR
-supplier-michelin,FR,Clermont-Ferrand,FR
-supplier-sadev,FR,Saint-Prouant,FR
-supplier-oreca,FR,Signes,FR
-supplier-peugeot,FR,Satory,FR
-supplier-alpine,FR,Viry-Châtillon,FR
-supplier-hewland,GB,Maidenhead,GB
-supplier-xtrac,GB,Thatcham,GB
-supplier-aston-martin,GB,Gaydon,GB
-supplier-cosworth,GB,Northampton,GB
-supplier-mclaren,GB,Woking,GB
-supplier-red-bull-technology,GB,Milton Keynes,GB
-supplier-goodyear,US,Akron,US
-supplier-cadillac,US,Warren,US
-supplier-ford,US,Dearborn,US
-supplier-chevrolet,US,Detroit,US
-supplier-pratt-miller,US,New Hudson,US
-supplier-hankook,KR,Seongnam,KR
-supplier-maxxis,TW,Yuanlin,TW
-supplier-henza-kart,DE,,DE
-supplier-multimatic,CA,Markham,CA
+org,country,base,base_country,base_source
+team-abt-sportsline,DE,Kempten,DE,
+team-dorr-motorsport,DE,Frankfurt,DE,
+team-schubert-motorsport,DE,Oschersleben,DE,
+team-mercedes-amg-team-landgraf,DE,Gensingen,DE,
+team-land-motorsport,DE,Niederdreisbach,DE,
+team-hrt-ford-performance,DE,Drees,DE,
+team-paul-motorsport,DE,Dresden,DE,
+team-manthey-ema,DE,Meuspath,DE,
+team-proton-competition,DE,Ummendorf,DE,
+team-us-racing,DE,Kerpen,DE,
+team-phm-racing,DE,,DE,
+team-hagemann-racing,CZ,Ostrava,CZ,https://cs55racingkart.com/rivenditori_mondo_en.php?cont=Europa
+team-comtoyou-racing,BE,Gembloux,BE,
+team-team-wrt,BE,Baudour,BE,
+team-vdk-racing,BE,,BE,
+team-emil-frey-racing,CH,Safenwil,CH,
+team-kick-sauber-f1-team,CH,Hinwil,CH,
+team-jenzer-motorsport,CH,Lyss,CH,
+team-maffi-racing,CH,Meyrin,CH,https://www.maffiracing.ch/contact
+team-tgi-team-lamborghini-by-grt,AT,Knittelfeld,AT,
+team-oracle-red-bull-racing,AT,Milton Keynes,GB,
+team-mercedes-amg-team-winward,DE,Altendiez,DE,https://media.adac-motorsport.de/dl.php?dID=2614%2C2727&fID=68691
+team-porsche-penske-motorsport,US,Mooresville,US,
+team-heart-of-racing-team,US,Brackley,GB,
+team-moneygram-haas-f1-team,US,Kannapolis,US,
+team-mclaren-formula-1-team,GB,Woking,GB,
+team-mercedes-amg-petronas-f1-team,GB,Brackley,GB,
+team-aston-martin-aramco-f1-team,GB,Silverstone,GB,
+team-williams-racing,GB,Grove,GB,
+team-invicta-racing,GB,Attleborough,GB,
+team-hitech-tgr,GB,Silverstone,GB,
+team-cadillac-hertz-team-jota,GB,Tunbridge Wells,GB,
+team-tf-sport,GB,Redhill,GB,
+team-united-autosports,GB,Wakefield,GB,
+team-phinsys-by-argenti,GB,Banbury,GB,https://fiaformula4.com/teams/argenti-motorsport/
+team-chris-dittmann-racing,GB,Tewkesbury,GB,
+team-jhr-developments,GB,Dronfield,GB,
+team-fortec-motorsport,GB,Daventry,GB,
+team-forza-racing,GB,,GB,
+team-fusion-motorsport,GB,Kimbolton,GB,https://www.fusionkarting.com/contact-us
+team-ricky-flynn-motorsport,GB,,GB,
+team-visa-cash-app-racing-bulls,IT,Faenza,IT,
+team-scuderia-ferrari,IT,Maranello,IT,
+team-prema-racing,IT,Grisignano di Zocco,IT,
+team-trident,IT,Ozzano Monferrato,IT,
+team-af-corse,IT,Piacenza,IT,
+team-iron-lynx,IT,Cesena,IT,
+team-real-racing,RO,Tunari,RO,https://f4championship.com/TEAM/69/REAL%20RACING
+team-viola-formula-racing,IT,San Benigno Canavese,IT,https://www.ilrisveglio-online.it/2014/10/16/trionfo-volpianese-a-magny-cours-con-luca-furbatto-e-viola-formula/
+team-cram-motorsport,IT,Erba,IT,
+team-technorace-competition,IT,Mercogliano,IT,https://www.technoracecompetition.com/english/contact-us/
+team-cl-motorsport,IT,Brescia,IT,
+team-kr-motorsport,IT,Due Carrare,IT,
+team-parolin-motorsport,IT,Romano d’Ezzelino,IT,
+team-energy-corse,IT,Seriate,IT,
+team-crg,IT,Desenzano del Garda,IT,
+team-tony-kart-racing-team,IT,Prevalle,IT,
+team-birel-art-racing,IT,Lissone,IT,
+team-akm-motorsport,IT,Calderara di Reno,IT,https://www.acisport.it/it/F4/team/2024
+team-asd-monster-k-factory-team,IT,San Giovanni Teatino,IT,https://www.monsterracing.it/en/contacts/
+team-ge-lu-mi-ni,IT,,IT,
+team-cl-racing-team,IT,,IT,
+team-bwt-alpine-f1-team,FR,Enstone,GB,
+team-dams-lucas-oil,FR,Ruaudin,FR,
+team-art-grand-prix,FR,Villeneuve-la-Guyard,FR,
+team-racing-spirit-of-leman,FR,La Roche-sur-Foron,FR,
+team-alpine-endurance-team,FR,Bourges,FR,
+team-akkodis-asp-team,FR,Saint-Sulpice-la-Pointe,FR,
+team-peugeot-totalenergies,FR,Satory,FR,
+team-sainteloc-racing,FR,Saint-Étienne,FR,
+team-r-ace-gp,FR,Fontenay-le-Comte,FR,
+team-victorylane,FR,,FR,
+team-campos-racing,ES,Alzira,ES,
+team-monlau-motorsport,ES,Barcelona,ES,
+team-drivex,ES,Madrid,ES,
+team-dxr,ES,Madrid,ES,https://f4spain.org/team/dxr-by-drivex/
+team-tecnicar-by-amtog,ES,Cheste,ES,https://tecnicar.es/contacto/
+team-grs-team,ES,Paterna,ES,https://f4spain.org/team/grs-team/
+team-dpk-racing,ES,Bobes,ES,
+team-karting-club-campillos,ES,Campillos,ES,
+team-mp-motorsport,NL,Westmaas,NL,
+team-van-amersfoort-racing,NL,Zeewolde,NL,
+team-var-by-birel,NL,,NL,
+team-rodin-motorsport,NZ,Farnham,GB,
+team-aix-racing,DE,Gernsheim,DE,
+team-toyota-gazoo-racing,JP,Cologne,DE,
+team-tc-racing,FR,Madrid,ES,
+team-xcel-motorsport,AE,Dubai,AE,https://fiaformula4.com/teams/xcel-motorsport/
+team-akcel-gp,AE,Lonato del Garda,IT,https://formulascout.com/behind-the-contrasting-fortunes-of-frecs-newest-teams/137531
+team-as-motorsport,SI,окрестности Венеции,IT,https://www.asmotorsport.si/contact
+team-g4-racing,CH,Vilanova del Vallès,ES,https://f4spain.org/es/team/g4-racing/
+team-rpm,IT,Piacenza,IT,https://feederseries.net/2022/02/23/exclusive-introducing-new-freca-team-race-performance-motorsport-we-can-run-at-the-front/
+team-ward-racing,SE,Desenzano del Garda,IT,https://www.kartsportnews.com/2019/11/28/interview-joakim-ward-ward-racing/
+team-krz-motorsport,PL,,PL,
+team-kbk-competition,PL,,FR,https://www.kbkcompetition.fr/structure/
+team-koski-motorsport,FI,,FI,
+team-liqui-moly-roli-motorsport,EE,,EE,
+team-tepz-racing-team,CZ,,CZ,
+supplier-pirelli,IT,Milan,IT,
+supplier-ferrari,IT,Maranello,IT,
+supplier-abarth,IT,Turin,IT,
+supplier-tatuus,IT,Lainate,IT,
+supplier-iame,IT,Zingonia,IT,
+supplier-kart-republic,IT,Due Carrare,IT,
+supplier-tm-kart,IT,Pesaro,IT,
+supplier-parolin,IT,Romano d’Ezzelino,IT,
+supplier-energy-corse,IT,Seriate,IT,
+supplier-otk-kart-group,IT,Prevalle,IT,
+supplier-crg,IT,Desenzano del Garda,IT,
+supplier-vortex,IT,Prevalle,IT,
+supplier-birel-art,IT,Lissone,IT,
+supplier-monster-k,IT,San Giovanni Teatino,IT,https://www.monsterracing.it/en/contacts/
+supplier-lamborghini,IT,Sant’Agata Bolognese,IT,
+supplier-dallara,IT,Varano de’ Melegari,IT,
+supplier-bmw,DE,Munich,DE,
+supplier-porsche,DE,Weissach,DE,
+supplier-mercedes,DE,Brixworth,GB,
+supplier-audi,DE,Neuburg,DE,
+supplier-honda-rbpt,JP,Sakura,JP,
+supplier-toyota,JP,Toyota City,JP,
+supplier-lexus,JP,Toyota–Okazaki (Shimoyama),JP,https://global.toyota/en/newsroom/corporate/40604217.html
+supplier-renault,FR,Viry-Châtillon,FR,
+supplier-mecachrome,FR,Aubigny-sur-Nère,FR,
+supplier-3mo,FR,Laval,FR,
+supplier-michelin,FR,Clermont-Ferrand,FR,
+supplier-sadev,FR,Saint-Prouant,FR,
+supplier-oreca,FR,Signes,FR,
+supplier-peugeot,FR,Satory,FR,
+supplier-alpine,FR,Viry-Châtillon,FR,
+supplier-hewland,GB,Maidenhead,GB,
+supplier-xtrac,GB,Thatcham,GB,
+supplier-aston-martin,GB,Gaydon,GB,
+supplier-cosworth,GB,Northampton,GB,
+supplier-mclaren,GB,Woking,GB,
+supplier-red-bull-technology,GB,Milton Keynes,GB,
+supplier-goodyear,US,Akron,US,
+supplier-cadillac,US,Warren,US,
+supplier-ford,US,Dearborn,US,
+supplier-chevrolet,US,Detroit,US,
+supplier-pratt-miller,US,New Hudson,US,
+supplier-hankook,KR,Seongnam,KR,
+supplier-maxxis,TW,Yuanlin,TW,
+supplier-henza-kart,NL,Oud-Beijerland,NL,https://henzakart.com/contact
+supplier-multimatic,CA,Markham,CA,

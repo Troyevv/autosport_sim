@@ -27,6 +27,8 @@ def audit(s):
     assert len(world["championships"]) == 11
     assets = list(s["estate"]["assets"].values())
     for oid in teams:
+        assert teams[oid]["domicile"] in world["countries"], oid
+        assert teams[oid]["base_country"] in world["countries"], oid
         owned = [a for a in assets if a["owner"] == oid]
         rented = [
             s["estate"]["assets"][r["facility"]]
@@ -39,6 +41,7 @@ def audit(s):
     assert all(
         s["seats"][aid] for aid, a in world["assignments"].items() if a["person"]
     )
+    assert all(g["size"] > 0 for g in s["collectives"].values())
     contracts = s["market"]["supplies"]
     by_entry = {}
     for key, d in contracts.items():
@@ -101,6 +104,28 @@ def audit(s):
             facilities=sum(a["owner"] in orgs | makers for a in assets),
             contracts=sum(c["series"] == champ for c in contracts.values()),
             liveries=sum(e["id"] in GARAGE["entries"] for e in entries),
+            personnel=len(
+                {
+                    a["person"]
+                    for a in world["assignments"].values()
+                    if a["org"] in orgs | makers and a["person"]
+                }
+            ),
+            collectives=sum(
+                g["org"] in orgs | makers for g in s["collectives"].values()
+            ),
+            installed=sum(len(parts.installed[e["id"]]) for e in entries),
+            specifications=len(
+                {
+                    parts.stock[i]["spec"]
+                    for e in entries
+                    for i in parts.installed[e["id"]].values()
+                }
+            ),
+            academies=sum(
+                a["org"] in orgs | makers
+                for a in world["staff_rules"]["academies"].values()
+            ),
         )
     return dict(
         series=series,
