@@ -1,0 +1,1451 @@
+{
+  "patterns": {
+    "plain": {
+      "name": "Сплошной цвет",
+      "secondary": "",
+      "accent": ""
+    },
+    "rb": {
+      "name": "Тёмный борт",
+      "secondary": "M0 63L15 55 13 77 0 93Z M56 8Q63 0 77 20L69 48 58 38Z",
+      "accent": "M51 48Q64 35 74 24L71 39 61 57 52 64Z M1 77L10 67 9 73Z"
+    },
+    "papaya": {
+      "name": "Папайя и графит",
+      "secondary": "M0 90Q27 61 47 58Q72 56 85 22L100 0V100H0Z",
+      "accent": "M0 88Q40 54 54 57L62 55Q49 61 41 62L0 94Z M92 0H100V15Z"
+    },
+    "maranello": {
+      "name": "Белая полоса кокпита",
+      "secondary": "M29 41L43 42Q48 41 53 33L62 20 74 27 59 45Q52 51 45 49L29 46Z",
+      "accent": "M0 89L13 78 18 84 2 96Z M77 87L94 75V84Z"
+    },
+    "silver": {
+      "name": "Серебро и бирюза",
+      "secondary": "M0 75Q24 64 46 66Q66 63 79 42L89 27 100 22V100H0Z",
+      "accent": "M0 73Q23 60 48 61Q70 58 82 36L87 31Q68 66 49 66L0 79Z"
+    },
+    "british": {
+      "name": "Контур понтона",
+      "secondary": "M0 88Q49 81 66 76L88 54 100 52V100H0Z",
+      "accent": "M0 77Q33 73 51 74Q70 75 86 54L85 59Q69 80 52 78L0 81Z"
+    },
+    "alpine": {
+      "name": "Розовые понтоны",
+      "secondary": "M0 50L15 46 11 78 0 89Z M38 58Q58 63 79 42L73 78 46 84Z M88 0H100V49H94Z",
+      "accent": "M32 46L43 49 46 55Z M67 79L85 58 80 72Z"
+    },
+    "grove": {
+      "name": "Двухцветный синий",
+      "secondary": "M0 84L35 72Q58 66 60 47L68 12 86 23 71 70 43 88H0Z",
+      "accent": "M41 75Q61 67 63 45L68 27 66 55 57 71Z"
+    },
+    "sauber": {
+      "name": "Зелёный нос",
+      "secondary": "M0 0H53Q39 53 60 76L68 100H0Z M89 0H100V100H97Z",
+      "accent": "M43 40L58 70 69 81 53 73Z"
+    },
+    "faenza": {
+      "name": "Синие штрихи",
+      "secondary": "M0 86Q45 79 72 63L86 49 76 74 41 88 0 94Z M67 42L74 12 81 27 74 49Z",
+      "accent": "M62 44Q64 18 71 15L73 25 69 42Z"
+    },
+    "haas": {
+      "name": "Красный кантик",
+      "secondary": "M0 59Q39 41 50 50L64 66 92 70 100 100H0Z",
+      "accent": "M4 69L44 48 52 52 66 70 49 55Z M89 0H100V9H88Z"
+    },
+    "invicta": {
+      "name": "Жёлтый и чёрный",
+      "secondary": "M0 14H14L13 89H0Z M43 90L64 78 71 51 79 42 72 87 60 100H44Z M88 0H100V40H89Z",
+      "accent": "M45 78L66 63 61 71 49 83Z"
+    },
+    "prema": {
+      "name": "Триколор",
+      "secondary": "M0 59L44 40 60 50 75 26 88 10V53L61 76 43 58 0 76Z",
+      "accent": "M36 48L50 45 57 50 47 52Z M68 72L87 39 88 46 75 73Z"
+    },
+    "trident": {
+      "name": "Ломаная стрела",
+      "secondary": "M0 84L37 50 55 56 75 28 92 27 67 69 55 81 36 65Z",
+      "accent": "M29 65L38 54 54 62 69 45 58 69 38 60Z"
+    },
+    "tgr": {
+      "name": "Заводской диагональный блок",
+      "secondary": "M0 78L40 70 65 20 82 15 65 77 45 91 0 95Z",
+      "accent": "M49 64L72 18 78 20 58 71Z"
+    },
+    "mp": {
+      "name": "Оранжевая дуга",
+      "secondary": "M0 92Q35 49 53 58Q63 69 78 32L86 26Q75 80 54 75Q37 66 0 98Z",
+      "accent": "M42 64Q55 55 60 66L55 68Z"
+    },
+    "art": {
+      "name": "Чёрно-белые секции",
+      "secondary": "M0 79L41 61 56 63 70 19 100 14V0H0Z",
+      "accent": "M0 85L52 66 67 42 64 56 54 73Z"
+    },
+    "rodin": {
+      "name": "Золотой кант",
+      "secondary": "M0 82L40 70Q63 70 78 46L76 53Q65 74 43 76L0 89Z",
+      "accent": "M8 74L37 65 46 63 37 70Z"
+    },
+    "aix": {
+      "name": "Гранёный борт",
+      "secondary": "M0 55L24 71 46 54 58 72 77 44 93 54 76 80 58 88 43 71 27 82Z",
+      "accent": "M31 75L47 60 58 78 76 52 59 85 46 66Z"
+    },
+    "var": {
+      "name": "Двойной шеврон",
+      "secondary": "M0 76L43 72 58 47 66 40 55 76 38 86H0Z M68 80L84 30 95 23 82 75Z",
+      "accent": "M44 81L64 43 52 77Z"
+    },
+    "dams": {
+      "name": "Синие секции",
+      "secondary": "M0 81L27 64 52 65 62 16 80 22 66 72 47 80 0 92Z",
+      "accent": "M0 85L47 75 55 72 48 81 0 94Z"
+    },
+    "campos": {
+      "name": "Контрастный клин",
+      "secondary": "M0 82L37 71 51 54 65 58 85 26 79 61 64 77 49 66 35 82Z",
+      "accent": "M23 82L43 62 50 59 34 79Z"
+    },
+    "goldsweep": {
+      "name": "Золотые росчерки",
+      "secondary": "M0 86Q41 74 56 47Q62 32 85 19L76 43Q63 58 59 70L76 61 61 83 28 92Z",
+      "accent": "M0 76Q42 65 55 47L48 62 31 75Z"
+    },
+    "vantage-line": {
+      "name": "Линия порога",
+      "secondary": "M0 79L34 81Q61 82 81 65L100 59V100H0Z",
+      "accent": "M0 79L38 79Q65 78 82 60L100 55V58L82 64Q66 83 37 83H0Z"
+    },
+    "split": {
+      "name": "Двухцветная дверь",
+      "secondary": "M0 0H57L43 100H0Z",
+      "accent": "M54 0H59L45 100H40Z"
+    },
+    "speed": {
+      "name": "Полосы скорости",
+      "secondary": "M0 90L29 71 51 69 80 31 91 29 67 71 44 84Z",
+      "accent": "M17 89L53 74 76 49 64 72 43 86Z"
+    },
+    "schaeffler": {
+      "name": "Зелёные секции",
+      "secondary": "M0 81L33 77 56 63 81 61 100 46V100H0Z",
+      "accent": "M0 78L29 71 49 68 36 76Z M69 56L89 39 98 38 86 48Z"
+    },
+    "ravenol": {
+      "name": "Сине-жёлтые поля",
+      "secondary": "M0 0H28L44 59 60 78 45 88 22 61 0 68Z M82 0H100V66L76 76Z",
+      "accent": "M29 42L49 68 64 70 61 76 47 74Z"
+    },
+    "heritage": {
+      "name": "Продольные полосы",
+      "secondary": "M0 55L100 46V56L0 67Z M0 76L100 64V68L0 80Z",
+      "accent": "M0 70L100 58V61L0 73Z"
+    },
+    "mann": {
+      "name": "Змеиный рисунок",
+      "secondary": "M0 28L11 39 19 33 30 54 40 41 52 59 62 43 73 55 84 32 98 39 100 59 84 49 74 72 62 60 52 80 39 58 29 72 17 48 7 54Z",
+      "accent": "M0 81L26 75 41 85 56 75 73 84 93 58 100 62 79 93 54 86 40 94Z"
+    },
+    "grello": {
+      "name": "Пламенные языки",
+      "secondary": "M0 59Q23 58 37 79Q32 60 45 52Q46 70 57 66Q52 60 61 51Q67 32 80 30Q69 41 69 52Q79 49 86 34L97 24Q77 73 60 78Q39 93 22 81Z",
+      "accent": "M0 90Q35 83 49 91L60 87 47 96H0Z"
+    },
+    "pens": {
+      "name": "Стрела прототипа",
+      "secondary": "M0 80Q43 56 53 51L76 15 100 14V50L75 55 56 75 0 94Z",
+      "accent": "M0 90Q40 66 55 62L76 38 79 42 57 70 0 98Z"
+    },
+    "gr": {
+      "name": "Красный штрих",
+      "secondary": "M0 77L36 63 49 64 66 45 80 40 58 71 42 77 19 77 0 86Z",
+      "accent": "M0 88L27 77 44 77 36 83Z"
+    },
+    "bmw-m": {
+      "name": "Диагонали M",
+      "secondary": "M0 63L16 70 34 38 41 31 28 75 54 69 71 23 84 14 67 77 47 87 0 86Z",
+      "accent": "M21 85L40 42 47 39 33 78Z M66 79L80 43 87 42 78 76Z"
+    },
+    "cadillac": {
+      "name": "Золотая корма",
+      "secondary": "M0 82L30 74 57 78 79 57 98 60V95H0Z",
+      "accent": "M0 76L29 70 57 72 82 50 89 50 60 78 30 75Z"
+    },
+    "rosso": {
+      "name": "Диагональ 499P",
+      "secondary": "M10 80L26 70 51 65 64 42 73 18 80 15 68 57 57 74 27 78Z",
+      "accent": "M0 88L24 80 52 80 68 69 100 65V100H0Z"
+    },
+    "claw": {
+      "name": "Когти 9X8",
+      "secondary": "M5 21L18 55 11 82 32 55 25 18 38 43 35 72 53 43 46 4 62 29 55 59 75 30 76 4 89 19 79 55 98 26 87 70 60 81 69 55 48 83 48 62 25 86Z",
+      "accent": "M20 87L38 61 32 80Z M55 73L74 44 67 67Z M78 70L92 45 85 66Z"
+    },
+    "valk": {
+      "name": "Контур арок",
+      "secondary": "M0 84Q17 53 30 69L57 77Q67 74 75 54Q82 38 99 46V51Q82 46 76 63Q69 85 56 84L29 77Q14 60 0 93Z",
+      "accent": "M0 89L28 78 51 85 26 84Z"
+    },
+    "flag": {
+      "name": "Флаг на крыле",
+      "secondary": "M0 64L29 57 34 62 2 71Z M0 75L35 66 38 70 0 82Z M62 0H100V32L72 37Z",
+      "accent": "M0 86L41 75 45 78 0 94Z"
+    },
+    "weave": {
+      "name": "Переплетение",
+      "secondary": "M0 83L24 67 39 78 54 50 67 67 86 34 100 35 71 82 55 66 42 91 25 79Z",
+      "accent": "M0 91L24 78 39 86 54 64 66 77 85 49 69 85 54 76 42 96 24 83Z"
+    },
+    "iron": {
+      "name": "Наклонные блоки",
+      "secondary": "M0 73L26 58 38 57 23 81 0 91Z M49 91L72 48 92 30 100 32 83 64 76 87Z",
+      "accent": "M32 84L46 60 52 58 39 83Z M78 84L94 53 100 49 89 80Z"
+    },
+    "ford-performance": {
+      "name": "Продольные полосы Ford",
+      "secondary": "M0 44H32L49 53 76 42 100 22V44L72 59 48 65 27 54H0Z M0 80Q46 71 75 62L100 46V100H0Z",
+      "accent": "M0 75Q37 67 60 62L100 39V43L60 66Q35 71 0 80Z M87 15H100V24L87 33Z"
+    },
+    "shell-vpower": {
+      "name": "Дуги V-Power",
+      "secondary": "M0 26Q40 24 55 59Q64 79 100 60V98Q65 99 53 76Q34 41 0 52Z M79 0H100V42L87 44Z",
+      "accent": "M0 45Q31 34 49 60Q66 90 100 71V84Q65 100 48 69Q28 45 0 56Z"
+    },
+    "alpine-endurance": {
+      "name": "Стрела Alpine",
+      "secondary": "M0 65L43 59 58 44 69 7 85 11 72 47 51 82 0 89Z M80 81L100 67V100H65Z",
+      "accent": "M0 86L37 78 56 63 48 76 0 94Z M83 33L92 20 96 20 86 39Z"
+    },
+    "bend-bmw": {
+      "name": "Панели The Bend",
+      "secondary": "M0 55L30 38 53 51 65 27 82 20 97 43 98 55 75 44 62 59 52 63 28 52 0 70Z M47 79L76 67 98 73V94L67 87Z",
+      "accent": "M0 43L23 35 32 42 7 55Z M55 54L68 37 80 32 67 48 58 61Z M80 79L100 72 100 78 84 87Z"
+    },
+    "dames-ribbon": {
+      "name": "Ленты Iron Dames",
+      "secondary": "M0 64Q17 31 37 55T70 52Q83 23 100 39V47Q81 37 70 64Q57 91 33 62Q18 46 0 77Z",
+      "accent": "M0 73Q22 42 39 65T70 63Q85 37 100 49V56Q82 48 72 71Q55 96 34 69Q19 54 0 82Z"
+    },
+    "lexus-asp": {
+      "name": "Стрела Lexus",
+      "secondary": "M0 23H33L55 61 80 49 100 18V45L81 64 52 77 29 44H0Z M32 91L65 74 100 68V100H30Z",
+      "accent": "M0 57L28 49 52 78 80 64 100 48V53L80 71 51 85 27 58 0 65Z"
+    },
+    "fat-turbo": {
+      "name": "Продольная полоса F.A.T.",
+      "secondary": "M0 43Q24 51 42 57L61 48Q78 25 100 27V39Q80 39 67 55L45 68 0 54Z",
+      "accent": "M0 61Q27 69 47 71L67 61 77 54 70 66 46 78 0 66Z"
+    }
+  },
+  "sponsors": {
+    "relay": {
+      "name": "Реле",
+      "zones": [
+        "flank",
+        "upper",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1
+    },
+    "axis": {
+      "name": "Ось",
+      "zones": [
+        "flank",
+        "upper",
+        "nose",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1
+    },
+    "bars": {
+      "name": "Три штриха",
+      "zones": [
+        "flank",
+        "upper",
+        "nose",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 0.85
+    },
+    "oracle": {
+      "name": "Oracle",
+      "zones": [
+        "flank",
+        "upper",
+        "nose",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1,
+      "image": "marks/oracle.png"
+    },
+    "visa": {
+      "name": "Visa",
+      "zones": [
+        "flank",
+        "upper",
+        "nose",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1,
+      "image": "marks/visa.png"
+    },
+    "hp": {
+      "name": "HP",
+      "zones": [
+        "flank",
+        "upper",
+        "nose",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1,
+      "image": "marks/hp.png"
+    },
+    "dhl": {
+      "name": "DHL",
+      "zones": [
+        "flank",
+        "upper",
+        "nose",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1,
+      "image": "marks/dhl.png"
+    },
+    "okx": {
+      "name": "OKX",
+      "zones": [
+        "flank",
+        "upper",
+        "nose",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1,
+      "image": "marks/okx.png"
+    },
+    "supplier-pirelli": {
+      "name": "Pirelli",
+      "zones": [
+        "flank",
+        "upper",
+        "nose",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1,
+      "media": "supplier-pirelli"
+    },
+    "supplier-michelin": {
+      "name": "Michelin",
+      "zones": [
+        "flank",
+        "upper",
+        "nose",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1,
+      "media": "supplier-michelin"
+    },
+    "supplier-mercedes": {
+      "name": "Mercedes-Benz",
+      "zones": [
+        "flank",
+        "upper",
+        "nose",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1,
+      "media": "supplier-mercedes"
+    },
+    "team-mclaren-formula-1-team": {
+      "name": "McLaren",
+      "zones": [
+        "flank",
+        "upper",
+        "nose",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1,
+      "media": "team-mclaren-formula-1-team"
+    },
+    "team-moneygram-haas-f1-team": {
+      "name": "Haas",
+      "zones": [
+        "flank",
+        "upper",
+        "nose",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1,
+      "media": "team-moneygram-haas-f1-team"
+    },
+    "team-team-wrt": {
+      "name": "WRT",
+      "zones": [
+        "flank",
+        "upper",
+        "nose",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1,
+      "media": "team-team-wrt"
+    },
+    "team-af-corse": {
+      "name": "AF Corse",
+      "zones": [
+        "flank",
+        "upper",
+        "nose",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1,
+      "media": "team-af-corse"
+    },
+    "bwt": {
+      "name": "BWT",
+      "zones": [
+        "flank",
+        "upper",
+        "nose",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1,
+      "text": "BWT"
+    },
+    "petronas": {
+      "name": "PETRONAS",
+      "zones": [
+        "flank",
+        "upper",
+        "nose",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1,
+      "text": "PETRONAS"
+    },
+    "aramco": {
+      "name": "aramco",
+      "zones": [
+        "flank",
+        "upper",
+        "nose",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1,
+      "text": "aramco"
+    },
+    "atlassian": {
+      "name": "Atlassian",
+      "zones": [
+        "flank",
+        "upper",
+        "nose",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1,
+      "text": "Atlassian"
+    },
+    "stake": {
+      "name": "Stake",
+      "zones": [
+        "flank",
+        "upper",
+        "nose",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1,
+      "text": "Stake"
+    },
+    "haas": {
+      "name": "HAAS",
+      "zones": [
+        "flank",
+        "upper",
+        "nose",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1,
+      "text": "HAAS"
+    },
+    "invicta": {
+      "name": "INVICTA",
+      "zones": [
+        "flank",
+        "upper",
+        "nose",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1,
+      "text": "INVICTA"
+    },
+    "tgr": {
+      "name": "TGR",
+      "zones": [
+        "flank",
+        "upper",
+        "nose",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1,
+      "text": "TGR"
+    },
+    "mp": {
+      "name": "MP",
+      "zones": [
+        "flank",
+        "upper",
+        "nose",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1,
+      "text": "MP"
+    },
+    "prema": {
+      "name": "PREMA",
+      "zones": [
+        "flank",
+        "upper",
+        "nose",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1,
+      "text": "PREMA"
+    },
+    "trident": {
+      "name": "TRIDENT",
+      "zones": [
+        "flank",
+        "upper",
+        "nose",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1,
+      "text": "TRIDENT"
+    },
+    "art": {
+      "name": "ART",
+      "zones": [
+        "flank",
+        "upper",
+        "nose",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1,
+      "text": "ART"
+    },
+    "rodin": {
+      "name": "RODIN",
+      "zones": [
+        "flank",
+        "upper",
+        "nose",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1,
+      "text": "RODIN"
+    },
+    "aix": {
+      "name": "AIX",
+      "zones": [
+        "flank",
+        "upper",
+        "nose",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1,
+      "text": "AIX"
+    },
+    "var": {
+      "name": "VAR",
+      "zones": [
+        "flank",
+        "upper",
+        "nose",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1,
+      "text": "VAR"
+    },
+    "dams": {
+      "name": "DAMS",
+      "zones": [
+        "flank",
+        "upper",
+        "nose",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1,
+      "text": "DAMS"
+    },
+    "campos": {
+      "name": "CAMPOS",
+      "zones": [
+        "flank",
+        "upper",
+        "nose",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1,
+      "text": "CAMPOS"
+    },
+    "schaeffler": {
+      "name": "Schaeffler",
+      "zones": [
+        "flank",
+        "upper",
+        "nose",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1,
+      "text": "Schaeffler"
+    },
+    "robomarkets": {
+      "name": "RoboMarkets",
+      "zones": [
+        "flank",
+        "upper",
+        "nose",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1,
+      "text": "RoboMarkets"
+    },
+    "ravenol": {
+      "name": "RAVENOL",
+      "zones": [
+        "flank",
+        "upper",
+        "nose",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1,
+      "text": "RAVENOL"
+    },
+    "mann": {
+      "name": "MANN-FILTER",
+      "zones": [
+        "flank",
+        "upper",
+        "nose",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1,
+      "text": "MANN-FILTER"
+    },
+    "meyle": {
+      "name": "MEYLE",
+      "zones": [
+        "flank",
+        "upper",
+        "nose",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1,
+      "text": "MEYLE"
+    },
+    "tgi": {
+      "name": "TGI",
+      "zones": [
+        "flank",
+        "upper",
+        "nose",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1,
+      "text": "TGI"
+    },
+    "emil": {
+      "name": "EMIL FREY",
+      "zones": [
+        "flank",
+        "upper",
+        "nose",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1,
+      "text": "EMIL FREY"
+    },
+    "windhager": {
+      "name": "Windhager",
+      "zones": [
+        "flank",
+        "upper",
+        "nose",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1,
+      "text": "Windhager"
+    },
+    "manthey": {
+      "name": "MANTHEY",
+      "zones": [
+        "flank",
+        "upper",
+        "nose",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1,
+      "text": "MANTHEY"
+    },
+    "joyn": {
+      "name": "joyn",
+      "zones": [
+        "flank",
+        "upper",
+        "nose",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1,
+      "text": "joyn"
+    },
+    "abt": {
+      "name": "ABT",
+      "zones": [
+        "flank",
+        "upper",
+        "nose",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1,
+      "text": "ABT"
+    },
+    "comtoyou": {
+      "name": "COMTOYOU",
+      "zones": [
+        "flank",
+        "upper",
+        "nose",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1,
+      "text": "COMTOYOU"
+    },
+    "doerr": {
+      "name": "DÖRR",
+      "zones": [
+        "flank",
+        "upper",
+        "nose",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1,
+      "text": "DÖRR"
+    },
+    "ford": {
+      "name": "FORD PERFORMANCE",
+      "zones": [
+        "flank",
+        "upper",
+        "nose",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1,
+      "text": "FORD PERFORMANCE"
+    },
+    "hertz": {
+      "name": "Hertz",
+      "zones": [
+        "flank",
+        "upper",
+        "nose",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1,
+      "text": "Hertz"
+    },
+    "denso": {
+      "name": "DENSO",
+      "zones": [
+        "flank",
+        "upper",
+        "nose",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1,
+      "text": "DENSO"
+    },
+    "penske": {
+      "name": "PENSKE",
+      "zones": [
+        "flank",
+        "upper",
+        "nose",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1,
+      "text": "PENSKE"
+    },
+    "iron": {
+      "name": "IRON LYNX",
+      "zones": [
+        "flank",
+        "upper",
+        "nose",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1,
+      "text": "IRON LYNX"
+    },
+    "iron-dames": {
+      "name": "IRON DAMES",
+      "zones": [
+        "flank",
+        "upper",
+        "nose",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1,
+      "text": "IRON DAMES"
+    },
+    "vista": {
+      "name": "VISTA",
+      "zones": [
+        "flank",
+        "upper",
+        "nose",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1,
+      "text": "VISTA"
+    },
+    "heart": {
+      "name": "THE HEART OF RACING",
+      "zones": [
+        "flank",
+        "upper",
+        "nose",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1,
+      "text": "THE HEART OF RACING"
+    },
+    "fat": {
+      "name": "F.A.T.",
+      "zones": [
+        "flank",
+        "upper",
+        "nose",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1,
+      "text": "F.A.T."
+    },
+    "akkodis": {
+      "name": "AKKODIS",
+      "zones": [
+        "flank",
+        "upper",
+        "nose",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1,
+      "text": "AKKODIS"
+    },
+    "tf": {
+      "name": "TF SPORT",
+      "zones": [
+        "flank",
+        "upper",
+        "nose",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1,
+      "text": "TF SPORT"
+    },
+    "phorm": {
+      "name": "1st Phorm",
+      "zones": [
+        "flank",
+        "upper",
+        "nose",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1,
+      "text": "1st Phorm"
+    },
+    "alpine": {
+      "name": "ALPINE",
+      "zones": [
+        "flank",
+        "upper",
+        "nose",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1,
+      "text": "ALPINE"
+    },
+    "peugeot": {
+      "name": "PEUGEOT",
+      "zones": [
+        "flank",
+        "upper",
+        "nose",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1,
+      "text": "PEUGEOT"
+    },
+    "redbull": {
+      "name": "Red Bull",
+      "zones": [
+        "flank",
+        "upper",
+        "nose",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1,
+      "text": "Red Bull"
+    },
+    "chrome": {
+      "name": "Chrome",
+      "text": "Chrome",
+      "zones": [
+        "nose",
+        "flank",
+        "upper",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1
+    },
+    "dell-technologies": {
+      "name": "Dell Technologies",
+      "text": "Dell Technologies",
+      "zones": [
+        "nose",
+        "flank",
+        "upper",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1
+    },
+    "cisco": {
+      "name": "Cisco",
+      "text": "Cisco",
+      "zones": [
+        "nose",
+        "flank",
+        "upper",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1
+    },
+    "mobil-1": {
+      "name": "Mobil 1",
+      "text": "Mobil 1",
+      "zones": [
+        "nose",
+        "flank",
+        "upper",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1
+    },
+    "rauch": {
+      "name": "RAUCH",
+      "text": "RAUCH",
+      "zones": [
+        "nose",
+        "flank",
+        "upper",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1
+    },
+    "ineos": {
+      "name": "INEOS",
+      "text": "INEOS",
+      "zones": [
+        "nose",
+        "flank",
+        "upper",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1
+    },
+    "amg": {
+      "name": "AMG",
+      "text": "AMG",
+      "zones": [
+        "nose",
+        "flank",
+        "upper",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1
+    },
+    "shell": {
+      "name": "Shell",
+      "text": "Shell",
+      "zones": [
+        "nose",
+        "flank",
+        "upper",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1
+    },
+    "unicredit": {
+      "name": "UniCredit",
+      "text": "UniCredit",
+      "zones": [
+        "nose",
+        "flank",
+        "upper",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1
+    },
+    "ibm": {
+      "name": "IBM",
+      "text": "IBM",
+      "zones": [
+        "nose",
+        "flank",
+        "upper",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1
+    },
+    "cognizant": {
+      "name": "Cognizant",
+      "text": "Cognizant",
+      "zones": [
+        "nose",
+        "flank",
+        "upper",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1
+    },
+    "valvoline": {
+      "name": "Valvoline",
+      "text": "Valvoline",
+      "zones": [
+        "nose",
+        "flank",
+        "upper",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1
+    },
+    "castrol": {
+      "name": "Castrol",
+      "text": "Castrol",
+      "zones": [
+        "nose",
+        "flank",
+        "upper",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1
+    },
+    "bp": {
+      "name": "bp",
+      "text": "bp",
+      "zones": [
+        "nose",
+        "flank",
+        "upper",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1
+    },
+    "cash-app": {
+      "name": "Cash App",
+      "text": "Cash App",
+      "zones": [
+        "nose",
+        "flank",
+        "upper",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1
+    },
+    "tudor": {
+      "name": "TUDOR",
+      "text": "TUDOR",
+      "zones": [
+        "nose",
+        "flank",
+        "upper",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1
+    },
+    "moneygram": {
+      "name": "MoneyGram",
+      "text": "MoneyGram",
+      "zones": [
+        "nose",
+        "flank",
+        "upper",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1
+    },
+    "toyota-gazoo-racing": {
+      "name": "TOYOTA GAZOO Racing",
+      "text": "TOYOTA GAZOO Racing",
+      "zones": [
+        "nose",
+        "flank",
+        "upper",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1
+    },
+    "gulf": {
+      "name": "Gulf",
+      "text": "Gulf",
+      "zones": [
+        "nose",
+        "flank",
+        "upper",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1
+    },
+    "komatsu": {
+      "name": "Komatsu",
+      "text": "Komatsu",
+      "zones": [
+        "nose",
+        "flank",
+        "upper",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1
+    },
+    "singha": {
+      "name": "Singha",
+      "text": "Singha",
+      "zones": [
+        "nose",
+        "flank",
+        "upper",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1
+    },
+    "dekra": {
+      "name": "DEKRA",
+      "text": "DEKRA",
+      "zones": [
+        "nose",
+        "flank",
+        "upper",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1
+    },
+    "adac": {
+      "name": "ADAC",
+      "text": "ADAC",
+      "zones": [
+        "nose",
+        "flank",
+        "upper",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1
+    },
+    "goodyear": {
+      "name": "Goodyear",
+      "text": "Goodyear",
+      "zones": [
+        "nose",
+        "flank",
+        "upper",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1
+    },
+    "totalenergies": {
+      "name": "TOTALENERGIES",
+      "text": "TOTALENERGIES",
+      "zones": [
+        "nose",
+        "flank",
+        "upper",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1
+    },
+    "sonax": {
+      "name": "SONAX",
+      "text": "SONAX",
+      "zones": [
+        "nose",
+        "flank",
+        "upper",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1
+    },
+    "yuka-tel": {
+      "name": "YUKA tel",
+      "text": "YUKA tel",
+      "zones": [
+        "nose",
+        "flank",
+        "upper",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1
+    },
+    "mecachrome": {
+      "name": "Mecachrome",
+      "text": "Mecachrome",
+      "zones": [
+        "nose",
+        "flank",
+        "upper",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1
+    },
+    "winmax": {
+      "name": "WINMAX",
+      "text": "WINMAX",
+      "zones": [
+        "nose",
+        "flank",
+        "upper",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1
+    },
+    "koncentra": {
+      "name": "Koncentra",
+      "text": "Koncentra",
+      "zones": [
+        "nose",
+        "flank",
+        "upper",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1
+    },
+    "tricorp": {
+      "name": "TRICORP",
+      "text": "TRICORP",
+      "zones": [
+        "nose",
+        "flank",
+        "upper",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1
+    },
+    "veltins": {
+      "name": "Veltins",
+      "text": "Veltins",
+      "zones": [
+        "nose",
+        "flank",
+        "upper",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1
+    },
+    "schuberg-philis": {
+      "name": "Schuberg Philis",
+      "text": "Schuberg Philis",
+      "zones": [
+        "nose",
+        "flank",
+        "upper",
+        "wing",
+        "sill",
+        "shoulder"
+      ],
+      "maxScale": 1
+    }
+  }
+}

@@ -32,6 +32,7 @@ MIGRATIONS = [
         "DELETE FROM media WHERE kind='head' AND json_extract(metadata, '$.originalSha256') IS NULL"
     ],
     [],  # Fictional roster. Upgrade checkpoint data in the migration transaction.
+    ["ALTER TABLE receipt ADD COLUMN paint TEXT"],
 ]
 
 
@@ -123,10 +124,15 @@ def postings(db, cid, org=None):
 
 
 def receipts(db, cid):
-    return [
-        dict(r)
-        for r in db.execute(
-            "SELECT command_id, revision, action FROM receipt WHERE career=? ORDER BY revision",
-            (cid,),
-        )
-    ]
+    rows = db.execute(
+        "SELECT command_id, revision, action, paint FROM receipt WHERE career=? ORDER BY revision",
+        (cid,),
+    )
+    commands = []
+    for row in rows:
+        item = dict(row)
+        paint = item.pop("paint")
+        if paint is not None:
+            item["paint"] = json.loads(paint)
+        commands.append(item)
+    return commands

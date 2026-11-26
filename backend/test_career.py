@@ -161,6 +161,7 @@ def test_additive_schema_upgrade_preserves_checkpoint(tmp_path):
     c = create()
     with sqlite3.connect(tmp_path / "world.sqlite3") as db:
         db.execute("DROP TABLE media")
+        db.execute("ALTER TABLE receipt DROP COLUMN paint")
         db.execute("PRAGMA user_version=1")
     assert service.load(c["id"]) == c
     with sqlite3.connect(tmp_path / "world.sqlite3") as db:
@@ -287,13 +288,16 @@ def test_version_one_import_and_sqlite_upgrade():
     with storage.transaction(True) as db:
         storage.store(db, "historical", state, create=True)
         db.execute(
-            "INSERT INTO receipt VALUES (?,?,?,?)",
+            "INSERT INTO receipt(career,command_id,revision,action) VALUES (?,?,?,?)",
             ("historical", "first", 0, "advance"),
         )
+        db.execute("ALTER TABLE receipt DROP COLUMN paint")
         db.execute("PRAGMA user_version=3")
     assert service.export_save("historical") == upgraded
     with storage.transaction() as db:
-        assert db.execute("PRAGMA user_version").fetchone()[0] == 4
+        assert db.execute("PRAGMA user_version").fetchone()[0] == len(
+            storage.MIGRATIONS
+        )
         assert (
             json.loads(
                 db.execute("SELECT state FROM career WHERE id='historical'").fetchone()[

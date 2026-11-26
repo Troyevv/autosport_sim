@@ -7,6 +7,7 @@ from fastapi.concurrency import run_in_threadpool
 from . import media, service
 from .catalog import WORLD
 from .domain import RuleError
+from .livery import GARAGE
 
 app = FastAPI(title="Autosport Sim", version="0.2.0")
 
@@ -36,6 +37,11 @@ def world():
         },
         "faces": {p: v["face"] for p, v in WORLD["profiles"].items()},
     }
+
+
+@app.get("/api/garage")
+def garage():
+    return GARAGE
 
 
 @app.get("/api/careers")

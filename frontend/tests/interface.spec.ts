@@ -188,7 +188,7 @@ test('Разработка, общий журнал, календарь и га�
   await expect(page.locator('.event-detail')).toContainText('смена экипажей')
   await navigate(page, 'Гараж')
   await button(page, 'Ливрея').click()
-  await expect(page.locator('main')).toContainText('задаче #4')
+  await expect(page.locator('main')).toContainText('доступен в гараже карьеры')
   await button(page, 'Компоненты').click()
   await button(page, 'Проверить компонент').first().click()
   await button(page, 'Отметить проверку').click()

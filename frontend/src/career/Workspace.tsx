@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import {
   ArrowRight,
   CalendarDays,
+  CarFront,
   ChevronLeft,
   Download,
   Factory,
@@ -17,11 +18,13 @@ import { dateLabel } from '../game'
 import { roles } from '../ui/labels'
 import { Calendar, Overview, People, Finance, Championships, Briefing, type SectionProps } from './Sections'
 import { api, assetUrl, ApiError, explain, money, post } from './api'
+import { SeasonGarage } from '../garage/Garage'
 import { Brand } from './Library'
 const sections = [
   { id: 'overview', name: 'Штаб', icon: LayoutDashboard, view: Overview },
   { id: 'people', name: 'Пилоты и персонал', icon: Users, view: People },
   { id: 'calendar', name: 'Календарь', icon: CalendarDays, view: Calendar },
+  { id: 'garage', name: 'Гараж', icon: CarFront, view: SeasonGarage },
   { id: 'world', name: 'Чемпионаты', icon: Trophy, view: Championships },
   { id: 'engineering', name: 'Техническая программа', icon: Gauge, view: Engineering },
   { id: 'finance', name: 'Финансы', icon: Wallet, view: Finance },
@@ -250,7 +253,7 @@ export function Workspace({ world, c: initial, media }: SectionProps) {
               {error}
             </p>
           )}
-          <Screen world={world} c={c} media={media} />
+          <Screen world={world} c={c} media={media} updateCareer={update} />
         </main>
       </div>
       <nav className="mobile-bottom" aria-label="Быстрая навигация">

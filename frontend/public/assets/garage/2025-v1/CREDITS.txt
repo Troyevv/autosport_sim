@@ -1,0 +1,89 @@
+Графика гаража · сезон 2025
+
+Боковые проекции 31 модели, колёса и пустое помещение подготовлены для игры с помощью OpenAI ImageGen. Карты материалов, альфа-каналы, монтаж деталей, схемы окраски и игровые эмблемы подготовлены для этого репозитория. Применяется лицензия MIT проекта.
+
+Марки принадлежат своим владельцам. Ниже указаны происхождение, изменения и лицензия каждой поставляемой эмблемы. Для изображений, содержащих эмблему WRT, сохраняется атрибуция W Racing Team и лицензия CC BY-SA 4.0 для этой графики и содержащих её миниатюр и сравнительного листа WEC.
+
+Oracle
+Oracle
+PD-textlogo
+Одноцветный растр, обрезаны поля.
+https://raw.githubusercontent.com/gilbarbara/logos/main/logos/oracle.svg
+https://commons.wikimedia.org/wiki/File:Oracle_logo.svg
+
+Visa
+Visa
+PD-textlogo / CC0-1.0
+Одноцветный растр, обрезаны поля.
+https://registry.npmjs.org/simple-icons/-/simple-icons-13.21.0.tgz
+https://commons.wikimedia.org/wiki/File:Visa_2021.svg
+
+HP
+HP
+PD-textlogo / CC0-1.0
+Одноцветный растр, обрезаны поля.
+https://registry.npmjs.org/simple-icons/-/simple-icons-13.21.0.tgz
+https://commons.wikimedia.org/wiki/File:HP_logo_2012.svg
+
+DHL
+DHL
+PD-textlogo / CC0-1.0
+Одноцветный растр, обрезаны поля.
+https://registry.npmjs.org/simple-icons/-/simple-icons-13.21.0.tgz
+https://commons.wikimedia.org/wiki/File:DHL_Logo.svg
+
+OKX
+OKX
+PD-textlogo / CC0-1.0
+Одноцветный растр, обрезаны поля.
+https://registry.npmjs.org/simple-icons/-/simple-icons-13.21.0.tgz
+https://commons.wikimedia.org/wiki/File:OKX_logo.svg
+
+Pirelli
+Pierluigi Cerri
+Public domain (PD-textlogo)
+Локальная идентификация организации; растровая копия.
+https://commons.wikimedia.org/wiki/File:Pirelli_-_logo_full_(Italy,_1997).svg
+
+Michelin
+Trademarked by Michelin/Registrado por Michelin. Upload by: Spider_pig
+Public domain (PD-textlogo)
+Локальная идентификация организации; растровая копия.
+https://commons.wikimedia.org/wiki/File:Michelin_Wordmark.svg
+
+Mercedes-Benz
+Mercedes-Benz / Simple Icons contributors
+Public domain (geometric mark); CC0-1.0 (Simple Icons vector)
+Одноцветная растровая копия для идентификации.
+https://registry.npmjs.org/simple-icons/-/simple-icons-13.21.0.tgz
+https://commons.wikimedia.org/wiki/File:Mercedes-Benz_logo.svg
+
+McLaren
+McLaren Racing / Simple Icons contributors
+Public domain (geometric mark); CC0-1.0 (Simple Icons vector)
+Одноцветная растровая копия для идентификации.
+https://registry.npmjs.org/simple-icons/-/simple-icons-13.21.0.tgz
+https://commons.wikimedia.org/wiki/File:McLaren_Speedmark.svg
+
+Haas
+Haas F1 Team
+Public domain
+Локальная идентификация организации; растровая копия.
+https://commons.wikimedia.org/wiki/File%3AHaas_F1_Team_Logo.svg
+
+WRT
+W Racing Team
+CC BY-SA 4.0 · https://creativecommons.org/licenses/by-sa/4.0/
+Локальная идентификация организации; растровая копия.
+https://commons.wikimedia.org/wiki/File:Wrt2023logo.jpg
+
+AF Corse
+AF Corse S.r.l.
+Public domain (PD-textlogo)
+Локальная идентификация организации; растровая копия.
+https://commons.wikimedia.org/wiki/File:AFCorseLogo.png
+
+Названия обычным набором без фирменного рисунка
+BWT, PETRONAS, aramco, Atlassian, Stake, HAAS, INVICTA, TGR, MP, PREMA, TRIDENT, ART, RODIN, AIX, VAR, DAMS, CAMPOS, Schaeffler, RoboMarkets, RAVENOL, MANN-FILTER, MEYLE, TGI, EMIL FREY, Windhager, MANTHEY, joyn, ABT, COMTOYOU, DÖRR, FORD PERFORMANCE, Hertz, DENSO, PENSKE, IRON LYNX, IRON DAMES, VISTA, THE HEART OF RACING, F.A.T., AKKODIS, TF SPORT, 1st Phorm, ALPINE, PEUGEOT, Red Bull, Chrome, Dell Technologies, Cisco, Mobil 1, RAUCH, INEOS, AMG, Shell, UniCredit, IBM, Cognizant, Valvoline, Castrol, bp, Cash App, TUDOR, MoneyGram, TOYOTA GAZOO Racing, Gulf, Komatsu, Singha, DEKRA, ADAC, Goodyear, TOTALENERGIES, SONAX, YUKA tel, Mecachrome, WINMAX, Koncentra, TRICORP, Veltins, Schuberg Philis
+
+Три собственных знака редактора — Relay, Axis и Bars.
