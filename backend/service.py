@@ -11,7 +11,7 @@ from .finance.events import PRODUCERS
 from .finance import market, rights, budget, economy, capital, facilities
 from .livery import GARAGE, PaintOrder
 from .catalog import VERSION, WORLD, LINEUP_WORLD
-from . import lineup, components, research, development, production
+from . import lineup, components, research, development, production, council
 from .roster_upgrade import (
     original_world,
     previous_world,
@@ -65,6 +65,7 @@ class Command(Strict):
     revision: int = Field(ge=0)
     action: str = Field(min_length=1, max_length=32)
     engineering: components.Install | components.Usage | None = None
+    council: dict | None = None
     production: dict | None = None
     development: dict | None = None
     research: dict | None = None
@@ -86,6 +87,10 @@ class Command(Strict):
                 raise ValueError("Неверные параметры инженерной команды.")
         elif self.engineering is not None:
             raise ValueError("Лишние параметры инженерной команды.")
+        if (self.action in council.ORDERS) != (self.council is not None):
+            raise ValueError("Неверные параметры решения штаба.")
+        if self.council is not None:
+            council.ORDERS[self.action].model_validate(self.council)
         if (self.action in production.ORDERS) != (self.production is not None):
             raise ValueError("Неверные параметры производственного заказа.")
         if self.production is not None:
@@ -127,6 +132,8 @@ class Command(Strict):
         return self
 
     def payload(self):
+        if self.council is not None:
+            return self.council
         if self.production is not None:
             return self.production
         if self.development is not None:
@@ -303,6 +310,7 @@ def create(spec):
         research.initialize(state)
         development.initialize(state)
         production.initialize(state)
+        council.initialize(state)
         cid = str(uuid4())
         storage.store(db, cid, state, create=True)
         statistics_personnel.refresh(db, cid, state)
@@ -337,12 +345,15 @@ def execute(cid, command):
                 raise domain.RuleError(
                     "Карьеру изменили в другом окне. Состояние обновлено.", 409
                 )
+            prior_council = len(state.get("council", {}).get("history", []))
             prior_production = len(state.get("production", {}).get("history", []))
             prior_fits = len(state["components"]["history"])
             prior_events = len(state.get("development", {}).get("history", []))
             prior_reports = set(state["research"]["reports"])
             previous = statistics_personnel.mutable_state(state)
             domain.apply(state, WORLD, command.action, args)
+            for event in state.get("council", {}).get("history", [])[prior_council:]:
+                council.write_fact(db, cid, state, LINEUP_WORLD, event)
             for event in state.get("development", {}).get("history", [])[prior_events:]:
                 development.write_fact(db, cid, state, LINEUP_WORLD, event)
             for event in state.get("production", {}).get("history", [])[prior_production:]:
@@ -553,6 +564,8 @@ def import_save(document, *, statistics_records=None):
                 development.initialize(state)
             if saved.get("production", {}).get("since") == state["revision"]:
                 production.initialize(state)
+            if saved.get("council", {}).get("since") == state["revision"]:
+                council.initialize(state)
 
         for original in commands:
             item = original
@@ -616,6 +629,7 @@ def import_save(document, *, statistics_records=None):
         research.initialize(state)
         development.initialize(state)
         production.initialize(state)
+        council.initialize(state)
     except (KeyError, TypeError, ValueError, RecursionError, ValidationError):
         raise domain.RuleError("Файл повреждён или нарушает правила мира.") from None
     cid = str(uuid4())
@@ -626,6 +640,8 @@ def import_save(document, *, statistics_records=None):
             "INSERT INTO receipt(career,command_id,revision,action,paint) VALUES(?,?,?,?,?)",
             [(cid, *row) for row in receipts],
         )
+        for event in state["council"]["history"]:
+            council.write_fact(db, cid, state, LINEUP_WORLD, event)
         for event in state["production"]["history"]:
             production.write_fact(db, cid, state, LINEUP_WORLD, event)
         for event in state["development"]["history"]:

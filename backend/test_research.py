@@ -8,6 +8,7 @@ from fastapi.testclient import TestClient
 from . import domain, research, service, storage
 from .app import app, research_desk
 from .catalog import LINEUP_WORLD as WORLD
+from .components.catalog import OPENING
 from .research.model import applicability, conclusion, evidence
 from .test_career import MCLAREN, advance, create
 
@@ -113,6 +114,22 @@ def test_competing_projects_actual_budget_grants_and_private_public_sources():
     revisions = current.pop("revisions")
     current["inventory"] = {
         i: v for i, v in current["inventory"].items() if v["org"] == MCLAREN
+    }
+    # Other organizations now install verified alternatives during this interval.
+    current["history"] = [
+        h for h in current["history"] if WORLD["entries"][h["entry"]]["org"] == MCLAREN
+    ]
+    current["mounts"] = {
+        eid: m
+        for eid, m in current["mounts"].items()
+        if WORLD["entries"][eid]["org"] == MCLAREN
+    }
+    current["condition"] = {
+        iid: value
+        for iid, value in current["condition"].items()
+        if iid in current["inventory"]
+        or iid in original["condition"]
+        or iid in OPENING.by_org[MCLAREN]
     }
     assert current == {k: value for k, value in original.items() if k != "revisions"}
     assert revisions and all(

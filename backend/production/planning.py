@@ -23,14 +23,26 @@ def needs(state, world, org):
             engineer = staff.get(METHODS[axis][0])
             if not staff.get("chief-mechanic") or not engineer:
                 continue
-            released = [
-                d
-                for d in state["components"]["revisions"].values()
-                if d["family"] == fitted["family"]
-                and development.released(state, org, d["id"])
-                and components.compatible(state, world, e, d)
-            ]
-            target = max([fitted, *released], key=lambda d: d["version"])
+            if "council" in state:
+                from ..council.evidence import preferred, replacement_due
+
+                target = preferred(state, world, e, fitted)
+                replace = replacement_due(state, iid)
+            else:
+                # Historical #48 receipts selected by edition number.
+                released = [
+                    d
+                    for d in state["components"]["revisions"].values()
+                    if d["family"] == fitted["family"]
+                    and development.released(state, org, d["id"])
+                    and components.compatible(state, world, e, d)
+                ]
+                target = max([fitted, *released], key=lambda d: d["version"])
+                replace = (
+                    not components.serviceable(state, iid)
+                    or components.remaining(state, iid) < fitted["life_m"] // 4
+                    or components.condition(state, iid)["wear_ppm"] >= 750000
+                )
             key = target["id"]
             row = needs_by_version.setdefault(
                 key,
@@ -46,12 +58,7 @@ def needs(state, world, org):
                 ),
             )
             row["cars"] += 1
-            row["replace"] += int(
-                not components.serviceable(state, iid)
-                or components.remaining(state, iid) < fitted["life_m"] // 4
-                or components.condition(state, iid)["wear_ppm"] >= 750000
-                or key != fitted["id"]
-            )
+            row["replace"] += int(replace or key != fitted["id"])
             row["stock"].update(
                 i for i in available if components.spec(state, i)["id"] == key
             )

@@ -345,9 +345,9 @@ def work(state, world, p, used):
             p["reason"] = reason
             return
     site = facility(state, org, day, end, kind)
-    if not site and (
-        org != state["setup"]["org"] or state["setup"]["role"] != "manager"
-    ):
+    from ..council import may_rent
+
+    if not site and may_rent(state, org):
         # The manager rents only for a day on which the assigned specialist can work.
         try:
             if p.get("kind") == "test":
@@ -498,6 +498,10 @@ def work(state, world, p, used):
             development.complete(state, world, p)
         else:
             complete(state, world, p)
+        if "council" in state:
+            from ..council.outcomes import completed
+
+            completed(state, world, p)
 
 
 def npc_plan(state, world):
@@ -540,12 +544,18 @@ def advance(state, world, end):
         while state["date"] < end:
             day = state["date"]
             tomorrow = facilities.later(day, 1)
-            npc_plan(state, world)
+            if "council" in state:
+                from ..council import day as council_day
+
+                council_day(state, world)
+            else:
+                npc_plan(state, world)
             queues = [state["research"]["projects"]]
             if "development" in state:
                 from .. import development
 
-                development.npc_plan(state, world)
+                if "council" not in state:
+                    development.npc_plan(state, world)
                 queues.append(state["development"]["projects"])
             used = {}
             pending = sorted(
