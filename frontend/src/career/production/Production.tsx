@@ -253,7 +253,12 @@ export function Production({ c, world, updateCareer }: SectionProps & { updateCa
                         занято {s.used}
                       </p>
                     ))}
-                    {site.crew ? (
+                    {site.kind === 'warehouse' ? (
+                      <p>
+                        Занято {data.storage.used} из {data.storage.total} мест · под заказы{' '}
+                        {data.storage.reserved} · свободно {data.storage.free}.
+                      </p>
+                    ) : site.crew ? (
                       <>
                         <strong>
                           {site.crew.name} · {site.crew.size} чел.

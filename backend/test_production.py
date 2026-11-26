@@ -99,6 +99,18 @@ def test_budget_staff_outsourcing_and_npc_costs():
     with pytest.raises(domain.RuleError, match="поставщик"):
         production.commission(s, WORLD, org, "npc-batch", request)
     external = request.model_copy(update={"outsource": True})
+    s["market"]["supplies"]["different-maker"] = dict(
+        org=org,
+        series=e["championship"],
+        product="brakes",
+        sponsor="other",
+        status="signed",
+        start=s["date"],
+        end="2026-01-01",
+    )
+    with pytest.raises(domain.RuleError, match="договору"):
+        production.commission(s, WORLD, org, "npc-batch", external)
+    del s["market"]["supplies"]["different-maker"]
     allocation = s["control"]["plans"][org]["2025"]["allocations"]
     approved = allocation["engineering"]
     allocation["engineering"] = 0
@@ -409,3 +421,27 @@ def test_endurance_crew_uses_one_car_and_standard_drawings():
         any(draw["id"] == d["id"] for draw in car["choices"]) for car in desk["entries"]
     )
     assert need["pending"] == 1
+
+
+def test_warehouse_reserves_capacity_before_spending_and_releases_on_cancel():
+    c = create()
+    s = checkpoint(c)
+    start = production.storage_space(s, WORLD, MCLAREN)
+    assert 0 < start["free"] <= 24
+    spec = version(s)
+    c = order(c, spec, quantity=start["free"])
+    booked = production_desk(c["id"])
+    assert (
+        booked["storage"]["reserved"] == start["free"]
+        and booked["storage"]["free"] == 0
+    )
+    saved = service.export_save(c["id"])
+    with pytest.raises(domain.RuleError, match="складских мест"):
+        order(c, spec)
+    assert service.export_save(c["id"]) == saved
+    c = rent(c, "warehouse")
+    assert production_desk(c["id"])["storage"]["free"] == 12
+    c = order(c, spec, quantity=2)
+    c = send(c, "production-cancel", batch=booked["batches"][0]["id"])
+    assert production_desk(c["id"])["storage"]["reserved"] == 2
+    assert production_desk(c["id"])["storage"]["free"] == start["free"] + 10

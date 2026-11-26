@@ -98,6 +98,7 @@ export type Desk = {
   history: Event[]
   people: Record<string, string>
   capacity: Facility[]
+  storage: { total: number; used: number; reserved: number; free: number }
   limit_cents: number
 }
 export const labels: Record<string, string> = {

@@ -38,9 +38,11 @@ export function OrderForm({
     mode.reason ||
     (!Number.isInteger(quantity) || quantity < 1 || quantity > 24
       ? 'Выберите от 1 до 24 экземпляров.'
-      : cost > data.limit_cents
-        ? 'Недостаточно бюджета или свободных средств.'
-        : '')
+      : quantity > data.storage.free
+        ? 'Для партии недостаточно свободных складских мест.'
+        : cost > data.limit_cents
+          ? 'Недостаточно бюджета или свободных средств.'
+          : '')
   return (
     <Dialog title="Новый производственный заказ" onClose={close}>
       <form
@@ -113,6 +115,7 @@ export function OrderForm({
             ['Работа цеха', unit.hours * quantity + ' нормо-ч'],
             ['Ориентир при 24 нормо-ч за смену', Math.ceil((unit.hours * quantity) / 24) + ' смен'],
             ['Доступный бюджет', money(data.limit_cents)],
+            ['Свободно на складе', data.storage.free + ' мест'],
           ]}
         />
         {rush && <p>Сокращённый цикл повышает вероятность брака. Надбавка включена в смету.</p>}

@@ -8,7 +8,8 @@ from .. import components, development, finance
 from ..components.catalog import OPENING
 from ..components.registry import drawing_for
 from ..domain import RuleError
-from ..finance import budget
+from ..finance import budget, facilities
+from ..finance.market import contracted_supplier
 from ..research import admitted
 from ..research.model import Priority, METHODS
 from ..staff_input import Fields, Id
@@ -63,6 +64,8 @@ def permitted(state, world, entry, drawing, outsource):
         return "Редакция ожидает допуска или отозвана."
     if drawing["manufacturer"] == org:
         return development.restriction(state, world, entry, slot)
+    if contracted_supplier(state, entry, slot) not in (None, drawing["manufacturer"]):
+        return "По действующему договору узел поставляет другой изготовитель."
     if not outsource:
         return "Серийный узел изготавливает утверждённый поставщик."
     if drawing["id"] not in OPENING.rules[drawing["regulation"]]["approved"]:
@@ -115,6 +118,11 @@ def commission(state, world, org, key, order):
     lead = components.specialists(state, world, entry).get("chief-mechanic")
     if not lead:
         raise RuleError("Требуется назначенный главный механик.")
+    if order.quantity > storage_space(state, world, org)["free"]:
+        raise RuleError(
+            "Недостаточно складских мест для партии. Расширьте склад или освободите резерв.",
+            409,
+        )
     unit = quote(drawing, order.rush, order.outsource)
     cost = unit["cents"] * order.quantity
     spend(state, world, org, key, cost)
@@ -160,6 +168,32 @@ def mounted(state, world, org):
         if e["org"] == org
         for iid in components.mounting(state, e["id"]).values()
     }
+
+
+def storage_space(state, world, org):
+    """Opening racks plus the organization's staffed or leased warehouse capacity."""
+    fitted = mounted(state, world, org)
+    stock = inventory(state, org)
+    used = sum(
+        iid not in fitted and status(state, iid, fitted) != "scrapped" for iid in stock
+    )
+    reserved = sum(
+        b["quantity"]
+        for b in state["production"]["batches"].values()
+        if b["org"] == org and not b["finished"]
+    )
+    # Opening racks fit the initial spares plus one replacement set for each entered car.
+    base = len(OPENING.by_org.get(org, ()))
+    day = state["date"]
+    slots = sum(
+        max(0, facilities.free(state, site, day, facilities.later(day, 1), buyer=org))
+        for site in state["estate"]["assets"].values()
+        if site["kind"] == "warehouse"
+    )
+    total = base + slots * 12
+    return dict(
+        total=total, used=used, reserved=reserved, free=max(0, total - used - reserved)
+    )
 
 
 def status(state, iid, mounts):

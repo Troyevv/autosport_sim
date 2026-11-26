@@ -7,7 +7,7 @@ from ..components.design import LABELS
 from ..domain import RuleError, occupant_on
 from ..finance import budget, facilities
 from ..research.model import queue_position
-from . import actions, inventory, mounted, permitted, quote, status
+from . import actions, inventory, mounted, permitted, quote, status, storage_space
 from .planning import needs
 from .workshop import crew
 
@@ -16,7 +16,7 @@ def capacity(state, org, kind):
     today = state["date"]
     end = facilities.later(today, 1)
     sites = [a for a in state["estate"]["assets"].values() if a["kind"] == kind]
-    group = crew(state, org, kind == "quality")
+    group = crew(state, org, kind == "quality") if kind != "warehouse" else None
     shared = state["estate"]["assets"]["shared:" + kind]
     return dict(
         kind=kind,
@@ -232,7 +232,8 @@ def projection(state, world):
         batches=batches,
         needs=reports,
         history=history[::-1],
-        capacity=[capacity(state, org, k) for k in ("factory", "quality")],
+        capacity=[capacity(state, org, k) for k in ("factory", "quality", "warehouse")],
+        storage=storage_space(state, world, org),
         limit_cents=max(0, limit),
         people={pid: state["people"][pid]["name"] for pid in people},
     )
