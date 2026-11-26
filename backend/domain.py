@@ -209,6 +209,17 @@ def next_date(state, catalog):
             and state["date"] < HORIZON
             and any(
                 p["org"] == state["setup"]["org"] and not p["finished"]
+                for p in state.get("development", {}).get("projects", {}).values()
+            )
+        ):
+            from .finance.facilities import later
+
+            dates.append(later(state["date"], 1))
+        if (
+            state["setup"]["role"] == "manager"
+            and state["date"] < HORIZON
+            and any(
+                p["org"] == state["setup"]["org"] and not p["finished"]
                 for p in state.get("research", {}).get("projects", {}).values()
             )
         ):
@@ -306,6 +317,12 @@ def apply(state, catalog, action, payload=None):
 
     from . import research
 
+    from . import development
+
+    if action in development.ORDERS and "development" in state:
+        development.command(state, catalog, action, payload)
+        state["revision"] += 1
+        return
     if action in research.ORDERS and "research" in state:
         research.command(state, catalog, action, payload)
         state["revision"] += 1

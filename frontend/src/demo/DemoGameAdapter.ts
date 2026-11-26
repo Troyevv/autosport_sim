@@ -11,11 +11,9 @@ const initial = (): GameState => ({
     { id: 'aero', date: '2028-05-12', label: 'Испытания в аэротрубе', cents: -48000000 },
     { id: 'travel', date: '2028-05-08', label: 'Логистика · Сакура', cents: -26000000 },
   ],
-  projects: catalog.projects.slice(0, 2).map((p) => ({ ...p, installed: false })),
   read: [],
   offers: [],
   shares: { formula: 68, gt: 22, endurance: 10 },
-  engineers: { aero: 24, power: 18, reliability: 14 },
   shifts: 2,
   terms: Object.fromEntries(
     catalog.products.map((p) => [p.id, { cents: Math.round(p.price * 100000000), support: 'Стандартная' }]),
@@ -29,7 +27,6 @@ const initial = (): GameState => ({
   orders: [],
   load: 76,
   inspected: [],
-  specs: [],
   motion: true,
   frame: 0,
   radio: [],
@@ -74,11 +71,6 @@ export class DemoGameAdapter implements GameAdapter {
         date.setUTCDate(date.getUTCDate() + 1)
         update = {
           date: date.toISOString().slice(0, 10),
-          projects: s.projects.map((p) => ({
-            ...p,
-            days: Math.max(p.days - 1, 0),
-            progress: p.days <= 1 ? 100 : p.progress + Math.ceil((100 - p.progress) / p.days),
-          })),
         }
         break
       }
@@ -94,33 +86,6 @@ export class DemoGameAdapter implements GameAdapter {
         )
           return
         update = { offers: [...s.offers, { ...c.offer }] }
-        break
-      }
-      case 'project': {
-        const p = catalog.projects.find((p) => p.id === c.id)
-        if (
-          !p ||
-          s.role !== 'manager' ||
-          s.projects.some((item) => item.id === p.id) ||
-          s.balanceCents < p.cost
-        )
-          return
-        update = {
-          projects: [...s.projects, { ...p, installed: false }],
-          balanceCents: s.balanceCents - p.cost,
-          ledger: [{ id: p.id, date: s.date, label: p.name, cents: -p.cost }, ...s.ledger],
-        }
-        break
-      }
-      case 'engineers': {
-        const values = Object.values(c.values)
-        if (
-          s.role !== 'manager' ||
-          values.some((x) => !Number.isInteger(x) || x < 0 || x > 40) ||
-          values.reduce((a, b) => a + b, 0) > 60
-        )
-          return
-        update = { engineers: { ...c.values } }
         break
       }
       case 'mandates':
@@ -181,12 +146,6 @@ export class DemoGameAdapter implements GameAdapter {
         update = { completed: [...s.completed, c.id], load: s.load - order.load }
         break
       }
-      case 'install':
-        if (s.role !== 'manager') return
-        update = {
-          projects: s.projects.map((p) => (p.id === c.id && p.days === 0 ? { ...p, installed: true } : p)),
-        }
-        break
       case 'allocate': {
         const values = Object.values(c.shares)
         if (
@@ -205,15 +164,6 @@ export class DemoGameAdapter implements GameAdapter {
         update = { orders: [...s.orders, c.id], load: s.load + order.load }
         break
       }
-      case 'spec':
-        if (
-          s.role !== 'manufacturer' ||
-          !catalog.products.some((p) => p.id === c.id) ||
-          s.specs.includes(c.id)
-        )
-          return
-        update = { specs: [...s.specs, c.id] }
-        break
       case 'inspect':
         if (
           s.role !== 'manager' ||

@@ -1,3 +1,4 @@
+import { units, fmt } from './quantities'
 import { useEffect, useState } from 'react'
 import { api, explain, type Career } from '../career/api'
 import { useOrder } from '../career/finance/useOrder'
@@ -47,31 +48,6 @@ type Desk = {
     wear_ppm: number
   }[]
 }
-const units: Record<string, [string, string]> = {
-  mass_kg: ['Масса', 'кг'],
-  clearance_mm: ['Просвет под нагрузкой', 'мм'],
-  lift_area_m2: ['Площадь прижима (ClA)', 'м²'],
-  drag_area_m2: ['Площадь сопротивления (CdA)', 'м²'],
-  thermal_margin_kw: ['Резерв охлаждения', 'кВт'],
-  sustainable_wheel_kw: ['Длительная мощность на колёсах', 'кВт'],
-  base_drag_area_m2: ['Сопротивление кузова (CdA)', 'м²'],
-  inlet_area_m2: ['Сечение воздухозаборника', 'м²'],
-  rejection_kw: ['Отвод тепла', 'кВт'],
-  power_kw: ['Мощность', 'кВт'],
-  heat_kw: ['Тепловыделение', 'кВт'],
-  vertical_rate_n_mm: ['Жёсткость комплекта', 'Н/мм'],
-  total_torque_nm: ['Суммарный тормозной момент', 'Н·м'],
-  input_limit_nm: ['Допустимый входной момент', 'Н·м'],
-  peak_torque_nm: ['Пиковый момент', 'Н·м'],
-  brake_force_n: ['Предельная тормозная сила', 'Н'],
-  friction_coefficient: ['Коэффициент сцепления', ''],
-  loaded_radius_m: ['Радиус под нагрузкой', 'м'],
-  design_clearance_mm: ['Расчётный просвет', 'мм'],
-  wheel_rate_n_mm: ['Вертикальная жёсткость', 'Н/мм'],
-  static_clearance_mm: ['Статический просвет', 'мм'],
-  efficiency: ['КПД трансмиссии', ''],
-}
-const fmt = (n: number) => n.toLocaleString('ru-RU', { maximumFractionDigits: 3 })
 function quantities(values: Record<string, number>) {
   return Object.entries(values).map(([k, v]): [string, string] => [units[k][0], fmt(v) + ' ' + units[k][1]])
 }

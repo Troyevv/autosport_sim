@@ -123,6 +123,7 @@ class Milestone(Fields):
         "achievement",
         "organization-change",
         "specification-change",
+        "engineering-report",
         "research-report",
         "financial-event",
         "academy-event",
@@ -170,6 +171,7 @@ class Fact(Fields):
             "technical-event": "technical",
             "financial-event": "internal",
             "specification-change": "technical",
+            "engineering-report": "technical",
             "research-report": "technical",
             "estimate": "estimate",
         }.get(self.data.kind)

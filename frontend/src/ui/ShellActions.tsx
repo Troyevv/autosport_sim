@@ -88,7 +88,6 @@ export function Search() {
       note: p.role,
       fn: () => open(p.name, <Profile person={p} />),
     })),
-    ...state.projects.map((p) => ({ title: p.name, note: 'Разработка', fn: () => go('development') })),
   ].filter((x) => x.title.toLowerCase().includes(q.trim().toLowerCase()))
   return (
     <>

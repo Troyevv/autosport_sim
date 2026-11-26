@@ -14,6 +14,7 @@ export type Entry = {
   concept: string
   regulation: string
   staff: Record<string, string>
+  questions: Record<string, string>
   axes: string[]
   rivals: Source[]
 }
@@ -54,6 +55,7 @@ export type Report = {
   confidence: number
   conclusion: string
   applicability: Record<string, number>
+  citations: string[]
   readers: Record<string, string>
 }
 export type Desk = {

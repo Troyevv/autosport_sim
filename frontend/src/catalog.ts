@@ -24,17 +24,6 @@ export interface Person {
   bio: string
   history: string[][]
 }
-export interface ProjectSpec {
-  id: string
-  name: string
-  category: string
-  description: string
-  gain: string
-  engineers: number
-  days: number
-  progress: number
-  cost: number
-}
 interface Championship {
   title: string
   short: string
@@ -112,7 +101,6 @@ export interface GameCatalog {
   raceCars: Record<'kel' | 'web', { personId: string; energy: number; lastLap: string }>
   replay: { lapSeconds: number; startSeconds: number; timeScale: number }
   frames: readonly { lap: number; radio: string }[]
-  projects: readonly ProjectSpec[]
   programs: readonly {
     id: Series
     name: string

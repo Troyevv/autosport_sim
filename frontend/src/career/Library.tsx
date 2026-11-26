@@ -7,7 +7,7 @@ import { dateLabel } from '../game'
 import { Button, Panel } from '../ui/components'
 import { api, post, explain, type World, type Save, type Asset } from './api'
 
-export const careerUrl = (id: string) => '?career=' + encodeURIComponent(id)
+export const careerUrl = (id: string) => '?career=' + encodeURIComponent(id) + (location.hash === '#development' ? location.hash : '')
 export function Brand() {
   return (
     <div className="brand">

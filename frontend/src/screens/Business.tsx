@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Building2, Flag, Factory, Zap, Cog, SlidersHorizontal, Plus } from 'lucide-react'
+import { Building2, Flag, Factory, Zap, Cog, SlidersHorizontal } from 'lucide-react'
 import { useGame, useUI } from '../ui/context'
 import { Header, Choices, Panel, Stats, Button, Facts, Confirm, Progress, Table } from '../ui/components'
 import { millions, type Series } from '../game'
@@ -220,15 +220,6 @@ export function Production() {
   const { data, state, send } = useGame(),
     { open, go } = useUI(),
     [tab, setTab] = useState('products')
-  const startSpec = (id: string) => {
-    const p = data.products.find((x) => x.id === id)!
-    open(
-      p.name,
-      <Confirm action="Начать разработку" onConfirm={() => send({ type: 'spec', id })}>
-        Открыть демонстрационный проект следующей спецификации {p.name} для клиентских команд?
-      </Confirm>,
-    )
-  }
   return (
     <section className="screen">
       <Header
@@ -239,27 +230,6 @@ export function Production() {
         <Button onClick={() => open('План производства', <Capacity />)}>
           <SlidersHorizontal aria-hidden="true" size={16} />
           Мощности
-        </Button>
-        <Button
-          primary
-          onClick={() =>
-            open(
-              'Разработать изделие',
-              <>
-                {data.products.map((p) => (
-                  <div key={p.id} className="result">
-                    <strong>{p.name}</strong>
-                    <Button disabled={state.specs.includes(p.id)} onClick={() => startSpec(p.id)}>
-                      {state.specs.includes(p.id) ? 'В разработке' : 'Выбрать'}
-                    </Button>
-                  </div>
-                ))}
-              </>,
-            )
-          }
-        >
-          <Plus aria-hidden="true" size={16} />
-          Разработать изделие
         </Button>
       </Header>
       <Banner production />
@@ -316,9 +286,6 @@ export function Production() {
                   <span>{state.terms[p.id].support}</span>
                 </div>
                 <Button onClick={() => open(p.name, <Terms id={p.id} />)}>Параметры</Button>{' '}
-                <Button disabled={state.specs.includes(p.id)} onClick={() => startSpec(p.id)}>
-                  {state.specs.includes(p.id) ? 'Спецификация в разработке' : 'Новая спецификация'}
-                </Button>
               </div>
             </article>
           ))}

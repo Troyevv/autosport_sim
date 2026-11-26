@@ -108,7 +108,14 @@ def test_competing_projects_actual_budget_grants_and_private_public_sources():
     favored, paused = research_desk(c["id"])["projects"]
     assert favored["worked"] > 0 and paused["worked"] == active["worked"]
     s = checkpoint(c)
-    assert original == s["components"]
+    # The player's studies cannot issue a drawing. Independently funded NPC offices can.
+    current = dict(s["components"])
+    revisions = current.pop("revisions")
+    assert current == {k: value for k, value in original.items() if k != "revisions"}
+    assert revisions and all(
+        d["manufacturer"] != MCLAREN and d["reference"] in s["development"]["projects"]
+        for d in revisions.values()
+    )
     grants = [
         r
         for r in s["estate"]["bookings"].values()

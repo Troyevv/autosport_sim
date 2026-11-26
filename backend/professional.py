@@ -55,6 +55,11 @@ ACTIVITIES = {
         "aero chassis performance reliability chief-engineer",
         "*",
     ),
+    "component-test": (
+        "Испытание спецификации",
+        "aero chassis performance reliability chief-engineer",
+        "*",
+    ),
     "research-handover": ("Передача инженерного опыта", "*", "*"),
     "design": (
         "Разработка компонента",

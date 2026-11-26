@@ -1,6 +1,6 @@
 import { Trophy, Flag, Wallet, Gauge, Play, MapPin, Sun, ChevronRight } from 'lucide-react'
 import { useGame, useUI, type Route } from '../ui/context'
-import { Header, Button, Stats, Panel, Choices, Progress } from '../ui/components'
+import { Header, Button, Stats, Panel, Choices } from '../ui/components'
 import { Inbox } from '../ui/ShellActions'
 import { Profile } from './People'
 import { millions, type Series } from '../game'
@@ -163,21 +163,6 @@ export function Overview() {
             action={<span className="chip">{data.messages.length - state.read.length} новых</span>}
           >
             <Inbox />
-          </Panel>
-          <Panel title="Программа модернизации" action={link('development', 'Все проекты')}>
-            {state.projects.map((p) => (
-              <div className="project-mini" key={p.id}>
-                <div className="project-mini-top">
-                  <strong>{p.name}</strong>
-                  <span>{p.progress}%</span>
-                </div>
-                <Progress value={p.progress} />
-                <div className="project-mini-bottom">
-                  {p.category}
-                  <span>Осталось дней: {p.days}</span>
-                </div>
-              </div>
-            ))}
           </Panel>
         </div>
         <div className="dashboard-right">
