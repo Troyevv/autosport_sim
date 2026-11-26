@@ -123,6 +123,7 @@ class Milestone(Fields):
         "achievement",
         "organization-change",
         "specification-change",
+        "research-report",
         "financial-event",
         "academy-event",
         "media-event",
@@ -169,6 +170,7 @@ class Fact(Fields):
             "technical-event": "technical",
             "financial-event": "internal",
             "specification-change": "technical",
+            "research-report": "technical",
             "estimate": "estimate",
         }.get(self.data.kind)
         if self.access != "public" and self.data.context.org is None:

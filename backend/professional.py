@@ -50,6 +50,12 @@ ACTIVITIES = {
         "Стратегия Соперники Риск Скорость_решений Прогнозирование Погода Анализ_данных Адаптивность",
     ),
     "debrief": ("Анализ выполненной работы", "*", "*"),
+    "research": (
+        "Исследование инженерной концепции",
+        "aero chassis performance reliability chief-engineer",
+        "*",
+    ),
+    "research-handover": ("Передача инженерного опыта", "*", "*"),
     "design": (
         "Разработка компонента",
         "aero chassis engines transmissions tyres tyre-construction reliability performance chief-engineer",

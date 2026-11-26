@@ -2,7 +2,6 @@
 
 from concurrent.futures import ThreadPoolExecutor
 from copy import deepcopy
-import hashlib
 
 import pytest
 from fastapi.testclient import TestClient
@@ -213,18 +212,20 @@ def test_incompatible_double_install_and_atomic_failure(monkeypatch):
 
 def test_migrate_database_and_portable_v19_on_active_revision():
     c = create()
-    c = service.execute(
-        c["id"], service.Command(action="advance", revision=0, command_id="advance")
-    )
-    saved = service.export_save(c["id"])
-    saved["payload"]["state"].pop("components")
-    saved["sha256"] = hashlib.sha256(
-        storage.dump(saved["payload"]).encode()
-    ).hexdigest()
+    # Produce the receipt with the systems available in v19.
     with storage.transaction(True) as db:
         old = storage.checkpoint(db, c["id"])
         old.pop("components")
+        old.pop("research")
+        domain.apply(old, WORLD, "advance")
         storage.store(db, c["id"], old)
+        db.execute(
+            "INSERT INTO receipt(career,command_id,revision,action) VALUES(?,?,?,?)",
+            (c["id"], "advance", 0, "advance"),
+        )
+    c = service.load(c["id"])
+    saved = service.export_save(c["id"])
+    with storage.transaction(True) as db:
         db.execute("PRAGMA user_version=19")
     migrated = service.load(c["id"])
     copied = service.import_save(saved)

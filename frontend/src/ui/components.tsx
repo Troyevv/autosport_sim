@@ -164,12 +164,14 @@ export function Dialog({
   const ref = useRef<HTMLDialogElement>(null)
   useEffect(() => {
     const el = ref.current!
+    const trigger = document.activeElement
     el.showModal()
     const overflow = document.body.style.overflow
     document.body.style.overflow = 'hidden'
     return () => {
       el.close()
       document.body.style.overflow = overflow
+      if (trigger instanceof HTMLElement && trigger.isConnected) trigger.focus({ preventScroll: true })
     }
   }, [])
   useEffect(() => {

@@ -1,0 +1,134 @@
+.research-desk .tabs {
+  margin: 20px 0 16px;
+}
+.research-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.8fr) minmax(250px, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+.research-side,
+.research-form,
+.research-empty,
+.research-card {
+  padding: 18px;
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+}
+.research-side a {
+  color: var(--text);
+  text-underline-offset: 4px;
+}
+.research-heading,
+.research-meta,
+.research-actions,
+.research-filters {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.research-heading {
+  justify-content: space-between;
+  align-items: flex-start;
+}
+.research-heading > div {
+  flex: 1;
+  min-width: min(200px, 100%);
+}
+.research-heading small,
+.research-meta,
+.research-empty p,
+.research-card p {
+  color: #abb5c2;
+}
+.research-heading h3,
+.research-empty h3 {
+  margin: 6px 0 0;
+  font-size: 1rem;
+  line-height: 1.45;
+}
+.research-card p,
+.research-empty p {
+  margin: 0;
+  line-height: 1.5;
+}
+.research-card + .research-card,
+.research-filters + .research-card {
+  border-top: 1px solid #343b45;
+}
+.research-card > .btn,
+.research-side > .btn {
+  justify-self: start;
+}
+.research-meta span {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  font-size: 0.85rem;
+}
+.research-card summary {
+  cursor: pointer;
+  padding: 6px 0;
+}
+.research-card .facts,
+.research-form .facts {
+  overflow-wrap: anywhere;
+}
+.research-filters {
+  padding: 16px;
+  align-items: end;
+}
+.research-filters label,
+.research-form label {
+  display: grid;
+  gap: 7px;
+  font-size: 0.85rem;
+  min-width: 0;
+}
+.research-filters label {
+  flex: 1 1 140px;
+}
+.research-filters select,
+.research-form select {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  padding: 9px;
+  background: #202630;
+  color: #edf1f5;
+  border: 1px solid #414a58;
+  border-radius: 5px;
+}
+.research-empty {
+  align-content: start;
+  color: #a7b1bf;
+}
+.research-empty svg {
+  color: #cf7f88;
+}
+.research-empty h3 {
+  color: #eef1f6;
+}
+@media (max-width: 800px) {
+  .research-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .research-desk .tabs {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  .research-card {
+    padding: 14px;
+  }
+  .research-filters {
+    align-items: stretch;
+  }
+  .research-meta {
+    gap: 8px;
+  }
+  .research-form {
+    padding: 8px;
+  }
+}

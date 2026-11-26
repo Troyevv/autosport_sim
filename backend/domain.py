@@ -204,6 +204,20 @@ def next_date(state, catalog):
 
         dates.extend(d for d in personnel_dates(state) if d <= HORIZON)
         dates.append(HORIZON)
+        if (
+            state["setup"]["role"] == "manager"
+            and state["date"] < HORIZON
+            and any(
+                p["org"] == state["setup"]["org"] and not p["finished"]
+                for p in state.get("research", {}).get("projects", {}).values()
+            )
+        ):
+            from .research import facility
+            from .finance.facilities import later
+
+            tomorrow = later(state["date"], 1)
+            if facility(state, state["setup"]["org"], state["date"], tomorrow):
+                dates.append(tomorrow)
     return min((d for d in dates if d > state["date"]), default=None)
 
 
@@ -290,6 +304,12 @@ def apply(state, catalog, action, payload=None):
 
     from .finance import facilities
 
+    from . import research
+
+    if action in research.ORDERS and "research" in state:
+        research.command(state, catalog, action, payload)
+        state["revision"] += 1
+        return
     if action in lineup.ORDERS and "lineup" in state:
         lineup.command(state, catalog, action, payload)
         state["revision"] += 1

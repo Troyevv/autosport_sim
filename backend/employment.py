@@ -439,6 +439,10 @@ def advance_dates(state, catalog, target):
             current.year + current.month // 12, current.month % 12 + 1, 1
         ).isoformat()
         day = min([month, target, *(d for d in dates(state) if d > state["date"])])
+        if "research" in state:
+            from . import research
+
+            research.advance(state, catalog, day)
         develop(state, catalog, day)
         state["date"] = day
         if "growth_since" in state:
