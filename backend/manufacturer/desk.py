@@ -1,6 +1,6 @@
 """One office projection. Internal documents stay with their engineering owner."""
 
-from .. import components, programme
+from .. import components, programme, production
 from ..components.catalog import OPENING
 from ..council import access
 from ..development.physics import estimate
@@ -12,7 +12,9 @@ from .context import (
     person,
     engineering_entry,
     restriction,
+    supplier_baseline,
 )
+from .operating import CASES, operating_point
 from .profile import parameters, TARGETS
 from .support import diagnosis, proposal
 
@@ -30,11 +32,19 @@ def projection(state, world):
             terms = agreement(state, world, e, axis)
             if axis not in OPENING.installed[e["id"]]:
                 continue
-            start = OPENING.stock[OPENING.installed[e["id"]][axis]]["spec"]
+            start = supplier_baseline(e["id"], org, axis) if maker else None
             if (
                 maker
+                and start
                 and start not in catalog
-                and OPENING.specs[start]["manufacturer"] == org
+                and (
+                    OPENING.specs[
+                        OPENING.stock[OPENING.installed[e["id"]][axis]]["spec"]
+                    ]["manufacturer"]
+                    == org
+                    or terms
+                    and terms["maker"] == org
+                )
             ):
                 y = int(state["date"][:4])
                 ctx = engineering_entry(state, world, e["id"], org, axis)
@@ -58,6 +68,19 @@ def projection(state, world):
                                 axis, estimate(state, d), OPENING.specs[start]["life_m"]
                             ),
                             forecast=p.get("forecast"),
+                            calculations=[
+                                dict(
+                                    label=values[0],
+                                    results=operating_point(
+                                        axis,
+                                        estimate(state, d),
+                                        OPENING.specs[start]["life_m"],
+                                        case,
+                                    ),
+                                )
+                                for case, values in CASES.items()
+                                if axis == "tyre" or case != "wet"
+                            ],
                         )
                     )
                 catalog[start] = dict(
@@ -139,6 +162,20 @@ def projection(state, world):
             )
     advisor = person(state, org, "technical-advisor") if maker else None
     return dict(
+        inventory=[
+            dict(
+                id=iid,
+                serial=components.serial(iid),
+                axis=components.spec(state, iid)["slot"],
+                status=item["status"],
+                rejected=item["rejected"],
+                checks=item["checks"],
+                reason=item["reason"],
+                decisions=production.actions(state, iid, item["status"]),
+            )
+            for iid in production.inventory(state, org)
+            if maker and (item := state["production"]["items"].get(iid))
+        ],
         catalog=list(catalog.values()),
         clients=clients,
         cases=cases,

@@ -41,6 +41,7 @@ export function Manufacturer({
   world,
   updateCareer,
 }: SectionProps & { updateCareer: (c: Career) => void }) {
+  const [quantity, setQuantity] = useState(1)
   const maker = c.role === 'manufacturer'
   const request = usePersonnel<Desk>('careers/' + c.id + '/manufacturer', c.revision)
   const orders = useOrder(c, updateCareer, 'manufacturer'),
@@ -137,7 +138,8 @@ export function Manufacturer({
             <p>Уверенность оценки · {diag.confidence}%</p>
             {diag.observations.map((f) => (
               <p key={f.reference}>
-                {f.observation} · {f.value} ± {f.uncertainty} {f.unit}
+                {f.observation}
+                {f.value != null && ' · ' + num(f.value) + ' ± ' + num(f.uncertainty) + ' ' + f.unit}
               </p>
             ))}
           </>
@@ -255,6 +257,22 @@ export function Manufacturer({
                         </div>
                       ))}
                     </dl>
+                    <details>
+                      <summary>Расчётные режимы нагрузки</summary>
+                      {version.calculations.map((row) => (
+                        <section key={row.label}>
+                          <h3>{row.label}</h3>
+                          <dl>
+                            {Object.entries(row.results).map(([k, v]) => (
+                              <div key={k}>
+                                <dt>{label(k)}</dt>
+                                <dd>{num(v)}</dd>
+                              </div>
+                            ))}
+                          </dl>
+                        </section>
+                      ))}
+                    </details>
                   </>
                 ) : (
                   <p>В каталоге отсутствуют чертежи для этого направления.</p>
@@ -314,6 +332,17 @@ export function Manufacturer({
                             </select>
                           </Field>
                           {product.years[year] && <p>{product.years[year]}</p>}
+                          {tab === 'factory' && (
+                            <Field name="Количество в партии">
+                              <input
+                                type="number"
+                                min={1}
+                                max={24}
+                                value={quantity}
+                                onChange={(e) => setQuantity(Number(e.target.value))}
+                              />
+                            </Field>
+                          )}
                           {(tab === 'research' ? ['research', 'design'] : ['lab', 'bench', 'produce']).map(
                             (a) => (
                               <Button
@@ -331,6 +360,7 @@ export function Manufacturer({
                                       year: Number(year),
                                       objective: target,
                                       specification: version.id,
+                                      quantity: a === 'produce' ? quantity : 1,
                                     },
                                     'Поручение добавлено в календарь работ.',
                                   )
@@ -340,6 +370,24 @@ export function Manufacturer({
                               </Button>
                             ),
                           )}
+                          {tab === 'factory' &&
+                            version.status === 'released' &&
+                            d.clients.some(
+                              (r) => r.entry === product.entry && r.axis === product.axis && r.equal,
+                            ) && (
+                              <Button
+                                disabled={busy}
+                                onClick={() =>
+                                  void submit(
+                                    'maker-rollout',
+                                    { entry: product.entry, specification: version.id },
+                                    'Единая спецификация передана всем действующим клиентам.',
+                                  )
+                                }
+                              >
+                                Сменить спецификацию у всех клиентов
+                              </Button>
+                            )}
                           <a href="#facilities">Мощности и аренда</a>
                         </>
                       )}
@@ -395,6 +443,40 @@ export function Manufacturer({
                 </div>
               </Panel>
             </div>
+          )}
+          {tab === 'factory' && (
+            <Panel title="Склад и контроль качества">
+              <div className="maker-body">
+                {!d.inventory.length && <p>Изготовленные экземпляры поступят сюда на контроль качества.</p>}
+                {d.inventory.map((i) => (
+                  <article key={i.id} className="maker-card">
+                    <small>
+                      {i.serial} · {label(i.axis)}
+                    </small>
+                    <h3>{i.rejected ? 'Отклонён ОТК' : label(i.status)}</h3>
+                    <p>Проверок · {i.checks}</p>
+                    {i.reason && <p>{i.reason}</p>}
+                    {i.decisions
+                      .filter((v) => v !== 'scrap')
+                      .map((v) => (
+                        <Button
+                          key={v}
+                          disabled={busy}
+                          onClick={() =>
+                            void submit(
+                              'maker-item',
+                              { instance: i.id, decision: v },
+                              'Экземпляр передан в цех.',
+                            )
+                          }
+                        >
+                          {label(v)}
+                        </Button>
+                      ))}
+                  </article>
+                ))}
+              </div>
+            </Panel>
           )}
           {tab === 'clients' && (
             <Panel title="Договор и доступная продукция">

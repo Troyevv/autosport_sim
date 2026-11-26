@@ -1,6 +1,7 @@
 """Engineering commissions, transfers of custody and client decisions."""
 
 from typing import Literal
+from pydantic import Field
 from .. import components, development, production, programme, research
 from ..components.catalog import OPENING
 from ..components.registry import drawing_for
@@ -18,6 +19,12 @@ class Work(Fields):
     action: Literal["research", "design", "bench", "lab", "produce"]
     objective: Id = "output"
     specification: Id | None = None
+    quantity: int = Field(default=1, ge=1, le=24)
+
+
+class Rollout(Fields):
+    entry: Id
+    specification: Id
 
 
 class Delivery(Fields):
@@ -30,6 +37,8 @@ ORDERS = {
     "maker-request": Request,
     "maker-resolve": Resolve,
     "maker-deliver": Delivery,
+    "maker-item": production.Disposition,
+    "maker-rollout": Rollout,
     "maker-review": development.Decision,
     "maker-priority": programme.Priority,
 }
@@ -40,7 +49,14 @@ def initialize(state):
         return
     state.setdefault(
         "manufacturer",
-        dict(since=state["revision"], cases={}, deliveries={}, reviews={}, events=[]),
+        dict(
+            since=state["revision"],
+            cases={},
+            deliveries={},
+            reviews={},
+            events=[],
+            standards={},
+        ),
     )
 
     from ..catalog import LINEUP_WORLD as world
@@ -53,12 +69,15 @@ def initialize(state):
     }
     for entry in world["entries"].values():
         provider = factories.get(entry["org"])
+        reference = f"works-2025-{entry['id']}-engine"
+        if reference in state["market"].get("homologations", {}):
+            continue
         if provider and entry["championship"] == "f1" and state["date"] < "2026-01-01":
             homologate(
                 state,
                 world,
                 Homologation(
-                    reference=f"works-2025-{entry['id']}-engine",
+                    reference=reference,
                     provider=provider,
                     entry=entry["id"],
                     product="engine",
@@ -81,12 +100,12 @@ def commission(state, world, org, key, order):
     ):
         raise RuleError("Выберите продукт и доступный сезон программы.")
     axis = order.axis
-    initial = OPENING.stock[OPENING.installed[e["id"]][axis]]["spec"]
+    initial = e["supplier_baseline"]
     d = drawing_for(state, order.specification or initial)
     if d["manufacturer"] != org or d["family"] != OPENING.specs[initial]["family"]:
         raise RuleError("Редакция принадлежит другой программе.", 403)
     if order.action == "research":
-        return research.commission(
+        project = research.commission(
             state,
             world,
             org,
@@ -94,6 +113,20 @@ def commission(state, world, org, key, order):
             research.Commission(entry=e["id"], axis=axis, priority="normal"),
             target_year=order.year,
         )
+        if "objective" in project and (
+            project["objective"] != order.objective or project["baseline"] != d["id"]
+        ):
+            raise RuleError("Номер исследования уже относится к другой гипотезе.", 409)
+        from .profile import QUESTIONS
+
+        project.update(
+            objective=order.objective,
+            hypothesis=QUESTIONS[order.objective],
+            baseline=d["id"],
+            source=dict(project["source"], reference=d["id"]),
+            refinements=d["refinements"],
+        )
+        return project
     if order.action == "produce":
         return production.commission(
             state,
@@ -103,7 +136,7 @@ def commission(state, world, org, key, order):
             production.Order(
                 entry=e["id"],
                 specification=d["id"],
-                quantity=1,
+                quantity=order.quantity,
                 priority="normal",
                 rush=False,
                 outsource=False,
@@ -135,12 +168,14 @@ def commission(state, world, org, key, order):
     )
 
 
-def delivery_block(state, world, org, e, iid):
+def delivery_block(state, world, org, e, iid, *, rollout=False):
     item = state["components"]["inventory"].get(iid)
     if not item or item["org"] != org or not e:
         return "Экземпляр отсутствует на складе производителя."
     drawing = drawing_for(state, item["spec"])
     axis = drawing["slot"]
+    if drawing["manufacturer"] != org:
+        return "Спецификация принадлежит другому производителю."
     terms = agreement(state, world, e, axis)
     if not terms or terms["maker"] != org or not research.admitted(state, e):
         return "Отсутствует действующий договор или спортивный допуск."
@@ -157,9 +192,12 @@ def delivery_block(state, world, org, e, iid):
         state, world, e, drawing
     ) or not components.installable_revision(state, iid):
         return "Спецификация не допущена для этой машины."
+    from .rollout import standard
+
     if (
-        equal_supply(world, e, axis)
-        and drawing["id"] != OPENING.stock[OPENING.installed[e["id"]][axis]]["spec"]
+        not rollout
+        and equal_supply(world, e, axis)
+        and drawing["id"] != standard(state, e, org, axis)
     ):
         return "Обязательна единая омологированная спецификация для всех клиентов."
     return None
@@ -221,6 +259,14 @@ def command(state, world, action, payload):
         raise RuleError("Требуется назначение руководителя производителя.", 403)
     if isinstance(order, Work):
         return commission(state, world, org, key, order)
+    if isinstance(order, production.Disposition):
+        return production.disposition(state, world, org, order)
+    if isinstance(order, Rollout):
+        from .rollout import publish
+
+        return publish(
+            state, world, org, world["entries"].get(order.entry), order.specification
+        )
     if isinstance(order, Delivery):
         return deliver(
             state, world, org, world["entries"].get(order.entry), order.instance
@@ -244,8 +290,16 @@ def day(state, world):
     plan(state, world)
 
 
-def lines(world, org):
+def lines(world, org, state=None):
+    from .context import supplier_baseline
+
     for e in world["entries"].values():
         for axis, maker in world["cars"][e["car"]]["suppliers"].items():
-            if maker == org and axis in ROLES and axis in OPENING.installed[e["id"]]:
+            if axis not in ROLES or axis not in OPENING.installed[e["id"]]:
+                continue
+            if maker == org:
                 yield e, axis
+            elif state and supplier_baseline(e["id"], org, axis):
+                terms = agreement(state, world, e, axis)
+                if terms and terms["maker"] == org:
+                    yield e, axis

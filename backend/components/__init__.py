@@ -101,12 +101,6 @@ def compatible(
         "components"
     ]["admissions"].get(drawing["regulation"], [])
     own_design = slot in rule["team_slots"] and drawing["manufacturer"] == entry["org"]
-    if (
-        drawing.get("reference")
-        and for_review
-        and drawing["manufacturer"] == entry["org"]
-    ):
-        own_design = own_design or "supplier_axis" in entry
     if not (certified or own_design):
         return False
     fitted = mounting(state, entry["id"])

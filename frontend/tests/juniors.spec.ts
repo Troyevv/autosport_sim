@@ -23,7 +23,13 @@ for (const [series, org] of [
     expect(await picker.locator('option[value^="kart-"]').count()).toBe(0)
     await picker.selectOption(series)
     await page.getByRole('combobox', { name: 'Организация', exact: true }).selectOption(org)
-    await page.getByRole('button', { name: 'Создать карьеру' }).click()
+    const [created] = await Promise.all([
+      page.waitForResponse(
+        (r) => new URL(r.url()).pathname === '/api/careers' && r.request().method() === 'POST',
+      ),
+      page.getByRole('button', { name: 'Создать карьеру' }).click(),
+    ])
+    expect(created.ok()).toBe(true)
     await expect(page.getByRole('heading', { name: 'Штаб команды' })).toBeVisible()
     const url = page.url().split('#')[0]
     await evidence('hq')

@@ -5,8 +5,8 @@ from .. import components, development, production
 from ..domain import RuleError
 from ..finance import facilities
 from . import Work, commission, deliver, eligible_stock, lines
-from .context import agreement, person
-from .support import Request, Resolve, open_case, resolve, diagnosis
+from .context import agreement, equal_supply, person
+from .support import Request, Resolve, assigned, open_case, resolve, diagnosis
 from .profile import TARGETS
 
 
@@ -56,15 +56,51 @@ def priority(state, world, row):
     )
 
 
+def assign_advisor(state, world, request):
+    from ..employment import assign_support
+
+    day = state["date"]
+    if assigned(state, request, day):
+        return
+    org = request["supplier"]
+    seat = world["assignments"].get(org + ":technical-advisor")
+    advisor = person(state, org, "technical-advisor")
+    if not seat or not advisor:
+        return
+    row = next(
+        r
+        for r in state["seats"][seat["id"]]
+        if r["person"] == advisor
+        and r["start"] <= day
+        and (not r["end"] or day < r["end"])
+    )
+    try:
+        assign_support(
+            state,
+            world,
+            seat,
+            row,
+            dict(
+                entry=request["entry"],
+                product=request["axis"],
+                start=day,
+                end=facilities.later(day, 1),
+            ),
+        )
+    except RuleError:
+        # The engineering office can still review its own production and bench records.
+        return
+
+
 def review(state, world, org, ordinal):
     office = state["manufacturer"]
     clients = [
         (e, a)
-        for e, a in lines(world, org)
+        for e, a in lines(world, org, state)
         if (d := agreement(state, world, e, a)) and d["maker"] == org
     ]
     if not clients:
-        clients = list(lines(world, org))
+        clients = list(lines(world, org, state))
     if not clients or not person(state, org, "chief-engineer"):
         return
     e, axis = clients[(ordinal // 7) % len(clients)]
@@ -87,7 +123,14 @@ def review(state, world, org, ordinal):
     active = [p for p in projects if not p["finished"]]
     if requests:
         r = requests[0]
-        if r["kind"] in ("consult", "problem", "warranty"):
+        terms = agreement(state, world, world["entries"][r["entry"]], r["axis"])
+        if not terms or terms["id"] != r["contract"]:
+            choice, reason = (
+                "decline",
+                "Срок договорных полномочий по этому обращению завершён.",
+            )
+        elif r["kind"] in ("consult", "problem", "warranty"):
+            assign_advisor(state, world, r)
             report = diagnosis(state, world, r)
             choice = (
                 "compensate"
@@ -157,7 +200,43 @@ def review(state, world, org, ordinal):
             )
             year = now
         else:
-            action = "design"
+            conclusion = state["research"]["reports"].get("report-" + last["id"], {})
+            action = "design" if conclusion.get("outcome") == "supported" else "bench"
+            # Carry over a released ancestor only when a paired measurement supports its trade.
+            candidates = []
+            for project in projects:
+                if (
+                    project.get("kind") != "design"
+                    or project.get("axis") != axis
+                    or project["entry"] != e["id"]
+                    or project.get("objective") != objective
+                    or project.get("disposition") != "released"
+                    or project.get("findings")
+                    or project.get("target_year", now) not in (year, year - 1)
+                ):
+                    continue
+                for test in projects:
+                    r = test.get("report")
+                    if (
+                        not r
+                        or test.get("candidate") != project["specification"]
+                        or test.get("objective") != objective
+                        or test["method"] != "bench"
+                        or r["detected"]
+                    ):
+                        continue
+                    margin = (
+                        TARGETS[axis][objective][1] * r["difference"] - r["uncertainty"]
+                    )
+                    if margin > 0:
+                        candidates.append(
+                            (
+                                margin / max(0.001, abs(r["a"]["value"])),
+                                project["specification"],
+                            )
+                        )
+            if candidates:
+                version = max(candidates)[1]
             objective = next(
                 (
                     r["objective"]
@@ -169,6 +248,18 @@ def review(state, world, org, ordinal):
             if axis == "engine" and e["championship"] == "f1" and year == 2025:
                 year += 1
     if action == "produce":
+        if equal_supply(world, e, axis):
+            from .rollout import publish, standard
+
+            current = standard(state, e, org, axis)
+            if version and version != current:
+                try:
+                    publish(state, world, org, e, version)
+                    return
+                except RuleError:
+                    # Pending a common rollout, fulfil outstanding orders with the current drawing.
+                    pass
+            version = current
         for client, product in clients:
             if stock := eligible_stock(state, world, org, client, product):
                 deliver(state, world, org, client, stock[0])
@@ -221,7 +312,7 @@ def plan(state, world):
         if row["kind"] == "supplier" and set(row["lines"]) & TARGETS.keys()
     )
     org = makers[ordinal % len(makers)]
-    clients = list(lines(world, org))
+    clients = list(lines(world, org, state))
     # At a review, consult two distinct client programmes. Reopen briefs only for a new season.
     seen = {
         r["client"]

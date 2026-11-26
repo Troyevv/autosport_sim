@@ -905,8 +905,11 @@ def assign_support(state, catalog, seat, row, args):
     course = state["people"][row["person"]].get("training")
     if course and intersects(course, start, end):
         raise RuleError("Период поддержки пересекается с курсом.")
+    reference = f"support-{state['revision']}"
+    if any(r["id"] == reference for r in state["support"]):
+        reference += f"/{seat['org']}/{entry['id']}/{product}/{start}"
     assignment = SupportAssignment(
-        f"support-{state['revision']}",
+        reference,
         row["person"],
         seat["org"],
         entry["org"],

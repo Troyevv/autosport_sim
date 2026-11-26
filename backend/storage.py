@@ -273,10 +273,14 @@ def transaction(write=False):
                     store(db, row["id"], state)
             if idx == 25:
                 from .manufacturer import initialize
+                from .manufacturer.history import write_fact
+                from .catalog import LINEUP_WORLD
 
                 for row in db.execute("SELECT id FROM career").fetchall():
                     state = checkpoint(db, row["id"])
                     initialize(state)
+                    for event in state["manufacturer"]["events"]:
+                        write_fact(db, row["id"], state, LINEUP_WORLD, event)
                     store(db, row["id"], state)
             db.execute(f"PRAGMA user_version={idx + 1}")
         yield db

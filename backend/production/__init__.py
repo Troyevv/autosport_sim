@@ -104,9 +104,11 @@ def spend(state, world, org, key, cents):
     finance.transfer(state, org, None, key, cents, "production")
 
 
-def log(state, entry, version, code, actor, *, batch=None, instance=None):
+def log(
+    state, entry, version, code, actor, *, batch=None, instance=None, operator=None
+):
     history = state["production"]["history"]
-    owner = state["production"]["batches"].get(batch, {}).get("org")
+    owner = operator or state["production"]["batches"].get(batch, {}).get("org")
     history.append(
         dict(
             **({"org": owner} if owner and owner.startswith("supplier-") else {}),
@@ -166,7 +168,9 @@ def commission(state, world, org, key, order, *, target_year=None):
         if terms and terms["signed"] and terms["maker"] == org:
             contract = terms["id"]
             paid = state["finance"]["instalments"].get(contract + ":production", {})
-            if paid.get("status") == "paid":
+            if paid and paid.get("status") != "paid":
+                raise RuleError("Договорный платёж за производство ещё не проведён.")
+            if paid:
                 used = sum(
                     b.get("prepaid_cents", 0)
                     for b in batches.values()
@@ -283,7 +287,9 @@ def disposition(state, world, org, order):
     items = state["production"]["items"]
     drawing = components.spec(state, iid)
     if iid in items:
-        entry = world["entries"][items[iid]["entry"]]
+        entry = engineering_entry(
+            state, world, items[iid]["entry"], org, drawing["slot"]
+        )
     else:
         entry = next(
             (
@@ -297,7 +303,9 @@ def disposition(state, world, org, order):
         )
         if entry is None:
             raise RuleError("Не найдена программа обслуживания.")
-    lead = components.specialists(state, world, entry).get("chief-mechanic")
+    lead = components.specialists(state, world, entry).get(
+        "chief-engineer" if "supplier_axis" in entry else "chief-mechanic"
+    )
     if not lead:
         raise RuleError("Требуется назначенный главный механик.")
     if order.decision == "repair":
@@ -335,6 +343,7 @@ def disposition(state, world, org, order):
         lead,
         batch=item["batch"],
         instance=iid,
+        operator=org,
     )
 
 
@@ -372,9 +381,8 @@ def write_fact(db, cid, state, world, event):
 
     e = world["entries"][event["entry"]]
     drawing = drawing_for(state, event["version"])
-    batch = state["production"]["batches"].get(event["batch"])
-    if batch and batch["org"] != e["org"]:
-        e = engineering_entry(state, world, e["id"], batch["org"], drawing["slot"])
+    if event.get("org") and event["org"] != e["org"]:
+        e = engineering_entry(state, world, e["id"], event["org"], drawing["slot"])
     facts.record(
         db,
         cid,

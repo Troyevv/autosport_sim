@@ -118,7 +118,8 @@ def test_profile_lead_and_bench(org, axis):
     assert test["lead"] != design["lead"]
 
 
-def test_serial_delivery_ledger_equality_and_warranty():
+@pytest.mark.parametrize("remedy", ["compensate", "repair", "replace"])
+def test_serial_delivery_ledger_equality_and_warranty(remedy):
     s = checkpoint(create(MAKER, "manufacturer"))
     e = WORLD["entries"][ENTRY]
     client = e["org"]
@@ -136,12 +137,22 @@ def test_serial_delivery_ledger_equality_and_warranty():
         WORLD,
         MAKER,
         "rack-batch",
-        manufacturer.Work(entry=ENTRY, axis="engine", year=2025, action="produce"),
+        manufacturer.Work(
+            entry=ENTRY,
+            axis="engine",
+            year=2025,
+            action="produce",
+            quantity=2 if remedy == "replace" else 1,
+        ),
     )
     iid = b["id"] + "/unit-1"
     for _ in range(15):
         factory_day(s, WORLD, {})
-        if s["production"]["items"].get(iid, {}).get("status") == "stock":
+        if all(
+            s["production"]["items"].get(b["id"] + f"/unit-{n}", {}).get("status")
+            == "stock"
+            for n in range(1, b["quantity"] + 1)
+        ):
             break
         next_day(s)
     assert iid in manufacturer.eligible_stock(s, WORLD, MAKER, e, "engine")
@@ -164,6 +175,8 @@ def test_serial_delivery_ledger_equality_and_warranty():
     )
     s["market"]["supplies"]["competing"] = deal
     assert manufacturer.delivery_block(s, WORLD, MAKER, e, iid)
+    deal.update(status="terminated", ended=s["date"])
+    assert agreement(s, WORLD, e, "engine") is None
     del s["market"]["supplies"]["competing"]
     balance = finance.balance(s, MAKER)
     manufacturer.deliver(s, WORLD, MAKER, e, iid)
@@ -191,7 +204,7 @@ def test_serial_delivery_ledger_equality_and_warranty():
     s["production"]["items"][iid]["fault"] = True
     assert not support.diagnosis(s, WORLD, row)["covered"]
     decision = support.Resolve(
-        case="claim", decision="compensate", reason="Брак подтверждён ОТК"
+        case="claim", decision=remedy, reason="Брак подтверждён ОТК"
     )
     with pytest.raises(RuleError):
         support.resolve(s, WORLD, MAKER, decision)
@@ -206,13 +219,34 @@ def test_serial_delivery_ledger_equality_and_warranty():
         batch=b["id"],
         instance=iid,
     )
+    if remedy == "repair":
+        with pytest.raises(RuleError, match="снять"):
+            support.resolve(s, WORLD, MAKER, decision)
+        del s["components"]["mounts"][ENTRY]["engine"]
     s0 = finance.balance(s, client)
     support.resolve(s, WORLD, MAKER, decision)
-    assert (
-        finance.balance(s, client) - s0
-        == balance - finance.balance(s, MAKER)
-        == row["compensation_cents"]
-    )
+    if remedy == "compensate":
+        assert (
+            finance.balance(s, client) - s0
+            == balance - finance.balance(s, MAKER)
+            == row["compensation_cents"]
+        )
+    elif remedy == "replace":
+        assert b["id"] + "/unit-2" in components.stockroom(s, WORLD, e)
+        assert finance.balance(s, client) == s0 and finance.balance(s, MAKER) == balance
+    else:
+        item = s["production"]["items"][iid]
+        assert item["status"] == "repair" and item["service_org"] == MAKER
+        assert finance.balance(s, client) == s0 and finance.balance(s, MAKER) < balance
+        for _ in range(10):
+            next_day(s)
+            factory_day(s, WORLD, {})
+            if item["status"] == "stock":
+                break
+        assert (
+            item["status"] == "stock" and item["repaired"] and "service_org" not in item
+        )
+
     with pytest.raises(RuleError):
         support.resolve(s, WORLD, MAKER, decision)
 
@@ -288,3 +322,142 @@ def test_client_conflict_diagnosis_grants_and_npc():
     assert len(s["research"]["projects"]) == 1 and not s["components"]["revisions"]
     s["date"] = "2025-07-02"
     assert not support.evidence(s, WORLD, hot)
+
+
+def test_equal_supply_switch_requires_stock_for_every_entry():
+    from .components.catalog import OPENING
+    from .components.registry import register_instance, register_revision
+    from .manufacturer.rollout import publish
+    from .manufacturer.context import person
+
+    org = "supplier-pirelli"
+    s = checkpoint(create(org, "manufacturer", "f2"))
+    cohort = [e for e, a in manufacturer.lines(WORLD, org) if e["championship"] == "f2"]
+    e = cohort[0]
+    author = person(s, org, "tyres")
+    s["date"] = "2026-02-01"
+    axis = "tyre"
+    base = components.spec(s, OPENING.installed[e["id"]][axis])
+    version = register_revision(
+        s,
+        parent=base["id"],
+        version=2,
+        title="Контрольная спецификация",
+        parameters=base["parameters"],
+        life_m=base["life_m"],
+        visual=None,
+        author=author,
+        reference="design-case",
+    )
+    s["components"]["admissions"][base["regulation"]] = [version]
+    s["development"]["projects"]["design-case"] = dict(
+        id="design-case", org=org, disposition="released", findings=[]
+    )
+    s["production"]["batches"]["lot"] = dict(
+        org=org, finished=s["date"], specification=version
+    )
+
+    def stock(i):
+        iid = f"lot/{i}"
+        register_instance(s, instance=iid, version=version, org=org, reference="lot")
+        s["production"]["items"][iid] = dict(status="stock", batch="lot")
+        return iid
+
+    iid = stock(0)
+    assert manufacturer.delivery_block(s, WORLD, org, e, iid)
+    with pytest.raises(RuleError):
+        publish(s, WORLD, org, e, version)
+    assert (
+        s["components"]["inventory"][iid]["org"] == org
+        and not s["manufacturer"]["standards"]
+    )
+    for i in range(1, len(cohort)):
+        stock(i)
+    publish(s, WORLD, org, e, version)
+    assert {r["entry"] for r in s["manufacturer"]["deliveries"].values()} == {
+        c["id"] for c in cohort
+    }
+    assert {i["spec"] for i in s["components"]["inventory"].values()} == {version}
+    with pytest.raises(RuleError):
+        publish(s, WORLD, org, e, version)
+
+
+def test_works_and_independent_client_prepaid_manufacturing():
+    from .finance import market
+    from .test_commercial import terms
+
+    s = checkpoint(create(MAKER, "manufacturer"))
+    factory = next(
+        e
+        for e, a in manufacturer.lines(WORLD, MAKER)
+        if agreement(s, WORLD, e, a)["partnership"] == "works"
+    )
+    customer = WORLD["entries"][ENTRY]
+    assert agreement(s, WORLD, customer, "engine")["partnership"] == "client"
+    facilities.act(
+        s,
+        WORLD,
+        MAKER,
+        "rack",
+        facilities.Lease(
+            facility="shared:warehouse", start=s["date"], days=10, units=1, mode="lease"
+        ),
+    )
+    for e in (factory, customer):
+        bid = market.Bid(
+            terms=terms(org=e["org"], sponsor=MAKER),
+            supply=dict(
+                product="engine",
+                price_cents=500000,
+                discount_cents=0,
+                support=True,
+                seat_cents=0,
+                testing=False,
+                development=True,
+            ),
+        )
+        key = "signed-" + e["id"]
+        market.sign_supply(
+            s,
+            WORLD,
+            bid,
+            market.Reply(
+                offer=key,
+                decision="accept",
+                supply=True,
+                sponsorship=False,
+                support=True,
+            ),
+            key,
+        )
+        finance.settle(s)
+        assert (key + ":delivery" in s["finance"]["instalments"]) == (e == customer)
+        balance = finance.balance(s, MAKER)
+        batch = manufacturer.commission(
+            s,
+            WORLD,
+            MAKER,
+            key + "/part",
+            manufacturer.Work(
+                entry=e["id"], year=2025, axis="engine", action="produce"
+            ),
+        )
+        assert (
+            batch["prepaid_cents"] == batch["cost_cents"]
+            and finance.balance(s, MAKER) == balance
+        )
+        assert not any(k.startswith(key) for k in s["market"]["contracts"])
+
+
+def test_controlled_load_cases_use_physical_profile():
+    from .manufacturer.operating import operating_point
+    from .components.catalog import OPENING
+
+    tyre = next(d for d in OPENING.specs.values() if d["slot"] == "tyre")
+    cases = [
+        operating_point("tyre", tyre["parameters"], tyre["life_m"], mode)
+        for mode in ("rated", "cold", "wet")
+    ]
+    rated, cold, wet = cases
+    assert cold["warmup_energy_kj"] > rated["warmup_energy_kj"] == 0
+    assert wet["contact_force_n"] / 0.75 < rated["contact_force_n"]

@@ -329,12 +329,15 @@ def service_item(state, world, iid, item, used):
             (serial or batch) and sample < 350 + quality * 6
         ):
             code = "batch-defect" if batch else "rejected"
+            if "manufacturer" in state and components.condition(state, iid)["damaged"]:
+                code = "damaged"
             item["rejected"] = True
         elif sample >= 910 + quality // 2:
             code = "additional"
         else:
             code = "accepted"
             item.update(status="stock", rejected=False)
+            item.pop("service_org", None)
     item["reason"] = None
     record_work(
         state,
@@ -356,6 +359,7 @@ def service_item(state, world, iid, item, used):
         lead,
         batch=item["batch"],
         instance=iid,
+        operator=owner,
     )
     if code == "batch-defect":
         for other_id, other in sorted(state["production"]["items"].items()):
@@ -381,6 +385,7 @@ def service_item(state, world, iid, item, used):
                 lead,
                 batch=item["batch"],
                 instance=other_id,
+                operator=owner,
             )
     if code == "accepted" and "council" not in state:
         from .planning import issue_to_car

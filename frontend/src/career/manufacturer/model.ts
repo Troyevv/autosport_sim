@@ -53,6 +53,23 @@ export const labels: Record<string, string> = {
   distance: 'Дистанция',
   temperature: 'Температура',
   feedback: 'Обратная связь',
+  inspection: 'ОТК',
+  stock: 'На складе',
+  scrapped: 'Списан',
+  inspect: 'Повторная проверка',
+  scrap: 'Списать',
+  shaft_kw: 'Мощность на валу, кВт',
+  torque_nm: 'Момент на валу, Н·м',
+  fuel_kg_h: 'Расход топлива, кг/ч',
+  thermal_efficiency: 'Тепловой КПД',
+  required_cooling_kw: 'Требуемый теплоотвод, кВт',
+  first_output_nm: 'Момент на I передаче, Н·м',
+  top_output_nm: 'Момент на высшей передаче, Н·м',
+  mechanical_loss_kw: 'Механические потери, кВт',
+  shift_interruption_ms: 'Разрыв тяги, мс',
+  contact_force_n: 'Предельная сила сцепления, Н',
+  tread_loss_mm_100km: 'Расчётный износ, мм/100 км',
+  warmup_energy_kj: 'Энергия до рабочего окна, кДж',
   mass_kg: 'Масса, кг',
   power_kw: 'Мощность, кВт',
   peak_torque_nm: 'Пиковый момент, Н·м',
@@ -89,6 +106,7 @@ export interface Client {
   stock: string[]
 }
 export interface Edition {
+  calculations: { label: string; results: Record<string, number> }[]
   id: string
   version: number
   title: string
@@ -162,6 +180,16 @@ export interface Desk {
   }[]
   cases: Case[]
   targets: Record<string, string[]>
+  inventory: {
+    id: string
+    serial: string
+    axis: string
+    status: string
+    reason: string | null
+    rejected: boolean
+    checks: number
+    decisions: string[]
+  }[]
   allocation: string
   advisor: { seat: string; name: string } | null
   assignments: {

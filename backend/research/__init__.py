@@ -105,7 +105,11 @@ def commission(state, world, org, key, order, *, target_year=None):
         if "supplier_axis" in entry
         else components.mounting(state, entry["id"])
     )
-    drawing = components.spec(state, mounted[axis])
+    drawing = (
+        OPENING.specs[entry["supplier_baseline"]]
+        if "supplier_axis" in entry
+        else components.spec(state, mounted[axis])
+    )
     source = dict(
         kind="design-file",
         reference=drawing["id"],
@@ -231,7 +235,8 @@ def handover(state, world, org, order):
     if not report or report["org"] != org:
         raise RuleError("Отчёт недоступен.", 403)
     mentor, recipient = order.mentor, order.recipient
-    entry = world["entries"][data["projects"][report["project"]]["entry"]]
+    project = data["projects"][report["project"]]
+    entry = engineering_entry(state, world, project["entry"], org, project["axis"])
     current = set(components.specialists(state, world, entry).values()) - {None}
     if not {mentor, recipient} <= current or mentor == recipient:
         raise RuleError("Для передачи нужны два действующих специалиста программы.")

@@ -16,6 +16,7 @@ class Request(Fields):
     kind: Literal["problem", "change", "next", "consult", "warranty"]
     objective: Id
     message: Id
+    instance: Id | None = None
 
 
 class Resolve(Fields):
@@ -29,7 +30,17 @@ def open_case(state, world, org, key, order):
     if not e or e["org"] != org or order.objective not in TARGETS[order.axis]:
         raise RuleError("Нет полномочий на обращение по этому узлу.", 403)
     terms = agreement(state, world, e, order.axis)
-    iid = components.mounting(state, e["id"]).get(order.axis)
+    fitted = components.mounting(state, e["id"]).get(order.axis)
+    iid = order.instance or fitted
+    if iid != fitted and (
+        iid not in production.inventory(state, org)
+        or components.spec(state, iid)["slot"] != order.axis
+        or not any(
+            h["entry"] == e["id"] and iid in (h["instance"], h["removed"])
+            for h in state["components"]["history"]
+        )
+    ):
+        raise RuleError("Экземпляр не обслуживался в указанной заявке.", 403)
     if (
         not terms
         or not iid
@@ -50,7 +61,7 @@ def open_case(state, world, org, key, order):
     ):
         raise RuleError("Такое обращение по экземпляру уже зарегистрировано.", 409)
     row = dict(
-        **order.model_dump(),
+        **order.model_dump(exclude={"instance"}),
         id=key,
         client=org,
         supplier=terms["maker"],
@@ -114,7 +125,13 @@ def evidence(state, world, row):
         ):
             continue
         grant = support_on(state, advisor["advisor"], fact["day"])
-        if not grant or grant.agreement != terms["id"]:
+        dated = agreement(state, world, e, row["axis"], fact["day"])
+        if (
+            not dated
+            or dated["id"] != terms["id"]
+            or not grant
+            or grant.agreement != terms["id"]
+        ):
             continue
         channel = "feedback" if fact["kind"] == "driver-feedback" else fact["channel"]
         scope = ObservationScope(
@@ -130,7 +147,7 @@ def evidence(state, world, row):
         if visible_channels(grant, scope, fact["day"], row["supplier"], [channel]):
             result.append(
                 {
-                    k: fact[k]
+                    k: fact.get(k)
                     for k in (
                         "reference",
                         "day",
@@ -140,6 +157,10 @@ def evidence(state, world, row):
                         "uncertainty",
                         "conditions",
                         "observation",
+                        "indicator",
+                        "track",
+                        "layout",
+                        "load_profile",
                     )
                 }
             )
@@ -158,6 +179,7 @@ def diagnosis(state, world, row):
         h["id"]
         for h in state["production"]["history"]
         if h["instance"] == row["instance"]
+        and h.get("org") == row["supplier"]
         and h["code"] in ("rejected", "batch-defect", "quarantine")
         and batch
         and state["production"]["batches"][batch]["org"] == row["supplier"]
@@ -174,12 +196,34 @@ def diagnosis(state, world, row):
         "staff": [],
     }
     for fact in observations:
-        for code in {
-            "temperature": ("cooling", "integration"),
-            "wear": ("wear", "overload"),
-            "mode": ("operation", "staff"),
-        }.get(fact["channel"], ()):
-            causes[code].append(fact["reference"])
+        indicator = {
+            "mount-out-of-tolerance": "integration",
+            "coolant-flow-low": "cooling",
+            "load-limit-exceeded": "overload",
+            "service-procedure-deviation": "staff",
+            "outside-operating-window": "operation",
+        }.get(fact.get("indicator"))
+        if indicator:
+            causes[indicator].append(fact["reference"])
+        elif (
+            fact["channel"] == "temperature"
+            and fact["value"] is not None
+            and fact["unit"] in ("°C", "degC")
+        ):
+            # Conservative nominal thresholds from the drawing. A single high reading cannot isolate the installation.
+            from .profile import parameters
+            from ..development.physics import estimate
+
+            nominal = parameters(row["axis"], estimate(state, d), d["life_m"])
+            if fact["value"] - (fact["uncertainty"] or 0) > nominal.get(
+                "window_high_c", 105
+            ):
+                for code in ("cooling", "integration"):
+                    causes[code].append(fact["reference"])
+        elif fact["channel"] == "wear" and fact["unit"] in ("%", "ppm"):
+            limit = 80 if fact["unit"] == "%" else 800000
+            if fact["value"] - (fact["uncertainty"] or 0) >= limit:
+                causes["wear"].append(fact["reference"])
     advisor = assigned(state, row, state["date"])
     analyst = person(state, row["supplier"], "chief-analyst")
     reviewer = advisor["advisor"] if advisor else analyst
@@ -202,7 +246,15 @@ def diagnosis(state, world, row):
             if analyst
             else skill
         )
-        confidence = min(90, (skill + review + 100 - p["fatigue"]) // 3)
+        allocation = advisor["allocation_percent"] if advisor else 100
+        comparable = sum(1 for f in observations if f.get("indicator"))
+        confidence = min(
+            90,
+            (skill + review + 100 - p["fatigue"]) // 3 * allocation // 100
+            + min(comparable, 3) * 2,
+        )
+        if not (qc or findings or comparable):
+            confidence = min(confidence, 45)
     return dict(
         causes=causes,
         observations=observations,
@@ -342,6 +394,19 @@ def resolve(state, world, org, order):
         row["contract"],
         row["id"],
     )
+    if report["observations"] and report["reviewer"]:
+        from ..research import record_work
+
+        record_work(
+            state,
+            world,
+            report["reviewer"],
+            org,
+            row["id"],
+            "client-data",
+            "Диагностика",
+            "completed",
+        )
     row["proposal"] = brief["id"]
     row.update(
         status=choice,

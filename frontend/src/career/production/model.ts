@@ -118,6 +118,7 @@ export const labels: Record<string, string> = {
   accepted: 'Допущен по протоколу',
   'batch-defect': 'Обнаружен брак партии',
   rejected: 'Экземпляр отклонён',
+  damaged: 'Обнаружено повреждение экземпляра',
   repaired: 'Ремонт завершён',
   inspect: 'Назначен контроль',
   scrap: 'Списан',

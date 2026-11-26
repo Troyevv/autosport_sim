@@ -137,6 +137,8 @@ def commission(state, world, org, key, order, *, target_year=None, objective=Non
         if (
             prior["org"] != org
             or prior["order"] != order.model_dump()
+            or objective is not None
+            and prior.get("objective") != objective
             or (target_year is not None and prior.get("target_year") != target_year)
         ):
             raise RuleError("Номер поручения уже используется.", 409)
@@ -156,9 +158,7 @@ def commission(state, world, org, key, order, *, target_year=None, objective=Non
     allowed = {d["id"] for d in versions(state, entry["id"], axis)}
     maker = "supplier_axis" in entry
     if maker:
-        family = OPENING.stock[OPENING.installed[entry["id"]][axis]]["spec"].rsplit(
-            "/", 1
-        )[0]
+        family = OPENING.specs[entry["supplier_baseline"]]["family"]
         allowed = {
             d["id"]
             for pool in (OPENING.specs, state["components"]["revisions"])
@@ -168,10 +168,17 @@ def commission(state, world, org, key, order, *, target_year=None, objective=Non
     from ..programme.rules import config_for
 
     config = config_for(state, world, entry, target_year)
-    if base["id"] not in allowed or base["regulation"] not in (
-        config["regulation"],
-        world["cars"][entry["car"]]["regulation"],
+    baseline_rules = {config["regulation"], world["cars"][entry["car"]]["regulation"]}
+    if (
+        maker
+        and target_year
+        and target_year > 2025
+        and released(state, org, base["id"])
     ):
+        baseline_rules.add(
+            config_for(state, world, entry, target_year - 1)["regulation"]
+        )
+    if base["id"] not in allowed or base["regulation"] not in baseline_rules:
         raise RuleError("Чертёж не принадлежит программе.", 403)
     design = isinstance(order, Design)
     if base.get("programme_concept") and base["programme_concept"] != config["concept"]:
@@ -412,7 +419,13 @@ def review(state, world, p, disposition, actor):
     if disposition == "released" and (
         p["findings"]
         or not any(
-            t.get("candidate") == p["specification"] and t.get("report") and (not p.get("objective") or t["org"] == p["org"] and t["regulation"] == p["regulation"])
+            t.get("candidate") == p["specification"]
+            and t.get("report")
+            and (
+                not p.get("objective")
+                or t["org"] == p["org"]
+                and t["regulation"] == p["regulation"]
+            )
             for t in state["development"]["projects"].values()
         )
     ):

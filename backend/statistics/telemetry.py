@@ -139,8 +139,11 @@ def permitted(viewer, header):
     for assignment in json.loads(viewer["support"]):
         if (
             assignment["agreement"] != ctx.contract
-            # The existing supply producer issues one agreement per entry/product.
-            or ctx.contract != entry_agreement(ctx.entry, part.product)
+            or (
+                assignment["entry"] != ctx.entry
+                if "entry" in assignment
+                else ctx.contract != entry_agreement(ctx.entry, part.product)
+            )
             or not assignment["start"] <= viewer["day"] < assignment["end"]
             or header.day > viewer["day"]
         ):

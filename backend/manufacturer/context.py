@@ -1,5 +1,6 @@
 """Resolve the engineering owner separately from the racing entry used for fit checks."""
 
+from functools import lru_cache
 from ..components.catalog import OPENING, POLICIES
 from ..domain import RuleError, occupant_on
 from ..finance.market import supplier_eligible
@@ -15,18 +16,20 @@ ROLES = {
 
 def agreement(state, world, e, axis, day=None):
     day = day or state["date"]
+    agreements = [
+        r
+        for r in state["market"]["supplies"].values()
+        if r["org"] == e["org"]
+        and r["series"] == e["championship"]
+        and r["product"] == axis
+        and r["start"] <= day
+        and r["status"] in ("signed", "terminated", "expired")
+    ]
     signed = next(
-        (
-            r
-            for r in state["market"]["supplies"].values()
-            if r["org"] == e["org"]
-            and r["series"] == e["championship"]
-            and r["product"] == axis
-            and r["status"] == "signed"
-            and r["start"] <= day < r["end"]
-        ),
-        None,
+        (r for r in agreements if day < min(r["end"], r.get("ended") or r["end"])), None
     )
+    if agreements and not signed:
+        return None
     maker = (
         signed["sponsor"] if signed else world["cars"][e["car"]]["suppliers"].get(axis)
     )
@@ -51,6 +54,27 @@ def agreement(state, world, e, axis, day=None):
     )
 
 
+@lru_cache(maxsize=None)
+def supplier_baseline(eid, org, axis):
+    original = OPENING.installed[eid].get(axis)
+    if not original:
+        return None
+    drawing = OPENING.specs[OPENING.stock[original]["spec"]]
+    if drawing["manufacturer"] == org:
+        return drawing["id"]
+    return next(
+        (
+            d["id"]
+            for d in OPENING.specs.values()
+            if d["slot"] == axis
+            and d["manufacturer"] == org
+            and d["interface"] == drawing["interface"]
+            and d["regulation"] == drawing["regulation"]
+        ),
+        None,
+    )
+
+
 def engineering_entry(state, world, eid, org, axis):
     entry = world["entries"].get(eid)
     if not entry or entry["org"] == org:
@@ -63,14 +87,15 @@ def engineering_entry(state, world, eid, org, axis):
         or axis not in maker["lines"]
     ):
         raise RuleError("Направление находится вне полномочий организации.", 403)
-    base = OPENING.installed[eid].get(axis)
-    if not base or OPENING.specs[OPENING.stock[base]["spec"]]["manufacturer"] != org:
+    base = supplier_baseline(eid, org, axis)
+    if not base:
         raise RuleError(
             "У производителя нет исходного чертежа для этого интерфейса.", 403
         )
     return dict(
         entry,
         supplier_axis=axis,
+        supplier_baseline=base,
         client_program=entry["program"],
         client=entry["org"],
         org=org,
