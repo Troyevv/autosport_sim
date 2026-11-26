@@ -181,6 +181,8 @@ def test_negative_paired_reading_overrides_design_forecast_and_latent_truth():
         report=dict(
             metric="lift_area_m2",
             difference=-0.2,
+            a=dict(value=2.5),
+            b=dict(value=2.3),
             conditions="Одинаковая сборка",
             interpretation="У варианта Б значение ниже.",
             uncertainty=0.01,
@@ -211,6 +213,57 @@ def test_negative_paired_reading_overrides_design_forecast_and_latent_truth():
         design["disposition"] == "withdrawn"
         and preferred(s, WORLD, entry, base) == base
     )
+
+    assert (
+        preferred(s, WORLD, entry, s["components"]["revisions"][v])["id"] == base["id"]
+    )
+    design["findings"] = [test["id"]]
+    test["report"].update(detected=True, finding="Обнаружена деформация панели.")
+    followup = next(
+        r
+        for r in council.refresh(s, WORLD, MCLAREN).values()
+        if r["kind"] == "withdrawal"
+    )
+    assert (
+        followup["options"][0]["payload"]["baseline"] == v
+        and "деформация" in followup["observation"]
+    )
+
+
+def test_available_opening_alternative_requires_comparable_evidence():
+    s = checkpoint(create())
+    e = WORLD["entries"]["f1-4"]
+    base, alternative = development.versions(s, e["id"], "rear-wing")
+    assert preferred(s, WORLD, e, base) == base
+    trial = development.commission(
+        s,
+        WORLD,
+        MCLAREN,
+        "signed-comparison",
+        development.TestOrder(
+            entry=e["id"],
+            baseline=base["id"],
+            candidate=alternative["id"],
+            priority="normal",
+            method="tunnel",
+        ),
+    )
+    trial.update(
+        finished=s["date"],
+        report=dict(
+            metric="lift_area_m2",
+            difference=0.18,
+            uncertainty=0.05,
+            detected=False,
+            a=dict(value=1.5),
+        ),
+    )
+    assert preferred(s, WORLD, e, base) == alternative
+    trial["report"]["uncertainty"] = 0.2
+    assert preferred(s, WORLD, e, base) == base
+    trial["report"]["uncertainty"] = 0.05
+    trial["concept"] = "different-assembly"
+    assert preferred(s, WORLD, e, base) == base
 
 
 def test_conflicting_protocols_call_another_method():

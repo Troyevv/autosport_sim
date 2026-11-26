@@ -73,28 +73,47 @@ def preferred(state, world, entry, fitted):
             base = drawing_for(state, base["parent"])
         if components.compatible(state, world, entry, base):
             return base
-    for project in sorted(
-        (
-            p
-            for p in state["development"]["projects"].values()
-            if p.get("disposition") == "released"
-            and p["baseline"] == fitted["id"]
-            and p["org"] == org
-        ),
-        key=lambda p: p["id"],
-    ):
-        candidate = project["specification"]
-        if (
-            not project["findings"]
-            and verdict(
-                protocols(state, entry, fitted["id"], candidate), fitted["slot"]
-            )
-            == "release"
+    candidates = {
+        p["candidate"]
+        for p in state["development"]["projects"].values()
+        if p["org"] == org
+        and p.get("report")
+        and p["baseline"] == fitted["id"]
+        and p["candidate"] != fitted["id"]
+    }
+    best, margin = fitted, 0.0
+    for candidate in sorted(candidates):
+        if candidate not in OPENING.specs and not development.released(
+            state, org, candidate
         ):
-            drawing = drawing_for(state, candidate)
-            if components.compatible(state, world, entry, drawing):
-                return drawing
-    return fitted
+            continue
+        reports = protocols(state, entry, fitted["id"], candidate)
+        if verdict(reports, fitted["slot"]) != "release":
+            continue
+        # Compare only resolved benefits on a common primary metric or assembly test.
+        gains = []
+        primary, direction, _, _ = TRADE[fitted["slot"]]
+        for p in reports:
+            r = p["report"]
+            if r["metric"] == primary:
+                sign = direction
+            elif p["method"] == "calculation" and r["metric"] in (
+                "sustainable_wheel_kw",
+                "thermal_margin_kw",
+                "brake_force_n",
+            ):
+                sign = 1
+            else:
+                continue
+            gains.append(
+                (sign * r["difference"] - r["uncertainty"])
+                / max(abs(r["a"]["value"]), 1e-9)
+            )
+        lower_bound = max(gains, default=0)
+        drawing = drawing_for(state, candidate)
+        if lower_bound > margin and components.compatible(state, world, entry, drawing):
+            best, margin = drawing, lower_bound
+    return best
 
 
 def replacement_due(state, iid):

@@ -23,6 +23,7 @@ OCCASIONS = {
     "session": "Разбор сессии",
     "study": "Заключение исследования",
     "revision": "Рассмотрение редакции",
+    "withdrawal": "Разбор отзыва редакции",
     "fit": "Замена на машине",
     "resources": "Конфликт ресурсов",
     "inspection": "Брак при приёмке",
@@ -215,7 +216,7 @@ def build(
     )
 
 
-def design_option(state, entry, axis, base, lead):
+def design_option(state, world, entry, axis, base, lead):
     d = drawing_for(state, base)
     config = state["car_configurations"][entry["car"]]
     p = dict(
@@ -223,7 +224,7 @@ def design_option(state, entry, axis, base, lead):
         evidence=evidence(
             state, entry["org"], axis, config["concept"], config["regulation"]
         ),
-        test_inputs=[],
+        test_inputs=development.test_inputs(state, entry["org"], base),
         assembly={
             k: components.spec(state, i)["id"]
             for k, i in components.mounting(state, entry["id"]).items()
@@ -231,7 +232,12 @@ def design_option(state, entry, axis, base, lead):
     )
     metric = TRADE[axis][0]
     low, high = forecast(
-        state, d, p, state["people"][lead]["skills"][METHODS[axis][1]]
+        state,
+        d,
+        p,
+        evaluate(state["people"][lead], world, state["date"])["values"][
+            METHODS[axis][1]
+        ],
     )[metric]
     return option(
         "design",
@@ -294,7 +300,7 @@ def opening_topics(state, world, e, staff, fitted, covered, studies, projects):
             if staff.get(METHODS[coupled_axis][0]):
                 options.insert(1, study(e, coupled_axis))
             if not development.restriction(state, world, e, axis):
-                options.insert(0, design_option(state, e, axis, base, lead))
+                options.insert(0, design_option(state, world, e, axis, base, lead))
             yield build(
                 state,
                 world,
@@ -380,13 +386,18 @@ def session_topics(state, world, e, staff):
                 fact["specification"],
                 "bench" if "bench" in methods(a) else "lab",
             )
+            shared_observation = (
+                f"{fact['value']:g} ± {fact['uncertainty']:g} {fact['unit']}."
+                if fact["kind"] == "track-measurement"
+                else fact["observation"]
+            )
             row["options"].append(proposed)
             row["positions"].append(
                 dict(
                     person=analyst,
                     stance="Анализ данных",
                     confidence=precision,
-                    argument=f"{observed} Один режим не позволяет отделить интеграцию от свойств узла. Предлагаю {proposed['title']}.",
+                    argument=f"{shared_observation} Один режим не позволяет отделить интеграцию от свойств узла. Предлагаю {proposed['title']}.",
                 )
             )
         yield row
@@ -411,7 +422,9 @@ def research_topics(state, world, e, staff, projects):
         if r["outcome"] == "supported" and not development.restriction(
             state, world, e, a
         ):
-            options.insert(0, design_option(state, e, a, b, staff[METHODS[a][0]]))
+            options.insert(
+                0, design_option(state, world, e, a, b, staff[METHODS[a][0]])
+            )
         elif r["outcome"] == "rejected":
             options.reverse()
         yield build(
@@ -434,10 +447,40 @@ def revision_topics(state, world, e, staff, projects):
         if (
             p["entry"] != eid
             or not p.get("specification")
-            or p["disposition"] not in ("review", "released")
+            or (p["disposition"] == "withdrawn" and not p["findings"])
         ):
             continue
         a, b, v = p["axis"], p["baseline"], p["specification"]
+        if p["disposition"] == "withdrawn":
+            if any(t["kind"] == "design" and t["baseline"] == v for t in projects):
+                continue
+            options = [keep(), study(e, a)]
+            if staff.get(METHODS[a][0]) and not development.restriction(
+                state, world, e, a
+            ):
+                options.insert(
+                    0, design_option(state, world, e, a, v, staff[METHODS[a][0]])
+                )
+            findings = [state["development"]["projects"][ref] for ref in p["findings"]]
+            yield build(
+                state,
+                world,
+                e,
+                staff,
+                a,
+                "withdrawal",
+                [p["id"], v, *p["findings"]],
+                " ".join(
+                    t["report"]["finding"]
+                    for t in findings
+                    if t.get("report") and t["report"]["finding"]
+                )
+                or "Редакция отозвана по протоколу проверки.",
+                "Отклонение повторится, если воспроизвести исходный чертёж. Проверим конструкцию и посадку узла.",
+                options,
+                importance=5,
+            )
+            continue
         if any(t.get("candidate") == v and not t["finished"] for t in projects):
             continue
         reports = protocols(state, e, b, v)
@@ -485,7 +528,9 @@ def revision_topics(state, world, e, staff, projects):
             and staff.get(METHODS[a][0])
             and not development.restriction(state, world, e, a)
         ):
-            options.insert(1, design_option(state, e, a, v, staff[METHODS[a][0]]))
+            options.insert(
+                1, design_option(state, world, e, a, v, staff[METHODS[a][0]])
+            )
         elif result != "withdraw" and left:
             options.insert(0, test_option(e, a, b, v, left[0]))
         diagnosis = (
@@ -741,6 +786,7 @@ def workshop_topics(state, world, org, entries, staff_by_entry):
                 ),
                 keep(),
             ],
+            objection=f"План уже учитывает {row['pending']} ожидаемых экземпляров. Для новой партии ещё нужны цех и приёмка.",
             initiator=row["mechanic"],
             importance=5 if row["replace"] else 1,
         )

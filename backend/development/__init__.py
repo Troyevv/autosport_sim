@@ -107,6 +107,17 @@ def charge(state, world, p, atr):
     )
 
 
+def test_inputs(state, org, specification):
+    return [
+        t["id"]
+        for t in sorted(
+            state["development"]["projects"].values(),
+            key=lambda t: (t["finished"] or "", t["id"]),
+        )
+        if t["org"] == org and t.get("candidate") == specification and t.get("report")
+    ]
+
+
 def commission(state, world, org, key, order):
     projects = state["development"]["projects"]
     if key in projects:
@@ -177,15 +188,7 @@ def commission(state, world, org, key, order):
         p.update(
             brief=order.brief,
             site_kind="design",
-            test_inputs=[
-                t["id"]
-                for t in sorted(
-                    projects.values(), key=lambda t: (t["finished"] or "", t["id"])
-                )
-                if t["org"] == org
-                and t.get("candidate") == base["id"]
-                and t.get("report")
-            ],
+            test_inputs=test_inputs(state, org, base["id"]),
         )
         p["forecast"] = forecast(state, base, p, ability)
         charge(state, world, p, {})

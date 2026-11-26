@@ -156,6 +156,10 @@ def launch(state, world, row, choice, actor):
         budget.authorize(
             state, world, org, category, choice["cost_cents"], state["date"]
         )
+    if action == "test" and world["entries"][row["entry"]]["championship"] == "f1":
+        budget.check_allowance(
+            budget.scope_for(state, world, org), development.TESTS[payload["method"]][3]
+        )
     if action in ("research", "design", "test", "produce"):
         module, model = {
             "research": (research, research.Commission),
@@ -417,6 +421,21 @@ def deliberate(state, world, org):
             "install",
         ):
             continue
+        site = choice["site"]
+        if site and choice["action"] != "lease":
+            today = state["date"]
+            tomorrow = facilities.later(today, 1)
+            shared = state["estate"]["assets"]["shared:" + site]
+            if not research.facility(state, org, today, tomorrow, site) and not (
+                policy["allow_rent"]
+                and facilities.free(state, shared, today, tomorrow) > 0
+            ):
+                row["blocked"] = (
+                    "Для делегированного решения нужен доступный слот: "
+                    + choice["resource"]
+                    + "."
+                )
+                continue
         try:
             decide(
                 state,
