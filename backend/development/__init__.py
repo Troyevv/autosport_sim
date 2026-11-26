@@ -97,7 +97,7 @@ def versions(state, eid, axis):
     )
 
 
-def charge(state, world, p, atr):
+def charge(state, world, p, atr, *, reserve_only=False):
     budget.project(
         state,
         world,
@@ -110,6 +110,7 @@ def charge(state, world, p, atr):
             amount_cents=p["cost_cents"],
             atr=atr,
         ),
+        reserve_only=reserve_only,
     )
 
 
@@ -138,7 +139,7 @@ def commission(state, world, org, key, order, *, target_year=None):
     from ..programme import paused
 
     year = target_year or int(state["date"][:4])
-    if paused(state, org, year) and isinstance(order, Design):
+    if paused(state, org, year):
         raise RuleError("Развитие текущего поколения остановлено менеджером.", 409)
     entry = world["entries"].get(order.entry)
     if not entry or entry["org"] != org or not admitted(state, entry):
@@ -254,6 +255,12 @@ def commission(state, world, org, key, order, *, target_year=None):
             candidate=order.candidate,
             site_kind=TESTS[order.method][1],
         )
+        if p.get("target_year"):
+            charge(state, world, p, {}, reserve_only=True)
+    if target_year is not None:
+        from ..programme.rules import pin_concept
+
+        pin_concept(state, world, entry, target_year)
     projects[key] = p
     return p
 
@@ -265,13 +272,16 @@ def check_rental(state, world, p, entry):
     org, day = p["org"], state["date"]
     site = state["estate"]["assets"]["shared:" + p["site_kind"]]
     fee = facilities.quote(site["kind"], site["country"])["daily_cents"]
-    budget.authorize(state, world, org, "engineering", p["cost_cents"], day)
+    reservation = "project:" + p["id"] if p.get("target_year") else None
+    budget.authorize(
+        state, world, org, "engineering", p["cost_cents"], day, ignore=reservation
+    )
     if entry["championship"] == "f1":
         budget.check_allowance(
             budget.scope_for(state, world, org), TESTS[p["method"]][3]
         )
     total = fee + p["cost_cents"]
-    if total > available(state, org):
+    if total > available(state, org, ignore=reservation):
         raise RuleError("Недостаточно средств на аренду и испытание.", 409)
 
 
@@ -371,7 +381,7 @@ def review(state, world, p, disposition, actor):
     if disposition == "released" and (
         p["findings"]
         or not any(
-            t.get("candidate") == p["specification"] and t["finished"]
+            t.get("candidate") == p["specification"] and t.get("report")
             for t in state["development"]["projects"].values()
         )
     ):

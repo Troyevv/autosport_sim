@@ -60,6 +60,7 @@ def projection(state, world):
                 )
                 if r["org"] == org
             ]
+            calendar = [timing(state, k, p) for k, p in works]
             plans.append(
                 dict(
                     **plan,
@@ -83,7 +84,9 @@ def projection(state, world):
                     knowledge=reports,
                     certificates=board["certificates"].get(plan["id"], {}),
                     violations=inspection(state, world, e) if target == year else [],
-                    calendar=[timing(state, k, p) for k, p in works],
+                    calendar=calendar,
+                    spent_cents=sum(r["cost_cents"] for r in calendar),
+                    reserved_cents=sum(r["reserved_cents"] for r in calendar),
                 )
             )
     people = {

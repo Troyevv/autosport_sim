@@ -64,11 +64,14 @@ export type Plan = {
     worked: number
     reason: string | null
     cost_cents: number
+    reserved_cents: number
     lead: string | null
   }[]
   knowledge: { id: string; conclusion: string; confidence: number; applicable: number }[]
   certificates: Record<string, { date: string }>
   violations: { instance: string; decision: string }[]
+  spent_cents: number
+  reserved_cents: number
   concept_costs: Record<string, number>
 }
 export type Desk = {

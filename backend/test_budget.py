@@ -110,7 +110,13 @@ def test_restrictions_audit_classification_and_non_f1():
     s["date"] = "2026-01-01"
     budget.tick(s, WORLD)
     assert s["control"]["audits"][MCLAREN + ":2025"]["fine_cents"] == 25
-    assert budget.report(s, WORLD, MCLAREN, 2026)["cap"] is None
+    # The historical catalogue ends in 2025. A career with #50 activated has a separate simulated renewal.
+    legacy = {k: v for k, v in s.items() if k != "programme"}
+    assert budget.report(legacy, WORLD, MCLAREN, 2026)["cap"] is None
+    assert (
+        budget.report(s, WORLD, MCLAREN, 2026)["cap"]["version"]
+        == "f1-2026-financial-sim-1"
+    )
     assert (
         budget.cap_rule(
             WORLD,

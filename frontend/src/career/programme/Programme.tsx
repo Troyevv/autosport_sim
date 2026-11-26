@@ -78,7 +78,7 @@ function Packages({
                       </>
                     )}
                     {manage &&
-                      part.fits.map((f) => (
+                      (part.fits || []).map((f) => (
                         <Button
                           key={f.entry + f.instance}
                           onClick={() => onFit(f.entry, f.instance, f.label)}
@@ -137,6 +137,33 @@ function Resources({ data, c }: { data: Desk; c: Career }) {
             </div>
           ))}
           <a href="#facilities">Управление инфраструктурой</a>
+        </div>
+      </Panel>
+      <Panel title="Загрузка подразделений">
+        <div className="programme-body">
+          {c.collectives.map((g) => (
+            <div className="programme-proposal" key={g.id}>
+              <strong>{g.name}</strong>
+              <p>
+                {g.size} чел. · квалификация {g.qualification}/100 · загрузка {g.workload}%
+              </p>
+            </div>
+          ))}
+        </div>
+      </Panel>
+      <Panel title="Работы по поколениям">
+        <div className="programme-body">
+          {data.plans.map((plan) => (
+            <div key={plan.id} className="programme-proposal">
+              <strong>
+                {plan.year} · {plan.category} · {plan.name}
+              </strong>
+              <p>
+                Оплачено {money(plan.spent_cents)} · резерв{' '}
+                {money(plan.reserved_cents)}
+              </p>
+            </div>
+          ))}
         </div>
       </Panel>
       {atr && (
@@ -255,7 +282,7 @@ export function Programme({ c, world, updateCareer }: SectionProps & { updateCar
                   {p.year} <small>{p.category}</small>
                 </strong>
                 <span>
-                  {p.name} · {p.calendar.length} работ
+                  {p.year === data.year ? p.name : 'Основа · ' + p.name} · {p.calendar.length} работ
                 </span>
               </button>
             ))}
@@ -336,6 +363,7 @@ export function Programme({ c, world, updateCareer }: SectionProps & { updateCar
                     <Progress value={(100 * p.worked) / p.required} />
                     <p>
                       {p.worked} / {p.required} ч · {money(p.cost_cents)}{' '}
+                      {p.reserved_cents > 0 && ' · резерв ' + money(p.reserved_cents)}{' '}
                       {p.lead && ' · ' + data.people[p.lead]}
                     </p>
                     {p.reason && <p>{p.reason}</p>}

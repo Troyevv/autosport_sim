@@ -274,8 +274,19 @@ def topics(state, world, org):
         yield from revision_topics(state, world, e, staff, projects)
         yield from fit_topics(state, world, e, staff, fitted)
     if entries and "programme" in state:
-        from ..programme.packages import entries_for, topics as programme_topics
+        from ..programme.packages import (
+            entries_for,
+            topics as programme_topics,
+            allocation_topic,
+        )
 
+        leader = next(
+            (e for e in entries_for(world, org) if e["id"] in staff_by_entry), None
+        )
+        if leader:
+            yield from allocation_topic(
+                state, world, leader, staff_by_entry[leader["id"]]
+            )
         for e in entries_for(world, org):
             if e["id"] in staff_by_entry:
                 yield from programme_topics(state, world, e, staff_by_entry[e["id"]])

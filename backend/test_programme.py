@@ -403,3 +403,142 @@ def test_package_reschedule_cancel_and_series_specific_publications():
             later["slot"] == slot
             and later["announced"] < later["effective"] <= later["freeze"]
         )
+
+
+def test_waiting_test_reserves_once_releases_on_concept_change_and_annual_limits():
+    from . import finance, programme
+
+    s = checkpoint(create())
+    e = WORLD["entries"]["f1-4"]
+    org = e["org"]
+    base = components.spec(s, components.mounting(s, e["id"])["floor"])["id"]
+    request = development.TestOrder(
+        entry=e["id"], baseline=base, candidate=base, method="tunnel", priority="normal"
+    )
+    before = budget.report(s, WORLD, org, 2025)
+    p = development.commission(s, WORLD, org, "await-tunnel", request, target_year=2026)
+    after = budget.report(s, WORLD, org, 2025)
+    fee = p["cost_cents"]
+    assert after["available_cents"] == before["available_cents"] - fee
+    assert after["cap"]["committed_cents"] == before["cap"]["committed_cents"] + fee
+    finance.settle(s)
+    assert "await-tunnel" not in s["control"]["projects"]
+    assert (
+        development.commission(s, WORLD, org, "await-tunnel", request, target_year=2026)
+        is p
+    )
+    programme.command(
+        s, WORLD, "programme-concept", dict(entry=e["id"], year=2026, strategy="revise")
+    )
+    assert (
+        p["status"] == "cancelled"
+        and s["finance"]["instalments"]["project:await-tunnel"]["status"] == "cancelled"
+    )
+    assert not any(r["key"] == "due:project:await-tunnel" for r in s["ledger"])
+    s["date"] = "2026-01-01"
+    scope = budget.scope_for(s, WORLD, org)
+    assert (
+        scope["limits"] is None
+        and sum(scope["used"].values()) == 0
+        and "sim" in scope["pool_id"]
+    )
+    budget.determination(
+        s,
+        WORLD,
+        budget.Ranking(
+            org=org, period=scope["period"]["id"], rank=3, reference="classification"
+        ),
+    )
+    assert budget.scope_for(s, WORLD, org)["percent"] == 80
+    assert "sim" in budget.report(s, WORLD, org, 2026)["cap"]["version"]
+
+
+def test_verified_reliability_exception_replaces_registered_defective_drawing():
+    from .development.physics import finish_design, measure, sample
+
+    s = checkpoint(create())
+    org = MCLAREN
+    e = WORLD["entries"]["f1-4"]
+    axis = "floor"
+    base = components.spec(s, components.mounting(s, e["id"])[axis])["id"]
+
+    def issue(key, parent, brief):
+        p = development.commission(
+            s,
+            WORLD,
+            org,
+            key,
+            development.Design(
+                entry=e["id"], baseline=parent, brief=brief, priority="high"
+            ),
+            target_year=2026,
+        )
+        finish_design(s, p, 80)
+        p.update(finished=s["date"], status="complete")
+        return p
+
+    def protocol(key, parent, candidate, method):
+        t = development.commission(
+            s,
+            WORLD,
+            org,
+            key,
+            development.TestOrder(
+                entry=e["id"],
+                baseline=parent,
+                candidate=candidate,
+                method=method,
+                priority="normal",
+            ),
+            target_year=2026,
+        )
+        # Isolate the metrology and regulator from the independently tested daily scheduler.
+        t["report"] = measure(s, t, 88)
+        t.update(status="complete", finished=s["date"])
+        return t
+
+    seed = s["setup"]["seed"]
+    key = next(
+        f"prototype-{n}"
+        for n in range(500)
+        if sample(seed, f"prototype-{n}", "defect") < 0.06
+    )
+    p = issue(key, base, "balanced")
+    v = p["specification"]
+    assert p["latent_defect"]
+    protocol("calculated", base, v, "calculation")
+    development.review(s, WORLD, p, "released", s["player_id"])
+    rules.certify(s, WORLD, e, 2026, v, s["player_id"])
+    lab = next(
+        f"diagnose-{n}"
+        for n in range(100)
+        if sample(seed, f"diagnose-{n}", "diagnosis") < 0.88
+    )
+    assert protocol(lab, base, v, "lab")["report"]["detected"]
+    development.review(s, WORLD, p, "withdrawn", s["player_id"])
+    assert not rules.admitted_version(
+        s, WORLD, e, components.registry.drawing_for(s, v), 2026
+    )
+    # Existing staff terms are explicitly extended in this unit fixture past the opening calendar.
+    for seat, rows in s["seats"].items():
+        if WORLD["assignments"][seat]["org"] == org and rows:
+            rows[0]["end"] = "2027-01-01"
+    s["date"] = "2026-03-02"
+    budget.open_year(s, org, "2026")
+    fix = next(
+        f"repair-{n}"
+        for n in range(100)
+        if sample(seed, f"repair-{n}", "inherit") > 0.8
+        and sample(seed, f"repair-{n}", "defect") > 0.5
+    )
+    corrected = issue(fix, v, "reliability")
+    candidate = corrected["specification"]
+    d = components.registry.drawing_for(s, candidate)
+    assert (
+        d["parameters"] == components.registry.drawing_for(s, v)["parameters"]
+        and d["reliability_fix"]
+    )
+    protocol("after-fix", v, candidate, "lab")
+    development.review(s, WORLD, corrected, "released", s["player_id"])
+    rules.certify(s, WORLD, e, 2026, candidate, s["player_id"])
+    assert rules.admitted_version(s, WORLD, e, d, 2026)

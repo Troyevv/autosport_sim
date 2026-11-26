@@ -198,20 +198,29 @@ def observe(state, world, p):
                 data["staff"][pid] = data["staff"].get(pid, 0) + amount
 
 
-def cap_rule(world, org, year):
+def cap_rule(world, org, year, *, simulated=False):
     rule = world["engineering"]["cost_cap"]
-    if (
-        org not in world["engineering"]["atr"]["opening_rank"]
-        or str(year) != rule["start"][:4]
+    successor = simulated and int(year) > int(rule["start"][:4])
+    if org not in world["engineering"]["atr"]["opening_rank"] or (
+        str(year) != rule["start"][:4] and not successor
     ):
         return None
+    if successor:
+        rule = dict(
+            rule,
+            id=f"f1-{year}-financial-sim-1",
+            start=f"{year}-01-01",
+            end_exclusive=f"{int(year) + 1}-01-01",
+        )
     rounds = sum(
         e["kind"] == "round" and e["series"] == "f1" and e["start"][:4] == str(year)
         for e in world["events"]
     )
+    budget_rounds = rule["reference_rounds"] if successor and not rounds else rounds
     usd = (
         rule["base_cents"]
-        + (rounds - rule["reference_rounds"]) * rule["per_round_adjustment_cents"]
+        + (budget_rounds - rule["reference_rounds"])
+        * rule["per_round_adjustment_cents"]
     )
     # Art. 2.4 illustration in presentation currency, before indexation (21 competitions).
     return dict(
@@ -222,7 +231,9 @@ def cap_rule(world, org, year):
         end=rule["end_exclusive"],
         limit_cents=(usd * 122928 + 67500) // 135000,
         currency="EUR",
-        indexation="До индексации",
+        indexation="Продление в симуляции · базовый лимит до решения комиссии"
+        if successor
+        else "До индексации",
         exclusions=rule["excluded"],
         sanctions=rule["sanctions"],
     )
@@ -250,12 +261,14 @@ PRODUCERS.update(
 
 
 def scope_for(state, world, org):
-    scope = resource_scope(world, org, state["date"])
+    scope = resource_scope(world, org, state["date"], simulated="programme" in state)
     if not scope:
         return None
     rank = state.get("control", {}).get("rankings", {}).get(scope["pool_id"])
     if rank:
-        scope = resource_scope(world, org, state["date"], rank["rank"])
+        scope = resource_scope(
+            world, org, state["date"], rank["rank"], simulated="programme" in state
+        )
     projects = state.get("control", {}).get("projects", {})
     scope["used"] = {
         unit: sum(
@@ -274,12 +287,12 @@ def determination(state, world, event):
         if (
             not scope
             or scope["period"]["id"] != event.period
-            or scope["period"]["number"] <= 3
+            or (scope["period"]["number"] <= 3 and state["date"][:4] == "2025")
         ):
             raise RuleError("Классификация не относится к текущему периоду.")
         table, key = "rankings", scope["pool_id"]
     else:
-        rule = cap_rule(world, event.org, event.year)
+        rule = cap_rule(world, event.org, event.year, simulated="programme" in state)
         if (
             not rule
             or rule["version"] != event.version
@@ -293,7 +306,7 @@ def determination(state, world, event):
     rows[key] = event.model_dump()
 
 
-def report(state, world, org, year):
+def report(state, world, org, year, *, ignore=None):
     year = str(year)
     plan = state["control"]["plans"].get(org, {}).get(year)
     actual = state["control"]["actual"].get(org, {}).get(year, {})
@@ -301,7 +314,7 @@ def report(state, world, org, year):
     accrued = 0
     accrued_drivers = 0
     staff_with_dues = dict(actual.get("staff", {}))
-    rule = cap_rule(world, org, year)
+    rule = cap_rule(world, org, year, simulated="programme" in state)
     for row in pending(state):
         if (
             state.get("capital", {})
@@ -310,6 +323,7 @@ def report(state, world, org, year):
             .get("org", row["payer"].split(":")[0])
             != org
             or row["status"] != "pending"
+            or row["id"] == ignore
             or row["earned"][:4] != year
         ):
             continue
@@ -386,7 +400,9 @@ def report(state, world, org, year):
     )
 
 
-def authorize(state, world, org, category, amount, day, *, plan_only=False):
+def authorize(
+    state, world, org, category, amount, day, *, plan_only=False, ignore=None
+):
     if "control" not in state or org not in state["accounts"] or category not in GROUPS:
         return
     if (
@@ -394,7 +410,7 @@ def authorize(state, world, org, category, amount, day, *, plan_only=False):
         == "bankrupt"
     ):
         raise RuleError("Покупки остановлены в процедуре банкротства.", 409)
-    view = report(state, world, org, day[:4])
+    view = report(state, world, org, day[:4], ignore=ignore)
     plan = view["plan"]
     if not plan:
         raise RuleError("Нет утверждённого бюджета на этот год.", 409)
@@ -406,7 +422,7 @@ def authorize(state, world, org, category, amount, day, *, plan_only=False):
         raise RuleError("Статья утверждённого бюджета исчерпана.", 409)
     if category in RELEVANT and view["cap"] and view["cap"]["remaining_cents"] < amount:
         raise RuleError("Расход превышает остаток регламентного Cost Cap.", 409)
-    if not plan_only and amount > available(state, org):
+    if not plan_only and amount > available(state, org, ignore=ignore):
         raise RuleError("Недостаточно свободных денежных средств.", 409)
 
 
@@ -552,7 +568,7 @@ def check_allowance(pool, request):
         raise RuleError("Недостаточно инженерной квоты ATR.", 409)
 
 
-def project(state, world, cost):
+def project(state, world, cost, *, reserve_only=False):
     scope = project_target(
         world,
         cost.program,
@@ -569,7 +585,25 @@ def project(state, world, cost):
         return
     if cost.due < state["date"]:
         raise RuleError("Срок платежа истёк.")
-    authorize(state, world, org, "engineering", cost.amount_cents, state["date"])
+    term_id = "project:" + key
+    held = state["finance"]["instalments"].get(term_id, {})
+    reservation = held.get("awaiting_capacity")
+    if reservation and (
+        held["status"] != "pending"
+        or held["payer"] != org
+        or held["amount_cents"] != cost.amount_cents
+        or reservation != [cost.program, cost.target_season, cost.generation]
+    ):
+        raise RuleError("Условия проекта не соответствуют резерву.", 409)
+    authorize(
+        state,
+        world,
+        org,
+        "engineering",
+        cost.amount_cents,
+        state["date"],
+        ignore=term_id if reservation else None,
+    )
     pool = scope_for(state, world, org)
     check_allowance(pool, cost.atr)
     term = Instalment(
@@ -583,7 +617,20 @@ def project(state, world, cost):
         earned=state["date"],
         reserved=True,
     )
-    register(state, Schedule(installments=[term]))
+    if reserve_only:
+        if not reservation:
+            register(state, Schedule(installments=[term]))
+            state["finance"]["instalments"][term_id]["awaiting_capacity"] = [
+                cost.program,
+                cost.target_season,
+                cost.generation,
+            ]
+        return
+    if reservation:
+        held.update(due=cost.due, earned=state["date"])
+        del held["awaiting_capacity"]
+    else:
+        register(state, Schedule(installments=[term]))
     plans[key] = dict(
         terms=cost.model_dump(), pool=pool["pool_id"] if pool else None, org=org
     )

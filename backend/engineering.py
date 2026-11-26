@@ -100,16 +100,27 @@ def atr_period(rule, day):
     )
 
 
-def resource_scope(world, org, day, current_rank=None):
+def resource_scope(world, org, day, current_rank=None, *, simulated=False):
     """The activity date selects the common pool for both project target seasons."""
     if org not in world["engineering"]["atr"]["opening_rank"]:
         return None
     rule = world["engineering"]["atr"]
+    successor = simulated and day >= rule["end_exclusive"]
+    if successor:
+        year = day[:4]
+        rule = dict(
+            rule,
+            id=f"f1-{year}-atr-sim-1",
+            period_starts=[year + d[4:] for d in rule["period_starts"]],
+            end_exclusive=f"{int(year) + 1}-01-01",
+        )
     period = atr_period(rule, day)
     if not period:
         return None
     rank = (
-        rule["opening_rank"].index(org) + 1 if period["number"] <= 3 else current_rank
+        rule["opening_rank"].index(org) + 1
+        if period["number"] <= 3 and not successor
+        else current_rank
     )
     percent = None if rank is None else rule["rank_percent"][min(rank, 10) - 1]
     limits = (

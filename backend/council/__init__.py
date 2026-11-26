@@ -150,6 +150,11 @@ def launch(state, world, row, choice, actor):
     action = choice["action"]
     payload = choice["payload"]
     target = row.get("target_year")
+    if action == "allocate":
+        from ..programme import allocate
+
+        allocate(state, org, payload["allocation"], manager=actor == state["player_id"])
+        return None
     if action == "homologate":
         from ..programme.rules import certify
 

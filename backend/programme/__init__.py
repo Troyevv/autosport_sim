@@ -12,6 +12,7 @@ def initialize(state):
         dict(
             since=state["revision"],
             priorities={},
+            manager_allocations={},
             packages={},
             concepts={},
             certificates={},
@@ -61,6 +62,13 @@ def policy(state, org):
     )
 
 
+def allocate(state, org, allocation, *, manager):
+    key = org + ":" + state["date"][:4]
+    state["programme"]["priorities"][key] = allocation
+    if manager:
+        state["programme"]["manager_allocations"][key] = True
+
+
 def paused(state, org, year):
     return policy(state, org) == "stop-current" and year == int(state["date"][:4])
 
@@ -99,7 +107,7 @@ def command(state, world, action, payload):
     if isinstance(order, Priority):
         if policy(state, org) == order.allocation:
             return
-        data["priorities"][org + ":" + state["date"][:4]] = order.allocation
+        allocate(state, org, order.allocation, manager=True)
     else:
         entry = world["entries"].get(order.entry)
         today = int(state["date"][:4])
@@ -142,10 +150,28 @@ def command(state, world, action, payload):
                 raise RuleError("Развитие этого поколения остановлено.")
             # Preserve signed studies and drawings. A changed brief commissions new work on both interacting axes.
             concept = (
-                world["cars"][entry["car"]]["concept"]
+                plan["concept"]
                 if order.strategy == "continue"
                 else f"{key}/{order.strategy}/{state['revision']}"
             )
+            from ..finance import cancel
+            from .packages import work_for
+
+            for kind, p in work_for(state, world, entry, plan):
+                term_id = "project:" + p["id"]
+                term = state["finance"]["instalments"].get(term_id, {})
+                if (
+                    kind == "test"
+                    and p["concept"] == plan["concept"]
+                    and not p["finished"]
+                    and term.get("awaiting_capacity")
+                ):
+                    cancel(state, term_id)
+                    p.update(
+                        status="cancelled",
+                        finished=state["date"],
+                        reason="Сборка заменена. Резерв испытания освобождён.",
+                    )
             data["concepts"][key] = dict(concept=concept, strategy=order.strategy)
             if order.strategy != "continue":
                 from .. import research

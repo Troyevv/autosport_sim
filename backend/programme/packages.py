@@ -341,7 +341,7 @@ def component(state, world, e, plan, pkg, axis, works):
         risk=risk,
         ready=status == "Готов к применению",
         serials=sorted(stock) if compatible else [],
-        cost_cents=sum(p["cost_cents"] for p in relevant_projects),
+        cost_cents=sum(expenses(state, p)[0] for p in relevant_projects),
         forecast=design.get("forecast", {}),
         next_cost_cents=action["cost_cents"] if action else 0,
         confidence=applicability(report, plan["concept"], plan["regulation"])
@@ -459,6 +459,16 @@ def topics(state, world, e, staff):
                 yield row
 
 
+def expenses(state, p):
+    if "request" in p:
+        return p["cost_cents"] + p["facility_cents"], 0
+    term = state["finance"]["instalments"].get("project:" + p["id"], {})
+    return (
+        term.get("amount_cents", 0) if term.get("status") == "paid" else 0,
+        term.get("amount_cents", 0) if term.get("status") == "pending" else 0,
+    )
+
+
 def timing(state, kind, p):
     remaining = p["required"] - p["worked"]
     rate = p["worked"] / p["days"] if p["days"] else 24
@@ -471,7 +481,8 @@ def timing(state, kind, p):
         lead=p.get("lead"),
         status=p["status"],
         reason=p["reason"],
-        cost_cents=p["cost_cents"],
+        cost_cents=expenses(state, p)[0],
+        reserved_cents=expenses(state, p)[1],
         start=p["commissioned"],
         worked=p["worked"],
         required=p["required"],
@@ -521,3 +532,83 @@ def installation_dependency(state, entry, drawing):
             if expected and expected != drawing["id"]:
                 return False
     return True
+
+
+def allocation_topic(state, world, entry, staff):
+    """Reconsider shared staff only when two live portfolios actually compete."""
+    org = entry["org"]
+    year = int(state["date"][:4])
+    active = [
+        p
+        for book in ("research", "development")
+        for p in state[book]["projects"].values()
+        if p["org"] == org and not p["finished"] and p.get("lead")
+    ]
+    current = [p for p in active if work_year(state, p) == year]
+    future = [p for p in active if work_year(state, p) == year + 1]
+    conflicts = [
+        (a, b)
+        for a in current
+        for b in future
+        if a["lead"] == b["lead"]
+        or a.get("site_kind", "research") == b.get("site_kind", "research")
+    ]
+    if not conflicts or policy(state, org) == "stop-current":
+        return
+    a, b = min(conflicts, key=lambda pair: (pair[0]["id"], pair[1]["id"]))
+    events = [
+        ev["start"]
+        for ev in world["events"]
+        if ev["series"] == entry["championship"]
+        and ev["kind"] == "round"
+        and ev["start"] >= state["date"]
+    ]
+    remaining = bool(events)
+    urgent = remaining and (
+        min(events) <= facilities.later(state["date"], 14)
+        or any(
+            f["org"] == org and f["day"] >= a["commissioned"]
+            for f in state["council"]["observations"].values()
+        )
+    )
+    focus = "current" if urgent else "next"
+    if policy(state, org) == focus:
+        return
+    # A manager's explicit allocation is binding. A new mandate can delegate the next decision.
+    if org + ":" + str(year) in state["programme"]["manager_allocations"]:
+        return
+    target = year if urgent else year + 1
+    p = a if urgent else b
+    entry = world["entries"][p["entry"]]
+    staff = components.specialists(state, world, entry)
+    plan = dossier(state, world, entry, target)
+    choice = agenda.option(
+        "allocate",
+        f"Дать приоритет машине {target} года",
+        "Изменить порядок доступа к общим специалистам и площадкам.",
+        "Второй портфель может пропустить плановый срок.",
+        dict(allocation=focus),
+    )
+    row = agenda.build(
+        state,
+        world,
+        entry,
+        staff,
+        p["axis"],
+        "programme",
+        [a["id"], b["id"], focus],
+        "Оба поколения претендуют на один ресурс. "
+        + (
+            f"Ближайший этап {min(events)}."
+            if remaining
+            else "Сезонный календарь пройден."
+        ),
+        "Сначала обеспечить ближайший этап."
+        if urgent
+        else "Направить свободные смены на подготовку следующего поколения.",
+        [choice, agenda.keep()],
+        importance=5,
+    )
+    if row:
+        row.update(plan=plan["id"], occasion="Распределение между поколениями")
+        yield row

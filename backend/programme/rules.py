@@ -95,16 +95,29 @@ def dossier(state, world, entry, year=None):
     rule = bulletin(world, entry, year)
     generation = rule.get("base", rule["id"]).removeprefix("tech-")
     key = f"{opening['concept']}@{year}"
-    policy = state.get("programme", {}).get("concepts", {}).get(key, {})
+    concepts = state.get("programme", {}).get("concepts", {})
+    policy = concepts.get(key, {})
+    prior = max(
+        (k for k in concepts if k.startswith(opening["concept"] + "@") and k < key),
+        default=None,
+    )
+    inherited = concepts[prior]["concept"] if prior else opening["concept"]
     return dict(
         id=key,
         year=year,
         season=f"{entry['championship']}-{year}",
         generation=generation,
         regulation=rule["id"],
-        concept=policy.get("concept", opening["concept"]),
+        concept=policy.get("concept", inherited),
         strategy=policy.get("strategy", "continue"),
         rule=rule,
+    )
+
+
+def pin_concept(state, world, entry, year):
+    plan = dossier(state, world, entry, year)
+    state["programme"]["concepts"].setdefault(
+        plan["id"], dict(concept=plan["concept"], strategy=plan["strategy"])
     )
 
 
@@ -130,6 +143,10 @@ def admitted_version(state, world, entry, drawing, year):
         and drawing["programme_concept"] != plan["concept"]
     ):
         return False
+    if drawing.get("reference") in state.get("development", {}).get("projects", {}):
+        project = state["development"]["projects"][drawing["reference"]]
+        if project.get("findings") or project.get("disposition") == "withdrawn":
+            return False
     if drawing["slot"] != rule["slot"]:
         return True
     return drawing["id"] in state["programme"]["certificates"].get(plan["id"], {})
@@ -154,6 +171,10 @@ def certify(state, world, entry, year, version, actor):
         and p.get("report")
         and p["regulation"] == plan["regulation"]
         and p["concept"] == plan["concept"]
+        and (
+            not d.get("reliability_fix")
+            or p.get("method") in ("lab", "bench", "tunnel")
+        )
         and not p["report"]["detected"]
         for p in state["development"]["projects"].values()
     )

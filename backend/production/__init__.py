@@ -162,6 +162,10 @@ def commission(state, world, org, key, order, *, target_year=None):
     )
     if target_year is not None:
         batch["target_year"] = target_year
+    if target_year is not None:
+        from ..programme.rules import pin_concept
+
+        pin_concept(state, world, entry, target_year)
     batches[key] = batch
     log(state, entry["id"], drawing["id"], "ordered", lead, batch=key)
     return batch

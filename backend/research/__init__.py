@@ -176,6 +176,10 @@ def commission(state, world, org, key, order, *, target_year=None):
         project["design_context"] = design_context(state, entry, axis)
     if target_year is not None:
         project["target_year"] = target_year
+    if target_year is not None:
+        from ..programme.rules import pin_concept
+
+        pin_concept(state, world, entry, target_year)
     projects[key] = project
     return project
 
@@ -350,7 +354,7 @@ def work(state, world, p, used):
     from ..programme import paused, work_year
     from ..programme.rules import config_for
 
-    if paused(state, org, work_year(state, p)) and p.get("kind") != "test":
+    if paused(state, org, work_year(state, p)):
         p["reason"] = "Работа приостановлена до перераспределения ресурсов."
         return
     if "kind" in p or p.get("target_year"):
