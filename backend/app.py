@@ -294,3 +294,13 @@ def export_financial_statement(cid: str, scope: str = "organization"):
         media_type="text/csv",
         headers={"Content-Disposition": 'attachment; filename="finance.csv"'},
     )
+
+
+@app.get("/api/careers/{cid}/commercial")
+def commercial_market(cid: str):
+    from .finance import market
+    from .catalog import WORLD
+    from . import storage
+
+    with storage.transaction() as db:
+        return market.projection(storage.checkpoint(db, cid), WORLD)

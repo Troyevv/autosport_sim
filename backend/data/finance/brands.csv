@@ -1,0 +1,51 @@
+id,name,country,category,markets,series,priority,budget_eur
+oracle,Oracle,US,enterprise-it,US GB JP,f1 wec,technology,9200000
+hp,HP,US,computing,US IT GB,f1 f2,visibility,8500000
+chrome,Google,US,software,US GB DE,f1 wec,technology,7200000
+atlassian,Atlassian,AU,enterprise-it,AU GB US,f1 f2,technology,7500000
+petronas,PETRONAS,MY,lubricants,MY GB IT,f1 wec,technology,9400000
+aramco,Aramco,SA,fuel,SA GB JP,f1 f2 f3,technology,9200000
+bwt,BWT,AT,water,AT FR DE,f1 dtm,visibility,4200000
+visa,Visa,US,payments,US IT GB,f1 wec,hospitality,7900000
+cash-app,Cash App,US,finance-app,US GB,f1 f2,visibility,3700000
+moneygram,MoneyGram,US,remittances,US GB MX,f1 f2,markets,4700000
+redbull,Red Bull,AT,energy-drink,AT DE GB JP,f1 f2 f3 dtm freca,juniors,7800000
+hertz,Hertz,US,car-rental,US FR DE,wec dtm,hospitality,3250000
+mobil-1,Mobil 1,US,lubricants,US DE JP,wec dtm f1,technology,4500000
+dhl,DHL,US,logistics,DE US GB,wec f1 f3,markets,3750000
+schaeffler,Schaeffler,DE,industrial,DE AT IT,dtm wec,technology,2900000
+ravenol,RAVENOL,DE,lubricants,DE AT GB,dtm freca f4-gb,technology,850000
+komatsu,Komatsu,JP,machinery,JP US AU,f1 wec,technology,3200000
+gulf,Gulf Oil,US,lubricants,US GB AE,f1 wec dtm,visibility,2500000
+shell,Shell,GB,fuel,GB NL IT,f1 wec,technology,6800000
+unicredit,UniCredit,IT,banking,IT DE AT,f1 f4-it,hospitality,3500000
+ibm,IBM,US,enterprise-it,US IT JP,f1 wec,technology,4100000
+cisco,Cisco,US,networking,US GB DE,f1 wec,technology,3100000
+dell-technologies,Dell Technologies,US,computing,US GB DE,f1 wec,technology,3800000
+tudor,TUDOR,CH,watches,CH IT US,f1 wec,hospitality,3200000
+rauch,RAUCH,AT,juice,AT DE IT,f1 dtm kart-ok,visibility,950000
+denso,DENSO,JP,electronics,JP DE US,wec f3,technology,4200000
+totalenergies,TotalEnergies,FR,fuel,FR BE DE,wec freca,technology,4700000
+sonax,SONAX,DE,car-care,DE AT GB,dtm f4-gb,markets,550000
+puma,PUMA,DE,apparel,DE US GB,f1 f2 f3 dtm,juniors,2700000
+sparco,Sparco,IT,racewear,IT FR ES,f2 f3 f4-it kart-ok,technology,680000
+alpinestars,Alpinestars,IT,racewear,IT ES GB,freca f4-it f4-es kart-okj,juniors,620000
+brembo,Brembo,IT,brakes,IT DE US,f1 wec dtm,technology,1900000
+bosch,Bosch,DE,electronics,DE JP US,dtm wec f3,technology,3500000
+garmin,Garmin,US,navigation,US GB DE,wec dtm f4-gb,technology,1200000
+logitech,Logitech,CH,peripherals,CH GB US,f1 f2 freca,visibility,1500000
+lego,LEGO,DK,toys,DK GB DE,f1 f4-gb kart-okj,juniors,2100000
+lavazza,Lavazza,IT,coffee,IT GB FR,f1 wec f4-it,hospitality,900000
+illy,illy,IT,coffee,IT DE FR,freca wec f4-it,hospitality,420000
+seiko,Seiko,JP,watches,JP US FR,wec f3,markets,1200000
+asics,ASICS,JP,apparel,JP GB DE,f2 f3 freca,juniors,980000
+decathlon,Decathlon,FR,sport-retail,FR ES IT,f4-es freca kart-okj,juniors,720000
+db-schenker,DB Schenker,DE,freight,DE AT IT,dtm wec f3,markets,1150000
+karcher,Kärcher,DE,cleaning,DE GB FR,dtm wec,hospitality,690000
+akzonobel,AkzoNobel,NL,coatings,NL GB DE,f1 dtm freca,technology,920000
+adobe,Adobe,US,software,US GB FR,f1 wec f2,visibility,3300000
+canon,Canon,JP,imaging,JP GB FR,wec dtm f1,visibility,1800000
+repsol,Repsol,ES,fuel,ES PT IT,f4-es freca wec,markets,2300000
+santander,Santander,ES,banking,ES GB BR,f1 f4-es f2,markets,5800000
+mapfre,MAPFRE,ES,insurance,ES BR MX,f4-es f2 wec,hospitality,1700000
+skf,SKF,SE,bearings,SE IT DE,f1 f3 wec,technology,1300000

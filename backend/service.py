@@ -8,6 +8,7 @@ from pydantic import BaseModel, ConfigDict, Field, ValidationError, model_valida
 
 from . import domain, storage, finance
 from .finance.events import PRODUCERS
+from .finance import market
 from .livery import GARAGE, PaintOrder
 from .catalog import VERSION, WORLD
 from .roster_upgrade import (
@@ -80,7 +81,7 @@ class Command(Strict):
             raise ValueError("Неверные параметры кадровой команды.")
         if self.staff is not None:
             orders[self.action].model_validate(self.staff)
-        finance_orders = {**finance.ORDERS, **PRODUCERS}
+        finance_orders = {**finance.ORDERS, **market.ORDERS, **PRODUCERS}
         if (self.action in finance_orders) != (self.finance is not None):
             raise ValueError("Неверные параметры финансовой команды.")
         if self.finance is not None:
@@ -223,6 +224,7 @@ def create(spec):
         setup = spec.model_dump(exclude_none=True)
         state = domain.new_world(WORLD, setup)
         finance.activate(state, WORLD)
+        market.initialize(state, WORLD)
         cid = str(uuid4())
         storage.store(db, cid, state, create=True)
         statistics_personnel.refresh(db, cid, state)
@@ -391,6 +393,13 @@ def import_save(document, *, statistics_records=None):
             or not junior_since <= finance_since <= saved["revision"]
         ):
             raise ValueError
+        market_since = saved.get("market", {}).get("since")
+        if market_since is not None and (
+            type(market_since) is not int
+            or finance_since is None
+            or not finance_since <= market_since <= saved["revision"]
+        ):
+            raise ValueError
         growth = saved.get("growth_since")
         if growth is not None and (
             not modern
@@ -422,6 +431,8 @@ def import_save(document, *, statistics_records=None):
                 catalog = WORLD
             if finance_since == state["revision"]:
                 finance.activate(state, catalog, state["ledger"])
+            if market_since == state["revision"]:
+                market.initialize(state, catalog)
 
         for item in commands:
             apply_migrations()
@@ -455,6 +466,7 @@ def import_save(document, *, statistics_records=None):
         if not expanded:
             upgrade_juniors(state)
         finance.activate(state, WORLD, state["ledger"])
+        market.initialize(state, WORLD)
     except (KeyError, TypeError, ValueError, RecursionError, ValidationError):
         raise domain.RuleError("Файл повреждён или нарушает правила мира.") from None
     cid = str(uuid4())

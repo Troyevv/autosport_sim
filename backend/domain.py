@@ -258,7 +258,11 @@ def apply(state, catalog, action, payload=None):
     office = setup["org"] + ":" + setup["role"]
     if occupant_on(state["seats"][office], state["date"]) != state["player_id"]:
         raise RuleError("Действующее назначение не даёт полномочий.", 403)
-    if action.startswith("finance-") and "finance" in state:
+    from .finance import market
+
+    if action in market.ORDERS and "market" in state:
+        market.command(state, catalog, action, payload)
+    elif action.startswith("finance-") and "finance" in state:
         from .finance import command
 
         command(state, catalog, action, payload)

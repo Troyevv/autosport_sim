@@ -353,6 +353,10 @@ def record_result(
         from .finance.events import participation
 
         participation(state, world, entry, day)
+        if "market" in state:
+            from .finance.market import result_bonus
+
+            result_bonus(state, world, pid, entry, event_id, day, place)
     records[event_id] = result
     person["credentials"]["points"] += licence_points
 

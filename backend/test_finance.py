@@ -147,8 +147,9 @@ def test_sqlite_and_portable_migration_of_financed_seat(tmp_path):
     with storage.transaction(True) as db:
         state = storage.checkpoint(db, c["id"])
         state.pop("finance")
+        state.pop("market", None)
         db.execute(
-            "DELETE FROM posting WHERE career=? AND (key='finance-opening' OR org='organizer:f3:2025:promotion')",
+            "DELETE FROM posting WHERE career=? AND (key='finance-opening' OR org='organizer:f3:2025:promotion' OR org LIKE 'brand:%')",
             (c["id"],),
         )
         storage.store(db, c["id"], state)

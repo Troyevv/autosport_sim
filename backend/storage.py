@@ -41,6 +41,7 @@ MIGRATIONS = [
     [],  # Regional series and karting activation on the current game date.
     STATISTICS_SCHEMA,
     [],  # Finance opens previously unjournaled balances on the activation revision.
+    [],  # Commercial market activation.
 ]
 
 
@@ -137,6 +138,15 @@ def transaction(write=False):
                     cid = row["id"]
                     state = checkpoint(db, cid)
                     activate(state, WORLD, postings(db, cid))
+                    store(db, cid, state)
+            if idx == 11:
+                from .finance import market
+                from .catalog import WORLD
+
+                for row in db.execute("SELECT id FROM career").fetchall():
+                    cid = row["id"]
+                    state = checkpoint(db, cid)
+                    market.initialize(state, WORLD)
                     store(db, cid, state)
             db.execute(f"PRAGMA user_version={idx + 1}")
         yield db

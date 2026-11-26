@@ -76,3 +76,65 @@
 .finance-desk > .section-grid {
   margin-top: 16px;
 }
+.brand-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px;
+  padding: 0 16px;
+}
+.brand-card,
+.commercial-row {
+  color: inherit;
+  text-align: start;
+}
+.brand-card {
+  display: grid;
+  gap: 6px;
+  padding: 16px;
+  border: 1px solid #343941;
+  background: #181c23;
+  border-radius: 5px;
+}
+.brand-card:hover,
+.brand-card:focus-visible {
+  border-color: #cf4a60;
+}
+.brand-card strong {
+  font-size: 18px;
+}
+.brand-card small,
+.brand-card span {
+  color: #b8bdc5;
+}
+.commercial-row {
+  width: 100%;
+  background: transparent;
+  border: 0;
+}
+.finance-form fieldset {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(160px, 100%), 1fr));
+  gap: 12px;
+  min-width: 0;
+  border: 1px solid #343941;
+  padding: 14px;
+}
+.finance-form legend {
+  font-weight: 700;
+  padding: 0 6px;
+}
+.finance-form label:has(input[type='checkbox']) {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.finance-form input[type='checkbox'] {
+  min-height: 0;
+}
+.finance-form input,
+.finance-form select {
+  min-width: 0;
+}
+.panel > .finance-tools {
+  padding-top: 16px;
+}

@@ -18,6 +18,7 @@ import { dateLabel } from '../game'
 import { roles } from '../ui/labels'
 import { Calendar, Overview, People, Finance, Championships, Briefing, type SectionProps } from './Sections'
 import { api, assetUrl, ApiError, explain, money, post } from './api'
+import { Commercial } from './finance/Commercial'
 import { SeasonGarage } from '../garage/Garage'
 import { Brand } from './Library'
 const sections = [
@@ -27,6 +28,7 @@ const sections = [
   { id: 'garage', name: 'Гараж', icon: CarFront, view: SeasonGarage },
   { id: 'world', name: 'Чемпионаты', icon: Trophy, view: Championships },
   { id: 'engineering', name: 'Техническая программа', icon: Gauge, view: Engineering },
+  { id: 'commercial', name: 'Коммерческий отдел', icon: Factory, view: Commercial },
   { id: 'finance', name: 'Финансы', icon: Wallet, view: Finance },
 ]
 function Engineering({ c, world }: SectionProps) {

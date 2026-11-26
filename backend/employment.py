@@ -312,6 +312,10 @@ def resolve(state, catalog, offer):
 
 
 def dates(state):
+    for offer in state.get("market", {}).get("offers", {}).values():
+        if offer["status"] in ("offered", "counter"):
+            yield shifted(offer["date"], 1)
+            yield shifted(offer["deadline"], 1)
     for row in state.get("finance", {}).get("instalments", {}).values():
         if row["status"] == "pending":
             yield row["due"]
@@ -363,6 +367,10 @@ def advance(state, catalog, target):
             from .finance import settle
 
             settle(state)
+        if "market" in state:
+            from .finance import market
+
+            market.tick(state, catalog)
         backing.condition_review(state, day)
         for offer in sorted(
             state["offers"].values(),
