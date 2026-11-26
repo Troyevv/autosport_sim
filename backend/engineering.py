@@ -40,8 +40,8 @@ def technical_catalog(rules, entries, cars, config):
             concept=concept,
             regulation=generations[gid]["regulation"],
         )
-    # Only the announced F1 successor is seeded. Other future homologations can be registered independently.
-    generation("f1-2026", "F1")
+    for entry in entries.values():
+        generation(entry["championship"] + "-2026", entry["category"])
     return dict(
         seasons=seasons,
         technical_rules=regulations,
@@ -53,11 +53,22 @@ def technical_catalog(rules, entries, cars, config):
     )
 
 
-def project_target(world, program_id, season_id, generation_id):
+def project_target(world, program_id, season_id, generation_id, *, planning_year=None):
     program = world["programs"].get(program_id)
     engineering = world["engineering"]
     gen = engineering["generations"].get(generation_id)
     season = engineering["seasons"].get(season_id)
+    if program and planning_year and not gen:
+        for year in (planning_year, planning_year + 1):
+            for category in program["classes"]:
+                sid = f"{program['championship']}-{year}"
+                if season_id == sid and generation_id == f"{sid}-{category.lower()}-v1":
+                    gen = dict(
+                        category=category,
+                        season=sid,
+                        regulation="tech-" + generation_id,
+                    )
+                    season = dict(championship=program["championship"])
     if (
         not program
         or not gen
@@ -89,16 +100,27 @@ def atr_period(rule, day):
     )
 
 
-def resource_scope(world, org, day, current_rank=None):
+def resource_scope(world, org, day, current_rank=None, *, simulated=False):
     """The activity date selects the common pool for both project target seasons."""
     if org not in world["engineering"]["atr"]["opening_rank"]:
         return None
     rule = world["engineering"]["atr"]
+    successor = simulated and day >= rule["end_exclusive"]
+    if successor:
+        year = day[:4]
+        rule = dict(
+            rule,
+            id=f"f1-{year}-atr-sim-1",
+            period_starts=[year + d[4:] for d in rule["period_starts"]],
+            end_exclusive=f"{int(year) + 1}-01-01",
+        )
     period = atr_period(rule, day)
     if not period:
         return None
     rank = (
-        rule["opening_rank"].index(org) + 1 if period["number"] <= 3 else current_rank
+        rule["opening_rank"].index(org) + 1
+        if period["number"] <= 3 and not successor
+        else current_rank
     )
     percent = None if rank is None else rule["rank_percent"][min(rank, 10) - 1]
     limits = (

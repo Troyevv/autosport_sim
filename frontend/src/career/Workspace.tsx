@@ -14,11 +14,11 @@ import {
   Users,
   Wallet,
 } from 'lucide-react'
-import { Dialog, Button, Facts, Header, Panel } from '../ui/components'
+import { Dialog, Button, Facts } from '../ui/components'
 import { dateLabel } from '../game'
 import { roles } from '../ui/labels'
 import { Calendar, Overview, People, Finance, Championships, Briefing, type SectionProps } from './Sections'
-import { api, assetUrl, ApiError, explain, money, post } from './api'
+import { api, assetUrl, ApiError, explain, post } from './api'
 import { Budget, CostCap } from './finance/Budget'
 import { Facilities } from './finance/Facilities'
 import { Capital } from './finance/Capital'
@@ -27,6 +27,7 @@ import { Rights } from './finance/Rights'
 import { Commercial } from './finance/Commercial'
 import { SeasonGarage } from '../garage/Garage'
 import { Development } from './development/Development'
+import { Programme } from './programme/Programme'
 import { Council } from './council/Council'
 import { Research } from './research/Research'
 import { Production } from './production/Production'
@@ -37,7 +38,7 @@ const sections = [
   { id: 'calendar', name: 'Календарь', icon: CalendarDays, view: Calendar },
   { id: 'garage', name: 'Гараж', icon: CarFront, view: SeasonGarage },
   { id: 'world', name: 'Чемпионаты', icon: Trophy, view: Championships },
-  { id: 'engineering', name: 'Техническая программа', icon: Gauge, view: Engineering },
+  { id: 'engineering', name: 'Техническая программа', icon: Gauge, view: Programme },
   { id: 'council', name: 'Инженерный штаб', icon: Users, view: Council },
   { id: 'development', name: 'Разработка и испытания', icon: Gauge, view: Development },
   { id: 'production', name: 'Производственный центр', icon: Factory, view: Production },
@@ -51,90 +52,6 @@ const sections = [
   { id: 'economy', name: 'Экономика организации', icon: Factory, view: Economy },
   { id: 'cap', name: 'Cost Cap и ATR', icon: Gauge, view: CostCap },
 ]
-function Engineering({ c, world }: SectionProps) {
-  const reg = world.engineering.cost_cap
-  return (
-    <section className="screen">
-      <Header
-        section={world.organizations[c.org].name}
-        title="Техническая программа"
-        sub="Целевые сезоны, поколения машин и действующие лимиты."
-      />
-      <div className="section-grid">
-        <Panel title="Портфель программы">
-          {c.targets.map((t) => (
-            <div className="result" key={t.program + t.generation}>
-              <span>
-                <small>
-                  {world.championships[world.engineering.seasons[t.target_season].championship].name}
-                </small>
-                <strong>
-                  {world.engineering.seasons[t.target_season].year} ·{' '}
-                  {world.engineering.generations[t.generation].category}
-                </strong>
-              </span>
-              <small>
-                {world.engineering.seasons[t.target_season].status === 'active'
-                  ? 'Текущая машина'
-                  : 'Следующее поколение'}
-              </small>
-            </div>
-          ))}
-          {!c.targets.length && (
-            <p className="panel-body muted">Организация поставляет компоненты клиентским программам.</p>
-          )}
-        </Panel>
-        <Panel title="Бюджет разработки">
-          <Facts
-            items={[
-              ['Утверждено', money(c.account.development_budget_cents)],
-              ['Фактические расходы', money(c.account.development_spent_cents)],
-              ['Резерв обязательств', money(c.account.development_reserved_cents)],
-            ]}
-          />
-        </Panel>
-        {c.atr && (
-          <>
-            <Panel title="Аэродинамические исследования">
-              <Facts
-                items={[
-                  ['Период', 'ATP ' + c.atr.period.number],
-                  ['Начало', dateLabel(c.atr.period.start)],
-                  ['Коэффициент', c.atr.percent === null ? 'Ожидает классификации' : c.atr.percent + '%'],
-                  ...(c.atr.limits
-                    ? ([
-                        ['Прогоны', c.atr.limits.runs],
-                        ['Труба под потоком', c.atr.limits.wind_on_minutes + ' мин'],
-                        ['Занятость трубы', c.atr.limits.occupancy_minutes + ' мин'],
-                        ['CFD', c.atr.limits.cfd_milli_mauh / 1000 + ' MAUh'],
-                        ['Геометрии CFD', c.atr.limits.cfd_geometries],
-                      ] as [string, string | number][])
-                    : []),
-                ]}
-              />
-            </Panel>
-            <Panel title="Потолок расходов F1">
-              <Facts
-                items={[
-                  [
-                    'База до индексации',
-                    new Intl.NumberFormat('ru-RU', {
-                      style: 'currency',
-                      currency: reg.currency,
-                      maximumFractionDigits: 0,
-                    }).format(reg.base_cents / 100),
-                  ],
-                  ['Базовый календарь', reg.reference_rounds + ' этап'],
-                  ['Отчётный год', reg.start.slice(0, 4)],
-                ]}
-              />
-            </Panel>
-          </>
-        )}
-      </div>
-    </section>
-  )
-}
 export function Workspace({ world:catalog, c: initial, media }: SectionProps) {
   const [c, update] = useState(initial),
     [route, setRoute] = useState(() => location.hash.slice(1)),

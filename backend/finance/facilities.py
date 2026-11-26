@@ -459,7 +459,9 @@ def access(state, world, event):
         ):
             raise RuleError("Требуется подтверждённая квота проекта F1.")
         if "capacity_since" in state["estate"]:
-            pool = resource_scope(world, event.org, event.start)
+            pool = resource_scope(
+                world, event.org, event.start, simulated="programme" in state
+            )
             if (
                 not pool
                 or project["pool"] != pool["pool_id"]
@@ -472,7 +474,9 @@ def access(state, world, event):
                 else ("cfd_geometries", "cfd_milli_mauh")
             )
             if not any(project["terms"]["atr"].get(metric, 0) for metric in metrics):
-                raise RuleError("Квота проекта не покрывает выбранный вид оборудования.")
+                raise RuleError(
+                    "Квота проекта не покрывает выбранный вид оборудования."
+                )
         if any(
             r.get("authority") == event.authorization
             and r["id"] != event.reference

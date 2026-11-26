@@ -149,6 +149,24 @@ def launch(state, world, row, choice, actor):
     key = row["id"] + "-work"
     action = choice["action"]
     payload = choice["payload"]
+    target = row.get("target_year")
+    if action == "allocate":
+        from ..programme import allocate
+
+        allocate(state, org, payload["allocation"], manager=actor == state["player_id"])
+        return None
+    if action == "homologate":
+        from ..programme.rules import certify
+
+        certify(
+            state,
+            world,
+            world["entries"][row["entry"]],
+            target,
+            payload["specification"],
+            actor,
+        )
+        return payload["specification"]
     category = "production" if action in ("produce", "repair") else "engineering"
     if action == "lease":
         category = "infrastructure"
@@ -174,10 +192,24 @@ def launch(state, world, row, choice, actor):
             if action == "produce"
             else state["development"]["projects"]
         )
+        from ..programme import work_year
+        from ..programme.rules import config_for
+
+        year = target or int(state["date"][:4])
+        concept = config_for(state, world, world["entries"][row["entry"]], target)[
+            "concept"
+        ]
         for p in book.values():
             if (
                 p["org"] == org
                 and not p["finished"]
+                and (
+                    "programme" not in state
+                    or (
+                        work_year(state, p) == year
+                        and p.get("concept", concept) == concept
+                    )
+                )
                 and all(
                     p.get("order", p.get("request", {})).get(k) == v
                     for k, v in payload.items()
@@ -185,7 +217,9 @@ def launch(state, world, row, choice, actor):
                 )
             ):
                 return p["id"]
-        module.commission(state, world, org, key, model.model_validate(payload))
+        module.commission(
+            state, world, org, key, model.model_validate(payload), target_year=target
+        )
         return key
     if action == "priority":
         pool = (
@@ -247,6 +281,15 @@ def decide(state, world, row, decision, actor, index=0, reason=""):
     ):
         raise RuleError("Превышен лимит поручения.", 409)
     work = launch(state, world, row, choice, actor)
+    if row.get("package"):
+        from ..programme.packages import package
+        from ..programme.rules import dossier
+
+        entry = world["entries"][row["entry"]]
+        plan = dossier(state, world, entry, row["target_year"])
+        state["programme"]["packages"].setdefault(
+            row["package"], package(state, world, entry, plan)
+        )
     row.update(status="decided", work=work, chosen=choice, blocked=None)
     record(state, row, actor, decision, reason or choice["risk"], choice, work)
 

@@ -297,7 +297,7 @@ def register(state, schedule: Schedule):
 def settle(state):
     day = state["date"]
     for r in sorted(pending(state), key=lambda r: (r["due"], r["id"])):
-        if r["status"] != "pending" or r["due"] > day:
+        if r["status"] != "pending" or r["due"] > day or r.get("awaiting_capacity"):
             continue
         if r["category"] == "driver-backing" and r["id"].endswith(":seat"):
             supply = state.get("market", {}).get("supplies", {}).get(r["contract"])

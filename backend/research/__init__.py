@@ -13,7 +13,7 @@ from .model import (
     question_for,
     design_context,
     ORDERS,
-    queue_position,
+    queue_position as queue_position,
     Commission,
     Handover,
     Reorder,
@@ -60,12 +60,21 @@ def admitted(state, entry):
     )
 
 
-def commission(state, world, org, key, order):
+def commission(state, world, org, key, order, *, target_year=None):
     projects = state["research"]["projects"]
     if key in projects:
-        if projects[key]["org"] != org or projects[key]["order"] != order.model_dump():
+        if (
+            projects[key]["org"] != org
+            or projects[key]["order"] != order.model_dump()
+            or projects[key].get("target_year") != target_year
+        ):
             raise RuleError("Этот номер уже принадлежит другому поручению.", 409)
         return projects[key]
+    from ..programme import paused
+
+    year = target_year or int(state["date"][:4])
+    if paused(state, org, year):
+        raise RuleError("Развитие текущего поколения остановлено менеджером.", 409)
     entry = world["entries"].get(order.entry)
     if (
         not entry
@@ -74,7 +83,9 @@ def commission(state, world, org, key, order):
         or order.axis not in components.mounting(state, order.entry)
     ):
         raise RuleError("Направление недоступно для этой заявки.", 403)
-    config = state["car_configurations"][entry["car"]]
+    from ..programme.rules import config_for
+
+    config = config_for(state, world, entry, target_year)
     axis = order.axis
     role, _, question, hours, price = METHODS[axis]
     staff = components.specialists(state, world, entry)
@@ -87,7 +98,7 @@ def commission(state, world, org, key, order):
         label="Конструкторская документация · " + world["cars"][entry["car"]]["name"],
     )
     if "development" in state:
-        question = question_for(state, world, entry, drawing)
+        question = question_for(state, world, entry, drawing, config=config)
     if "development" in state and drawing["manufacturer"] != org:
         source["label"] = (
             "Монтажная документация · " + world["cars"][entry["car"]]["name"]
@@ -163,6 +174,12 @@ def commission(state, world, org, key, order):
 
         project["integration_study"] = bool(restriction(state, world, entry, axis))
         project["design_context"] = design_context(state, entry, axis)
+    if target_year is not None:
+        project["target_year"] = target_year
+    if target_year is not None:
+        from ..programme.rules import pin_concept
+
+        pin_concept(state, world, entry, target_year)
     projects[key] = project
     return project
 
@@ -334,13 +351,26 @@ def work(state, world, p, used):
     from .. import development
 
     kind = p.get("site_kind", "research")
-    if "kind" in p:
-        config = state["car_configurations"][entry["car"]]
+    from ..programme import paused, work_year
+    from ..programme.rules import config_for
+
+    if paused(state, org, work_year(state, p)):
+        p["reason"] = "Работа приостановлена до перераспределения ресурсов."
+        return
+    if "kind" in p or p.get("target_year"):
+        config = config_for(state, world, entry, p.get("target_year"))
         if config["regulation"] != p["regulation"] or config["concept"] != p["concept"]:
             p["reason"] = "Изменились концепция или регламент программы."
             return
-        if p["kind"] == "design" and (
-            reason := development.restriction(state, world, entry, p["axis"])
+        if p.get("kind") == "design" and (
+            reason := development.restriction(
+                state,
+                world,
+                entry,
+                p["axis"],
+                year=p.get("target_year"),
+                reliability=p.get("brief") == "reliability",
+            )
         ):
             p["reason"] = reason
             return
@@ -439,8 +469,14 @@ def work(state, world, p, used):
     grant = facilities.grant(state, key)
     support_hours = grant.effective_person_days_x100 * 8 // 100
     # Site operators and the team's own department must both have time for analysis.
+    peer = None
     if group:
-        support_hours = min(support_hours, department_capacity(group) * 8 // 100)
+        remaining_capacity = (
+            department_capacity(group) - used.get(group["id"], 0)
+            if "programme" in state
+            else department_capacity(group)
+        )
+        support_hours = min(support_hours, max(0, remaining_capacity) * 8 // 100)
     if "kind" in p and group:
         peer_name = {
             "aero": "Шасси",
@@ -467,7 +503,18 @@ def work(state, world, p, used):
                 evidence=ability,
             )["handover_quality"]
             review = (review + handover) // 2
-            support_hours = min(support_hours, department_capacity(peer) * 8 // 100)
+            remaining_capacity = (
+                department_capacity(peer) - used.get(peer["id"], 0)
+                if "programme" in state
+                else department_capacity(peer)
+            )
+            support_hours = min(support_hours, max(0, remaining_capacity) * 8 // 100)
+    if "programme" in state:
+        for crew in (group, peer):
+            if crew:
+                used[crew["id"]] = (
+                    used.get(crew["id"], 0) + (support_hours * 100 + 7) // 8
+                )
     hours = sum(h for _, _, h in contributors)
     quality = min(
         96,
@@ -558,9 +605,11 @@ def advance(state, world, end):
                     development.npc_plan(state, world)
                 queues.append(state["development"]["projects"])
             used = {}
+            from ..programme import queue_key
+
             pending = sorted(
                 (p for queue in queues for p in queue.values() if not p["finished"]),
-                key=queue_position,
+                key=lambda p: queue_key(state, p),
             )
             for p in pending:
                 work(state, world, p, used)

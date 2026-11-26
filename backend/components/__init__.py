@@ -58,20 +58,45 @@ def remaining(state, iid):
     return max(0, spec(state, iid)["life_m"] - condition(state, iid)["distance_m"])
 
 
-def compatible(state, world, entry, drawing):
+def compatible(
+    state, world, entry, drawing, *, year=None, for_review=False, planning=False
+):
     car = world["cars"][entry["car"]]
     slot = drawing["slot"]
     if slot in state["components"]["locked_slots"].get(entry["id"], {}):
         return False
-    if (
-        drawing["regulation"] != state["car_configurations"][entry["car"]]["regulation"]
-        or drawing["interface"] != OPENING.interfaces[entry["id"]]
+    opening = state["car_configurations"][entry["car"]]["regulation"]
+    if "programme" in state and (
+        (year or int(state["date"][:4])) != 2025 or drawing.get("programme_concept")
     ):
+        from ..programme.rules import dossier, admitted_version
+
+        year = year or int(state["date"][:4])
+        plan = dossier(state, world, entry, year)
+        if (
+            drawing["regulation"] not in (opening, plan["regulation"])
+            or drawing.get("programme_concept", plan["concept"]) != plan["concept"]
+        ):
+            return False
+        if not for_review and not admitted_version(state, world, entry, drawing, year):
+            return False
+    elif drawing["regulation"] != opening:
+        return False
+    if (
+        "programme" in state
+        and state["components"]["revisions"]
+        and not (for_review or planning)
+    ):
+        from ..programme.packages import installation_dependency
+
+        if not installation_dependency(state, entry, drawing):
+            return False
+    if drawing["interface"] != OPENING.interfaces[entry["id"]]:
         return False
     original = OPENING.installed[entry["id"]].get(slot)
     if not original:
         return False
-    rule = OPENING.rules[drawing["regulation"]]
+    rule = OPENING.rules[car["regulation"]]
     certified = drawing["id"] in rule["approved"] or drawing["id"] in state[
         "components"
     ]["admissions"].get(drawing["regulation"], [])
@@ -160,7 +185,7 @@ def seats_for(world, entry):
     ]
 
 
-def allocation(state, world, entry, iid, available):
+def allocation(state, world, entry, iid, available, *, year=None, planned_entries=None):
     seats = seats_for(world, entry)
     # Allocate access to this scarce drawing, independent of its physical trade-offs.
     drawing = spec(state, iid)
@@ -168,7 +193,7 @@ def allocation(state, world, entry, iid, available):
     for seat in seats:
         other = world["entries"][seat["entry"]]
         if driver_terms.contract(state, seat, state["date"]) and compatible(
-            state, world, other, drawing
+            state, world, other, drawing, year=year
         ):
             eligible[other["id"]] = mounting(state, other["id"])[drawing["slot"]]
     needed = {
@@ -183,6 +208,10 @@ def allocation(state, world, entry, iid, available):
             if spec(state, previous)["family"] == drawing["family"]
             and spec(state, previous)["version"] < drawing["version"]
         }
+    if planned_entries is not None:
+        # A future grid has no installations yet; each eligible entered car needs a unit.
+        resource = "specification"
+        needed = planned_entries.intersection(eligible)
     copies = [key for key in available if spec(state, key)["id"] == drawing["id"]]
     if len(copies) >= len(needed):
         # An optional exchange cannot consume the last copy needed by a teammate.
@@ -297,8 +326,14 @@ def install(state, world, order, org):
     event_id = f"component-fit-{state['revision'] + 1}"
     if "production" in state:
         event_id += f"-{len(data['history']) + 1}"
+    if "programme" in state and spec(state, previous)["id"] != drawing["id"]:
+        from ..programme.packages import pin_before_fit
+
+        pin_before_fit(state, world, entry, slot)
     data["mounts"].setdefault(entry["id"], {})[slot] = iid
     fitted = mounting(state, entry["id"])
+    from ..programme.rules import config_for
+
     data["history"].append(
         dict(
             id=event_id,
@@ -310,7 +345,7 @@ def install(state, world, order, org):
             removed=previous,
             removed_condition=dict(condition(state, previous)),
             instance=iid,
-            configuration=dict(state["car_configurations"][entry["car"]]),
+            configuration=dict(config_for(state, world, entry)),
             fitted=fitted,
             conditions={key: dict(condition(state, key)) for key in fitted.values()},
             mechanic=staff["chief-mechanic"],

@@ -346,6 +346,13 @@ def apply(state, catalog, action, payload=None):
 
     from . import development, production, council
 
+    from . import programme
+
+    if action in programme.ORDERS and "programme" in state:
+        programme.command(state, catalog, action, payload)
+        state["revision"] += 1
+        return
+
     if action in council.ORDERS and "council" in state:
         council.command(state, catalog, action, payload)
         state["revision"] += 1

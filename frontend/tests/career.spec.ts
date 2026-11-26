@@ -38,7 +38,11 @@ test('Штаб, брифинг, загрузка и перенос сохран�
     .getByLabel('Импортировать сохранение')
     .setInputFiles({ name: 'broken.json', mimeType: 'application/json', buffer: Buffer.from('{}') })
   await expect(page.getByRole('alert')).toContainText('Неизвестный формат')
+  const importing = page.waitForResponse(
+    (response) => response.url().endsWith('/api/careers/import') && response.request().method() === 'POST',
+  )
   await page.getByLabel('Импортировать сохранение').setInputFiles(file!)
+  expect((await importing).status()).toBe(201)
   await expect(page.getByRole('heading', { name: 'Штаб команды' })).toBeVisible()
   expect(page.url()).not.toBe(original)
   await expect(page.locator('.top-date')).toContainText('13 февраля')
