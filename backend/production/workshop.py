@@ -43,11 +43,7 @@ def crew(state, org, inspection):
 def booked_site(state, org, kind, day, end, contractor):
     """Assign one paid slot-day; other users of the capacity may have older unlinked grants."""
     bookings = state["estate"]["bookings"]
-    sites = sorted(
-        (a for a in state["estate"]["assets"].values() if a["kind"] == kind),
-        key=lambda a: (a["owner"] != org, a["id"]),
-    )
-    for site in sites:
+    for site in facilities.accessible_sites(state, org, kind, day):
         if facilities.free(state, site, day, end, buyer=org) < 1:
             continue
         if site["owner"] == org:

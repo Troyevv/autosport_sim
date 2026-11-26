@@ -306,3 +306,28 @@ def test_leased_slots_cannot_double_book_after_operator_capacity_drops():
     with pytest.raises(domain.RuleError):
         f.consume(s, MCLAREN, "second", facility, day, end, 2, "research", "project-2")
     assert f.free(s, facility, end, f.later(end, 1)) == 3
+
+
+def test_research_uses_contiguous_external_rights_for_the_whole_job():
+    from backend.research import facility
+
+    c = create()
+    with storage.transaction() as db:
+        s = storage.checkpoint(db, c["id"])
+    day = s["date"]
+    middle, end = f.later(day, 2), f.later(day, 4)
+    site = "shared:research"
+    for start, mode in ((day, "lease"), (middle, "outsource")):
+        f.act(
+            s,
+            WORLD,
+            MCLAREN,
+            "rights:" + start,
+            f.Lease(facility=site, start=start, days=2, units=1, mode=mode),
+        )
+    assert facility(s, MCLAREN, day, end)["id"] == site
+    assert facility(s, MCLAREN, middle, end)["id"] == site
+    assert facility(s, MCLAREN, end, f.later(end, 1)) is None
+    s["estate"]["bookings"]["rights:" + middle]["purpose"] = "preparation"
+    assert facility(s, MCLAREN, day, end) is None
+    assert facility(s, MCLAREN, middle, end) is None

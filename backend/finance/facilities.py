@@ -229,6 +229,31 @@ def resources(state, a):
     return (slots, effective) if effective else (0, 0)
 
 
+def accessible_sites(state, org, kind, day):
+    """List owned sites first, then external sites with access on the first day.
+
+    free() still checks staffing, competing uses and entitlement across all days.
+    """
+    assets = state["estate"]["assets"]
+    owned = sorted(
+        (a for a in assets.values() if a["owner"] == org and a["kind"] == kind),
+        key=lambda a: a["id"],
+    )
+    yield from owned
+    leases = {
+        r["facility"]
+        for r in state["estate"]["bookings"].values()
+        if r["org"] == org
+        and r["mode"] in ("lease", "outsource")
+        and r.get("purpose") != "preparation"
+        and r["start"] <= day < r["end"]
+    }
+    for key in sorted(leases):
+        a = assets[key]
+        if a["kind"] == kind and a["owner"] != org:
+            yield a
+
+
 def free(state, a, start, end, *, buyer=None):
     records = [
         r

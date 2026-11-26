@@ -304,11 +304,10 @@ def available_person(state, pid, day, end):
 
 
 def facility(state, org, day, end, kind="research"):
-    assets = (a for a in state["estate"]["assets"].values() if a["kind"] == kind)
     return next(
         (
             a
-            for a in sorted(assets, key=lambda a: (a["owner"] != org, a["id"]))
+            for a in facilities.accessible_sites(state, org, kind, day)
             if facilities.free(state, a, day, end, buyer=org) > 0
         ),
         None,
