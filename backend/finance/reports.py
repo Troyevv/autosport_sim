@@ -28,6 +28,9 @@ def cash_rows(db, cid, accounts):
 
 
 def scheduled_payroll(state, world, org, first, end):
+    from ..catalog import career_catalog
+
+    world = career_catalog(state, world)
     days = monthrange(first.year, first.month)[1]
     total = sum(
         g["payroll_cents"] for g in state["collectives"].values() if g["org"] == org

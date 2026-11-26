@@ -137,6 +137,9 @@ def disciplines(catalog, seat):
 
 
 def update_payroll(state, catalog, day):
+    from .catalog import career_catalog
+
+    catalog = career_catalog(state, catalog)
     totals = dict.fromkeys(state["accounts"], 0)
     for group in state["collectives"].values():
         totals[group["org"]] += group["payroll_cents"]
@@ -192,6 +195,9 @@ def evaluate(person, catalog, day, *, discipline=None, wet=False):
 
 
 def develop(state, catalog, target):
+    from .catalog import career_catalog
+
+    catalog = career_catalog(state, catalog)
     rules = catalog["staff_rules"]["training"]
     interval = rules["adaptation_days"]
     start = state["date"]
@@ -208,6 +214,14 @@ def develop(state, catalog, target):
                 continue
             pid = r["person"]
             employed.add(pid)
+            if "lineup" in state and seat["position"] == "driver":
+                from .driver_availability import unavailable
+
+                if unavailable(state, pid, start):
+                    employed.discard(pid)
+                    continue
+            if seat.get("duty"):
+                continue
             practiced.update((pid, d) for d in disciplines(catalog, seat))
     for pid, discipline in practiced:
         p = state["people"][pid]

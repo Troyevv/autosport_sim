@@ -313,10 +313,20 @@ def record_result(
     result = dict(day=day, place=place, licence_points=licence_points)
     if entry is not None:
         car = world["entries"].get(entry) if world else None
-        if not car or not any(
-            world["assignments"][aid]["entry"] == entry and active(row, day)
-            for aid, row in bookings(state, pid)
-        ):
+        from .driver_availability import participant
+
+        if "lineup" in state and car:
+            assigned = any(
+                participant(state, a["id"], day) == pid
+                for a in world["assignments"].values()
+                if a["entry"] == entry and a["position"] == "driver"
+            )
+        else:
+            assigned = any(
+                world["assignments"][aid]["entry"] == entry and active(row, day)
+                for aid, row in bookings(state, pid)
+            )
+        if not car or not assigned:
             raise RuleError(
                 "Не подтверждено назначение в заявке на дату классификации."
             )

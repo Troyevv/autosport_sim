@@ -38,9 +38,15 @@ def partnerships(state, world, day):
     """Only recurring professional contacts, including distinct WEC entry crews."""
     programs = defaultdict(lambda: defaultdict(list))
     for aid, seat in world["assignments"].items():
-        if seat.get("academy"):
+        if seat.get("academy") or seat.get("duty"):
             continue
-        pid = occupant_on(state["seats"][aid], day)
+        from .driver_availability import participant
+
+        pid = (
+            participant(state, aid, day)
+            if seat["position"] == "driver"
+            else occupant_on(state["seats"][aid], day)
+        )
         if not pid:
             continue
         org = seat["org"]
@@ -264,6 +270,14 @@ def professional_action(state, world, pair, day, *, evidence=50, pressure=0):
             )
             // 5
             - pressure // 5
+            - min(
+                18,
+                3
+                * sum(
+                    r["kind"] == "grievance" and r["person"] == a and r["org"] == org
+                    for r in state.get("lineup", {}).get("history", [])
+                ),
+            )
             - max(0, 50 - evidence) * d["Оценка риска"] // 300
         )
         return dict(
@@ -364,10 +378,15 @@ def session_inputs(state, world, entry, event, actor, *, evidence, pressure):
     ):
         raise RuleError("Сессия не соответствует дате и заявке.")
     program = world["assignments"]
+    from .driver_availability import participant
+
     assigned = {
-        occupant_on(state["seats"][aid], state["date"])
+        participant(state, aid, state["date"])
+        if s["position"] == "driver"
+        else occupant_on(state["seats"][aid], state["date"])
         for aid, s in program.items()
         if s["org"] == e["org"]
+        and not s.get("duty")
         and not s.get("academy")
         and s["entry"] in (entry, None)
         and s["series"] in (None, event["series"])

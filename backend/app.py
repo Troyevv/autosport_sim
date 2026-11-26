@@ -9,7 +9,7 @@ from fastapi.concurrency import run_in_threadpool
 
 from . import backing, employment, media, service, staff_desk, storage
 from .staff_input import Day
-from .catalog import WORLD
+from .catalog import LINEUP_WORLD as WORLD
 from .domain import RuleError
 from .statistics import archive, facts, telemetry
 from .livery import GARAGE
@@ -87,6 +87,12 @@ def personnel(cid: str):
         return staff_desk.directory(storage.checkpoint(db, cid), WORLD)
 
 
+@app.get("/api/careers/{cid}/lineup")
+def driver_lineup(cid: str):
+    with storage.transaction() as db:
+        return service.lineup.desk(storage.checkpoint(db, cid), WORLD)
+
+
 @app.get("/api/careers/{cid}/personnel/{pid}")
 def dossier(cid: str, pid: str, wet: bool = False):
     with storage.transaction() as db:
@@ -101,6 +107,9 @@ def quote(
     start: Day,
     end: Day,
     salary_cents: int = 0,
+    outside_starts: bool = False,
+    combined_duties: bool = False,
+    driver_status: Literal["equal", "first", "second"] | None = None,
     remit: Literal["supervised", "standard", "independent"] = "standard",
 ):
     with storage.transaction() as db:
@@ -113,6 +122,9 @@ def quote(
                 end=end,
                 salary_cents=salary_cents,
                 remit=remit,
+                driver_status=driver_status,
+                outside_starts=outside_starts,
+                combined_duties=combined_duties,
             )
             fee = employment.quote(state, WORLD, terms)
             comparison = employment.career_choice.assess(
@@ -222,10 +234,15 @@ def channel_range(
 
 @app.post("/api/careers/{cid}/commands")
 def command(cid: str, command: service.Command):
-    if command.action in service.PRODUCERS or command.action in (
-        "confirmed-work",
-        "issued-licence",
-        "season-classification",
+    if (
+        command.action in service.lineup.PRODUCERS
+        or command.action in service.PRODUCERS
+        or command.action
+        in (
+            "confirmed-work",
+            "issued-licence",
+            "season-classification",
+        )
     ):
         raise RuleError("Требуется подтверждение подсистемы-источника.", 403)
     return service.execute(cid, command)
@@ -256,7 +273,7 @@ def asset(kind: str, entity: str, v: str | None = None):
 @app.get("/api/careers/{cid}/finance")
 def financial_statement(cid: str, scope: str = "organization"):
     from .finance.reports import statement
-    from .catalog import WORLD
+    from .catalog import LINEUP_WORLD as WORLD
     from . import storage
 
     with storage.transaction() as db:
@@ -299,7 +316,7 @@ def export_financial_statement(cid: str, scope: str = "organization"):
 @app.get("/api/careers/{cid}/commercial")
 def commercial_market(cid: str):
     from .finance import market
-    from .catalog import WORLD
+    from .catalog import LINEUP_WORLD as WORLD
     from . import storage
 
     with storage.transaction() as db:
@@ -309,7 +326,7 @@ def commercial_market(cid: str):
 @app.get("/api/careers/{cid}/garage")
 def career_garage(cid: str):
     from .finance.rights import catalog
-    from .catalog import WORLD
+    from .catalog import LINEUP_WORLD as WORLD
     from . import storage
 
     with storage.transaction() as db:
@@ -319,7 +336,7 @@ def career_garage(cid: str):
 @app.get("/api/careers/{cid}/rights")
 def commercial_rights(cid: str):
     from .finance.rights import projection
-    from .catalog import WORLD
+    from .catalog import LINEUP_WORLD as WORLD
     from . import storage
 
     with storage.transaction() as db:
@@ -329,7 +346,7 @@ def commercial_rights(cid: str):
 @app.get("/api/careers/{cid}/budget")
 def budget_control(cid: str, year: int | None = None):
     from .finance.budget import report
-    from .catalog import WORLD
+    from .catalog import LINEUP_WORLD as WORLD
     from . import storage
 
     with storage.transaction() as db:
@@ -342,7 +359,7 @@ def budget_control(cid: str, year: int | None = None):
 @app.get("/api/careers/{cid}/facilities")
 def facilities_overview(cid: str):
     from .finance.facilities import projection
-    from .catalog import WORLD
+    from .catalog import LINEUP_WORLD as WORLD
     from . import storage
 
     with storage.transaction() as db:
@@ -352,7 +369,7 @@ def facilities_overview(cid: str):
 @app.get("/api/careers/{cid}/capital")
 def capital_overview(cid: str):
     from .finance.capital import projection
-    from .catalog import WORLD
+    from .catalog import LINEUP_WORLD as WORLD
     from . import storage
 
     with storage.transaction() as db:
@@ -362,7 +379,7 @@ def capital_overview(cid: str):
 @app.get("/api/careers/{cid}/economy")
 def economy_overview(cid: str):
     from .finance.economy import projection
-    from .catalog import WORLD
+    from .catalog import LINEUP_WORLD as WORLD
     from . import storage
 
     with storage.transaction() as db:

@@ -10,10 +10,12 @@ import { priorities, seatName, shortDate, statuses, usePersonnel, type Candidate
 import { PreparationDesk } from './Development'
 import { GroupWork } from './Teamwork'
 import { Programs } from './Programs'
+import { Lineup, sportingStatus } from './Lineup'
 import './staff.css'
 
 const views = [
   ['roster', 'Состав'],
+  ['lineup', 'Состав пилотов'],
   ['market', 'Кадровый рынок'],
   ['offers', 'Переговоры'],
   ['groups', 'Коллективы'],
@@ -148,7 +150,9 @@ export function People({
         </div>
       </div>
       <Choices
-        items={views.filter(([id]) => id !== 'programs' || c.mandate)}
+        items={views.filter(
+          ([id]) => (id !== 'programs' || c.mandate) && (id !== 'lineup' || c.role !== 'manufacturer'),
+        )}
         active={tab}
         onChange={changeTab}
         label="Кадровый центр"
@@ -157,6 +161,15 @@ export function People({
         <p className="career-error" role="alert">
           {error}
         </p>
+      )}
+      {tab === 'lineup' && (
+        <Lineup
+          {...{ c, world, media, order, busy }}
+          openMarket={() => {
+            changeTab('market')
+            profession('driver')
+          }}
+        />
       )}
       {tab === 'preparation' && <PreparationDesk {...{ c, order, busy }} />}
       {tab === 'programs' && (
@@ -411,6 +424,7 @@ export function People({
                   <p>
                     {shortDate(o.start)} — {shortDate(o.end)} · бонус {money(o.bonus_cents)}
                   </p>
+                  {o.driver_status && <p>{sportingStatus[o.driver_status]}</p>}
                   <p>{o.message}</p>
                   {o.assessment && (
                     <details className="staff-handling">

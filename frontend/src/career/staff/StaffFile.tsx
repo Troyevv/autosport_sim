@@ -1,3 +1,4 @@
+import { sportingStatus } from './Lineup'
 import { Development } from './Development'
 import { useState } from 'react'
 import { Button, Choices, Dialog, Facts, Progress } from '../../ui/components'
@@ -208,6 +209,11 @@ function CareerFile({ data, c, world, order, busy }: FileProps) {
             {r.agreed_end && r.end !== r.agreed_end && ' · Исходный срок до ' + shortDate(r.agreed_end)}
           </span>
         </article>
+      ))}
+      {data.lineup_history?.map((r) => (
+        <p key={r.id}>
+          {shortDate(r.date)} · {r.message}
+        </p>
       ))}
       {!data.history.length && <p>Назначений в карьере пока нет.</p>}
       {p.position === 'technical-advisor' && (
@@ -428,6 +434,11 @@ function Terms({ data, c, world, busy, order, onSent }: FileProps) {
   const [seat, target] = useState(first?.id || ''),
     [salary, pay] = useState(String((first?.ask_cents || 0) / 100)),
     [bonus, signing] = useState('0')
+  const [status, setStatus] = useState(current?.driver_status || 'equal')
+  const [combined, setCombined] = useState(false),
+    [outside, setOutside] = useState(false)
+  const driver = data.person.position === 'driver'
+  const supporting = !!c.assignments.find((a) => a.id === seat)?.duty
   const [remit, setRemit] = useState('standard')
   const firstStart = first?.available || daysAfter(c.date, 3)
   const seasonEnd = (date: string) => String(Number(date.slice(0, 4)) + 1) + '-01-01'
@@ -436,6 +447,9 @@ function Terms({ data, c, world, busy, order, onSent }: FileProps) {
     [release, confirm] = useState(false)
   const expectation = options.find((o) => o.id === seat)?.ask_cents
   const query = new URLSearchParams({
+    ...(driver && !supporting ? { driver_status: status } : {}),
+    outside_starts: String(driver && outside),
+    combined_duties: String(driver && supporting && combined),
     remit,
     seat,
     start,
@@ -460,6 +474,9 @@ function Terms({ data, c, world, busy, order, onSent }: FileProps) {
       {current && (
         <Facts
           items={[
+            ...(current.driver_status
+              ? [['Спортивный статус', sportingStatus[current.driver_status]] as [string, string]]
+              : []),
             ['Работодатель', world.organizations[current.org].name],
             [
               'Оклад / месяц',
@@ -507,6 +524,11 @@ function Terms({ data, c, world, busy, order, onSent }: FileProps) {
             e.preventDefault()
             if (
               await order('offer-send', {
+                ...(driver
+                  ? supporting
+                    ? { combined_duties: combined, outside_starts: outside }
+                    : { driver_status: status, outside_starts: outside }
+                  : {}),
                 remit,
                 person: data.person.id,
                 seat,
@@ -542,6 +564,30 @@ function Terms({ data, c, world, busy, order, onSent }: FileProps) {
               ))}
             </select>
           </label>
+          {driver && !supporting && (
+            <label>
+              Статус по договору
+              <select value={status} onChange={(e) => setStatus(e.target.value)}>
+                {Object.entries(sportingStatus).map(([id, text]) => (
+                  <option key={id} value={id}>
+                    {text}
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
+          {driver && supporting && (
+            <label className="staff-check">
+              <input type="checkbox" checked={combined} onChange={(e) => setCombined(e.target.checked)} />
+              Совмещать резерв и испытания
+            </label>
+          )}
+          {driver && (
+            <label className="staff-check">
+              <input type="checkbox" checked={outside} onChange={(e) => setOutside(e.target.checked)} />
+              Разрешить выступления в другой серии в свободные даты
+            </label>
+          )}
           {data.person.position !== 'driver' && (
             <label>
               Профессиональные полномочия

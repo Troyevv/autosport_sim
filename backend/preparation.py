@@ -29,6 +29,12 @@ def busy(state, pid, start, end):
 
 
 def eligible(state, world, pid, org, start, end, academy=False):
+    from .driver_availability import unavailable, occupied
+
+    if "lineup" in state and (
+        unavailable(state, pid, start) or occupied(state, pid, start, end)
+    ):
+        return False
     member = state["people"].get(pid) or state["collectives"][pid]
     if member["fatigue"] >= 60 or busy(state, pid, start, end):
         return False
@@ -101,7 +107,7 @@ def options(state):
     ]
 
 
-def reserve(state, world, kind):
+def reserve(state, world, kind, *, participant=None):
     from .employment import post, HORIZON
 
     org = state["setup"]["org"]
@@ -220,6 +226,14 @@ def reserve(state, world, kind):
         for p in candidates
         if eligible(state, world, p, org, start, end, kind == "academy")
     ]
+    if participant is not None:
+        if (
+            kind != "simulator"
+            or "lineup" not in state
+            or participant not in candidates
+        ):
+            raise RuleError("Выбранный пилот недоступен для этой программы.")
+        candidates = [participant]
     if not candidates:
         raise RuleError(
             "Нет свободного участника с действующим назначением на весь слот."

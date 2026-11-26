@@ -129,6 +129,9 @@ def leaving_mid_session(catalog, seat, day):
 
 
 def check_terms(state, catalog, offer):
+    from .catalog import career_catalog
+
+    catalog = career_catalog(state, catalog)
     seat = catalog["assignments"].get(offer["seat"])
     p = state["people"].get(offer["person"])
     day, end = offer["start"], offer["end"]
@@ -151,7 +154,11 @@ def check_terms(state, catalog, offer):
             raise RuleError("Полномочия отправителя прекращены.")
     if not state["date"] <= day < end:
         raise RuleError("Окончание договора должно быть позже его начала.")
-    if p["position"] == "driver":
+    if "lineup" in state:
+        from .driver_terms import validate_offer
+
+        validate_offer(state, catalog, seat, offer)
+    if p["position"] == "driver" and seat["entry"]:
         entry = catalog["entries"][seat["entry"]]
         rules = catalog["championships"][seat["series"]]
         reason = development_path.eligibility(
@@ -169,6 +176,14 @@ def check_terms(state, catalog, offer):
         raise RuleError(
             "Место занято в запрошенный период. Сначала освободите его.", 409
         )
+    if "lineup" in state and p["position"] == "driver":
+        from .driver_availability import occupied
+
+        if occupied(state, p["id"], day, end) or any(
+            r["principal"] == p["id"] and r["start"] < end and r["end"] > day
+            for r in state["lineup"]["covers"].values()
+        ):
+            raise RuleError("Договор пересекается с подтверждённой заменой.")
     previous = []
     if leaving_mid_session(catalog, seat, day) or leaving_mid_session(
         catalog, seat, end
@@ -177,6 +192,30 @@ def check_terms(state, catalog, offer):
     for aid, row in bookings(state, p["id"]):
         if not intersects(row, day, end):
             continue
+        other = catalog["assignments"][aid]
+        if "lineup" in state and p["position"] == "driver" and aid != seat["id"]:
+            if (
+                (other.get("duty") or seat.get("duty"))
+                and other["series"] != seat["series"]
+                and row.get("outside_starts")
+                and offer.get("outside_starts")
+            ):
+                events = [
+                    e
+                    for e in catalog["events"]
+                    if e["kind"] in ("round", "testing")
+                    and e["start"] < min(end, row["end"] or end)
+                    and day <= e["end"]
+                ]
+                if any(
+                    a["start"] <= b["end"] and b["start"] <= a["end"]
+                    for a in events
+                    if a["series"] == other["series"]
+                    for b in events
+                    if b["series"] == seat["series"]
+                ):
+                    raise RuleError("Календари двух договоров пересекаются.")
+                continue
         if row["start"] > state["date"] or row.get("transfer_on"):
             raise RuleError("У сотрудника уже есть обязательство на этот период.", 409)
         if leaving_mid_session(catalog, catalog["assignments"][aid], day):
@@ -267,6 +306,26 @@ def sign(state, catalog, offer):
             position=seat["position"],
             remit=offer.get("remit", "standard"),
             agreed_end=offer["end"],
+        )
+    if "lineup" in state and seat["position"] == "driver":
+        from .driver_terms import history
+
+        row = state["seats"][seat["id"]][-1]
+        row.update(
+            outside_starts=offer.get("outside_starts", False),
+            combined_duties=offer.get("combined_duties", False),
+        )
+        if seat["entry"]:
+            row["driver_status"] = offer.get("driver_status") or "equal"
+        history(
+            state,
+            seat,
+            p["id"],
+            "contract",
+            "Подписаны условия назначения.",
+            status=row.get("driver_status"),
+            start=row["start"],
+            end=row["end"],
         )
     offer.update(
         status="accepted", message="Договор подписан. Назначение с " + offer["start"]
@@ -363,6 +422,9 @@ def dates(state):
 
 
 def advance(state, catalog, target):
+    from .catalog import career_catalog
+
+    catalog = career_catalog(state, catalog)
     from .finance import indexed
 
     with indexed(state):
@@ -384,6 +446,10 @@ def advance_dates(state, catalog, target):
         if day == month:
             backing.monthly(state, catalog)
             monthly_pay(state, catalog)
+            if "lineup" in state:
+                from .driver_terms import npc_review
+
+                npc_review(state, catalog)
             if "growth_since" in state and shifted(day, 3) < HORIZON:
                 fill_vacancies(state, catalog)
         if "finance" in state:
@@ -542,6 +608,26 @@ def propose(state, catalog, args, org, role):
         if not actor:
             raise RuleError("Нет действующего руководителя.")
         args = {**args, "actor": dict(org=org, role=role, person=actor)}
+    if "lineup" in state:
+        seat = catalog["assignments"].get(args["seat"], {})
+        if (
+            seat.get("position") == "driver"
+            and seat["entry"]
+            and not args.get("driver_status")
+        ):
+            from .driver_terms import contract
+
+            current = contract(state, seat, args["start"])
+            if not current:
+                current = next(
+                    (
+                        r
+                        for r in reversed(state["seats"][seat["id"]])
+                        if r["person"] == args["person"]
+                    ),
+                    {},
+                )
+            args = {**args, "driver_status": current.get("driver_status", "equal")}
     buyout = quote(state, catalog, args)
     if any(
         o["person"] == args["person"] and o["status"] in ("sent", "countered")
@@ -576,6 +662,8 @@ def fill_vacancies(state, catalog):
         if not r["end"] or r["end"] > day
     }
     for seat in catalog["assignments"].values():
+        if seat.get("duty") == "relief":
+            continue
         role = career_choice.office(catalog, seat)
         org = seat["org"]
         if state.get("capital", {}).get("crises", {}).get(org, {}).get("status") in (
@@ -669,7 +757,9 @@ def command(state, catalog, action, args):
     if "growth_since" in state and action in ("staff-train", "academy-course"):
         raise RuleError("Универсальные курсы завершены. Доступны программы подготовки.")
     if action == "prepare-program" and "growth_since" in state:
-        return preparation.reserve(state, catalog, args["kind"])
+        return preparation.reserve(
+            state, catalog, args["kind"], participant=args.get("participant")
+        )
     if action == "scout-driver":
         return development_path.scout(state, catalog, args["person"])
     if action == "manager-mandate":
@@ -715,6 +805,11 @@ def command(state, catalog, action, args):
 
         train(state, catalog, p, args["skill"])
     elif action == "staff-release":
+        if "lineup" in state:
+            from .driver_availability import occupied
+
+            if occupied(state, p["id"], day, row["end"] or HORIZON):
+                raise RuleError("Пилот уже заявлен на замену.")
         backing.can_leave(state, p["id"], seat["org"], day)
         if (
             (

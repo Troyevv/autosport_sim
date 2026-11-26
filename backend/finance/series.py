@@ -27,10 +27,9 @@ def award(state, world, order):
         raise RuleError("Для выплаты нужен подтверждённый состав следующего сезона.")
     eligible = {
         row["person"]
-        for aid, history in state["seats"].items()
-        if world["assignments"][aid]["position"] == "driver"
-        and world["assignments"][aid]["series"] == "f2"
-        for row in history
+        for aid, seat in world["assignments"].items()
+        if seat["entry"] and seat["position"] == "driver" and seat["series"] == "f2"
+        for row in state["seats"][aid]
         if row["start"] <= state["date"]
         and (not row["end"] or state["date"] < row["end"])
     }

@@ -232,6 +232,16 @@ def post_payroll(state, target):
 
 
 def apply(state, catalog, action, payload=None):
+    from . import lineup
+
+    if "lineup" in state:
+        from .catalog import LINEUP_WORLD
+
+        catalog = LINEUP_WORLD
+        if action in lineup.PRODUCERS:
+            lineup.confirm(state, catalog, action, payload)
+            state["revision"] += 1
+            return
     if (
         action in ("issued-licence", "season-classification")
         and "junior_since" in state
@@ -262,6 +272,10 @@ def apply(state, catalog, action, payload=None):
 
     from .finance import facilities
 
+    if action in lineup.ORDERS and "lineup" in state:
+        lineup.command(state, catalog, action, payload)
+        state["revision"] += 1
+        return
     if action in facilities.ORDERS and "estate" in state:
         facilities.command(state, catalog, action, payload)
         state["revision"] += 1

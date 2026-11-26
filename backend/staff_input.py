@@ -20,6 +20,9 @@ Day = Annotated[str, AfterValidator(iso_day)]
 
 
 class Offer(Fields):
+    driver_status: Literal["equal", "first", "second"] | None = None
+    combined_duties: bool = False
+    outside_starts: bool = False
     remit: Literal["supervised", "standard", "independent"] = "standard"
     person: Id
     seat: Id
@@ -86,6 +89,7 @@ class Coaching(Agreement):
 
 
 class Program(Fields):
+    participant: Id | None = None
     kind: Literal[
         "simulator", "fitness", "academy", "pit-drill", "debrief", "bench-test"
     ]

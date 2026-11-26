@@ -52,6 +52,7 @@ MIGRATIONS = [
         json_extract(state,'$.revision'), id)"""
     ],
     [],  # Independent engineering resources and conversion of former depots.
+    [],  # Negotiated driver terms, support appointments and temporary lineups.
 ]
 
 
@@ -200,6 +201,14 @@ def transaction(write=False):
                 for row in db.execute("SELECT id FROM career").fetchall():
                     state = checkpoint(db, row["id"])
                     facilities.migrate(state)
+                    store(db, row["id"], state)
+            if idx == 18:
+                from .driver_terms import initialize
+                from .catalog import LINEUP_WORLD
+
+                for row in db.execute("SELECT id FROM career").fetchall():
+                    state = checkpoint(db, row["id"])
+                    initialize(state, LINEUP_WORLD)
                     store(db, row["id"], state)
             db.execute(f"PRAGMA user_version={idx + 1}")
         yield db

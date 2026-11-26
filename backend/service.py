@@ -10,7 +10,8 @@ from . import domain, storage, finance
 from .finance.events import PRODUCERS
 from .finance import market, rights, budget, economy, capital, facilities
 from .livery import GARAGE, PaintOrder
-from .catalog import VERSION, WORLD
+from .catalog import VERSION, WORLD, LINEUP_WORLD
+from . import lineup
 from .roster_upgrade import (
     original_world,
     previous_world,
@@ -73,6 +74,8 @@ class Command(Strict):
             raise ValueError("Неверные параметры команды ливреи.")
         orders = {
             **ORDERS,
+            **lineup.ORDERS,
+            **lineup.PRODUCERS,
             "confirmed-work": professional.Batch,
             "issued-licence": junior_path.LicenceDecision,
             "season-classification": junior_path.SeasonClassification,
@@ -140,11 +143,12 @@ def list_careers():
 def project(db, cid, state):
     from . import teamwork
 
+    world = LINEUP_WORLD if "lineup" in state else WORLD
     org = state["setup"]["org"]
     people = []
-    for aid in sorted(WORLD["assignments"]):
-        assignment = WORLD["assignments"][aid]
-        if assignment["org"] != org:
+    for aid in sorted(world["assignments"]):
+        assignment = world["assignments"][aid]
+        if assignment["org"] != org or assignment.get("duty") == "relief":
             continue
         person = domain.occupant_on(state["seats"].get(aid, []), state["date"])
         occupant = state["people"].get(person)
@@ -157,31 +161,31 @@ def project(db, cid, state):
         )
     history = storage.postings(db, cid, org)
     targets = [
-        project_target(WORLD, program["id"], g["season"], g["id"])
-        for program in WORLD["programs"].values()
+        project_target(world, program["id"], g["season"], g["id"])
+        for program in world["programs"].values()
         if program["org"] == org
-        for g in WORLD["engineering"]["generations"].values()
-        if WORLD["engineering"]["seasons"][g["season"]]["championship"]
+        for g in world["engineering"]["generations"].values()
+        if world["engineering"]["seasons"][g["season"]]["championship"]
         == program["championship"]
         and g["category"] in program["classes"]
     ]
-    crews = {eid: [] for eid in WORLD["entries"]}
-    for aid, assignment in WORLD["assignments"].items():
-        if assignment["position"] == "driver":
-            pid = domain.occupant_on(state["seats"][aid], state["date"])
+    crews = {eid: [] for eid in world["entries"]}
+    for aid, assignment in world["assignments"].items():
+        if assignment["position"] == "driver" and assignment["entry"]:
+            pid = lineup.availability.participant(state, aid, state["date"])
             if pid:
                 crews[assignment["entry"]].append(pid)
-    contacts = teamwork.partnerships(state, WORLD, state["date"])
+    contacts = teamwork.partnerships(state, world, state["date"])
     account = dict(state["accounts"][org])
     if "control" in state:
-        view = budget.report(state, WORLD, org, state["date"][:4])
+        view = budget.report(state, world, org, state["date"][:4])
         account.update(
             development_spent_cents=view["actual"].get("engineering", 0),
             development_reserved_cents=view["reserved"]["engineering"],
         )
     return dict(
         crews=crews,
-        team_names=rights.title_names(state, WORLD, state["date"]),
+        team_names=rights.title_names(state, world, state["date"]),
         mandate=state["mandates"].get(org),
         academies=[a for a in state["academies"].values() if a["org"] == org],
         scholarships=[
@@ -192,7 +196,7 @@ def project(db, cid, state):
         offers=[
             o
             for o in state["offers"].values()
-            if WORLD["assignments"][o["seat"]]["org"] == org
+            if world["assignments"][o["seat"]]["org"] == org
         ],
         preparation_options=preparation.options(state),
         preparations=[
@@ -217,7 +221,7 @@ def project(db, cid, state):
             )
             for car_id, config in state["car_configurations"].items()
         },
-        atr=budget.scope_for(state, WORLD, org),
+        atr=budget.scope_for(state, world, org),
         targets=targets,
         **summary(cid, state),
         rules=VERSION,
@@ -225,21 +229,21 @@ def project(db, cid, state):
         player_cash_cents=state["player_cash_cents"],
         account=account,
         available_cents=finance.available(state, org),
-        team_color=WORLD["organizations"][org]["color"],
+        team_color=world["organizations"][org]["color"],
         assignments=people,
         ledger=history,
         collectives=[
             dict(
                 v,
-                development=professional.projection(state, WORLD, v["id"]),
+                development=professional.projection(state, world, v["id"]),
                 capacity=department_capacity(v),
-                **teamwork.group_view(state, WORLD, v, contacts),
+                **teamwork.group_view(state, world, v, contacts),
             )
             for v in state["collectives"].values()
             if v["org"] == org
         ],
         pending=state["pending"],
-        next_date=domain.next_date(state, WORLD),
+        next_date=domain.next_date(state, world),
         checkpoint=state["checkpoint"],
         briefing_action=domain.BRIEFINGS[state["setup"]["role"]],
     )
@@ -255,6 +259,7 @@ def create(spec):
         facilities.initialize(state, WORLD)
         capital.initialize(state, WORLD)
         economy.initialize(state, WORLD)
+        lineup.terms.initialize(state, LINEUP_WORLD)
         cid = str(uuid4())
         storage.store(db, cid, state, create=True)
         statistics_personnel.refresh(db, cid, state)
@@ -480,6 +485,9 @@ def import_save(document, *, statistics_records=None):
             if saved.get("economy", {}).get("since") == state["revision"]:
                 economy.initialize(state, catalog)
 
+            if saved.get("lineup", {}).get("since") == state["revision"]:
+                lineup.terms.initialize(state, LINEUP_WORLD)
+
         for original in commands:
             item = original
             apply_migrations()
@@ -537,6 +545,7 @@ def import_save(document, *, statistics_records=None):
         capital.initialize(state, WORLD)
         economy.initialize(state, WORLD)
         facilities.migrate(state)
+        lineup.terms.initialize(state, LINEUP_WORLD)
     except (KeyError, TypeError, ValueError, RecursionError, ValidationError):
         raise domain.RuleError("Файл повреждён или нарушает правила мира.") from None
     cid = str(uuid4())

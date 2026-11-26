@@ -16,6 +16,7 @@ export type Candidate = Pick<Person, 'id' | 'name' | 'origin' | 'face'> & {
   tag: string
 }
 type Contract = {
+  driver_status?: string
   agreed_end?: string | null
   transfer_on?: string
   position: string
@@ -30,6 +31,7 @@ type Contract = {
   buyout_cents?: number
 }
 export type Dossier = {
+  lineup_history: {id:string;date:string;message:string}[]
   results: {session_id:string;series:string;day:string;entry:string;place:number|null}[]
   classifications: {season:string;place:number;certified_points:number}[]
   development: import('./Development').DevelopmentRecord
@@ -86,6 +88,7 @@ export const priorities: Record<string, string> = {
   autonomy: 'Самостоятельность',
 }
 export type Offer = {
+  driver_status?: string
   assessment?: { priority: string; reasons: string[] }
   id: string
   person: string
@@ -127,7 +130,7 @@ export function seatName(id: string, c: Career, w: World) {
     s.position === 'driver' && entry && entry.crew.length > 1
       ? 'место ' + (entry.crew.indexOf(w.assignments[id].person) + 1)
       : null
-  return [w.positions[s.position].name, s.series?.toUpperCase(), entry && '№ ' + entry.number, slot]
+  return [s.duty === "reserve" ? "Резервный пилот" : s.duty === "test" ? "Тестовый пилот" : w.positions[s.position].name, s.series?.toUpperCase(), entry && '№ ' + entry.number, slot]
     .filter(Boolean)
     .join(' · ')
 }

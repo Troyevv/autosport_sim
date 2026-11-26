@@ -102,7 +102,19 @@ def test_counter_transfer_and_partial_month_settlement():
     while c["date"] < "2025-03-01":
         c = run(c, c["briefing_action"] if c["pending"] else "advance")
     state = snapshot(c)
-    assert staff_desk.dossier(state, WORLD, GT)["current"] is None
+    # The expired race contract never extends implicitly. An NPC can subsequently
+    # recruit this free driver into its reserve through an independently signed offer.
+    current = staff_desk.dossier(state, WORLD, GT)["current"]
+    if current:
+        assert current["org"] != MCLAREN and current["seat"].endswith(
+            (":reserve", ":test")
+        )
+        assert state["offers"][current["offer"]]["status"] == "accepted"
+    assert not any(
+        personnel.active(r, c["date"])
+        for r in state["seats"][SEAT]
+        if r["person"] == GT
+    )
     payroll = [r for r in c["ledger"] if r["source"] == "staff-payroll"]
     base_salary = before["seats"][SEAT][0]["salary_cents"]
     assert [r["delta_cents"] for r in payroll] == [

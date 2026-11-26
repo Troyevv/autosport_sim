@@ -160,6 +160,35 @@ def assess(state, world, p, offer):
                     veto = (
                         "Пилот хочет сохранить место в серии с более высоким допуском."
                     )
+    if "lineup" in state and p["position"] == "driver" and seat["entry"]:
+        from .driver_terms import assessment, LABELS
+
+        status = offer.get("driver_status") or "equal"
+        change, refusal = assessment(
+            state, p, org, status, contract.get("driver_status", "equal")
+        )
+        score += change
+        reasons.append("Предлагаемый статус · " + LABELS[status])
+        if refusal:
+            veto = refusal
+            reasons.append(refusal)
+    if "lineup" in state and p["position"] == "driver":
+        from .driver_terms import grievances
+
+        if (
+            old.get("entry")
+            and seat.get("duty")
+            and not (offer.get("outside_starts") and contract.get("outside_starts"))
+        ):
+            score -= max(5, ambition // 5)
+            reasons.append(
+                "Сопоставляет гарантированное место на старте с работой в резерве."
+            )
+            if ambition >= 82 and priority == "sport":
+                veto = "Хочет сохранить основное место и продолжать выступления."
+        if old and old["org"] != org and grievances(state, p["id"], old["org"]):
+            score += min(15, 5 * len(grievances(state, p["id"], old["org"])))
+            reasons.append("Ищет другую команду после нарушений договорённостей.")
     remit = offer.get("remit", "standard")
     previous_remit = contract.get("remit", "standard")
     if p["position"] != "driver" and remit != previous_remit:

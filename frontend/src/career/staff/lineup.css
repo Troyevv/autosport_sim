@@ -1,0 +1,94 @@
+.lineup-desk {
+  scroll-margin-top: 80px;
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
+.lineup-grid,
+.lineup-secondary {
+  scroll-margin-top: 82px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.lineup-grid,
+.lineup-body {
+  padding: 16px;
+}
+.lineup-driver {
+  min-width: 0;
+  border: 1px solid var(--line, #393d42);
+  padding: 18px;
+  background: #1a1c20;
+  border-radius: 5px;
+}
+.lineup-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: center;
+}
+.lineup-heading small,
+.lineup-event small {
+  color: #b5b9c1;
+}
+.lineup-heading h3 {
+  font-size: 1.28rem;
+  margin: 5px 0;
+}
+.lineup-heading b {
+  font-size: 0.85rem;
+  color: #e1c7b9;
+}
+.lineup-heading svg,
+.lineup-heading .portrait {
+  width: 66px;
+  height: 72px;
+  flex: none;
+}
+.lineup-driver dl {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr);
+  gap: 8px 12px;
+  margin: 16px 0;
+  font-size: 0.88rem;
+}
+.lineup-driver dt {
+  color: #b5b9c1;
+}
+.lineup-driver dd {
+  margin: 0;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+.lineup-event {
+  display: flex;
+  gap: 18px;
+  border-bottom: 1px solid #383b40;
+  padding: 10px 0;
+}
+.lineup-body p,
+.lineup-row p {
+  line-height: 1.45;
+  margin: 0 0 12px;
+}
+.lineup-event p {
+  margin: 4px 0;
+}
+@media (max-width: 760px) {
+  .lineup-grid,
+  .lineup-secondary {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .lineup-grid,
+  .lineup-body {
+    padding: 12px;
+  }
+  .lineup-driver {
+    padding: 14px;
+  }
+  .lineup-event {
+    flex-direction: column;
+    gap: 4px;
+  }
+}
