@@ -34,11 +34,10 @@ const looks = [
   { name: 'Свободный агент', id: null, color: '#85878a', driver: false },
 ]
 function Gallery({ world, media }: { world: World; media: Asset[] }) {
-  const names: Record<string, string> = {}
+  const names = Object.fromEntries(Object.entries(world.faces).map(([id, face]) => [face, world.names[id]]))
   const appointments = new Map<string, { org: string; position: string }>()
   for (const seat of Object.values(world.assignments)) {
     const face = world.faces[seat.person]
-    names[face] = world.names[seat.person]
     appointments.set(face, seat)
   }
   const subjects = media.filter((a) => a.kind === 'generated-head' && a.anatomy).sort((a, b) =>

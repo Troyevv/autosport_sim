@@ -263,7 +263,7 @@ function Studio({ c, world, catalog, updateCareer }: Props & { catalog: Catalog 
                   ['Заявка', '№ ' + original.number],
                   ['Класс', entry.category],
                   ['Команда', org.name],
-                  ['Экипаж', entry.crew.map((id) => world.names[id]).join(', ')],
+                  ['Экипаж', c.crews[entry.id].map((id) => world.names[id]).join(', ') || 'Вакантно'],
                 ]}
               />
               <div className="garage-fields">

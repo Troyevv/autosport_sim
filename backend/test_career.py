@@ -276,13 +276,24 @@ def test_version_one_import_and_sqlite_upgrade():
         "rng",
         "revision",
         "date",
-        "accounts",
         "ledger",
         "checkpoint",
         "pending",
-        "collectives",
     ):
         assert new[key] == state[key]
+    assert new["collectives"].keys() == state["collectives"].keys()
+    for gid, original in state["collectives"].items():
+        assert {k: new["collectives"][gid][k] for k in original} == original
+        assert new["collectives"][gid]["team_days"] == 0
+    for org, account in state["accounts"].items():
+        revised = new["accounts"][org]
+        for key in account.keys() - {"payroll_cents", "forecast_cents"}:
+            assert revised[key] == account[key]
+        assert revised["payroll_cents"] > account["payroll_cents"]
+        assert (
+            revised["forecast_cents"]
+            == revised["cash_cents"] - revised["payroll_cents"]
+        )
     assert new["people"]["player"]["face"] == state["people"]["player"]["face"]
     assert service.export_save(service.import_save(upgraded)["id"]) == upgraded
     with storage.transaction(True) as db:

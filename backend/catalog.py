@@ -10,9 +10,9 @@ from pathlib import Path
 from .engineering import technical_catalog
 from .supply import tyre_eligible
 
-VERSION = "2025-v2"
+VERSION = "2025-v3"
 DATA = Path(__file__).with_name("data") / "2025-v1"
-ROSTER = DATA.parent / VERSION
+ROSTER = DATA.parent / "2025-v2"
 
 
 def slug(text):
@@ -25,8 +25,8 @@ def rows(name, directory=DATA):
         return list(csv.DictReader(source))
 
 
-def load_catalog(*, legacy=False):
-    version = "2025-v1" if legacy else VERSION
+def load_catalog(*, legacy=False, previous=False):
+    version = "2025-v1" if legacy else ("2025-v2" if previous else VERSION)
     palette = (
         {}
         if legacy
@@ -210,7 +210,7 @@ def load_catalog(*, legacy=False):
     if not legacy:
         for historic_staff_source in ("staff", "wec_staff"):
             origin["sources"].pop(historic_staff_source, None)
-    return dict(
+    world = dict(
         version=version,
         profiles=profiles,
         reserve_ages={}
@@ -232,6 +232,12 @@ def load_catalog(*, legacy=False):
         assignments=assignments,
         events=sorted(events, key=lambda e: (e["start"], e["id"])),
     )
+
+    if version == VERSION:
+        from .staff_catalog import extend
+
+        extend(world)
+    return world
 
 
 WORLD = load_catalog()

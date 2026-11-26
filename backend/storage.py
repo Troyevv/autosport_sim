@@ -33,6 +33,7 @@ MIGRATIONS = [
     ],
     [],  # Fictional roster. Upgrade checkpoint data in the migration transaction.
     ["ALTER TABLE receipt ADD COLUMN paint TEXT"],
+    [],  # Dated contracts and personnel activation revision.
 ]
 
 
@@ -79,6 +80,16 @@ def transaction(write=False):
                         db.execute(
                             "UPDATE career SET state=? WHERE id=?",
                             (dump(upgrade(state)), row["id"]),
+                        )
+            if idx == 5:
+                from .roster_upgrade import upgrade_personnel
+
+                for row in db.execute("SELECT id,state FROM career").fetchall():
+                    state = json.loads(row["state"])
+                    if state.get("rules") == "2025-v2":
+                        db.execute(
+                            "UPDATE career SET state=? WHERE id=?",
+                            (dump(upgrade_personnel(state)), row["id"]),
                         )
             db.execute(f"PRAGMA user_version={idx + 1}")
         yield db
@@ -133,6 +144,8 @@ def receipts(db, cid):
         item = dict(row)
         paint = item.pop("paint")
         if paint is not None:
-            item["paint"] = json.loads(paint)
+            item["paint" if item["action"] == "save-livery" else "staff"] = json.loads(
+                paint
+            )
         commands.append(item)
     return commands

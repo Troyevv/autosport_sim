@@ -1,0 +1,296 @@
+[
+  {
+    "org": "supplier-goodyear",
+    "position": "tyre-construction",
+    "id": "staff-2b83ed331f58",
+    "face": "generated-studio-002-08",
+    "name": "Evan Aldwick",
+    "birth_date": "1991-06-28",
+    "nationality": "США",
+    "experience": 12,
+    "potential": 94,
+    "skills": {
+      "Конструкция": 85,
+      "Прочность": 79,
+      "Сопротивление качению": 84,
+      "Перегрев": 81,
+      "Испытания": 86
+    }
+  },
+  {
+    "org": "supplier-pirelli",
+    "position": "tyre-construction",
+    "id": "staff-7e01977171ca",
+    "face": "generated-studio-002-05",
+    "name": "Alba Neretti",
+    "birth_date": "1991-07-16",
+    "nationality": "Италия",
+    "experience": 12,
+    "potential": 94,
+    "skills": {
+      "Конструкция": 88,
+      "Прочность": 83,
+      "Сопротивление качению": 85,
+      "Перегрев": 79,
+      "Испытания": 87
+    }
+  },
+  {
+    "org": "supplier-michelin",
+    "position": "tyre-construction",
+    "id": "staff-f4f626dc8a25",
+    "face": "generated-studio-002-13",
+    "name": "Manon Delorme",
+    "birth_date": "1991-08-13",
+    "nationality": "Франция",
+    "experience": 12,
+    "potential": 94,
+    "skills": {
+      "Конструкция": 90,
+      "Прочность": 85,
+      "Сопротивление качению": 82,
+      "Перегрев": 86,
+      "Испытания": 89
+    }
+  },
+  {
+    "id": "agent-season25-1",
+    "org": null,
+    "position": "driver",
+    "face": "generated-studio-001-08",
+    "name": "Elias Merlen",
+    "birth_date": "2002-06-04",
+    "nationality": "Бельгия",
+    "experience": 3,
+    "potential": 89,
+    "skills": {
+      "Темп": 72,
+      "Торможение": 78,
+      "Повороты": 74,
+      "Обгоны": 69,
+      "Защита": 61,
+      "Стабильность": 70,
+      "Шины": 71,
+      "Дождь": 79,
+      "Обратная связь": 67,
+      "Выносливость": 75
+    }
+  },
+  {
+    "id": "agent-season25-2",
+    "org": null,
+    "position": "driver",
+    "face": "generated-studio-014-08",
+    "name": "Chiara Volpini",
+    "birth_date": "1997-11-09",
+    "nationality": "Италия",
+    "experience": 7,
+    "potential": 85,
+    "skills": {
+      "Темп": 79,
+      "Торможение": 77,
+      "Повороты": 81,
+      "Обгоны": 75,
+      "Защита": 80,
+      "Стабильность": 76,
+      "Шины": 79,
+      "Дождь": 71,
+      "Обратная связь": 78,
+      "Выносливость": 82
+    }
+  },
+  {
+    "id": "agent-season25-3",
+    "org": null,
+    "position": "race-engineer",
+    "face": "generated-studio-022-08",
+    "name": "Nora Haldsen",
+    "birth_date": "1994-04-11",
+    "nationality": "Дания",
+    "experience": 8,
+    "potential": 88,
+    "skills": {
+      "Настройка": 76,
+      "Телеметрия": 82,
+      "Коммуникация": 74,
+      "Диагностика": 71
+    }
+  },
+  {
+    "id": "agent-season25-4",
+    "org": null,
+    "position": "analyst",
+    "face": "generated-studio-026-02",
+    "name": "Felix Brenwald",
+    "birth_date": "1993-02-19",
+    "nationality": "Швейцария",
+    "experience": 9,
+    "potential": 86,
+    "skills": {
+      "Испытания": 79,
+      "Телеметрия": 77,
+      "Дефекты": 82,
+      "Точность": 80,
+      "Прогноз отказов": 75
+    }
+  },
+  {
+    "id": "agent-season25-5",
+    "org": null,
+    "position": "technical-advisor",
+    "face": "generated-studio-026-13",
+    "name": "Amari Ekwem",
+    "birth_date": "1995-12-20",
+    "nationality": "Великобритания",
+    "experience": 7,
+    "potential": 87,
+    "skills": {
+      "Технические знания": 76,
+      "Диагностика": 82,
+      "Телеметрия": 78,
+      "Коммуникация": 85,
+      "Адаптивность": 76,
+      "Оперативность": 74
+    }
+  },
+  {
+    "id": "staff-mclaren-development-academy-director",
+    "org": "team-mclaren-formula-1-team",
+    "academy": "mclaren-development",
+    "position": "academy-director",
+    "face": "generated-studio-010-03",
+    "name": "Cora Hadwell",
+    "birth_date": "1990-08-12",
+    "nationality": "Великобритания",
+    "experience": 11,
+    "potential": 92,
+    "skills": {
+      "Развитие талантов": 70,
+      "Планирование": 74,
+      "Переговоры": 78,
+      "Бюджет": 82
+    }
+  },
+  {
+    "id": "staff-mclaren-development-scout",
+    "org": "team-mclaren-formula-1-team",
+    "academy": "mclaren-development",
+    "position": "scout",
+    "face": "generated-studio-010-04",
+    "name": "Ben Fallow",
+    "birth_date": "1991-08-12",
+    "nationality": "Великобритания",
+    "experience": 10,
+    "potential": 92,
+    "skills": {
+      "Поиск": 75,
+      "Оценка потенциала": 79,
+      "Знание рынка": 83,
+      "Оценка навыков": 87
+    }
+  },
+  {
+    "id": "staff-mclaren-development-coach",
+    "org": "team-mclaren-formula-1-team",
+    "academy": "mclaren-development",
+    "position": "coach",
+    "face": "generated-studio-010-06",
+    "name": "Leila Ashford",
+    "birth_date": "1992-08-12",
+    "nationality": "Великобритания",
+    "experience": 9,
+    "potential": 92,
+    "skills": {
+      "Методика": 80,
+      "Обратная связь": 84,
+      "Подготовка пилотов": 88
+    }
+  },
+  {
+    "id": "staff-mclaren-development-academy-analyst",
+    "org": "team-mclaren-formula-1-team",
+    "academy": "mclaren-development",
+    "position": "academy-analyst",
+    "face": "generated-studio-018-11",
+    "name": "Marc Bellamy",
+    "birth_date": "1993-08-12",
+    "nationality": "Великобритания",
+    "experience": 8,
+    "potential": 92,
+    "skills": {
+      "Телеметрия": 85,
+      "Динамика развития": 70,
+      "Точность": 74
+    }
+  },
+  {
+    "id": "staff-ferrari-academy-academy-director",
+    "org": "team-scuderia-ferrari",
+    "academy": "ferrari-academy",
+    "position": "academy-director",
+    "face": "generated-studio-022-11",
+    "name": "Lidia Sorelli",
+    "birth_date": "1990-08-12",
+    "nationality": "Италия",
+    "experience": 11,
+    "potential": 92,
+    "skills": {
+      "Развитие талантов": 73,
+      "Планирование": 77,
+      "Переговоры": 81,
+      "Бюджет": 85
+    }
+  },
+  {
+    "id": "staff-ferrari-academy-scout",
+    "org": "team-scuderia-ferrari",
+    "academy": "ferrari-academy",
+    "position": "scout",
+    "face": "generated-studio-026-10",
+    "name": "Dario Neri",
+    "birth_date": "1991-08-12",
+    "nationality": "Италия",
+    "experience": 10,
+    "potential": 92,
+    "skills": {
+      "Поиск": 78,
+      "Оценка потенциала": 82,
+      "Знание рынка": 86,
+      "Оценка навыков": 71
+    }
+  },
+  {
+    "id": "staff-ferrari-academy-coach",
+    "org": "team-scuderia-ferrari",
+    "academy": "ferrari-academy",
+    "position": "coach",
+    "face": "generated-studio-026-15",
+    "name": "Marta Ferani",
+    "birth_date": "1992-08-12",
+    "nationality": "Италия",
+    "experience": 9,
+    "potential": 92,
+    "skills": {
+      "Методика": 83,
+      "Обратная связь": 87,
+      "Подготовка пилотов": 72
+    }
+  },
+  {
+    "id": "staff-ferrari-academy-academy-analyst",
+    "org": "team-scuderia-ferrari",
+    "academy": "ferrari-academy",
+    "position": "academy-analyst",
+    "face": "generated-studio-030-15",
+    "name": "Luca Savino",
+    "birth_date": "1993-08-12",
+    "nationality": "Италия",
+    "experience": 8,
+    "potential": 92,
+    "skills": {
+      "Телеметрия": 88,
+      "Динамика развития": 73,
+      "Точность": 77
+    }
+  }
+]

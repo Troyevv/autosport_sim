@@ -4,7 +4,8 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse, Response
 from fastapi.concurrency import run_in_threadpool
 
-from . import media, service
+from . import backing, employment, media, service, staff_desk, storage
+from .staff_input import Day
 from .catalog import WORLD
 from .domain import RuleError
 from .livery import GARAGE
@@ -65,7 +66,7 @@ async def read_upload(request, limit):
 
 @app.post("/api/careers/import", status_code=201)
 async def import_career(request: Request):
-    body = await read_upload(request, 4 * 1024 * 1024)
+    body = await read_upload(request, 16 * 1024 * 1024)
     try:
         document = json.loads(body)
     except (ValueError, UnicodeError, RecursionError):
@@ -76,6 +77,45 @@ async def import_career(request: Request):
 @app.get("/api/careers/{cid}")
 def load(cid: str):
     return service.load(cid)
+
+
+@app.get("/api/careers/{cid}/personnel")
+def personnel(cid: str):
+    with storage.transaction() as db:
+        return staff_desk.directory(storage.checkpoint(db, cid), WORLD)
+
+
+@app.get("/api/careers/{cid}/personnel/{pid}")
+def dossier(cid: str, pid: str, wet: bool = False):
+    with storage.transaction() as db:
+        return staff_desk.dossier(storage.checkpoint(db, cid), WORLD, pid, wet)
+
+
+@app.get("/api/careers/{cid}/personnel/{pid}/quote")
+def quote(cid: str, pid: str, seat: str, start: Day, end: Day, salary_cents: int = 0):
+    with storage.transaction() as db:
+        state = storage.checkpoint(db, cid)
+        try:
+            fee = employment.quote(
+                state,
+                WORLD,
+                dict(
+                    person=pid,
+                    seat=seat,
+                    start=start,
+                    end=end,
+                    salary_cents=salary_cents,
+                ),
+            )
+        except RuleError as exc:
+            return dict(buyout_cents=None, reason=str(exc))
+        support = backing.quote(state, pid, state["setup"]["org"], start)
+        return dict(
+            buyout_cents=fee,
+            support_cents=support,
+            net_cents=support - salary_cents,
+            reason=None,
+        )
 
 
 @app.get("/api/careers/{cid}/export")

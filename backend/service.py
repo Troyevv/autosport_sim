@@ -9,7 +9,10 @@ from pydantic import BaseModel, ConfigDict, Field, ValidationError, model_valida
 from . import domain, storage
 from .livery import GARAGE, PaintOrder
 from .catalog import VERSION, WORLD
-from .roster_upgrade import original_world, upgrade
+from .roster_upgrade import original_world, previous_world, upgrade, upgrade_personnel
+from .staff_input import ORDERS
+from .development_path import public_person
+from .team_staff import department_capacity
 from .engineering import resource_scope, project_target
 
 
@@ -41,15 +44,20 @@ class Command(Strict):
     revision: int = Field(ge=0)
     action: str = Field(min_length=1, max_length=32)
     paint: PaintOrder | None = None
+    staff: dict | None = None
 
     @model_validator(mode="after")
     def check_action_payload(self):
         if (self.action == "save-livery") != (self.paint is not None):
             raise ValueError("Неверные параметры команды ливреи.")
+        if (self.action in ORDERS) != (self.staff is not None):
+            raise ValueError("Неверные параметры кадровой команды.")
+        if self.staff is not None:
+            ORDERS[self.action].model_validate(self.staff)
         return self
 
-    def paint_data(self):
-        return self.paint.model_dump() if self.paint else None
+    def payload(self):
+        return self.paint.model_dump() if self.paint else self.staff
 
 
 def summary(cid, state):
@@ -74,6 +82,8 @@ def list_careers():
 
 
 def project(db, cid, state):
+    from . import teamwork
+
     org = state["setup"]["org"]
     people = []
     for aid in sorted(WORLD["assignments"]):
@@ -82,7 +92,13 @@ def project(db, cid, state):
             continue
         person = domain.occupant_on(state["seats"].get(aid, []), state["date"])
         occupant = state["people"].get(person)
-        people.append({**assignment, "person": person, "occupant": occupant})
+        people.append(
+            {
+                **assignment,
+                "person": person,
+                "occupant": public_person(occupant) if occupant else None,
+            }
+        )
     history = storage.postings(db, cid, org)
     targets = [
         project_target(WORLD, program["id"], g["season"], g["id"])
@@ -93,7 +109,24 @@ def project(db, cid, state):
         == program["championship"]
         and g["category"] in program["classes"]
     ]
+    crews = {eid: [] for eid in WORLD["entries"]}
+    for aid, assignment in WORLD["assignments"].items():
+        if assignment["position"] == "driver":
+            pid = domain.occupant_on(state["seats"][aid], state["date"])
+            if pid:
+                crews[assignment["entry"]].append(pid)
+    contacts = teamwork.partnerships(state, WORLD, state["date"])
     return dict(
+        crews=crews,
+        mandate=state["mandates"].get(org),
+        academies=[a for a in state["academies"].values() if a["org"] == org],
+        scholarships=[
+            s
+            for s in state["scholarships"].values()
+            if state["academies"][s["academy"]]["org"] == org
+        ],
+        offers=list(state["offers"].values()),
+        notices=state["notices"][-50:],
         liveries=state.get("liveries", {}),
         garage_configurations={
             car_id: dict(
@@ -114,7 +147,15 @@ def project(db, cid, state):
         team_color=WORLD["organizations"][org]["color"],
         assignments=people,
         ledger=history,
-        collectives=[v for v in state["collectives"].values() if v["org"] == org],
+        collectives=[
+            dict(
+                v,
+                capacity=department_capacity(v),
+                **teamwork.group_view(state, WORLD, v, contacts),
+            )
+            for v in state["collectives"].values()
+            if v["org"] == org
+        ],
         pending=state["pending"],
         next_date=domain.next_date(state, WORLD),
         checkpoint=state["checkpoint"],
@@ -137,8 +178,8 @@ def load(cid):
 
 
 def execute(cid, command):
-    paint = command.paint_data()
-    stored_paint = storage.dump(paint) if paint is not None else None
+    args = command.payload()
+    stored_args = storage.dump(args) if args is not None else None
     with storage.transaction(True) as db:
         state = storage.checkpoint(db, cid)
         old = db.execute(
@@ -149,7 +190,7 @@ def execute(cid, command):
             if (old["revision"], old["action"], old["paint"]) != (
                 command.revision,
                 command.action,
-                stored_paint,
+                stored_args,
             ):
                 raise domain.RuleError(
                     "Этот ключ команды уже использован с другими параметрами.", 409
@@ -159,7 +200,7 @@ def execute(cid, command):
                 raise domain.RuleError(
                     "Карьеру изменили в другом окне. Состояние обновлено.", 409
                 )
-            domain.apply(state, WORLD, command.action, paint)
+            domain.apply(state, WORLD, command.action, args)
             storage.store(db, cid, state)
             db.execute(
                 "INSERT INTO receipt(career,command_id,revision,action,paint) VALUES(?,?,?,?,?)",
@@ -168,7 +209,7 @@ def execute(cid, command):
                     command.command_id,
                     command.revision,
                     command.action,
-                    stored_paint,
+                    stored_args,
                 ),
             )
         return project(db, cid, state)
@@ -195,7 +236,7 @@ def import_save(document):
         or (
             type(document.get("version")) is not int
             or document["version"] != 1
-            or document.get("rules") not in ("2025-v1", VERSION)
+            or document.get("rules") not in ("2025-v1", "2025-v2", VERSION)
         )
     ):
         raise domain.RuleError("Неизвестный формат сохранения или версия правил.")
@@ -224,11 +265,17 @@ def import_save(document):
             appearance = {"face_pool": pool}
         else:
             face = setup.pop("player_face")
-            if face not in WORLD["reserve"]:
+            if face not in previous_world()["reserve"]:
                 raise ValueError
             appearance = {"player_face": face}
         spec = CareerInput.model_validate(setup)
-        catalog = original_world() if legacy else WORLD
+        activation = saved.get("personnel_since")
+        modern = document["rules"] == VERSION
+        if modern and (
+            type(activation) is not int or not 0 <= activation <= saved["revision"]
+        ):
+            raise ValueError
+        catalog = original_world() if legacy else previous_world()
         commands = payload["commands"]
         if not isinstance(commands, list):
             raise ValueError
@@ -236,25 +283,32 @@ def import_save(document):
         seen = set()
         receipts = []
         for item in commands:
+            if modern and activation == state["revision"]:
+                state = upgrade_personnel(state)
+                catalog = WORLD
             cmd = Command.model_validate(item)
             if cmd.command_id in seen or cmd.revision != state["revision"]:
                 raise ValueError
             seen.add(cmd.command_id)
-            paint = cmd.paint_data()
-            domain.apply(state, catalog, cmd.action, paint)
+            args = cmd.payload()
+            domain.apply(state, catalog, cmd.action, args)
             receipts.append(
                 (
                     cmd.command_id,
                     cmd.revision,
                     cmd.action,
-                    storage.dump(paint) if paint else None,
+                    storage.dump(args) if args else None,
                 )
             )
+        if modern and activation == state["revision"]:
+            state = upgrade_personnel(state)
         state["ledger"].sort(key=lambda p: (p["date"], p["org"], p["key"]))
         if storage.dump(state) != storage.dump(saved):
             raise ValueError
         if legacy:
             state = upgrade(state)
+        if not modern:
+            state = upgrade_personnel(state)
     except (KeyError, TypeError, ValueError, RecursionError, ValidationError):
         raise domain.RuleError("Файл повреждён или нарушает правила мира.") from None
     cid = str(uuid4())
