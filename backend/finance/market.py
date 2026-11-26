@@ -78,6 +78,20 @@ class Rights(Fields):
     zone: ZONE
     share: int = Field(ge=10, le=100)
     shared: bool = False
+    offset: int = Field(default=0, ge=0, le=90)
+    priority: int = Field(default=0, ge=0, le=15)
+    color: str | None = Field(default=None, pattern=r"^#[0-9a-fA-F]{6}$")
+
+    @model_validator(mode="after")
+    def fits(self):
+        if self.offset + self.share > 100 or (
+            self.color
+            and self.zone not in ("flank", "upper", "nose", "sill", "shoulder", "wing")
+        ):
+            raise ValueError(
+                "Доля и позиция должны помещаться в поверхности. Цвет задаётся для кузова."
+            )
+        return self
 
 
 class Terms(Fields):
@@ -382,6 +396,10 @@ def conflict(state, world, terms):
         ):
             return "Действуют исключительные права партнёра."
 
+    from .rights import collision
+
+    return collision(state, world, terms)
+
 
 def sign_sponsor(state, world, terms, key, source=None, first_due=None):
     err = conflict(state, world, terms)
@@ -482,6 +500,9 @@ def initialize(state, world):
             reputation=30,
             compensation_cents=amount // 8,
         )
+        from .rights import start_rights
+
+        t = t.model_copy(update={"rights": start_rights(world, org, t.series, bid)})
         sign_sponsor(
             state,
             world,
@@ -767,7 +788,10 @@ def tick(state, world):
     for o in market["offers"].values():
         if o["status"] in ("counter", "offered") and o["deadline"] < day:
             o.update(status="expired", reason="Истёк срок ответа.")
-    for d in [*market["contracts"].values(), *market["supplies"].values()]:
+    for d in sorted(
+        [*market["contracts"].values(), *market["supplies"].values()],
+        key=lambda d: d["id"],
+    ):
         if (
             d["status"] == "signed"
             and "appearances" in d
@@ -780,6 +804,22 @@ def tick(state, world):
                 end_deal(
                     state, d, d["sponsor"], "Репутация ниже договорной", breach=True
                 )
+        if d["status"] == "signed" and "fulfilled_events" in d:
+            if d["end"] <= day and len(d["fulfilled_events"]) < d["appearances"]:
+                d.update(renew=False, end_reason="Не выполнен график мероприятий")
+            elif any(
+                row.get("withheld", "9999-12-31")
+                <= (date.fromisoformat(day) - timedelta(days=30)).isoformat()
+                for row in state["finance"]["instalments"].values()
+                if row["contract"] == d["id"] and row["status"] == "pending"
+            ):
+                end_deal(
+                    state,
+                    d,
+                    d["sponsor"],
+                    "Нарушение рекламных обязательств",
+                    breach=True,
+                )
         if d["status"] == "signed" and d["end"] <= day:
             d["status"] = "expired"
     player = state["setup"]["org"]
@@ -787,7 +827,7 @@ def tick(state, world):
     if day[8:] == "01":
         invite(state, world, day, market, player)
         renewals(state, world, day)
-    for key in list(market["offers"]):
+    for key in sorted(market["offers"]):
         o = state["market"]["offers"][key]
         t = o["terms"]
         if (
@@ -890,7 +930,8 @@ def invite(state, world, day, market, player):
 def renewals(state, world, day):
     market = state["market"]
     horizon = (date.fromisoformat(day) + timedelta(days=32)).isoformat()
-    for d in list(market["contracts"].values()):
+    for key in sorted(market["contracts"]):
+        d = market["contracts"][key]
         if (
             not active(d, day)
             or not d["renew"]
@@ -972,8 +1013,6 @@ def appearance(state, world, order):
 
 
 def result_bonus(state, world, pid, entry_id, event_id, day, place):
-    from ..livery import GARAGE
-
     if place is None:
         return
     entry = world["entries"][entry_id]
@@ -987,18 +1026,9 @@ def result_bonus(state, world, pid, entry_id, event_id, day, place):
             or (d["person"] and d["person"] != pid)
         ):
             continue
-        paint = state.get("liveries", {}).get(
-            entry_id, GARAGE["entries"].get(entry_id, {}).get("livery", {})
-        )
-        if any(
-            not any(
-                layer["asset"] == d["sponsor"]
-                and layer["zone"] == r["zone"]
-                and layer["scale"] * 100 >= r["share"]
-                for layer in paint.get("decals", [])
-            )
-            for r in d["rights"]
-        ):
+        from .rights import audit
+
+        if not all(check["fulfilled"] for check in audit(state, world, d, entry_id)):
             continue
         term = Instalment(
             id=d["id"] + ":bonus:" + entry_id + ":" + event_id,

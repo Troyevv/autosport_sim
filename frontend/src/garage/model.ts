@@ -12,7 +12,7 @@ export type Livery = {
 }
 export type Catalog = {
   version: string
-  entries: Record<string, { geometry: string; allowed_assets: string[]; livery: Livery }>
+  entries: Record<string, { geometry: string; allowed_assets: string[]; commercial_zones?:Record<string,Zone[]>; livery: Livery }>
   patterns: Record<string, { name: string; secondary: string; accent: string }>
   sponsors: Record<
     string,

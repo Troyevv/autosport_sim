@@ -3,6 +3,7 @@ import { areaNames, clamp, type Catalog, type Decal } from './model'
 import { Button } from '../ui/components'
 
 type Props = {
+  zones?: Record<string,Decal["zone"][]>
   allowed: string[]
   catalog: Catalog
   decals: Decal[]
@@ -10,8 +11,9 @@ type Props = {
   select: (n: number) => void
   change: (decals: Decal[]) => void
 }
-export function DecalPanel({ allowed, catalog, decals, index, select, change }: Props) {
+export function DecalPanel({ allowed,zones, catalog, decals, index, select, change }: Props) {
   const d = decals[index]
+  const areas=(id:string)=>zones?.[id]??catalog.sponsors[id].zones
   const assets = allowed.map((k) => [k, catalog.sponsors[k]] as const)
   function replace(patch: Partial<Decal>) {
     change(decals.map((v, i) => (i === index ? { ...v, ...patch } : v)))
@@ -57,7 +59,7 @@ export function DecalPanel({ allowed, catalog, decals, index, select, change }: 
                   const rule = catalog.sponsors[e.target.value]
                   replace({
                     asset: e.target.value,
-                    zone: rule.zones.includes(d.zone) ? d.zone : rule.zones[0],
+                    zone: areas(e.target.value).includes(d.zone) ? d.zone : areas(e.target.value)[0],
                     scale: Math.min(d.scale, rule.maxScale),
                   })
                 }}
@@ -75,7 +77,7 @@ export function DecalPanel({ allowed, catalog, decals, index, select, change }: 
                 value={d.zone}
                 onChange={(e) => replace({ zone: e.target.value as Decal['zone'], x: 0.5, y: 0.5 })}
               >
-                {catalog.sponsors[d.asset].zones.map((k) => (
+                {areas(d.asset).map((k) => (
                   <option key={k} value={k}>
                     {areaNames[k]}
                   </option>

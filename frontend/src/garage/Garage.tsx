@@ -21,13 +21,13 @@ export function SeasonGarage(props: Props) {
     [attempt, retry] = useState(0)
   useEffect(() => {
     const controller = new AbortController()
-    api<Catalog>('garage', { signal: controller.signal })
+    api<Catalog>('careers/'+props.c.id+'/garage', { signal: controller.signal })
       .then(setCatalog)
       .catch((err) => {
         if (!controller.signal.aborted) setError(explain(err))
       })
     return () => controller.abort()
-  }, [attempt])
+  }, [attempt,props.c.id,props.c.revision])
   if (!catalog)
     return (
       <section className="screen">
@@ -72,7 +72,8 @@ function Studio({ c, world, catalog, updateCareer }: Props & { catalog: Catalog 
   const [wing, setWing] = useState('standard'),
     [saving, lock] = useState(false)
   const retry = useRef<{ signature: string; id: string } | null>(null)
-  const saved = c.liveries[entryId] || original,
+  const raw = c.liveries[entryId] || original
+  const saved = {...raw,decals:raw.decals.filter(d=>catalog.entries[entryId].allowed_assets.includes(d.asset))},
     draft = drafts[entryId],
     livery = draft?.current || saved
   const dirty = !sameLivery(livery, saved),
@@ -352,6 +353,7 @@ function Studio({ c, world, catalog, updateCareer }: Props & { catalog: Catalog 
             <Panel title="Декали и слои">
               <DecalPanel
                 allowed={catalog.entries[entryId].allowed_assets}
+                zones={catalog.entries[entryId].commercial_zones}
                 catalog={catalog}
                 decals={livery.decals}
                 index={index}

@@ -8,7 +8,7 @@ from pydantic import BaseModel, ConfigDict, Field, ValidationError, model_valida
 
 from . import domain, storage, finance
 from .finance.events import PRODUCERS
-from .finance import market
+from .finance import market, rights
 from .livery import GARAGE, PaintOrder
 from .catalog import VERSION, WORLD
 from .roster_upgrade import (
@@ -81,7 +81,12 @@ class Command(Strict):
             raise ValueError("Неверные параметры кадровой команды.")
         if self.staff is not None:
             orders[self.action].model_validate(self.staff)
-        finance_orders = {**finance.ORDERS, **market.ORDERS, **PRODUCERS}
+        finance_orders = {
+            **finance.ORDERS,
+            **market.ORDERS,
+            "finance-mount": rights.Mount,
+            **PRODUCERS,
+        }
         if (self.action in finance_orders) != (self.finance is not None):
             raise ValueError("Неверные параметры финансовой команды.")
         if self.finance is not None:
@@ -156,6 +161,7 @@ def project(db, cid, state):
     contacts = teamwork.partnerships(state, WORLD, state["date"])
     return dict(
         crews=crews,
+        team_names=rights.title_names(state, WORLD, state["date"]),
         mandate=state["mandates"].get(org),
         academies=[a for a in state["academies"].values() if a["org"] == org],
         scholarships=[

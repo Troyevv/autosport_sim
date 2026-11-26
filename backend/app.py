@@ -304,3 +304,23 @@ def commercial_market(cid: str):
 
     with storage.transaction() as db:
         return market.projection(storage.checkpoint(db, cid), WORLD)
+
+
+@app.get("/api/careers/{cid}/garage")
+def career_garage(cid: str):
+    from .finance.rights import catalog
+    from .catalog import WORLD
+    from . import storage
+
+    with storage.transaction() as db:
+        return catalog(storage.checkpoint(db, cid), WORLD)
+
+
+@app.get("/api/careers/{cid}/rights")
+def commercial_rights(cid: str):
+    from .finance.rights import projection
+    from .catalog import WORLD
+    from . import storage
+
+    with storage.transaction() as db:
+        return projection(storage.checkpoint(db, cid), WORLD)

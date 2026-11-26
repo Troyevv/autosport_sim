@@ -18,6 +18,7 @@ import { dateLabel } from '../game'
 import { roles } from '../ui/labels'
 import { Calendar, Overview, People, Finance, Championships, Briefing, type SectionProps } from './Sections'
 import { api, assetUrl, ApiError, explain, money, post } from './api'
+import { Rights } from './finance/Rights'
 import { Commercial } from './finance/Commercial'
 import { SeasonGarage } from '../garage/Garage'
 import { Brand } from './Library'
@@ -28,6 +29,7 @@ const sections = [
   { id: 'garage', name: 'Гараж', icon: CarFront, view: SeasonGarage },
   { id: 'world', name: 'Чемпионаты', icon: Trophy, view: Championships },
   { id: 'engineering', name: 'Техническая программа', icon: Gauge, view: Engineering },
+  { id: 'rights', name: 'Рекламные права', icon: CarFront, view: Rights },
   { id: 'commercial', name: 'Коммерческий отдел', icon: Factory, view: Commercial },
   { id: 'finance', name: 'Финансы', icon: Wallet, view: Finance },
 ]
@@ -115,12 +117,14 @@ function Engineering({ c, world }: SectionProps) {
     </section>
   )
 }
-export function Workspace({ world, c: initial, media }: SectionProps) {
+export function Workspace({ world:catalog, c: initial, media }: SectionProps) {
   const [c, update] = useState(initial),
     [route, setRoute] = useState(() => location.hash.slice(1)),
     [dialog, open] = useState(''),
     [busy, setBusy] = useState(false),
     [error, setError] = useState('')
+  const world={...catalog,organizations:{...catalog.organizations}}
+  for(const [id,name] of Object.entries(c.team_names)) world.organizations[id]={...world.organizations[id],name}
   const current = sections.find((s) => s.id === route) || sections[0],
     Screen = current.view,
     org = world.organizations[c.org],

@@ -12,7 +12,7 @@ export type Brand = {
   min_popularity: number
   remaining_estimate_cents: number
 }
-export type Right = { zone: string; share: number; shared: boolean }
+export type Right = { zone: string; share: number; shared: boolean; offset?:number; priority?:number; color?:string|null }
 export type Terms = {
   sponsor: string
   org: string

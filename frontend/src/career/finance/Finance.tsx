@@ -39,6 +39,7 @@ export function Finance({ c, world, updateCareer }: SectionProps & { updateCaree
   const name = (id: string) => {
     if (id === 'person:player') return 'Личный капитал · ' + c.name
     if (id === 'consolidated') return 'Группа · консолидация'
+    if(id.startsWith('academy:')) return c.academies.find(a=>a.id===id.slice(8))?.name??id
     if (id.startsWith('group:')) return 'Средства владельца'
     if (id === c.org) return world.organizations[c.org].name
     return world.championships[id.slice(c.org.length + 1)]?.name ?? id

@@ -92,6 +92,7 @@ def statement(state, world, db, cid, scope="organization"):
         if (
             r["category"] not in CAPITAL
             and r["earned"] <= day
+            and not r.get("withheld")
             and r["status"] != "cancelled"
         ):
             value = direction(r) * r["amount_cents"]

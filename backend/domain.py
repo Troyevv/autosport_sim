@@ -260,7 +260,11 @@ def apply(state, catalog, action, payload=None):
         raise RuleError("Действующее назначение не даёт полномочий.", 403)
     from .finance import market
 
-    if action in market.ORDERS and "market" in state:
+    if action == "finance-mount" and "market" in state:
+        from .finance.rights import mount
+
+        mount(state, catalog, payload)
+    elif action in market.ORDERS and "market" in state:
         market.command(state, catalog, action, payload)
     elif action.startswith("finance-") and "finance" in state:
         from .finance import command

@@ -222,6 +222,11 @@ def settle(state):
     ):
         if r["status"] != "pending" or r["due"] > day:
             continue
+        if r["category"] == "sponsorship" and "market" in state:
+            from .rights import release_payment
+
+            if not release_payment(state, r):
+                continue
         if available(state, r["payer"], ignore=r["id"]) < r["amount_cents"]:
             continue
         transfer(
@@ -260,6 +265,13 @@ def portfolio(state, world):
         org,
         *(org + ":" + s for s in world["organizations"][org]["programs"]),
         *(["group:" + org] if state["setup"]["role"] == "owner" else []),
+        *(
+            "academy:" + a["id"]
+            for a in state["academies"].values()
+            if a["org"] == org
+            and state["setup"]["role"] == "owner"
+            and "academy:" + a["id"] in state["finance"]["pockets"]
+        ),
     ]
 
 

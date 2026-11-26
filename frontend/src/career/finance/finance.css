@@ -138,3 +138,4 @@
 .panel > .finance-tools {
   padding-top: 16px;
 }
+.mounted-sign{position:relative;display:block;width:min(260px,70vw);height:36px;overflow:hidden;background:#242930;border:1px solid #4b525b;margin:6px 0}.mounted-sign b{position:absolute;top:3px;bottom:3px;display:grid;align-items:center;text-align:center;transform:translateX(-50%);background:#e3e7e8;color:#15171a;white-space:nowrap;overflow:hidden}.rights-row{flex-wrap:wrap}.brand-card:focus-visible{outline:2px solid #f1abb6}
