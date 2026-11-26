@@ -40,6 +40,18 @@ MIGRATIONS = [
     [],  # Professional event ledger and retirement of universal courses.
     [],  # Regional series and karting activation on the current game date.
     STATISTICS_SCHEMA,
+    [],  # Finance opens previously unjournaled balances on the activation revision.
+    [],  # Commercial market activation.
+    [],  # Annual mandates and ledger-derived cost aggregates.
+    [],  # facilities activation.
+    [],  # capital activation.
+    [],  # economy activation.
+    [
+        """CREATE INDEX IF NOT EXISTS career_listing ON career (
+        json_extract(state,'$.setup'), json_extract(state,'$.date'),
+        json_extract(state,'$.revision'), id)"""
+    ],
+    [],  # Independent engineering resources and conversion of former depots.
 ]
 
 
@@ -128,6 +140,67 @@ def transaction(write=False):
 
                 for row in db.execute("SELECT id,state FROM career"):
                     refresh(db, row["id"], json.loads(row["state"]))
+            if idx == 10:
+                from .finance import activate
+                from .catalog import WORLD
+
+                for row in db.execute("SELECT id FROM career").fetchall():
+                    cid = row["id"]
+                    state = checkpoint(db, cid)
+                    activate(state, WORLD, postings(db, cid))
+                    store(db, cid, state)
+            if idx == 11:
+                from .finance import market
+                from .catalog import WORLD
+
+                for row in db.execute("SELECT id FROM career").fetchall():
+                    cid = row["id"]
+                    state = checkpoint(db, cid)
+                    market.initialize(state, WORLD)
+                    store(db, cid, state)
+            if idx == 12:
+                from .finance import budget
+                from .catalog import WORLD
+
+                for row in db.execute("SELECT id FROM career").fetchall():
+                    cid = row["id"]
+                    state = checkpoint(db, cid)
+                    budget.initialize(state, WORLD, postings(db, cid))
+                    store(db, cid, state)
+            if idx == 13:
+                from .finance import facilities
+                from .catalog import WORLD
+
+                for row in db.execute("SELECT id FROM career").fetchall():
+                    cid = row["id"]
+                    state = checkpoint(db, cid)
+                    facilities.initialize(state, WORLD)
+                    store(db, cid, state)
+            if idx == 14:
+                from .finance import capital
+                from .catalog import WORLD
+
+                for row in db.execute("SELECT id FROM career").fetchall():
+                    cid = row["id"]
+                    state = checkpoint(db, cid)
+                    capital.initialize(state, WORLD)
+                    store(db, cid, state)
+            if idx == 15:
+                from .finance import economy
+                from .catalog import WORLD
+
+                for row in db.execute("SELECT id FROM career").fetchall():
+                    cid = row["id"]
+                    state = checkpoint(db, cid)
+                    economy.initialize(state, WORLD)
+                    store(db, cid, state)
+            if idx == 17:
+                from .finance import facilities
+
+                for row in db.execute("SELECT id FROM career").fetchall():
+                    state = checkpoint(db, row["id"])
+                    facilities.migrate(state)
+                    store(db, row["id"], state)
             db.execute(f"PRAGMA user_version={idx + 1}")
         yield db
         db.commit()
@@ -181,8 +254,12 @@ def receipts(db, cid):
         item = dict(row)
         paint = item.pop("paint")
         if paint is not None:
-            item["paint" if item["action"] == "save-livery" else "staff"] = json.loads(
-                paint
-            )
+            item[
+                "paint"
+                if item["action"] == "save-livery"
+                else "finance"
+                if item["action"].startswith("finance-")
+                else "staff"
+            ] = json.loads(paint)
         commands.append(item)
     return commands

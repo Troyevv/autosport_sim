@@ -126,6 +126,8 @@ export type Career = Save & {
     percent: number | null
     limits: Record<string, number> | null
   } | null
+  team_names:Record<string,string>
+  available_cents: number
   ledger: { key: string; date: string; delta_cents: number; source: string }[]
   player_cash_cents: number
   assignments: Seat[]

@@ -40,6 +40,14 @@ def notice(state, text, org=None):
 def post(state, org, key, amount, source):
     if not amount:
         return
+    if "finance" in state:
+        from . import finance
+
+        if amount < 0 and -amount > finance.available(state, org):
+            raise RuleError("Недостаточно свободных средств.", 409)
+        if "economy" in state and source in ("signing", "severance") and amount < 0:
+            finance.post(state, "economy:households", org + ":" + key, -amount, source)
+        return finance.post(state, org, key, amount, source)
     a = state["accounts"][org]
     if a["cash_cents"] + amount < 0:
         raise RuleError("Недостаточно средств для исполнения договора.", 409)
@@ -54,6 +62,7 @@ def monthly_pay(state, catalog):
     end = date.fromisoformat(state["date"])
     start = date.fromisoformat(shifted(state["date"], -1)).replace(day=1)
     days = monthrange(start.year, start.month)[1]
+    personal = {}
     payroll = dict.fromkeys(state["accounts"], 0)
     for g in state["collectives"].values():
         payroll[g["org"]] += g["payroll_cents"]
@@ -68,8 +77,16 @@ def monthly_pay(state, catalog):
             earned = r["salary_cents"] * max(0, (right - left).days) // days
             payroll[catalog["assignments"][aid]["org"]] += earned
             if r["person"] == state["player_id"]:
-                state["player_cash_cents"] += earned
+                org = catalog["assignments"][aid]["org"]
+                personal[org] = personal.get(org, 0) + earned
+                if "finance" not in state:
+                    state["player_cash_cents"] += earned
     for org, amount in payroll.items():
+        if "finance" in state:
+            from .finance import payroll as settle_payroll
+
+            settle_payroll(state, org, amount, personal.get(org, 0))
+            continue
         post(state, org, "payroll-" + end.strftime("%Y-%m"), -amount, "staff-payroll")
 
 
@@ -207,11 +224,27 @@ def sign(state, catalog, offer):
     seat, p, previous = check_terms(state, catalog, offer)
     org, key = seat["org"], offer["id"]
     costs = transfer_costs(catalog, previous, org)
+    cash = state["accounts"][org]["cash_cents"]
+    if "finance" in state:
+        from .finance import available
+
+        cash = available(state, org)
     if (
         offer["bonus_cents"] + sum(v for _, v, _ in costs) + offer["salary_cents"]
-        > state["accounts"][org]["cash_cents"]
+        > cash
     ):
         raise RuleError("Средств на бонус, выкуп и первый оклад недостаточно.", 409)
+    if "control" in state:
+        from .finance.budget import authorize
+
+        authorize(
+            state,
+            catalog,
+            org,
+            "signing",
+            offer["bonus_cents"] + sum(v for _, v, _ in costs),
+            state["date"],
+        )
     post(state, org, key + "-bonus", -offer["bonus_cents"], "signing")
     for old_org, value, aid in costs:
         if old_org != org:
@@ -292,6 +325,16 @@ def resolve(state, catalog, offer):
 
 
 def dates(state):
+    for asset in state.get("estate", {}).get("assets", {}).values():
+        if asset["status"] in ("construction", "upgrade"):
+            yield asset["ready"]
+    for offer in state.get("market", {}).get("offers", {}).values():
+        if offer["status"] in ("offered", "counter"):
+            yield shifted(offer["date"], 1)
+            yield shifted(offer["deadline"], 1)
+    for row in state.get("finance", {}).get("instalments", {}).values():
+        if row["status"] == "pending":
+            yield row["due"]
     for r in state["funding"].values():
         if r["status"] == "active":
             yield r["end"]
@@ -320,6 +363,13 @@ def dates(state):
 
 
 def advance(state, catalog, target):
+    from .finance import indexed
+
+    with indexed(state):
+        advance_dates(state, catalog, target)
+
+
+def advance_dates(state, catalog, target):
     # Settle the previous calendar month before activating today's appointments.
     while state["date"] < target:
         current = date.fromisoformat(state["date"])
@@ -336,6 +386,30 @@ def advance(state, catalog, target):
             monthly_pay(state, catalog)
             if "growth_since" in state and shifted(day, 3) < HORIZON:
                 fill_vacancies(state, catalog)
+        if "finance" in state:
+            from .finance import settle
+
+            settle(state)
+        if "market" in state:
+            from .finance import market
+
+            market.tick(state, catalog)
+        if "control" in state:
+            from .finance import budget
+
+            budget.tick(state, catalog)
+        if "estate" in state:
+            from .finance import facilities
+
+            facilities.tick(state, catalog)
+        if "capital" in state:
+            from .finance import capital
+
+            capital.tick(state, catalog)
+        if "economy" in state:
+            from .finance import economy
+
+            economy.tick(state, catalog)
         backing.condition_review(state, day)
         for offer in sorted(
             state["offers"].values(),
@@ -456,7 +530,7 @@ def assigned_actor(state, actor, day):
 
 def propose(state, catalog, args, org, role):
     day = state["date"]
-    if day >= HORIZON:
+    if day >= HORIZON and "economy" not in state:
         raise RuleError("Календарь сезона завершён.")
     if args["start"] < shifted(day, 2):
         raise RuleError("На рассмотрение предложения нужно два дня.")
@@ -504,6 +578,11 @@ def fill_vacancies(state, catalog):
     for seat in catalog["assignments"].values():
         role = career_choice.office(catalog, seat)
         org = seat["org"]
+        if state.get("capital", {}).get("crises", {}).get(org, {}).get("status") in (
+            "insolvent",
+            "bankrupt",
+        ):
+            continue
         recruiter = occupant_on(state["seats"].get(org + ":" + role, []), day)
         if (
             not recruiter

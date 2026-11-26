@@ -22,6 +22,8 @@ class SourceOffsets:
     appointment_ends: dict
     scholarship_ends: dict
     work_count: int
+    installments: dict
+    economic_history: int
 
 
 def mutable_state(state):
@@ -30,6 +32,11 @@ def mutable_state(state):
         {key: b["end"] for key, b in assignments(state)},
         {k: s["end"] for k, s in state["scholarships"].items()},
         len(state["work_log"]),
+        {
+            k: (r["status"], r.get("withheld"))
+            for k, r in state.get("finance", {}).get("instalments", {}).items()
+        },
+        len(state.get("capital", {}).get("history", [])),
     )
 
 
@@ -81,6 +88,55 @@ def refresh(db, cid, state, previous=None, action=None, args=None):
         return emit("driver-result", [pid, session], data["day"], ctx, data)
 
     def records():
+        for r in state.get("capital", {}).get("history", [])[
+            previous.economic_history if previous else 0 :
+        ]:
+            public = r["kind"] in ("bankrupt", "admit", "withdraw", "replace")
+            yield emit(
+                "organization-decision",
+                [r["org"], r["reference"], r["kind"]],
+                r["date"],
+                dict(org=r["org"]),
+                r,
+                access="public" if public else "internal",
+            )
+        for org, years in state.get("economy", {}).get("flows", {}).items():
+            for year, amounts in years.items():
+                if previous and year not in (
+                    state["date"][:4],
+                    str(int(state["date"][:4]) - 1),
+                ):
+                    continue
+                yield emit(
+                    "financial-year",
+                    [org, year],
+                    year + "-01-01",
+                    dict(org=org),
+                    dict(year=year, flows=amounts),
+                    access="internal",
+                )
+        for term in state.get("finance", {}).get("instalments", {}).values():
+            if previous and previous.installments.get(term["id"]) == (
+                term["status"],
+                term.get("withheld"),
+            ):
+                continue
+            for side in ("payer", "recipient"):
+                account = term[side]
+                if not account:
+                    continue
+                owner = account.removeprefix("group:").split(":")[0]
+                if owner in WORLD["organizations"]:
+                    ctx = dict(org=owner, contract=term["contract"])
+                    yield emit(
+                        "financial-obligation",
+                        [term["id"], side],
+                        term["due"],
+                        ctx,
+                        term,
+                        access="internal",
+                    )
+
         for key, b in assignments(state):
             if (
                 previous

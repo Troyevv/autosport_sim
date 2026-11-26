@@ -204,6 +204,10 @@ def move_money(state, payer, recipient, key, amount, source):
 
     if not amount or payer == recipient:
         return
+    if "finance" in state:
+        from .finance import transfer
+
+        return transfer(state, payer, recipient, key, amount, source)
     for org, delta in ((payer, -amount), (recipient, amount)):
         if org in state["accounts"]:
             post(state, org, key, delta, source)
@@ -220,34 +224,36 @@ def move_money(state, payer, recipient, key, amount, source):
             )
 
 
+def period_amounts(state, world, r, first, end, seats=None):
+    quantities = {}
+    left = max(first, date.fromisoformat(r["start"]))
+    right = min(end, date.fromisoformat(r["end"]))
+    if left < right:
+        seats = sorted(bookings(state, r["person"])) if seats is None else seats
+        while left < right:
+            day = left.isoformat()
+            # One designated place receives the payment even for a dual mandate.
+            employers = [
+                world["assignments"][aid]["org"]
+                for aid, row in seats
+                if active(row, day)
+            ]
+            org = r["team"] if r["team"] in employers else next(iter(employers), None)
+            if org and (r["portable"] or r["team"] == org):
+                quantities[org] = quantities.get(org, 0) + 1
+            left += timedelta(days=1)
+    days = monthrange(first.year, first.month)[1]
+    return {org: r["monthly_cents"] * n // days for org, n in quantities.items()}
+
+
 def monthly(state, world):
     """Settle the earned days by employment history, including mid-month moves and exits."""
     end = date.fromisoformat(state["date"])
     first = (end - timedelta(days=1)).replace(day=1)
-    days = monthrange(first.year, first.month)[1]
     for key, r in sorted(state["funding"].items()):
-        left = max(first, date.fromisoformat(r["start"]))
-        right = min(end, date.fromisoformat(r["end"]))
         owed = dict(r["arrears"])
-        if left < right:
-            seats = sorted(bookings(state, r["person"]))
-            quantities = {}
-            while left < right:
-                day = left.isoformat()
-                # One designated place receives the payment even for a dual mandate.
-                employers = [
-                    world["assignments"][aid]["org"]
-                    for aid, row in seats
-                    if active(row, day)
-                ]
-                org = (
-                    r["team"] if r["team"] in employers else next(iter(employers), None)
-                )
-                if org and (r["portable"] or r["team"] == org):
-                    quantities[org] = quantities.get(org, 0) + 1
-                left += timedelta(days=1)
-            for org, n in quantities.items():
-                owed[org] = owed.get(org, 0) + r["monthly_cents"] * n // days
+        for org, value in period_amounts(state, world, r, first, end).items():
+            owed[org] = owed.get(org, 0) + value
         r["arrears"] = {}
         for org, amount in sorted(owed.items()):
             payer = r["payer"]
@@ -260,6 +266,10 @@ def monthly(state, world):
             academy = (
                 state["academies"][scholarship["academy"]] if scholarship else None
             )
+            if "finance" in state:
+                from .finance import available
+
+                cash = max(0, available(state, payer))
             if payer in state["accounts"] and payer != org:
                 cash = max(0, cash - state["accounts"][payer]["payroll_cents"])
             if academy:
@@ -339,6 +349,14 @@ def record_result(
         if records[event_id] != result:
             raise RuleError("Результат этапа уже зафиксирован.")
         return
+    if entry and "finance" in state:
+        from .finance.events import participation
+
+        participation(state, world, entry, day)
+        if "market" in state:
+            from .finance.market import result_bonus
+
+            result_bonus(state, world, pid, entry, event_id, day, place)
     records[event_id] = result
     person["credentials"]["points"] += licence_points
 

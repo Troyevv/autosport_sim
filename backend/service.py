@@ -6,7 +6,9 @@ from uuid import uuid4
 
 from pydantic import BaseModel, ConfigDict, Field, ValidationError, model_validator
 
-from . import domain, storage
+from . import domain, storage, finance
+from .finance.events import PRODUCERS
+from .finance import market, rights, budget, economy, capital, facilities
 from .livery import GARAGE, PaintOrder
 from .catalog import VERSION, WORLD
 from .roster_upgrade import (
@@ -23,7 +25,7 @@ from . import preparation, professional, junior_path
 from .media_profile import COUNTRIES, initialize as initialize_identity
 from .development_path import public_person
 from .team_staff import department_capacity
-from .engineering import resource_scope, project_target
+from .engineering import project_target
 
 
 # A regulation/concept pair identifies the historical homologation independently
@@ -63,6 +65,7 @@ class Command(Strict):
     action: str = Field(min_length=1, max_length=32)
     paint: PaintOrder | None = None
     staff: dict | None = None
+    finance: dict | None = None
 
     @model_validator(mode="after")
     def check_action_payload(self):
@@ -78,10 +81,30 @@ class Command(Strict):
             raise ValueError("Неверные параметры кадровой команды.")
         if self.staff is not None:
             orders[self.action].model_validate(self.staff)
+        finance_orders = {
+            **finance.ORDERS,
+            **market.ORDERS,
+            **budget.ORDERS,
+            **economy.ORDERS,
+            **capital.ORDERS,
+            **facilities.ORDERS,
+            "finance-mount": rights.Mount,
+            **PRODUCERS,
+        }
+        if (self.action in finance_orders) != (self.finance is not None):
+            raise ValueError("Неверные параметры финансовой команды.")
+        if self.finance is not None:
+            finance_orders[self.action].model_validate(self.finance)
         return self
 
     def payload(self):
-        return self.paint.model_dump() if self.paint else self.staff
+        return (
+            self.paint.model_dump()
+            if self.paint
+            else self.finance
+            if self.finance is not None
+            else self.staff
+        )
 
 
 def summary(cid, state):
@@ -100,8 +123,17 @@ def summary(cid, state):
 def list_careers():
     with storage.transaction() as db:
         return [
-            summary(row["id"], json.loads(row["state"]))
-            for row in db.execute("SELECT id,state FROM career ORDER BY rowid DESC")
+            summary(
+                row["id"],
+                dict(
+                    setup=json.loads(row["setup"]),
+                    date=row["day"],
+                    revision=row["revision"],
+                ),
+            )
+            for row in db.execute("""SELECT id,json_extract(state,'$.setup') AS setup,
+                json_extract(state,'$.date') AS day,json_extract(state,'$.revision') AS revision
+                FROM career INDEXED BY career_listing ORDER BY rowid DESC""")
         ]
 
 
@@ -140,8 +172,16 @@ def project(db, cid, state):
             if pid:
                 crews[assignment["entry"]].append(pid)
     contacts = teamwork.partnerships(state, WORLD, state["date"])
+    account = dict(state["accounts"][org])
+    if "control" in state:
+        view = budget.report(state, WORLD, org, state["date"][:4])
+        account.update(
+            development_spent_cents=view["actual"].get("engineering", 0),
+            development_reserved_cents=view["reserved"]["engineering"],
+        )
     return dict(
         crews=crews,
+        team_names=rights.title_names(state, WORLD, state["date"]),
         mandate=state["mandates"].get(org),
         academies=[a for a in state["academies"].values() if a["org"] == org],
         scholarships=[
@@ -177,13 +217,14 @@ def project(db, cid, state):
             )
             for car_id, config in state["car_configurations"].items()
         },
-        atr=resource_scope(WORLD, org, state["date"]),
+        atr=budget.scope_for(state, WORLD, org),
         targets=targets,
         **summary(cid, state),
         rules=VERSION,
         player_id=state["player_id"],
         player_cash_cents=state["player_cash_cents"],
-        account=state["accounts"][org],
+        account=account,
+        available_cents=finance.available(state, org),
         team_color=WORLD["organizations"][org]["color"],
         assignments=people,
         ledger=history,
@@ -208,6 +249,12 @@ def create(spec):
     with storage.transaction(True) as db:
         setup = spec.model_dump(exclude_none=True)
         state = domain.new_world(WORLD, setup)
+        finance.activate(state, WORLD)
+        market.initialize(state, WORLD)
+        budget.initialize(state, WORLD, state["ledger"])
+        facilities.initialize(state, WORLD)
+        capital.initialize(state, WORLD)
+        economy.initialize(state, WORLD)
         cid = str(uuid4())
         storage.store(db, cid, state, create=True)
         statistics_personnel.refresh(db, cid, state)
@@ -369,6 +416,20 @@ def import_save(document, *, statistics_records=None):
             type(activation) is not int or not 0 <= activation <= saved["revision"]
         ):
             raise ValueError
+        finance_since = saved.get("finance", {}).get("since")
+        if finance_since is not None and (
+            type(finance_since) is not int
+            or not expanded
+            or not junior_since <= finance_since <= saved["revision"]
+        ):
+            raise ValueError
+        market_since = saved.get("market", {}).get("since")
+        if market_since is not None and (
+            type(market_since) is not int
+            or finance_since is None
+            or not finance_since <= market_since <= saved["revision"]
+        ):
+            raise ValueError
         growth = saved.get("growth_since")
         if growth is not None and (
             not modern
@@ -398,21 +459,60 @@ def import_save(document, *, statistics_records=None):
             if expanded and not native and junior_since == state["revision"]:
                 upgrade_juniors(state)
                 catalog = WORLD
+            if finance_since == state["revision"]:
+                finance.activate(state, catalog, state["ledger"])
+            if market_since == state["revision"]:
+                market.initialize(
+                    state, catalog, legacy=saved["market"].get("catalog") != 2
+                )
+            if saved.get("control", {}).get("since") == state["revision"]:
+                budget.initialize(state, catalog, state["ledger"])
+            if saved.get("estate", {}).get("since") == state["revision"]:
+                facilities.initialize(
+                    state,
+                    catalog,
+                    legacy="shared:warehouse" not in saved["estate"]["assets"],
+                )
+            if saved.get("estate", {}).get("capacity_since") == state["revision"]:
+                facilities.migrate(state)
+            if saved.get("capital", {}).get("since") == state["revision"]:
+                capital.initialize(state, catalog)
+            if saved.get("economy", {}).get("since") == state["revision"]:
+                economy.initialize(state, catalog)
 
-        for item in commands:
+        for original in commands:
+            item = original
             apply_migrations()
+            legacy_access = False
+            if "capacity_since" not in state.get("estate", {}) and item.get("finance"):
+                args = item["finance"]
+                if (
+                    item["action"] == "finance-build"
+                    and args.get("kind") == "logistics"
+                ):
+                    item = dict(item, finance=dict(args, kind="warehouse"))
+                if (
+                    item["action"] == "finance-facility-access"
+                    and args.get("purpose") == "logistics"
+                ):
+                    legacy_access = True
+                    item = dict(item, finance=dict(args, purpose="storage"))
             cmd = Command.model_validate(item)
             if cmd.command_id in seen or cmd.revision != state["revision"]:
                 raise ValueError
             seen.add(cmd.command_id)
             args = cmd.payload()
             domain.apply(state, catalog, cmd.action, args)
+            if legacy_access:
+                state["estate"]["bookings"][args["reference"]]["purpose"] = "logistics"
+            if item is not original:
+                args = original["finance"]
             receipts.append(
                 (
                     cmd.command_id,
                     cmd.revision,
                     cmd.action,
-                    storage.dump(args) if args else None,
+                    storage.dump(args) if args is not None else None,
                 )
             )
         apply_migrations()
@@ -430,6 +530,13 @@ def import_save(document, *, statistics_records=None):
             state = upgrade_personnel(state)
         if not expanded:
             upgrade_juniors(state)
+        finance.activate(state, WORLD, state["ledger"])
+        market.initialize(state, WORLD)
+        budget.initialize(state, WORLD, state["ledger"])
+        facilities.initialize(state, WORLD)
+        capital.initialize(state, WORLD)
+        economy.initialize(state, WORLD)
+        facilities.migrate(state)
     except (KeyError, TypeError, ValueError, RecursionError, ValidationError):
         raise domain.RuleError("Файл повреждён или нарушает правила мира.") from None
     cid = str(uuid4())

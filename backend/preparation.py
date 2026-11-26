@@ -239,7 +239,25 @@ def reserve(state, world, kind):
 
     pid = min(candidates, key=priority)
     key = f"prep-{state['revision'] + 1}"
+    facility_id = None
+    recipient = None
+    if "estate" in state:
+        from .finance.facilities import training
+
+        facility_id, recipient = training(state, org, key, kind, start, end)
+        if recipient is None:
+            cost = cost * 65 // 100
+        else:
+            state["estate"]["bookings"][key]["cost_cents"] = cost
+    if "control" in state:
+        from .finance.budget import authorize
+
+        authorize(state, world, org, "staff-preparation", cost, start)
     post(state, org, key, -cost, "staff-preparation")
+    if recipient:
+        from .finance import post as receive
+
+        receive(state, recipient, key, cost, "staff-preparation")
     participants = [pid] + ([mentor] if mentor else [])
     state["preparations"][key] = dict(
         id=key,
@@ -254,6 +272,8 @@ def reserve(state, world, kind):
         source=prior["event_id"] if prior else None,
         skills=prior["skills"] if prior else None,
     )
+    if facility_id:
+        state["preparations"][key]["facility_id"] = facility_id
     for person in participants:
         p = state["people"].get(person) or state["collectives"][person]
         p["fatigue"] = min(100, p["fatigue"] + load)

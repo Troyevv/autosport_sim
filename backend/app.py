@@ -222,7 +222,11 @@ def channel_range(
 
 @app.post("/api/careers/{cid}/commands")
 def command(cid: str, command: service.Command):
-    if command.action in ("confirmed-work", "issued-licence", "season-classification"):
+    if command.action in service.PRODUCERS or command.action in (
+        "confirmed-work",
+        "issued-licence",
+        "season-classification",
+    ):
         raise RuleError("Требуется подтверждение подсистемы-источника.", 403)
     return service.execute(cid, command)
 
@@ -247,3 +251,119 @@ def asset(kind: str, entity: str, v: str | None = None):
             else "no-cache",
         },
     )
+
+
+@app.get("/api/careers/{cid}/finance")
+def financial_statement(cid: str, scope: str = "organization"):
+    from .finance.reports import statement
+    from .catalog import WORLD
+    from . import storage
+
+    with storage.transaction() as db:
+        return statement(storage.checkpoint(db, cid), WORLD, db, cid, scope)
+
+
+@app.get("/api/careers/{cid}/finance/report.csv")
+def export_financial_statement(cid: str, scope: str = "organization"):
+    import csv
+    from io import StringIO
+    from fastapi.responses import Response
+
+    report = financial_statement(cid, scope)
+    output = StringIO()
+    writer = csv.writer(output)
+    writer.writerow(["EUR cents", "scope", report["scope"]])
+    for key in (
+        "opening_cents",
+        "cash_cents",
+        "available_cents",
+        "profit_cents",
+        "income_cents",
+        "expense_cents",
+        "cash_flow_cents",
+    ):
+        writer.writerow([key, report[key]])
+    for section in ("journal", "obligations", "forecast"):
+        writer.writerow([section])
+        rows = report[section]
+        if rows:
+            writer.writerow(rows[0].keys())
+            writer.writerows(row.values() for row in rows)
+    return Response(
+        output.getvalue().encode("utf-8-sig"),
+        media_type="text/csv",
+        headers={"Content-Disposition": 'attachment; filename="finance.csv"'},
+    )
+
+
+@app.get("/api/careers/{cid}/commercial")
+def commercial_market(cid: str):
+    from .finance import market
+    from .catalog import WORLD
+    from . import storage
+
+    with storage.transaction() as db:
+        return market.projection(storage.checkpoint(db, cid), WORLD)
+
+
+@app.get("/api/careers/{cid}/garage")
+def career_garage(cid: str):
+    from .finance.rights import catalog
+    from .catalog import WORLD
+    from . import storage
+
+    with storage.transaction() as db:
+        return catalog(storage.checkpoint(db, cid), WORLD)
+
+
+@app.get("/api/careers/{cid}/rights")
+def commercial_rights(cid: str):
+    from .finance.rights import projection
+    from .catalog import WORLD
+    from . import storage
+
+    with storage.transaction() as db:
+        return projection(storage.checkpoint(db, cid), WORLD)
+
+
+@app.get("/api/careers/{cid}/budget")
+def budget_control(cid: str, year: int | None = None):
+    from .finance.budget import report
+    from .catalog import WORLD
+    from . import storage
+
+    with storage.transaction() as db:
+        state = storage.checkpoint(db, cid)
+        return report(
+            state, WORLD, state["setup"]["org"], year or int(state["date"][:4])
+        )
+
+
+@app.get("/api/careers/{cid}/facilities")
+def facilities_overview(cid: str):
+    from .finance.facilities import projection
+    from .catalog import WORLD
+    from . import storage
+
+    with storage.transaction() as db:
+        return projection(storage.checkpoint(db, cid), WORLD)
+
+
+@app.get("/api/careers/{cid}/capital")
+def capital_overview(cid: str):
+    from .finance.capital import projection
+    from .catalog import WORLD
+    from . import storage
+
+    with storage.transaction() as db:
+        return projection(storage.checkpoint(db, cid), WORLD)
+
+
+@app.get("/api/careers/{cid}/economy")
+def economy_overview(cid: str):
+    from .finance.economy import projection
+    from .catalog import WORLD
+    from . import storage
+
+    with storage.transaction() as db:
+        return projection(storage.checkpoint(db, cid), WORLD)

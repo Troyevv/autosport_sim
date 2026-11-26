@@ -110,10 +110,20 @@ def install(state, world, order):
         or paint["pattern"] not in GARAGE["patterns"]
     ):
         raise RuleError("Шаблон или рисунок ливреи недоступен.")
+    current_catalog = GARAGE
+    if "market" in state:
+        from .finance.rights import catalog
+
+        current_catalog = catalog(state, world)
     for decal in paint["decals"]:
-        rule = GARAGE["sponsors"].get(decal["asset"])
+        rule = current_catalog["sponsors"].get(decal["asset"])
         if (
-            decal["asset"] not in GARAGE["entries"][entry["id"]]["allowed_assets"]
+            decal["asset"]
+            not in current_catalog["entries"][entry["id"]]["allowed_assets"]
+            or decal["zone"]
+            not in current_catalog["entries"][entry["id"]]
+            .get("commercial_zones", {})
+            .get(decal["asset"], rule["zones"] if rule else [])
             or not rule
             or decal["zone"] not in rule["zones"]
             or decal["scale"] > rule["maxScale"]

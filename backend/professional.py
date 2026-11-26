@@ -113,8 +113,8 @@ ACTIVITIES = {
     ),
     "commercial": (
         "Коммерческие переговоры",
-        "supply manufacturer",
-        "Переговоры Клиенты Ценообразование",
+        "supply manufacturer manager owner academy-director",
+        "Переговоры Клиенты Ценообразование Финансовое_планирование Бюджет",
     ),
     "management": (
         "Кадровое решение",

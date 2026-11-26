@@ -248,11 +248,49 @@ def apply(state, catalog, action, payload=None):
             record(state, catalog, event)
         state["revision"] += 1
         return
+    from .finance.events import PRODUCERS, confirm
+
+    if action in PRODUCERS and "finance" in state:
+        confirm(state, catalog, action, payload)
+        state["revision"] += 1
+        return
     setup = state["setup"]
     office = setup["org"] + ":" + setup["role"]
     if occupant_on(state["seats"][office], state["date"]) != state["player_id"]:
         raise RuleError("Действующее назначение не даёт полномочий.", 403)
-    if action == "save-livery" and payload is not None:
+    from .finance import market, budget
+
+    from .finance import facilities
+
+    if action in facilities.ORDERS and "estate" in state:
+        facilities.command(state, catalog, action, payload)
+        state["revision"] += 1
+        return
+    from .finance import capital
+
+    if action in capital.ORDERS and "capital" in state:
+        capital.command(state, catalog, action, payload)
+        state["revision"] += 1
+        return
+    from .finance import economy
+
+    if action in economy.ORDERS and "economy" in state:
+        economy.command(state, catalog, action, payload)
+        state["revision"] += 1
+        return
+    if action in budget.ORDERS and "control" in state:
+        budget.command(state, catalog, action, payload)
+    elif action == "finance-mount" and "market" in state:
+        from .finance.rights import mount
+
+        mount(state, catalog, payload)
+    elif action in market.ORDERS and "market" in state:
+        market.command(state, catalog, action, payload)
+    elif action.startswith("finance-") and "finance" in state:
+        from .finance import command
+
+        command(state, catalog, action, payload)
+    elif action == "save-livery" and payload is not None:
         from .livery import install
 
         install(state, catalog, payload)
