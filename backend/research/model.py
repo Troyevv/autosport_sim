@@ -248,9 +248,6 @@ def conclusion(seed, project):
     )
     draws = sha256(fingerprint.encode()).digest()
     quality = project["quality_sum"] // project["worked"]
-    margin = development_margin(
-        seed, project["concept"], project["axis"], project["refinements"]
-    )
     confidence = min(94, max(12, quality + draws[2] % 21 - 10))
     context = project.get("design_context", "")
     if draws[0] * 100 // 256 >= min(94, 30 + quality * 2 // 3):
@@ -260,9 +257,16 @@ def conclusion(seed, project):
             "Материалов недостаточно для вывода. Требуется независимый источник."
             + (" " + context if context else ""),
         )
-    plausible = margin > (
-        0.085 if project["source"]["kind"] == "public-entry" else 0.07
-    )
+    if project.get("integration_study"):
+        # The team can judge a fit to its package, without access to a supplier's design ceiling.
+        plausible = project["comparable"]
+    else:
+        margin = development_margin(
+            seed, project["concept"], project["axis"], project["refinements"]
+        )
+        plausible = margin > (
+            0.085 if project["source"]["kind"] == "public-entry" else 0.07
+        )
     if draws[1] * 100 // 256 < (100 - quality) // 2:
         plausible = not plausible
     followup = {
@@ -280,6 +284,18 @@ def conclusion(seed, project):
         )
         if project["source"]["kind"] == "public-entry":
             followup += " Сравнение по открытому заявочному листу."
+    if project.get("integration_study"):
+        if plausible:
+            return (
+                "supported",
+                confidence,
+                "Проверить интеграцию утверждённого узла в сборке. " + followup,
+            )
+        return (
+            "rejected",
+            confidence,
+            "Запросить уточнение условий применения узла у изготовителя. " + followup,
+        )
     if plausible:
         return (
             "supported",

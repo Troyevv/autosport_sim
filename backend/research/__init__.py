@@ -159,6 +159,9 @@ def commission(state, world, org, key, order):
     )
     if "development" in state:
         project["commission_revision"] = state["revision"]
+        from ..development import restriction
+
+        project["integration_study"] = bool(restriction(state, world, entry, axis))
         project["design_context"] = design_context(state, entry, axis)
     projects[key] = project
     return project
@@ -347,6 +350,8 @@ def work(state, world, p, used):
     ):
         # The manager rents only for a day on which the assigned specialist can work.
         try:
+            if p.get("kind") == "test":
+                development.check_rental(state, world, p, entry)
             facilities.act(
                 state,
                 world,

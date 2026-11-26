@@ -139,11 +139,14 @@ def projection(state, world):
             if k in p
         }
         rate = p["worked"] / p["days"] if p["days"] else 24
+        days = ceil((p["required"] - p["worked"]) / rate)
+        payment = state["finance"]["instalments"].get("project:" + p["id"])
         projects.append(
             dict(
                 **row,
-                remaining_days=ceil((p["required"] - p["worked"]) / rate),
-                paid=p["id"] in state["control"]["projects"],
+                remaining_days=days,
+                estimated_finish=facilities.later(today, max(0, days - 1)),
+                paid=bool(payment and payment["status"] == "paid"),
                 grants=[
                     facilities.grant(state, key).model_dump() for key in p["grants"]
                 ],

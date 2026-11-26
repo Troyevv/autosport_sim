@@ -196,6 +196,23 @@ def commission(state, world, org, key, order):
     return p
 
 
+def check_rental(state, world, p, entry):
+    """An NPC buys a testing slot only if it can pay for and authorize the paired run."""
+    from ..finance import available
+
+    org, day = p["org"], state["date"]
+    site = state["estate"]["assets"]["shared:" + p["site_kind"]]
+    fee = facilities.quote(site["kind"], site["country"])["daily_cents"]
+    budget.authorize(state, world, org, "engineering", p["cost_cents"], day)
+    if entry["championship"] == "f1":
+        budget.check_allowance(
+            budget.scope_for(state, world, org), TESTS[p["method"]][3]
+        )
+    total = fee + p["cost_cents"]
+    if total > available(state, org):
+        raise RuleError("Недостаточно средств на аренду и испытание.", 409)
+
+
 def book_test(state, world, p, site, key):
     entry = world["entries"][p["entry"]]
     series = entry["championship"]
@@ -237,7 +254,7 @@ def complete(state, world, p):
                 drawing_for(state, p["candidate"])["reference"]
             ]
             if source["disposition"] == "released":
-                review(state, source, "withdrawn", p["lead"])
+                review(state, world, source, "withdrawn", p["lead"])
     p.update(finished=state["date"], status="complete", reason=None)
     for pid, contribution in p["participants"].items():
         record_work(
@@ -283,10 +300,10 @@ def command(state, world, action, payload):
             raise RuleError("Работа завершена.")
         p["priority"] = order.priority
     else:
-        review(state, p, order.disposition, state["player_id"])
+        review(state, world, p, order.disposition, state["player_id"])
 
 
-def review(state, p, disposition, actor):
+def review(state, world, p, disposition, actor):
     if not p.get("specification") or p["disposition"] == disposition:
         raise RuleError("Редакция недоступна для такого решения.")
     if disposition == "released" and (
@@ -297,6 +314,17 @@ def review(state, p, disposition, actor):
         )
     ):
         raise RuleError("Выпуск требует испытанной редакции без выявленных дефектов.")
+    if disposition == "released":
+        entry = world["entries"][p["entry"]]
+        drawing = drawing_for(state, p["specification"])
+        if (
+            not admitted(state, entry)
+            or restriction(state, world, entry, p["axis"])
+            or not components.compatible(state, world, entry, drawing)
+        ):
+            raise RuleError(
+                "Редакция не соответствует действующей программе и допуску узла."
+            )
     p["disposition"] = disposition
     log(state, p, disposition, actor)
 
@@ -314,10 +342,14 @@ def npc_plan(state, world):
     ordinal = date.fromisoformat(state["date"]).toordinal()
     if ordinal % 5:
         return
+    # Alternate constructor portfolios with verification programmes on homologated grids.
+    constructor_turn = ordinal // 5 % 2 == 0
     entries = {
-        e["org"]: e for e in world["entries"].values() if e["championship"] == "f1"
+        e["org"]: e
+        for e in world["entries"].values()
+        if (e["championship"] == "f1") == constructor_turn
     }
-    org = sorted(entries)[ordinal // 5 % len(entries)]
+    org = sorted(entries)[ordinal // 10 % len(entries)]
     if org == state["setup"]["org"] and state["setup"]["role"] == "manager":
         return
     if not occupant_on(state["seats"].get(org + ":manager", []), state["date"]):
@@ -340,10 +372,20 @@ def npc_plan(state, world):
             None,
         )
         if protocol:
+            # Check eligibility again after a suspension or a change of regulation.
+            entry = world["entries"][project["entry"]]
+            eligible = (
+                admitted(state, entry)
+                and not restriction(state, world, entry, project["axis"])
+                and components.compatible(
+                    state, world, entry, drawing_for(state, project["specification"])
+                )
+            )
             review(
                 state,
+                world,
                 project,
-                "withdrawn" if project["findings"] else "released",
+                "withdrawn" if project["findings"] or not eligible else "released",
                 actor,
             )
     entry = entries[org]
@@ -368,6 +410,17 @@ def npc_plan(state, world):
             baseline=previous["baseline"],
             candidate=previous["specification"],
             method="lab",
+            priority="normal",
+        )
+    elif not constructor_turn:
+        slots = sorted(components.mounting(state, entry["id"]))
+        axis = slots[ordinal // 10 % len(slots)]
+        base = components.spec(state, components.mounting(state, entry["id"])[axis])
+        order = TestOrder(
+            entry=entry["id"],
+            baseline=base["id"],
+            candidate=base["id"],
+            method="bench" if "bench" in methods(axis) else "calculation",
             priority="normal",
         )
     else:

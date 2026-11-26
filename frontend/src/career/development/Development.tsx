@@ -102,7 +102,7 @@ function FileCard({
           <Progress value={Math.round((100 * p.worked) / p.required)} />
           <p>
             {p.kind === 'design' ? p.worked + ' / ' + p.required + ' расчётных ч · ' : ''}Остаток при
-            доступном слоте · {p.remaining_days} дн.
+            доступном слоте · {p.remaining_days} дн., до {dateLabel(p.estimated_finish)}.
           </p>
           {p.reason && <p>{p.reason}</p>}
         </>
@@ -142,7 +142,7 @@ function FileCard({
       <details>
         <summary>Материалы дела и вклад</summary>
         <p>
-          {p.regulation} · {p.concept}
+          {p.id} · {p.regulation} · {p.concept}
         </p>
         {p.evidence.length === 0 ? (
           <p>Основание — документация исходной редакции.</p>

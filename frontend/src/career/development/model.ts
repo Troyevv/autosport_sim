@@ -56,6 +56,7 @@ export type Project = {
   status: string
   paid: boolean
   cost_cents: number
+  estimated_finish: string
   remaining_days: number
   participants: Record<string, Contribution>
   grants: {

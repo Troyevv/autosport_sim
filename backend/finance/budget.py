@@ -540,6 +540,18 @@ def tick(state, world):
             )
 
 
+def check_allowance(pool, request):
+    if not request:
+        return
+    if not pool or pool["limits"] is None:
+        raise RuleError("Для периода отсутствует подтверждённая квота ATR.")
+    if any(
+        amount + pool["used"][unit] > pool["limits"][unit]
+        for unit, amount in request.items()
+    ):
+        raise RuleError("Недостаточно инженерной квоты ATR.", 409)
+
+
 def project(state, world, cost):
     scope = project_target(world, cost.program, cost.target_season, cost.generation)
     org = scope["budget_owner"]
@@ -553,17 +565,7 @@ def project(state, world, cost):
         raise RuleError("Срок платежа истёк.")
     authorize(state, world, org, "engineering", cost.amount_cents, state["date"])
     pool = scope_for(state, world, org)
-    if cost.atr:
-        if not pool or pool["limits"] is None:
-            raise RuleError("Для периода отсутствует подтверждённая квота ATR.")
-        for unit, amount in cost.atr.items():
-            used = sum(
-                p["terms"]["atr"].get(unit, 0)
-                for p in plans.values()
-                if p["pool"] == pool["pool_id"]
-            )
-            if amount + used > pool["limits"][unit]:
-                raise RuleError("Недостаточно инженерной квоты ATR.", 409)
+    check_allowance(pool, cost.atr)
     term = Instalment(
         id="project:" + key,
         contract=key,

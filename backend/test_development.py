@@ -116,7 +116,11 @@ def test_research_design_test_revision_and_replay():
     assert all(
         s["control"]["projects"][t["id"]]["terms"]["atr"]["runs"] == 2 for t in tests
     )
+    if not next(row for row in d["projects"] if row["id"] == p["id"])["findings"]:
+        c = send(c, "development-review", project=p["id"], disposition="released")
+        assert development.released(checkpoint(c), MCLAREN, version)
     c = send(c, "development-review", project=p["id"], disposition="withdrawn")
+    assert not development.released(checkpoint(c), MCLAREN, version)
     c = design(rent(c, "design"), version)
     c = until_finished(c, 4)
     s = checkpoint(c)
@@ -315,7 +319,7 @@ def test_stable_truth_negative_solutions_and_detected_defects():
         if report["detected"]:
             assert report["finding"] and p["findings"] == [trial["id"]]
             with pytest.raises(domain.RuleError, match="дефектов"):
-                development.review(s, p, "released", p["lead"])
+                development.review(s, WORLD, p, "released", p["lead"])
             assert drawing_for(s, version) == truth
             # Future producer #48 will see a different interface from the manager's garage.
             register_instance(
@@ -332,3 +336,106 @@ def test_stable_truth_negative_solutions_and_detected_defects():
                 break
     else:
         pytest.fail("Expected both a regression and a detected defect")
+
+
+def test_each_component_has_a_scoped_study_and_a_matching_test():
+    from . import research
+    from .development.desk import projection
+    from .development.physics import methods
+    from .finance import facilities
+
+    c = create()
+    s = checkpoint(c)
+    entry = WORLD["entries"]["f1-4"]
+    axes = mounting(s, entry["id"])
+    assert set(axes) == research.METHODS.keys()
+    for axis in axes:
+        study = research.commission(
+            s,
+            WORLD,
+            MCLAREN,
+            "study-" + axis,
+            research.Commission(entry=entry["id"], axis=axis, priority="normal"),
+        )
+        assert study["integration_study"] == (axis in ("engine", "tyre"))
+        assert (
+            study["baseline"] in study["source"]["reference"]
+            and study["design_context"] in study["hypothesis"]
+        )
+    for site in ("design", "cfd", "tunnel", "bench"):
+        facilities.act(
+            s,
+            WORLD,
+            MCLAREN,
+            "lease-" + site,
+            facilities.Lease(
+                facility="shared:" + site,
+                mode="lease",
+                start=s["date"],
+                days=12,
+                units=2,
+            ),
+        )
+    for axis in axes:
+        version = development.versions(s, entry["id"], axis)[0]["id"]
+        protocol = (
+            "calculation"
+            if axis in ("floor", "chassis")
+            else "lab"
+            if axis == "rear-wing"
+            else "bench"
+        )
+        assert protocol in methods(axis)
+        development.commission(
+            s,
+            WORLD,
+            MCLAREN,
+            "test-" + axis,
+            development.TestOrder(
+                entry=entry["id"],
+                baseline=version,
+                candidate=version,
+                priority="high",
+                method=protocol,
+            ),
+        )
+    research.advance(s, WORLD, facilities.later(s["date"], 10))
+    reports = projection(s, WORLD)["projects"]
+    assert {p["axis"] for p in reports if p.get("report")} == set(axes)
+    assert s["components"]["inventory"] == {}
+    assert not any(
+        p.get("org") == MCLAREN and p["kind"] == "design"
+        for p in s["development"]["projects"].values()
+    )
+
+
+def test_atomic_test_completion_and_expired_authority(monkeypatch):
+    from .development.desk import projection
+
+    c = rent(create(), "bench")
+    base = development.versions(checkpoint(c), "f1-4", "brakes")[0]["id"]
+    c = send(
+        c,
+        "development-test",
+        entry="f1-4",
+        baseline=base,
+        candidate=base,
+        method="bench",
+        priority="normal",
+    )
+    original = service.export_save(c["id"])
+    with monkeypatch.context() as patch:
+
+        def fail(*args):
+            raise RuntimeError("statistics unavailable")
+
+        patch.setattr(development, "write_fact", fail)
+        with pytest.raises(RuntimeError):
+            advance(c)
+    assert service.export_save(c["id"]) == original
+    c = advance(c)
+    s = checkpoint(c)
+    assert projection(s, WORLD)["projects"][0]["report"]
+    s["seats"][MCLAREN + ":manager"][0]["end"] = s["date"]
+    with pytest.raises(domain.RuleError, match="назначение"):
+        projection(s, WORLD)
