@@ -98,7 +98,12 @@ def crew_for_session(state, world, entry, event, *, wet=False):
         if a["position"] == "driver" and a["series"] in others
     }
     for member in crew:
-        reason = eligibility(state["people"][member["person"]], policy, state["date"])
+        reason = eligibility(
+            state["people"][member["person"]],
+            policy,
+            state["date"],
+            starts=state["starts"].get(member["person"], {}).values(),
+        )
         if reason:
             raise RuleError(reason)
         if event.get("kind") == "round" and event.get("country"):

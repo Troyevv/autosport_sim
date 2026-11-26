@@ -137,7 +137,9 @@ def check_terms(state, catalog, offer):
     if p["position"] == "driver":
         entry = catalog["entries"][seat["entry"]]
         rules = catalog["championships"][seat["series"]]
-        reason = development_path.eligibility(p, rules["admission"], day)
+        reason = development_path.eligibility(
+            p, rules["admission"], day, starts=state["starts"].get(p["id"], {}).values()
+        )
         if reason:
             raise RuleError(reason)
         backing.right_of_first_offer(state, p["id"], seat["org"], state["date"])

@@ -66,7 +66,29 @@ def garage_catalog():
                 ],
             ),
         )
-    return dict(version="2025-v1", entries=entries, **designs)
+    from .catalog import WORLD
+
+    for e in WORLD["entries"].values():
+        series = e["championship"]
+        if e["id"] in entries or not WORLD["championships"][series].get(
+            "playable", True
+        ):
+            continue
+        model = "tatuus-t318" if series == "freca" else "tatuus-t421"
+        org = WORLD["organizations"][e["org"]]
+        entries[e["id"]] = dict(
+            geometry=model,
+            allowed_assets=["axis", "bars", "relay"],
+            livery=dict(
+                version=1,
+                template=f"2025-v4/{series}/{model}",
+                pattern="rb",
+                number=e["number"],
+                colors=[org["color"], "#e9e9e1", "#232933"],
+                decals=[],
+            ),
+        )
+    return dict(version="2025-v4", entries=entries, **designs)
 
 
 GARAGE = garage_catalog()
@@ -76,6 +98,7 @@ def install(state, world, order):
     entry = world["entries"].get(order["entry"])
     if (
         not entry
+        or order["entry"] not in GARAGE["entries"]
         or entry["org"] != state["setup"]["org"]
         or state["setup"]["role"] == "manufacturer"
     ):

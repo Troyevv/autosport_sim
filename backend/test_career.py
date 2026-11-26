@@ -42,7 +42,19 @@ def test_seed_integrity():
     from collections import Counter
 
     counts = Counter(e["championship"] for e in WORLD["entries"].values())
-    assert counts == dict(f1=20, f2=22, f3=30, dtm=24, wec=36)
+    assert counts == {
+        "f1": 20,
+        "f2": 22,
+        "f3": 30,
+        "dtm": 24,
+        "wec": 36,
+        "f4-it": 41,
+        "f4-gb": 21,
+        "f4-es": 36,
+        "freca": 26,
+        "kart-ok": 98,
+        "kart-okj": 89,
+    }
     assert len(WORLD["events"]) == len({e["id"] for e in WORLD["events"]})
     assert WORLD["entries"]["wec-7"]["car"] != WORLD["entries"]["wec-007"]["car"]
     assert set(WORLD["entries"]["wec-36"]["crew"]) & set(
@@ -228,7 +240,14 @@ def test_fictional_roster_biographies_and_series_balance():
         person = profiles[seat["person"]]
         birth = date.fromisoformat(person["birth_date"])
         age = 2025 - birth.year - ((2, 1) < (birth.month, birth.day))
-        assert 18 <= age <= 70 and 0 < person["experience"] < age
+        admission = WORLD["championships"].get(seat["series"], {}).get("admission", {})
+        minimum = (
+            admission.get("min_age", 18) if person["id"].startswith("junior-") else 18
+        )
+        sporting_age = (
+            2025 - birth.year if admission.get("age_basis") == "calendar_year" else age
+        )
+        assert minimum <= sporting_age <= 70 and 0 < person["experience"] < age
         skills = person["skills"]
         assert set(skills) == set(WORLD["positions"][seat["position"]]["skills"])
         assert person["specialization"] in skills
@@ -276,12 +295,14 @@ def test_version_one_import_and_sqlite_upgrade():
         "rng",
         "revision",
         "date",
-        "ledger",
         "checkpoint",
         "pending",
     ):
         assert new[key] == state[key]
-    assert new["collectives"].keys() == state["collectives"].keys()
+    assert [p for p in new["ledger"] if p["org"] in state["accounts"]] == state[
+        "ledger"
+    ]
+    assert state["collectives"].keys() <= new["collectives"].keys()
     for gid, original in state["collectives"].items():
         assert {k: new["collectives"][gid][k] for k in original} == original
         assert new["collectives"][gid]["team_days"] == 0

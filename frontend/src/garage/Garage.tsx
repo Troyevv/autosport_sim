@@ -176,7 +176,7 @@ function Studio({ c, world, catalog, updateCareer }: Props & { catalog: Catalog 
               choose((grid.find((v) => v.org === c.org) || grid[0]).id)
             }}
           >
-            {Object.values(world.championships).map((s) => (
+            {Object.values(world.championships).filter((s) => s.playable !== false).map((s) => (
               <option key={s.id} value={s.id}>
                 {s.name}
               </option>
@@ -243,7 +243,7 @@ function Studio({ c, world, catalog, updateCareer }: Props & { catalog: Catalog 
               />
             </div>
             <footer>
-              <span>{world.championships[series].name}</span>
+              <span>{world.championships[series].short_name || world.championships[series].name}</span>
               <b>№ {livery.number}</b>
             </footer>
           </div>
@@ -367,9 +367,9 @@ function Studio({ c, world, catalog, updateCareer }: Props & { catalog: Catalog 
                   Антикрыло в предпросмотре
                   <select value={wing} onChange={(e) => setWing(e.target.value as typeof wing)}>
                     <option value="standard">Стартовый профиль</option>
-                    <option value={Object.keys(geometry[model].variants['rear-wing'])[0]}>
-                      Низкий профиль · пример
-                    </option>
+                    {Object.keys(geometry[model].variants['rear-wing'] || {}).map(key => (
+                      <option key={key} value={key}>Низкий профиль · пример</option>
+                    ))}
                   </select>
                 </label>
                 <small>Регламент {car.regulation}</small>

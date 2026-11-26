@@ -24,11 +24,25 @@ def initialize(state, world):
         if a["position"] == "driver":
             rule = world["championships"][a["series"]]["admission"]
             p = state["people"][a["person"]]
-            if (
-                rule.get("licence")
-                and rule["licence"] not in p["credentials"]["licences"]
-            ):
-                p["credentials"]["licences"].append(rule["licence"])
+            licence = rule.get("licence")
+            if world["championships"][a["series"]].get("superlicence"):
+                if licence == "ITF" and 2025 - int(p["birth_date"][:4]) >= 16:
+                    licence = "ITE"
+                reference = a["entry"] + "-admitted-2025"
+                p["credentials"].update(
+                    licences=[],
+                    issued={
+                        reference: dict(
+                            person=p["id"],
+                            licence=licence,
+                            issued=state["date"],
+                            expires="2026-01-01",
+                            reference=reference,
+                        )
+                    },
+                )
+            elif licence and licence not in p["credentials"]["licences"]:
+                p["credentials"]["licences"].append(licence)
             p["credentials"]["points"] = max(
                 rule.get("min_points", 0), p["credentials"]["points"]
             )
@@ -54,15 +68,56 @@ def initialize(state, world):
             )
 
 
-def eligibility(person, rules, day, assignment="race"):
+def eligibility(person, rules, day, assignment="race", *, starts=()):
     rules = {**rules, **rules.get("assignment_rules", {}).get(assignment, {})}
-    age = age_on(person, day)
+    age = (
+        int(day[:4]) - int(person["birth_date"][:4])
+        if rules.get("age_basis") == "calendar_year"
+        else age_on(person, day)
+    )
     if age < rules.get("min_age", 0) or age > rules.get("max_age", 150):
         return "Возраст вне допуска чемпионата."
     credentials = person["credentials"]
-    if rules.get("licence") and rules["licence"] not in credentials["licences"]:
+    if any(
+        s.get("series") in rules.get("excluded_starts", []) and s["day"] <= day
+        for s in starts
+    ):
+        return "Предыдущий старт исключает допуск в чемпионат."
+    seasons = [
+        s for s in credentials.get("classifications", {}).values() if s["end"] <= day
+    ]
+    limit = rules.get("prior_season_limit")
+    if (
+        limit
+        and sum(
+            bool(s.get("complete")) for s in seasons if s["series"] == rules["series"]
+        )
+        >= limit
+    ):
+        return "Достигнут лимит полных сезонов."
+    for standing in seasons:
+        cutoff = rules.get("recent_excluded_places", {}).get(standing["series"], 0)
+        if standing["place"] <= cutoff and int(day[:4]) - int(standing["end"][:4]) <= 3:
+            return "Предыдущая классификация исключает допуск в чемпионат."
+        if (
+            standing["end"] <= day
+            and standing["place"] == 1
+            and standing["series"] in rules.get("excluded_titles", [])
+        ):
+            return "Предыдущий титул исключает допуск в чемпионат."
+    accepted = rules.get("licences", [rules["licence"]] if rules.get("licence") else [])
+    from .junior_path import kart_grade_valid, licences_on, points_on
+
+    held = licences_on(credentials, day)
+    if rules.get("age_basis") == "calendar_year":
+        held = {grade for grade in held if kart_grade_valid(grade, age)}
+    if held.intersection(rules.get("forbidden_licences", [])):
+        return "Категория действующей лицензии исключает участие."
+    if rules.get("required_clearance") and rules["required_clearance"] not in held:
+        return "Требуется подтверждение допуска организатора."
+    if accepted and held.isdisjoint(accepted):
         return "Отсутствует требуемая лицензия."
-    if credentials["points"] < rules.get("min_points", 0):
+    if points_on(credentials, day) < rules.get("min_points", 0):
         return "Недостаточно лицензионных баллов."
     return None
 

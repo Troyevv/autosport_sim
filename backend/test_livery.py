@@ -13,7 +13,11 @@ from .livery import GARAGE, Livery
 
 
 def test_all_entries_have_round_trippable_independent_paint():
-    assert GARAGE["entries"].keys() == WORLD["entries"].keys()
+    assert GARAGE["entries"].keys() == {
+        eid
+        for eid, e in WORLD["entries"].items()
+        if WORLD["championships"][e["championship"]].get("playable", True)
+    }
     for entry, spec in GARAGE["entries"].items():
         paint = Livery.model_validate(spec["livery"])
         assert Livery.model_validate_json(paint.model_dump_json()) == paint

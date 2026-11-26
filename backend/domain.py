@@ -59,7 +59,13 @@ def player_face(catalog, setup):
 def new_world(catalog, setup):
     role, org, series = setup["role"], setup["org"], setup["series"]
     rec = catalog["organizations"].get(org)
-    if not rec or ROLES.get(role) != rec["kind"] or series not in rec["programs"]:
+    if (
+        not catalog["championships"].get(series, {}).get("playable", True)
+        or not rec
+        or not rec.get("playable", True)
+        or ROLES.get(role) != rec["kind"]
+        or series not in rec["programs"]
+    ):
         raise RuleError("Должность или программа недоступна для этой организации.")
     if catalog["version"] != "2025-v1" and "player_face" not in setup:
         setup = {**setup, "player_face": player_face(catalog, setup)}
@@ -127,9 +133,24 @@ def new_world(catalog, setup):
             if team
             else ["Инженеры", "Производственные рабочие"]
         )
+        group_sizes = (4, 24)
+        if team and all(
+            catalog["championships"][s].get("superlicence")
+            for s in organization["programs"]
+        ):
+            if any(
+                catalog["championships"][s]["playable"]
+                for s in organization["programs"]
+            ):
+                groups, group_sizes = (
+                    ["Инженеры программы", "Гоночные механики"],
+                    (2, 8),
+                )
+            else:
+                groups, group_sizes = ["Картинговые механики"], (1, 4)
         monthly = 0
         for i, name in enumerate(groups):
-            size = draw(state, 4, 24)
+            size = draw(state, *group_sizes)
             payroll = size * draw(state, 280000, 600000)
             cid = f"{oid}-group-{i + 1}"
             state["collectives"][cid] = dict(
@@ -157,13 +178,22 @@ def new_world(catalog, setup):
         state["ledger"].append(
             dict(org=oid, key="opening", date=START, delta_cents=cash, source="opening")
         )
-    if catalog["version"] == "2025-v3":
+    if catalog["version"] in ("2025-v3", "2025-v4"):
         from .personnel import initialize
 
         initialize(state, catalog)
         from .professional import activate
 
         activate(state)
+        if catalog["version"] == "2025-v4":
+            state["junior_since"] = 0
+            state["junior_reserve"] = {
+                p: state["people"].pop(p)
+                for p, v in catalog["profiles"].items()
+                if v.get("prospect")
+            }
+            for prospect in state["junior_reserve"].values():
+                prospect["credentials"]["licences"] = []
     return state
 
 
@@ -202,6 +232,15 @@ def post_payroll(state, target):
 
 
 def apply(state, catalog, action, payload=None):
+    if (
+        action in ("issued-licence", "season-classification")
+        and "junior_since" in state
+    ):
+        from .junior_path import record
+
+        record(state, catalog, action, payload)
+        state["revision"] += 1
+        return
     if action == "confirmed-work" and "growth_since" in state:
         from .professional import Batch, record
 
@@ -260,7 +299,9 @@ def apply(state, catalog, action, payload=None):
             e["id"]
             for e in catalog["events"]
             if e["start"] == target
+            and e["kind"] != "invitational"
             and e["series"] in programs
+            and catalog["championships"][e["series"]].get("playable", True)
             and (not e.get("org") or e["org"] == setup["org"])
         ]
         state["checkpoint"] = "weekend:" + target

@@ -31,7 +31,7 @@ def extend(world):
     positions["scout"]["skills"].append("Оценка навыков")
     positions["chief-analyst"]["skills"] += ["Телеметрия", "Дефекты", "Точность"]
     positions["analyst"]["skills"].append("Прогноз отказов")
-    path = Path(__file__).parent / "data" / world["version"] / "recruits.json"
+    path = Path(__file__).parent / "data" / "2025-v3" / "recruits.json"
     rules = json.loads(
         path.with_name("personnel-rules.json").read_text(encoding="utf-8")
     )

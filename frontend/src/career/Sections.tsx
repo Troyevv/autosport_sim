@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { CalendarDays, ChevronRight, Flag, MapPin } from 'lucide-react'
 import { dateLabel, millions } from '../game'
-import { Button, Facts, Header, Panel, Stats, Table } from '../ui/components'
+import { Button, Dialog, Facts, Header, Panel, Stats, Table } from '../ui/components'
 import { SeasonCalendar } from '../ui/SeasonCalendar'
 import { assetUrl, money, type World, type Career, type Asset } from './api'
 export { People } from './staff/People'
@@ -22,6 +22,8 @@ export function Overview({ world, c, media }: SectionProps) {
       (e.org === c.org || Object.values(world.cars[e.car].suppliers).includes(c.org)),
   )
   const photo = entries.map((e) => assetUrl(media, 'car', e.car)).find(Boolean)
+  const gridPhoto =
+    series.superlicence && entries[0] && '/assets/garage/2025-v1/grid/' + entries[0].id + '.webp'
   return (
     <section className="screen">
       <Header
@@ -30,8 +32,12 @@ export function Overview({ world, c, media }: SectionProps) {
         sub={[series.name, org.name, ...org.lines.map((line) => world.products[line].name)].join(' · ')}
       />
       <section className="dashboard-hero program-hero career-hero">
-        {photo ? (
-          <img alt="" src={photo} />
+        {photo || gridPhoto ? (
+          <img
+            alt=""
+            className={photo ? undefined : 'junior-grid-photo'}
+            src={photo || gridPhoto || undefined}
+          />
         ) : (
           <div className="program-hero-mark">{c.series.toUpperCase()}</div>
         )}
@@ -86,7 +92,7 @@ export function Overview({ world, c, media }: SectionProps) {
                 <small>
                   {c.role === 'manufacturer'
                     ? world.organizations[e.org].name
-                    : (c.crews[e.id].map((id) => world.names[id]).join(' · ') || 'Вакантно')}
+                    : c.crews[e.id].map((id) => world.names[id]).join(' · ') || 'Вакантно'}
                 </small>
               </span>
             </div>
@@ -148,7 +154,7 @@ export function Calendar({ world, c }: SectionProps) {
         day: e.start,
         series: e.series,
         title: world.championships[e.series].name + ' · ' + e.name,
-        type: e.kind === 'round' ? 'race' : 'development',
+        type: e.kind === 'round' || e.kind === 'invitational' ? 'race' : 'development',
         detail: [e.circuit, dateLabel(e.start) + ' — ' + dateLabel(e.end), ...e.sessions].join(' · '),
       }))}
     />
@@ -158,6 +164,11 @@ export function Championships({ world, c, media }: SectionProps) {
   const [series, choose] = useState(c.series),
     r = world.championships[series],
     es = Object.values(world.entries).filter((e) => e.championship === series)
+  const [organization, setOrganization] = useState('')
+  const profile = world.organizations[organization]
+  const profileEntries = Object.values(world.entries).filter(
+    (e) => e.org === organization || Object.values(world.cars[e.car].suppliers).includes(organization),
+  )
   const logo = assetUrl(media, 'logo', series)
   return (
     <section className="screen">
@@ -178,7 +189,10 @@ export function Championships({ world, c, media }: SectionProps) {
         <div>
           <div className="eyebrow">{r.discipline}</div>
           <h2>{r.name}</h2>
-          <p>{r.finish}</p>
+          <p>
+            {r.playable === false ? 'Фоновая серия · ' : ''}
+            {r.finish}
+          </p>
         </div>
         {logo && <img className="career-logo" alt={r.name} src={logo} />}
       </div>
@@ -186,6 +200,22 @@ export function Championships({ world, c, media }: SectionProps) {
         <Facts
           items={[
             ['Классы', r.classes.join(' · ')],
+            ...(r.technical_summary ? [['Техника', r.technical_summary] as const] : []),
+            ...(r.superlicence && r.admission
+              ? [
+                  [
+                    'Допуск',
+                    [
+                      r.admission.max_age
+                        ? r.admission.min_age + '–' + r.admission.max_age + ' лет'
+                        : 'от ' + r.admission.min_age + ' лет',
+                      r.admission.age_basis === 'calendar_year' ? 'по году рождения' : 'на дату участия',
+                      (r.admission.licences || [r.admission.licence]).join(' / '),
+                    ].join(' · '),
+                  ] as const,
+                  ['Баллы суперлицензии по итогам сезона', r.superlicence.join(' · ')] as const,
+                ]
+              : []),
             ...Object.entries(r.tyre_market).map(([category, policy]): [string, string] => {
               const modes = {
                 sole: 'Единый поставщик',
@@ -197,7 +227,23 @@ export function Championships({ world, c, media }: SectionProps) {
             }),
             ['Экипаж', r.crew[0] === r.crew[1] ? r.crew[0] : r.crew.join('–')],
             ['Сессии', Object.values(r.sessions)[0].join(' · ')],
-            ['Очки за гонку', (r.points.race || r.points['6h']).toString().replaceAll(',', ' · ')],
+            [
+              r.discipline === 'Karting' ? 'Очки за финал' : 'Очки за гонку',
+              (r.points.race || r.points['6h']).toString().replaceAll(',', ' · '),
+            ],
+            ...Object.entries({
+              reverse: 'Очки за реверсивную гонку',
+              short: 'Очки за короткую гонку',
+              pole: 'Поул',
+              fastest_eligible: 'Лучший круг при выполнении условий',
+              reverse_position_gained: 'За отыгранное место в реверсивной гонке',
+              qualifying_heats: 'Итог отборочных заездов',
+              super_heats: 'Итог суперхитов',
+              best_rounds_per_phase: 'Лучших этапов в зачёт каждой фазы',
+              fastest_final: 'Лучший круг финала',
+            })
+              .filter(([key]) => r.superlicence && key in r.points)
+              .map(([key, label]): [string, string] => [label, [r.points[key]].flat().join(' · ')]),
           ]}
         />
       </Panel>
@@ -210,16 +256,65 @@ export function Championships({ world, c, media }: SectionProps) {
             active: e.org === c.org,
             cells: [
               e.number,
-              world.organizations[e.org].name,
+              <button className="subtle-link org-link" onClick={() => setOrganization(e.org)}>
+                {world.organizations[e.org].name}
+              </button>,
               world.cars[e.car].name,
-              (c.crews[e.id].map((id) => world.names[id]).join(' · ') || 'Вакантно'),
-              Object.values(world.cars[e.car].suppliers)
-                .map((id) => world.organizations[id].name)
-                .join(' · '),
+              c.crews[e.id].map((id) => world.names[id]).join(' · ') || 'Вакантно',
+              <div className="supplier-links">
+                {Object.values(world.cars[e.car].suppliers).map((id) => (
+                  <button key={id} className="subtle-link org-link" onClick={() => setOrganization(id)}>
+                    {world.organizations[id].name}
+                  </button>
+                ))}
+              </div>,
             ],
           }))}
         />
       </Panel>
+      {profile && (
+        <Dialog title={profile.name} onClose={() => setOrganization('')}>
+          <Facts
+            items={[
+              ['Организация', profile.kind === 'team' ? 'Гоночная команда' : 'Производитель'],
+              ['Чемпионаты', profile.programs.map((id) => world.championships[id].name).join(' · ')],
+              ...(profile.lines.length
+                ? [['Продукция', profile.lines.map((line) => world.products[line].name).join(' · ')] as const]
+                : []),
+            ]}
+          />
+          <h3>Заявки сезона · {profileEntries.length}</h3>
+          <div className="org-programs">
+            {profile.programs.map((id) => (
+              <section key={id}>
+                <h4>{world.championships[id].name}</h4>
+                <ul>
+                  {profileEntries
+                    .filter((e) => e.championship === id)
+                    .map((e) => (
+                      <li key={e.id}>
+                        <b>№ {e.number}</b>
+                        <div>
+                          <strong>
+                            {c.crews[e.id].map((person) => world.names[person]).join(' · ') || 'Вакантно'}
+                          </strong>
+                          <small>
+                            {[
+                              profile.kind === 'supplier' && world.organizations[e.org].name,
+                              world.cars[e.car].name,
+                            ]
+                              .filter(Boolean)
+                              .join(' · ')}
+                          </small>
+                        </div>
+                      </li>
+                    ))}
+                </ul>
+              </section>
+            ))}
+          </div>
+        </Dialog>
+      )}
     </section>
   )
 }
@@ -250,7 +345,18 @@ export function Finance({ c, world }: SectionProps) {
               id: p.key,
               cells: [
                 dateLabel(p.date, true),
-                ({ opening: 'Стартовый капитал', payroll: 'Фонд оплаты коллективов', 'staff-payroll': 'Зарплата сотрудников и коллективов', 'driver-backing':'Финансирование места пилота','backing-exit':'Компенсация за прекращение поддержки', signing: 'Бонус за подписание', buyout: 'Выкуп контракта', severance: 'Компенсация при расторжении' } as Record<string,string>)[p.source] || p.source,
+                (
+                  {
+                    opening: 'Стартовый капитал',
+                    payroll: 'Фонд оплаты коллективов',
+                    'staff-payroll': 'Зарплата сотрудников и коллективов',
+                    'driver-backing': 'Финансирование места пилота',
+                    'backing-exit': 'Компенсация за прекращение поддержки',
+                    signing: 'Бонус за подписание',
+                    buyout: 'Выкуп контракта',
+                    severance: 'Компенсация при расторжении',
+                  } as Record<string, string>
+                )[p.source] || p.source,
                 money(p.delta_cents),
               ],
             }))}

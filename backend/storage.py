@@ -36,6 +36,7 @@ MIGRATIONS = [
     [],  # Dated contracts and personnel activation revision.
     [],  # Add country IDs and public profiles to existing v3 careers.
     [],  # Professional event ledger and retirement of universal courses.
+    [],  # Regional series and karting activation on the current game date.
 ]
 
 
@@ -111,6 +112,14 @@ def transaction(write=False):
                     db.execute(
                         "UPDATE career SET state=? WHERE id=?", (dump(state), row["id"])
                     )
+            if idx == 8:
+                from .roster_upgrade import upgrade_juniors
+
+                for row in db.execute("SELECT id,state FROM career").fetchall():
+                    state = json.loads(row["state"])
+                    if state["rules"] == "2025-v3":
+                        upgrade_juniors(state)
+                        store(db, row["id"], state)
             db.execute(f"PRAGMA user_version={idx + 1}")
         yield db
         db.commit()

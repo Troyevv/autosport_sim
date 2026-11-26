@@ -311,6 +311,30 @@ def record_result(
                 "Не подтверждено назначение в заявке на дату классификации."
             )
         result.update(org=car["org"], series=car["championship"], entry=entry)
+        rules = world["championships"][car["championship"]]
+        if "superlicence" in rules:
+            weekend = next(
+                (
+                    e
+                    for e in world["events"]
+                    if e["series"] == car["championship"]
+                    and e["kind"] == "round"
+                    and e["start"] <= day <= e["end"]
+                ),
+                None,
+            )
+            if not weekend or licence_points:
+                raise RuleError(
+                    "Для результата нужны даты этапа. Лицензионные баллы присуждаются за сезон."
+                )
+            result.update(
+                version=1,
+                season_id=weekend["season_id"],
+                round_id=weekend["id"],
+                session_id=event_id,
+                track_id=weekend["track_id"],
+                layout_id=weekend["layout_id"],
+            )
     if event_id in records:
         if records[event_id] != result:
             raise RuleError("Результат этапа уже зафиксирован.")

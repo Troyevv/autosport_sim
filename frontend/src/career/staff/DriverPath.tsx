@@ -50,6 +50,22 @@ export function Scouting({ data, c, world, busy, order }: Props) {
             : 'Запросить наблюдение'}
         </Button>
       )}
+      {data.results.length > 0 && (
+        <>
+          <h3>Результаты заездов</h3>
+          {data.results.map((r) => (
+            <p key={r.session_id}>
+              {shortDate(r.day)} · {world.championships[r.series].name} · №{world.entries[r.entry].number} ·{' '}
+              {r.place ? 'место ' + r.place : 'без классификации'}
+            </p>
+          ))}
+        </>
+      )}
+      {data.classifications.map((row) => (
+        <p key={row.season}>
+          {row.season} · место {row.place} · баллы суперлицензии {row.certified_points}
+        </p>
+      ))}
       {data.person.credentials && (
         <small>
           Лицензии ·{' '}

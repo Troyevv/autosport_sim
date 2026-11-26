@@ -1,0 +1,22 @@
+[
+  {
+    "id": "2025-f4-gb-british-gp",
+    "series": "f4-gb",
+    "season_id": "f4-gb-2025",
+    "kind": "invitational",
+    "start": "2025-07-04",
+    "end": "2025-07-06",
+    "circuit": "Silverstone",
+    "layout": "GP",
+    "layout_id": "silverstone:gp",
+    "track_id": "silverstone",
+    "country": "GB",
+    "name": "Silverstone · Гран-при Великобритании · вне зачёта",
+    "sessions": [
+      "Практика",
+      "Квалификация",
+      "Гонка 1 · второй квалификационный круг · 25 мин + круг",
+      "Гонка 2 · лучший квалификационный круг · 25 мин + круг"
+    ]
+  }
+]

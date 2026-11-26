@@ -1,0 +1,43 @@
+series,start,end,circuit,layout,country,format
+f4-it,2025-05-02,2025-05-04,Misano,GP,IT,groups
+f4-it,2025-05-23,2025-05-25,Vallelunga,Internazionale,IT,groups
+f4-it,2025-06-20,2025-06-22,Monza,GP,IT,standard
+f4-it,2025-07-11,2025-07-13,Mugello,GP,IT,standard
+f4-it,2025-08-01,2025-08-03,Imola,GP,IT,imola
+f4-it,2025-09-19,2025-09-21,Barcelona-Catalunya,GP,ES,standard
+f4-it,2025-10-10,2025-10-12,Misano,GP,IT,final
+f4-gb,2025-04-26,2025-04-27,Donington Park,National,GB,standard
+f4-gb,2025-05-02,2025-05-03,Silverstone,GP,GB,standard
+f4-gb,2025-05-24,2025-05-25,Snetterton,300,GB,standard
+f4-gb,2025-06-07,2025-06-08,Thruxton,Full,GB,standard
+f4-gb,2025-06-21,2025-06-22,Oulton Park,Island,GB,standard
+f4-gb,2025-07-26,2025-07-27,Zandvoort,GP,NL,standard
+f4-gb,2025-08-16,2025-08-17,Knockhill,Clockwise,GB,standard
+f4-gb,2025-08-30,2025-08-31,Donington Park,GP,GB,standard
+f4-gb,2025-09-20,2025-09-21,Silverstone,National,GB,standard
+f4-gb,2025-10-04,2025-10-05,Brands Hatch,GP,GB,standard
+f4-es,2025-03-28,2025-03-30,MotorLand Aragón,GP,ES,standard
+f4-es,2025-05-02,2025-05-04,Circuito de Navarra,Speed Circuit,ES,standard
+f4-es,2025-06-06,2025-06-08,Autódromo Internacional do Algarve,GP,PT,standard
+f4-es,2025-06-20,2025-06-22,Circuit Paul Ricard,1C-V2,FR,standard
+f4-es,2025-09-19,2025-09-21,Circuito de Jerez,GP,ES,standard
+f4-es,2025-10-17,2025-10-19,Circuit Ricardo Tormo,GP,ES,standard
+f4-es,2025-11-14,2025-11-16,Barcelona-Catalunya,GP,ES,standard
+freca,2025-05-02,2025-05-04,Misano,GP,IT,standard
+freca,2025-05-16,2025-05-18,Spa-Francorchamps,GP,BE,standard
+freca,2025-06-06,2025-06-08,Zandvoort,GP,NL,standard
+freca,2025-07-04,2025-07-06,Hungaroring,GP,HU,standard
+freca,2025-07-18,2025-07-20,Circuit Paul Ricard,1C-V2,FR,standard
+freca,2025-08-01,2025-08-03,Imola,GP,IT,standard
+freca,2025-09-05,2025-09-07,Red Bull Ring,GP,AT,standard
+freca,2025-09-19,2025-09-21,Barcelona-Catalunya,GP,ES,standard
+freca,2025-10-03,2025-10-05,Hockenheimring Baden-Württemberg,GP,DE,standard
+freca,2025-10-24,2025-10-26,Monza,GP,IT,standard
+kart-ok,2025-04-03,2025-04-06,KartCenter Campillos,International,ES,standard
+kart-ok,2025-05-01,2025-05-04,Kartódromo Internacional do Algarve,International,PT,standard
+kart-ok,2025-06-05,2025-06-08,Leopard Circuit Viterbo,International,IT,standard
+kart-ok,2025-07-31,2025-08-03,Rødby Karting Ring,International,DK,standard
+kart-okj,2025-04-03,2025-04-06,KartCenter Campillos,International,ES,standard
+kart-okj,2025-05-01,2025-05-04,Kartódromo Internacional do Algarve,International,PT,standard
+kart-okj,2025-06-05,2025-06-08,Leopard Circuit Viterbo,International,IT,standard
+kart-okj,2025-07-31,2025-08-03,Rødby Karting Ring,International,DK,standard

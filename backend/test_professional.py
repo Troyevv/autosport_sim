@@ -380,7 +380,9 @@ def test_migration_after_completed_and_open_courses():
                 staff=args,
             )
         )
-        domain.apply(s, WORLD, action, args)
+        from .roster_upgrade import personnel_world
+
+        domain.apply(s, personnel_world(), action, args)
     s["ledger"].sort(key=lambda row: (row["date"], row["org"], row["key"]))
     payload = dict(state=s, commands=commands)
     old = dict(

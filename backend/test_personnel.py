@@ -295,7 +295,9 @@ def test_midmonth_v2_migration_does_not_create_retroactive_wages():
     )
     domain.apply(state, world, "advance")
     opening = state["accounts"][MCLAREN]["payroll_cents"]
-    upgrade_personnel(state)
+    from .roster_upgrade import upgrade_juniors
+
+    upgrade_juniors(upgrade_personnel(state))
     individual = sum(
         r["salary_cents"] * 16 // 28
         for a, rows in state["seats"].items()
