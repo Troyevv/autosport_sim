@@ -9,6 +9,8 @@ from pathlib import Path
 from .domain import RuleError
 from .catalog import VERSION
 
+from .statistics.schema import DDL as STATISTICS_SCHEMA
+
 MIGRATIONS = [
     [
         "CREATE TABLE career (id TEXT PRIMARY KEY, state TEXT NOT NULL)",
@@ -37,6 +39,7 @@ MIGRATIONS = [
     [],  # Add country IDs and public profiles to existing v3 careers.
     [],  # Professional event ledger and retirement of universal courses.
     [],  # Regional series and karting activation on the current game date.
+    STATISTICS_SCHEMA,
 ]
 
 
@@ -120,6 +123,11 @@ def transaction(write=False):
                     if state["rules"] == "2025-v3":
                         upgrade_juniors(state)
                         store(db, row["id"], state)
+            if idx == 9:
+                from .statistics.personnel import refresh
+
+                for row in db.execute("SELECT id,state FROM career"):
+                    refresh(db, row["id"], json.loads(row["state"]))
             db.execute(f"PRAGMA user_version={idx + 1}")
         yield db
         db.commit()

@@ -1,14 +1,17 @@
 import json
+from tempfile import TemporaryFile
 from typing import Literal
 
-from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse, Response
+from fastapi import FastAPI, Query, Request
+from fastapi.responses import JSONResponse, Response, StreamingResponse
+from starlette.background import BackgroundTask
 from fastapi.concurrency import run_in_threadpool
 
 from . import backing, employment, media, service, staff_desk, storage
 from .staff_input import Day
 from .catalog import WORLD
 from .domain import RuleError
+from .statistics import archive, facts, telemetry
 from .livery import GARAGE
 
 app = FastAPI(title="Autosport Sim", version="0.2.0")
@@ -59,23 +62,18 @@ def create(spec: service.CareerInput):
     return service.create(spec)
 
 
-async def read_upload(request, limit):
-    data = bytearray()
-    async for chunk in request.stream():
-        if len(data) + len(chunk) > limit:
-            raise RuleError("Файл превышает допустимый размер.", 413)
-        data.extend(chunk)
-    return bytes(data)
-
-
 @app.post("/api/careers/import", status_code=201)
 async def import_career(request: Request):
-    body = await read_upload(request, 16 * 1024 * 1024)
-    try:
-        document = json.loads(body)
-    except (ValueError, UnicodeError, RecursionError):
-        raise RuleError("Не удалось прочитать сохранение.") from None
-    return await run_in_threadpool(service.import_save, document)
+    size = 0
+    limit = archive.file_limit()
+    with TemporaryFile() as upload:
+        async for chunk in request.stream():
+            size += len(chunk)
+            if size > limit:
+                raise RuleError("Файл превышает допустимый размер.", 413)
+            await run_in_threadpool(upload.write, chunk)
+        upload.seek(0)
+        return await run_in_threadpool(archive.read_file, upload)
 
 
 @app.get("/api/careers/{cid}")
@@ -134,13 +132,92 @@ def quote(
 
 @app.get("/api/careers/{cid}/export")
 def export(cid: str):
-    archive = service.export_save(cid)
-    return JSONResponse(
-        archive,
+    file, extended = archive.write_file(cid)
+    suffix = "autosport" if extended else "autosport.json"
+    return StreamingResponse(
+        iter(lambda: file.read(65536), b""),
+        media_type="application/octet-stream" if extended else "application/json",
         headers={
-            "Content-Disposition": f'attachment; filename="career-{cid}.autosport.json"'
+            "Content-Disposition": f'attachment; filename="career-{cid}.{suffix}"'
         },
+        background=BackgroundTask(file.close),
     )
+
+
+@app.get("/api/careers/{cid}/statistics")
+def statistics(
+    cid: str,
+    person: str | None = None,
+    org: str | None = None,
+    series: str | None = None,
+    season: str | None = None,
+    layout: str | None = None,
+    session: str | None = None,
+    kind: str | None = None,
+    manufacturer: str | None = None,
+    program: str | None = None,
+    track: str | None = None,
+    layout_version: str | None = None,
+    origin: Literal["initial", "simulation", "historical"] | None = None,
+    after: str | None = Query(None, max_length=8192),
+    limit: int = Query(50, ge=1, le=200),
+):
+    filters = {
+        k: v for k, v in locals().items() if k in facts.FILTERS and v is not None
+    }
+    try:
+        cursor = json.loads(after) if after is not None else None
+    except (ValueError, RecursionError):
+        raise RuleError("Некорректный курсор страницы.") from None
+    with storage.transaction() as db:
+        return facts.page(db, cid, filters=filters, after=cursor, limit=limit)
+
+
+@app.get("/api/careers/{cid}/statistics/ledger")
+def ledger_page(
+    cid: str,
+    after_date: str = "",
+    after_key: str = "",
+    limit: int = Query(50, ge=1, le=200),
+):
+    with storage.transaction() as db:
+        return facts.ledger(db, cid, after=(after_date, after_key), limit=limit)
+
+
+@app.get("/api/careers/{cid}/statistics/laps")
+def lap_summary(
+    cid: str,
+    session: str,
+    entry: str,
+    origin: Literal["initial", "simulation"] = "simulation",
+):
+    with storage.transaction() as db:
+        return facts.lap_summary(db, cid, session, entry, origin)
+
+
+@app.get("/api/careers/{cid}/statistics/telemetry")
+def channel_range(
+    cid: str,
+    session: str,
+    car: str,
+    channel: str,
+    start_us: int,
+    end_us: int,
+    instance: str = "",
+    limit: int = Query(8, ge=1, le=32),
+):
+    with storage.transaction() as db:
+        return telemetry.read(
+            db,
+            cid,
+            session=session,
+            car=car,
+            channel=channel,
+            start_us=start_us,
+            end_us=end_us,
+            instance=instance,
+            limit=limit,
+        )
 
 
 @app.post("/api/careers/{cid}/commands")

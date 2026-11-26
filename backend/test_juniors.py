@@ -83,6 +83,15 @@ def test_federation_decision_intake_and_calendar_year_boundary():
         == 403
     )
     c = service.execute(c["id"], command)
+    (published,) = (
+        TestClient(app)
+        .get(
+            f"/api/careers/{c['id']}/statistics",
+            params={"kind": "licence", "person": pid},
+        )
+        .json()["items"]
+    )
+    assert published["origin"] == "simulation" and published["body"]["data"] == issued
     person = snapshot(c)["people"][pid]
     rule = WORLD["championships"]["kart-okj"]["admission"]
     assert eligibility(person, rule, "2025-02-01") is None
@@ -198,6 +207,22 @@ def test_results_and_season_awards_are_distinct_and_idempotent():
     with pytest.raises(domain.RuleError):
         junior_path.record(
             s, WORLD, "season-classification", final | dict(certified_points=4)
+        )
+    from . import storage
+    from .statistics import facts, personnel
+
+    with storage.transaction(True) as db:
+        personnel.refresh(db, c["id"], s)
+        (row,) = facts.page(
+            db, c["id"], filters={"kind": "season-classification", "person": pid}
+        )["items"]
+        assert (
+            row["body"]["data"]
+            == s["people"][pid]["credentials"]["classifications"]["kart-ok-2025"]
+        )
+        assert (
+            row["body"]["context"]["regulation"]
+            == WORLD["championships"]["kart-ok"]["rules_id"]
         )
     cred = s["people"][pid]["credentials"]
     assert (

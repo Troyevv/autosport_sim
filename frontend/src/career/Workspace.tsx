@@ -296,7 +296,7 @@ export function Workspace({ world, c: initial, media }: SectionProps) {
                 </a>
                 <a className="btn btn-primary" href={'/api/careers/' + c.id + '/export'} download>
                   <Download size={15} />
-                  Экспорт JSON
+                  Экспорт сохранения
                 </a>
               </div>
             </>

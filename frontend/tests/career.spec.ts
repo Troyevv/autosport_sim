@@ -30,7 +30,7 @@ test('Штаб, брифинг, загрузка и перенос сохран�
   await expect(page.locator('.event-detail')).toContainText('Lusail')
   await page.getByRole('button', { name: 'Сохранение карьеры' }).click()
   const downloading = page.waitForEvent('download')
-  await page.getByRole('link', { name: 'Экспорт JSON' }).click()
+  await page.getByRole('link', { name: 'Экспорт сохранения' }).click()
   const download = await downloading
   const file = await download.path()
   await page.getByRole('link', { name: 'К списку карьер' }).click()

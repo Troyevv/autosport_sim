@@ -193,7 +193,7 @@ export function Library({ world, saves, media }: { world: World; saves: Save[]; 
               ) : (
                 <p className="panel-body muted">Здесь появятся ваши сохранения.</p>
               )}
-              <FileInput label="Импортировать сохранение" accept=".json" busy={busy} onFile={upload} />
+              <FileInput label="Импортировать сохранение" accept=".json,.autosport" busy={busy} onFile={upload} />
             </Panel>
             <Panel title="Локальная медиатека">
               <div className="panel-body">
