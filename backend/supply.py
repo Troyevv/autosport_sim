@@ -23,6 +23,11 @@ def tyre_eligible(policy, supplier, *, homologated):
     return supplier in listed
 
 
+def entry_agreement(entry, product):
+    """Stable agreement ID in the version-pinned starting supply catalog."""
+    return f"2025:{entry}:{product}"
+
+
 @dataclass(frozen=True)
 class SupportAssignment:
     """A manufacturer's employee serves a client within a dated service agreement."""

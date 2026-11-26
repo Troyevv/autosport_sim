@@ -667,7 +667,7 @@ def command(state, catalog, action, args):
 
 
 def assign_support(state, catalog, seat, row, args):
-    from .supply import SupportAssignment
+    from .supply import SupportAssignment, entry_agreement
     from dataclasses import asdict
 
     start, end = args["start"], args["end"]
@@ -696,7 +696,7 @@ def assign_support(state, catalog, seat, row, args):
         row["person"],
         seat["org"],
         entry["org"],
-        f"2025:{entry['id']}:{product}",
+        entry_agreement(entry["id"], product),
         product,
         start,
         end,

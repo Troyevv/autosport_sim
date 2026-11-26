@@ -17,6 +17,7 @@ from .roster_upgrade import (
     upgrade_personnel,
     upgrade_juniors,
 )
+from .statistics import personnel as statistics_personnel
 from .staff_input import ORDERS
 from . import preparation, professional, junior_path
 from .media_profile import COUNTRIES, initialize as initialize_identity
@@ -209,6 +210,7 @@ def create(spec):
         state = domain.new_world(WORLD, setup)
         cid = str(uuid4())
         storage.store(db, cid, state, create=True)
+        statistics_personnel.refresh(db, cid, state)
         return project(db, cid, state)
 
 
@@ -240,7 +242,16 @@ def execute(cid, command):
                 raise domain.RuleError(
                     "Карьеру изменили в другом окне. Состояние обновлено.", 409
                 )
+            previous = statistics_personnel.mutable_state(state)
             domain.apply(state, WORLD, command.action, args)
+            statistics_personnel.refresh(db, cid, state, previous, command.action, args)
+            if command.action == "advance":
+                from datetime import date
+                from .statistics.telemetry import get_policy, prune
+
+                policy = get_policy(db, cid)
+                if policy:
+                    prune(db, cid, date.fromisoformat(state["date"]), policy)
             storage.store(db, cid, state)
             db.execute(
                 "INSERT INTO receipt(career,command_id,revision,action,paint) VALUES(?,?,?,?,?)",
@@ -269,21 +280,43 @@ def confirm_work(cid, command_id, revision, facts):
     )
 
 
+def checkpoint_document(db, cid):
+    state = storage.checkpoint(db, cid)
+    state["ledger"] = storage.postings(db, cid)
+    payload = dict(state=state, commands=storage.receipts(db, cid))
+    return dict(
+        format="autosport-career",
+        version=1,
+        rules=VERSION,
+        payload=payload,
+        sha256=hashlib.sha256(storage.dump(payload).encode()).hexdigest(),
+    )
+
+
 def export_save(cid):
+    # In-memory convenience for legacy callers. File exports stream the same records.
+    from .statistics.archive import records
+
     with storage.transaction() as db:
-        state = storage.checkpoint(db, cid)
-        state["ledger"] = storage.postings(db, cid)
-        payload = dict(state=state, commands=storage.receipts(db, cid))
-        return dict(
-            format="autosport-career",
-            version=1,
-            rules=VERSION,
-            payload=payload,
-            sha256=hashlib.sha256(storage.dump(payload).encode()).hexdigest(),
-        )
+        doc = checkpoint_document(db, cid)
+        extra = []
+        size = 0
+        for item in records(db, cid):
+            size += len(storage.dump(item).encode())
+            if size > 16 * 1024**2:
+                raise domain.RuleError(
+                    "Для большого архива используйте файловый экспорт.", 413
+                )
+            extra.append(item)
+        if extra:
+            doc["payload"]["statistics_v1"] = extra
+            doc["sha256"] = hashlib.sha256(
+                storage.dump(doc["payload"]).encode()
+            ).hexdigest()
+        return doc
 
 
-def import_save(document):
+def import_save(document, *, statistics_records=None):
     if (
         not isinstance(document, dict)
         or document.get("format") != "autosport-career"
@@ -402,8 +435,24 @@ def import_save(document):
     cid = str(uuid4())
     with storage.transaction(True) as db:
         storage.store(db, cid, state, create=True)
+        statistics_personnel.refresh(db, cid, state)
         db.executemany(
             "INSERT INTO receipt(career,command_id,revision,action,paint) VALUES(?,?,?,?,?)",
             [(cid, *row) for row in receipts],
+        )
+        from .statistics.archive import restore
+
+        if statistics_records is not None and "statistics_v1" in payload:
+            raise domain.RuleError("Два архива статистики в одном сохранении.")
+        if "statistics_v1" in payload and not isinstance(
+            payload["statistics_v1"], list
+        ):
+            raise domain.RuleError("Некорректный формат статистики.")
+        restore(
+            db,
+            cid,
+            payload.get("statistics_v1", [])
+            if statistics_records is None
+            else statistics_records,
         )
         return project(db, cid, state)
