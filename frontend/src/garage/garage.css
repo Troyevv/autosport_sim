@@ -395,3 +395,24 @@
   margin-top: 14px;
   font-size: 0.76rem;
 }
+
+.component-desk {
+  display: grid;
+  gap: 14px;
+  scroll-margin-top: 74px;
+  min-width: 0;
+}
+.component-desk p { margin: 0; line-height: 1.5; }
+.component-desk code { overflow-wrap: anywhere; font-size: .83rem; }
+.component-desk summary { cursor: pointer; padding: 7px 0; font-weight: 600; }
+.component-desk details > p { margin: 8px 0; }
+.component-desk .garage-fields .facts { padding-inline: 0; }
+.component-id { color: #b9c2cd; }
+
+@media (min-width: 1000px) {
+  .with-passport > .studio-controls,
+  .with-passport .component-desk { display: contents; }
+  .with-passport .component-desk > :first-child { grid-column: 2; grid-row: 1; }
+  .with-passport .component-desk > :nth-child(2) { grid-column: 1; grid-row: 2; }
+  .with-passport .component-desk > :nth-child(3) { grid-column: 2; grid-row: 2; }
+}

@@ -11,7 +11,7 @@ from .finance.events import PRODUCERS
 from .finance import market, rights, budget, economy, capital, facilities
 from .livery import GARAGE, PaintOrder
 from .catalog import VERSION, WORLD, LINEUP_WORLD
-from . import lineup
+from . import lineup, components
 from .roster_upgrade import (
     original_world,
     previous_world,
@@ -64,6 +64,7 @@ class Command(Strict):
     command_id: str = Field(min_length=1, max_length=80, pattern=r"^[A-Za-z0-9_-]+$")
     revision: int = Field(ge=0)
     action: str = Field(min_length=1, max_length=32)
+    engineering: components.Install | components.Usage | None = None
     paint: PaintOrder | None = None
     staff: dict | None = None
     finance: dict | None = None
@@ -72,6 +73,16 @@ class Command(Strict):
     def check_action_payload(self):
         if (self.action == "save-livery") != (self.paint is not None):
             raise ValueError("Неверные параметры команды ливреи.")
+        if self.action in ("component-install", "component-usage"):
+            expected = (
+                components.Install
+                if self.action == "component-install"
+                else components.Usage
+            )
+            if type(self.engineering) is not expected:
+                raise ValueError("Неверные параметры инженерной команды.")
+        elif self.engineering is not None:
+            raise ValueError("Лишние параметры инженерной команды.")
         orders = {
             **ORDERS,
             **lineup.ORDERS,
@@ -101,6 +112,8 @@ class Command(Strict):
         return self
 
     def payload(self):
+        if self.engineering is not None:
+            return self.engineering.model_dump()
         return (
             self.paint.model_dump()
             if self.paint
@@ -183,6 +196,10 @@ def project(db, cid, state):
             development_spent_cents=view["actual"].get("engineering", 0),
             development_reserved_cents=view["reserved"]["engineering"],
         )
+    visual_mounts = {
+        world["entries"][eid]["car"]: components.visual_parts(state, eid)
+        for eid in state.get("components", {}).get("mounts", {})
+    }
     return dict(
         crews=crews,
         team_names=rights.title_names(state, world, state["date"]),
@@ -217,7 +234,8 @@ def project(db, cid, state):
                 regulation=config["regulation"],
                 concept=config["concept"],
                 geometry=VISUAL_CONCEPTS.get((config["regulation"], config["concept"])),
-                installed=config.get("visual_parts", {}),
+                installed=config.get("visual_parts", {})
+                | visual_mounts.get(car_id, {}),
             )
             for car_id, config in state["car_configurations"].items()
         },
@@ -260,6 +278,7 @@ def create(spec):
         capital.initialize(state, WORLD)
         economy.initialize(state, WORLD)
         lineup.terms.initialize(state, LINEUP_WORLD)
+        components.initialize(state)
         cid = str(uuid4())
         storage.store(db, cid, state, create=True)
         statistics_personnel.refresh(db, cid, state)
@@ -296,6 +315,10 @@ def execute(cid, command):
                 )
             previous = statistics_personnel.mutable_state(state)
             domain.apply(state, WORLD, command.action, args)
+            if command.action == "component-install":
+                components.write_install_fact(
+                    db, cid, state, LINEUP_WORLD, state["components"]["history"][-1]
+                )
             statistics_personnel.refresh(db, cid, state, previous, command.action, args)
             if command.action == "advance":
                 from datetime import date
@@ -488,6 +511,9 @@ def import_save(document, *, statistics_records=None):
             if saved.get("lineup", {}).get("since") == state["revision"]:
                 lineup.terms.initialize(state, LINEUP_WORLD)
 
+            if saved.get("components", {}).get("since") == state["revision"]:
+                components.initialize(state)
+
         for original in commands:
             item = original
             apply_migrations()
@@ -546,6 +572,7 @@ def import_save(document, *, statistics_records=None):
         economy.initialize(state, WORLD)
         facilities.migrate(state)
         lineup.terms.initialize(state, LINEUP_WORLD)
+        components.initialize(state)
     except (KeyError, TypeError, ValueError, RecursionError, ValidationError):
         raise domain.RuleError("Файл повреждён или нарушает правила мира.") from None
     cid = str(uuid4())
@@ -556,6 +583,8 @@ def import_save(document, *, statistics_records=None):
             "INSERT INTO receipt(career,command_id,revision,action,paint) VALUES(?,?,?,?,?)",
             [(cid, *row) for row in receipts],
         )
+        for event in state["components"]["history"]:
+            components.write_install_fact(db, cid, state, LINEUP_WORLD, event)
         from .statistics.archive import restore
 
         if statistics_records is not None and "statistics_v1" in payload:

@@ -238,6 +238,24 @@ def apply(state, catalog, action, payload=None):
         from .catalog import LINEUP_WORLD
 
         catalog = LINEUP_WORLD
+        if action in ("component-install", "component-usage") and "components" in state:
+            from . import components
+
+            if action == "component-install":
+                if state["setup"]["role"] != "manager":
+                    raise RuleError("Установку согласует менеджер команды.", 403)
+                components.install(
+                    state,
+                    catalog,
+                    components.Install.model_validate(payload),
+                    state["setup"]["org"],
+                )
+            else:
+                components.apply_usage(
+                    state, catalog, components.Usage.model_validate(payload)
+                )
+            state["revision"] += 1
+            return
         if action in lineup.PRODUCERS:
             lineup.confirm(state, catalog, action, payload)
             state["revision"] += 1

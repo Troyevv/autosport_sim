@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { Check, Eye, Images, RotateCcw, Save, Undo2 } from 'lucide-react'
 import { api, ApiError, explain, post, type Career, type World } from '../career/api'
 import { Button, Choices, Dialog, Facts, Header, Panel } from '../ui/components'
+import { Components } from './Components'
 import { CarView } from './CarView'
 import { DecalPanel } from './DecalPanel'
 import { geometry, partNames, sameLivery, type Catalog, type Livery } from './model'
@@ -141,8 +142,8 @@ function Studio({ c, world, catalog, updateCareer }: Props & { catalog: Catalog 
   }
   const installed = useMemo(
     () =>
-      wing === 'standard' ? configuration.installed : { ...configuration.installed, 'rear-wing': wing },
-    [wing, configuration],
+      tab !== 'parts' || wing === 'standard' ? configuration.installed : { ...configuration.installed, 'rear-wing': wing },
+    [wing, configuration, tab],
   )
   const viewProps = {
     model,
@@ -196,7 +197,7 @@ function Studio({ c, world, catalog, updateCareer }: Props & { catalog: Catalog 
         </label>
       </div>
       <Choices label="Раздел гаража" items={tabs} active={tab} onChange={setTab} />
-      <div className={'studio-layout' + (tab === 'livery' || tab === 'sponsors' ? ' editing' : '')}>
+      <div className={'studio-layout' + (tab === 'parts' && own ? ' with-passport' : '') + (tab === 'livery' || tab === 'sponsors' ? ' editing' : '')}>
         <section className="studio-panel">
           <div className="studio-stage">
             <header>
@@ -253,8 +254,32 @@ function Studio({ c, world, catalog, updateCareer }: Props & { catalog: Catalog 
               <i style={{ background: livery.colors[0] }} />
               {dirty ? 'Черновик' : c.liveries[entryId] ? 'Карьерная ливрея' : 'Стартовая ливрея'}
             </span>
-            <span>{catalog.patterns[livery.pattern].name}</span>
+            <span>{tab === 'parts' && wing !== 'standard' ? 'Предпросмотр антикрыла' : catalog.patterns[livery.pattern].name}</span>
           </div>
+          {tab === 'parts' && (
+            <Panel title="Визуальные модули">
+              <div className="garage-fields">
+                <label>
+                  Антикрыло в предпросмотре
+                  <select value={wing} onChange={(e) => setWing(e.target.value)}>
+                    <option value="standard">Установленный профиль</option>
+                    {Object.keys(geometry[model].variants['rear-wing'] || {}).map(key => (
+                      <option key={key} value={key}>Низкий профиль · пример</option>
+                    ))}
+                  </select>
+                </label>
+                <small>Регламент {car.regulation}</small>
+                <div className="garage-parts">
+                  {geometry[model].parts.map(([id]) => (
+                    <span key={id}>
+                      <Check size={12} />
+                      {partNames[id]}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </Panel>
+          )}
         </section>
         <aside className="studio-controls">
           {tab === 'overview' && (
@@ -362,29 +387,9 @@ function Studio({ c, world, catalog, updateCareer }: Props & { catalog: Catalog 
               />
             </Panel>
           )}
-          {tab === 'parts' && (
-            <Panel title="Конфигурация машины">
-              <div className="garage-fields">
-                <label>
-                  Антикрыло в предпросмотре
-                  <select value={wing} onChange={(e) => setWing(e.target.value as typeof wing)}>
-                    <option value="standard">Стартовый профиль</option>
-                    {Object.keys(geometry[model].variants['rear-wing'] || {}).map(key => (
-                      <option key={key} value={key}>Низкий профиль · пример</option>
-                    ))}
-                  </select>
-                </label>
-                <small>Регламент {car.regulation}</small>
-                <div className="garage-parts">
-                  {geometry[model].parts.map(([id]) => (
-                    <span key={id}>
-                      <Check size={12} />
-                      {partNames[id]}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </Panel>
+          {tab === 'parts' && (own
+            ? <Components key={entryId} entry={entryId} c={c} update={(next) => { setWing('standard'); updateCareer(next) }} />
+            : <Panel title="Технический паспорт"><p className="garage-fields">Состав сборки и история эксплуатации доступны сотрудникам команды.</p></Panel>
           )}
           {(tab === 'livery' || tab === 'sponsors' || dirty) && (
             <div className="panel garage-fields">
