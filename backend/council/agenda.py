@@ -19,6 +19,7 @@ from .evidence import preferred, protocols, replacement_due, verdict
 
 
 OCCASIONS = {
+    "programme": "Программа сезона",
     "direction": "Выбор направления",
     "session": "Разбор сессии",
     "study": "Заключение исследования",
@@ -216,9 +217,9 @@ def build(
     )
 
 
-def design_option(state, world, entry, axis, base, lead):
+def design_option(state, world, entry, axis, base, lead, *, config=None):
     d = drawing_for(state, base)
-    config = state["car_configurations"][entry["car"]]
+    config = config or state["car_configurations"][entry["car"]]
     p = dict(
         brief="performance" if state["people"][lead]["ambition"] >= 75 else "balanced",
         evidence=evidence(
@@ -272,6 +273,12 @@ def topics(state, world, org):
         yield from research_topics(state, world, e, staff, projects)
         yield from revision_topics(state, world, e, staff, projects)
         yield from fit_topics(state, world, e, staff, fitted)
+    if entries and "programme" in state:
+        from ..programme.packages import entries_for, topics as programme_topics
+
+        for e in entries_for(world, org):
+            if e["id"] in staff_by_entry:
+                yield from programme_topics(state, world, e, staff_by_entry[e["id"]])
     if entries:
         yield from resource_topics(state, world, org, staff_by_entry, studies, projects)
         yield from workshop_topics(state, world, org, entries, staff_by_entry)
@@ -408,6 +415,7 @@ def research_topics(state, world, e, staff, projects):
     for r in state["research"]["reports"].values():
         if (
             r["org"] != org
+            or state["research"]["projects"][r["project"]].get("target_year")
             or state["research"]["projects"][r["project"]]["entry"] != eid
         ):
             continue
@@ -446,6 +454,7 @@ def revision_topics(state, world, e, staff, projects):
     for p in projects:
         if (
             p["entry"] != eid
+            or p.get("target_year")
             or not p.get("specification")
             or (p["disposition"] == "withdrawn" and not p["findings"])
         ):

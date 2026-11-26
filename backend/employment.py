@@ -445,6 +445,10 @@ def advance_dates(state, catalog, target):
             research.advance(state, catalog, day)
         develop(state, catalog, day)
         state["date"] = day
+        if "programme" in state and day.endswith("-01-01"):
+            from .programme.rules import check_grid
+
+            check_grid(state, catalog)
         if "growth_since" in state:
             preparation.finish(state, catalog, day)
         if day == month:

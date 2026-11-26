@@ -20,7 +20,7 @@ class Design(Fields):
     entry: Id
     baseline: Id
     priority: Priority
-    brief: Literal["performance", "balanced"]
+    brief: Literal["performance", "balanced", "reliability"]
 
 
 class TestOrder(Fields):
@@ -51,9 +51,15 @@ def initialize(state):
     )
 
 
-def restriction(state, world, entry, axis):
+def restriction(state, world, entry, axis, *, year=None, reliability=False):
     car = world["cars"][entry["car"]]
+    from ..programme.rules import bulletin
+
     config = state["car_configurations"][entry["car"]]
+    if "programme" in state:
+        rule = bulletin(world, entry, year or int(state["date"][:4]))
+        if rule["slot"] == axis and state["date"] >= rule["freeze"] and not reliability:
+            return "Регламент заморозил разработку узла."
     rule = OPENING.rules.get(config["regulation"])
     if axis in state["components"]["locked_slots"].get(entry["id"], {}):
         return "Изменения узла заморожены."
@@ -118,13 +124,22 @@ def test_inputs(state, org, specification):
     ]
 
 
-def commission(state, world, org, key, order):
+def commission(state, world, org, key, order, *, target_year=None):
     projects = state["development"]["projects"]
     if key in projects:
         prior = projects[key]
-        if prior["org"] != org or prior["order"] != order.model_dump():
+        if (
+            prior["org"] != org
+            or prior["order"] != order.model_dump()
+            or (target_year is not None and prior.get("target_year") != target_year)
+        ):
             raise RuleError("Номер поручения уже используется.", 409)
         return prior
+    from ..programme import paused
+
+    year = target_year or int(state["date"][:4])
+    if paused(state, org, year) and isinstance(order, Design):
+        raise RuleError("Развитие текущего поколения остановлено менеджером.", 409)
     entry = world["entries"].get(order.entry)
     if not entry or entry["org"] != org or not admitted(state, entry):
         raise RuleError("Нет допуска к этой программе.", 403)
@@ -133,12 +148,45 @@ def commission(state, world, org, key, order):
     if axis not in components.mounting(state, entry["id"]):
         raise RuleError("Узел отсутствует в этой заявке.")
     allowed = {d["id"] for d in versions(state, entry["id"], axis)}
-    config = state["car_configurations"][entry["car"]]
-    if base["id"] not in allowed or base["regulation"] != config["regulation"]:
+    from ..programme.rules import config_for
+
+    config = config_for(state, world, entry, target_year)
+    if base["id"] not in allowed or base["regulation"] not in (
+        config["regulation"],
+        world["cars"][entry["car"]]["regulation"],
+    ):
         raise RuleError("Чертёж не принадлежит программе.", 403)
     design = isinstance(order, Design)
+    if base.get("programme_concept") and base["programme_concept"] != config["concept"]:
+        raise RuleError("Чертёж относится к другой концепции.")
+    if not design and drawing_for(state, order.candidate).get("regulation") not in (
+        base["regulation"],
+        config["regulation"],
+    ):
+        raise RuleError("Испытуемый узел относится к другому поколению.")
     if design:
-        reason = restriction(state, world, entry, axis)
+        if order.brief == "reliability":
+            parent = state["development"]["projects"].get(base.get("reference"), {})
+            if not parent.get("findings"):
+                raise RuleError("Исправление требует выявленного дефекта.")
+        reason = restriction(
+            state,
+            world,
+            entry,
+            axis,
+            year=target_year,
+            reliability=order.brief == "reliability",
+        )
+        if config["concept"] != world["cars"][entry["car"]]["concept"] and not any(
+            r["org"] == org
+            and r["axis"] == axis
+            and r["concept"] == config["concept"]
+            and r["regulation"] == config["regulation"]
+            for r in state["research"]["reports"].values()
+        ):
+            raise RuleError(
+                "Для новой компоновки сначала требуется заключение исследования.", 409
+            )
         if reason or base["manufacturer"] != org:
             raise RuleError(reason or "Нет прав конструктора.", 403)
     elif order.method not in methods(axis) or order.candidate not in allowed:
@@ -183,6 +231,14 @@ def commission(state, world, org, key, order):
             for slot, iid in components.mounting(state, entry["id"]).items()
         },
     )
+    if (
+        target_year is not None
+        or config["concept"] != world["cars"][entry["car"]]["concept"]
+    ):
+        p["target_year"] = target_year or year
+        from ..programme.packages import assembly_for
+
+        p["assembly"] = assembly_for(state, world, entry, p["target_year"])
     if design:
         ability = evaluate(state["people"][lead], world, state["date"])["values"][skill]
         p.update(
@@ -325,8 +381,17 @@ def review(state, world, p, disposition, actor):
         drawing = drawing_for(state, p["specification"])
         if (
             not admitted(state, entry)
-            or restriction(state, world, entry, p["axis"])
-            or not components.compatible(state, world, entry, drawing)
+            or restriction(
+                state,
+                world,
+                entry,
+                p["axis"],
+                year=p.get("target_year"),
+                reliability=p.get("brief") == "reliability",
+            )
+            or not components.compatible(
+                state, world, entry, drawing, year=p.get("target_year"), for_review=True
+            )
         ):
             raise RuleError(
                 "Редакция не соответствует действующей программе и допуску узла."

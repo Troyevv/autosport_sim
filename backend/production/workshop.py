@@ -6,11 +6,11 @@ from typing import NamedTuple
 
 from .. import components
 from ..components.registry import register_instance, drawing_for
+from ..programme.rules import dossier
 from ..domain import RuleError
 from ..finance import facilities
 from ..personnel import evaluate
 from ..research import available_person, record_work, admitted
-from ..research.model import queue_position
 from ..team_staff import department_capacity
 from . import permitted, log
 
@@ -72,7 +72,18 @@ def booked_site(state, org, kind, day, end, contractor):
     return None, None
 
 
-def shift(state, world, entry, used, kind, key, *, contractor=False, repair=False):
+def shift(
+    state,
+    world,
+    entry,
+    used,
+    kind,
+    key,
+    *,
+    contractor=False,
+    repair=False,
+    regulation=None,
+):
     org, day = entry["org"], state["date"]
     tomorrow = facilities.later(day, 1)
     inspection = kind == "quality"
@@ -135,7 +146,8 @@ def shift(state, world, entry, used, kind, key, *, contractor=False, repair=Fals
         facilities.PROCESS[kind],
         key.rsplit("/", 1)[0],
         program=entry["program"],
-        regulation=state["car_configurations"][entry["car"]]["regulation"],
+        regulation=regulation
+        or state["car_configurations"][entry["car"]]["regulation"],
     )
     if rental:
         state["estate"]["bookings"][key]["rental"] = rental["id"]
@@ -176,7 +188,12 @@ def fabricate(state, world, batch, used):
     entry = world["entries"][batch["entry"]]
     version, key = batch["specification"], batch["id"]
     reason = permitted(
-        state, world, entry, drawing_for(state, version), batch["outsource"]
+        state,
+        world,
+        entry,
+        drawing_for(state, version),
+        batch["outsource"],
+        year=batch.get("target_year"),
     )
     if reason:
         batch.update(status="queued", reason=reason)
@@ -193,6 +210,9 @@ def fabricate(state, world, batch, used):
             "factory",
             shift_id,
             contractor=batch["outsource"],
+            regulation=drawing_for(state, version)["regulation"]
+            if not batch.get("target_year")
+            else dossier(state, world, entry, batch["target_year"])["regulation"],
         )
     except RuleError as error:
         batch.update(status="queued", reason=str(error))
@@ -362,7 +382,15 @@ def day(state, world, used):
             and not item.get("rejected")
         ):
             service_item(state, world, iid, item, used)
+    from ..programme import queue_key, paused, work_year
+
     for batch in sorted(
-        (b for b in data["batches"].values() if not b["finished"]), key=queue_position
+        (b for b in data["batches"].values() if not b["finished"]),
+        key=lambda b: queue_key(state, b),
     ):
+        if batch.get("target_year") and paused(
+            state, batch["org"], work_year(state, batch)
+        ):
+            batch.update(status="queued", reason="Развитие поколения приостановлено.")
+            continue
         fabricate(state, world, batch, used)

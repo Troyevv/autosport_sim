@@ -58,20 +58,45 @@ def remaining(state, iid):
     return max(0, spec(state, iid)["life_m"] - condition(state, iid)["distance_m"])
 
 
-def compatible(state, world, entry, drawing):
+def compatible(
+    state, world, entry, drawing, *, year=None, for_review=False, planning=False
+):
     car = world["cars"][entry["car"]]
     slot = drawing["slot"]
     if slot in state["components"]["locked_slots"].get(entry["id"], {}):
         return False
-    if (
-        drawing["regulation"] != state["car_configurations"][entry["car"]]["regulation"]
-        or drawing["interface"] != OPENING.interfaces[entry["id"]]
+    opening = state["car_configurations"][entry["car"]]["regulation"]
+    if "programme" in state and (
+        (year or int(state["date"][:4])) != 2025 or drawing.get("programme_concept")
     ):
+        from ..programme.rules import dossier, admitted_version
+
+        year = year or int(state["date"][:4])
+        plan = dossier(state, world, entry, year)
+        if (
+            drawing["regulation"] not in (opening, plan["regulation"])
+            or drawing.get("programme_concept", plan["concept"]) != plan["concept"]
+        ):
+            return False
+        if not for_review and not admitted_version(state, world, entry, drawing, year):
+            return False
+    elif drawing["regulation"] != opening:
+        return False
+    if (
+        "programme" in state
+        and state["components"]["revisions"]
+        and not (for_review or planning)
+    ):
+        from ..programme.packages import installation_dependency
+
+        if not installation_dependency(state, entry, drawing):
+            return False
+    if drawing["interface"] != OPENING.interfaces[entry["id"]]:
         return False
     original = OPENING.installed[entry["id"]].get(slot)
     if not original:
         return False
-    rule = OPENING.rules[drawing["regulation"]]
+    rule = OPENING.rules[car["regulation"]]
     certified = drawing["id"] in rule["approved"] or drawing["id"] in state[
         "components"
     ]["admissions"].get(drawing["regulation"], [])
@@ -299,6 +324,8 @@ def install(state, world, order, org):
         event_id += f"-{len(data['history']) + 1}"
     data["mounts"].setdefault(entry["id"], {})[slot] = iid
     fitted = mounting(state, entry["id"])
+    from ..programme.rules import config_for
+
     data["history"].append(
         dict(
             id=event_id,
@@ -310,7 +337,7 @@ def install(state, world, order, org):
             removed=previous,
             removed_condition=dict(condition(state, previous)),
             instance=iid,
-            configuration=dict(state["car_configurations"][entry["car"]]),
+            configuration=dict(config_for(state, world, entry)),
             fitted=fitted,
             conditions={key: dict(condition(state, key)) for key in fitted.values()},
             mechanic=staff["chief-mechanic"],

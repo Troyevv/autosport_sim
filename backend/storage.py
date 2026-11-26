@@ -58,6 +58,7 @@ MIGRATIONS = [
     [],  # Activate design and metrology at this checkpoint.
     [],  # Open the production ledger without synthesizing historic batches.
     [],  # Activate evidence-led engineering decisions at this revision.
+    [],  # Open the two season portfolios at the saved revision.
 ]
 
 
@@ -262,6 +263,13 @@ def transaction(write=False):
                     for event in state["council"]["history"]:
                         write_fact(db, row["id"], state, LINEUP_WORLD, event)
                     store(db, row["id"], state)
+            if idx == 24:
+                from .programme import initialize
+
+                for row in db.execute("SELECT id FROM career").fetchall():
+                    state = checkpoint(db, row["id"])
+                    initialize(state)
+                    store(db, row["id"], state)
             db.execute(f"PRAGMA user_version={idx + 1}")
         yield db
         db.commit()
@@ -320,6 +328,8 @@ def receipts(db, cid):
                 if item["action"] == "save-livery"
                 else "finance"
                 if item["action"].startswith("finance-")
+                else "programme"
+                if item["action"].startswith("programme-")
                 else "council"
                 if item["action"].startswith("council-")
                 else "production"

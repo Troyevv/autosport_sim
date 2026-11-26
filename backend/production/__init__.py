@@ -52,18 +52,22 @@ def initialize(state):
     )
 
 
-def permitted(state, world, entry, drawing, outsource):
+def permitted(state, world, entry, drawing, outsource, *, year=None):
     if not admitted(state, entry):
         return "Нет действующего допуска программы."
     org, slot = entry["org"], drawing["slot"]
-    if not components.compatible(state, world, entry, drawing):
+    if not components.compatible(
+        state, world, entry, drawing, year=year, planning=True
+    ):
         return "Узел несовместим, заморожен или не разрешён регламентом и договором поставки."
     if drawing["id"] not in OPENING.specs and not development.released(
         state, org, drawing["id"]
     ):
         return "Редакция ожидает допуска или отозвана."
     if drawing["manufacturer"] == org:
-        return development.restriction(state, world, entry, slot)
+        return development.restriction(
+            state, world, entry, slot, year=year, reliability=True
+        )
     if contracted_supplier(state, entry, slot) not in (None, drawing["manufacturer"]):
         return "По действующему договору узел поставляет другой изготовитель."
     if not outsource:
@@ -103,17 +107,28 @@ def log(state, entry, version, code, actor, *, batch=None, instance=None):
     )
 
 
-def commission(state, world, org, key, order):
+def commission(state, world, org, key, order, *, target_year=None):
     batches = state["production"]["batches"]
     if key in batches:
-        if batches[key]["org"] == org and batches[key]["request"] == order.model_dump():
+        if (
+            batches[key]["org"] == org
+            and batches[key]["request"] == order.model_dump()
+            and batches[key].get("target_year") == target_year
+        ):
             return batches[key]
         raise RuleError("Номер партии уже использован.", 409)
+    from ..programme import paused
+
+    year = target_year or int(state["date"][:4])
+    if paused(state, org, year) and target_year is not None:
+        raise RuleError("Развитие текущего поколения остановлено менеджером.", 409)
     entry = world["entries"].get(order.entry)
     if not entry or entry["org"] != org:
         raise RuleError("Заявка вне полномочий команды.", 403)
     drawing = drawing_for(state, order.specification)
-    if reason := permitted(state, world, entry, drawing, order.outsource):
+    if reason := permitted(
+        state, world, entry, drawing, order.outsource, year=target_year
+    ):
         raise RuleError(reason)
     lead = components.specialists(state, world, entry).get("chief-mechanic")
     if not lead:
@@ -145,6 +160,8 @@ def commission(state, world, org, key, order):
         grants=[],
         participants={},
     )
+    if target_year is not None:
+        batch["target_year"] = target_year
     batches[key] = batch
     log(state, entry["id"], drawing["id"], "ordered", lead, batch=key)
     return batch

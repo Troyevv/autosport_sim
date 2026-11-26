@@ -40,8 +40,8 @@ def technical_catalog(rules, entries, cars, config):
             concept=concept,
             regulation=generations[gid]["regulation"],
         )
-    # Only the announced F1 successor is seeded. Other future homologations can be registered independently.
-    generation("f1-2026", "F1")
+    for entry in entries.values():
+        generation(entry["championship"] + "-2026", entry["category"])
     return dict(
         seasons=seasons,
         technical_rules=regulations,
@@ -53,11 +53,22 @@ def technical_catalog(rules, entries, cars, config):
     )
 
 
-def project_target(world, program_id, season_id, generation_id):
+def project_target(world, program_id, season_id, generation_id, *, planning_year=None):
     program = world["programs"].get(program_id)
     engineering = world["engineering"]
     gen = engineering["generations"].get(generation_id)
     season = engineering["seasons"].get(season_id)
+    if program and planning_year and not gen:
+        for year in (planning_year, planning_year + 1):
+            for category in program["classes"]:
+                sid = f"{program['championship']}-{year}"
+                if season_id == sid and generation_id == f"{sid}-{category.lower()}-v1":
+                    gen = dict(
+                        category=category,
+                        season=sid,
+                        regulation="tech-" + generation_id,
+                    )
+                    season = dict(championship=program["championship"])
     if (
         not program
         or not gen

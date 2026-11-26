@@ -139,6 +139,12 @@ def forecast(state, base, project, ability):
             round(center * (1 - width), 6),
             round(center * (1 + width), 6),
         ]
+    if brief == "reliability":
+        project["package_forecast"] = {}
+        return {
+            metric: [round(value * (1 - width), 6), round(value * (1 + width), 6)]
+            for metric, value in values.items()
+        }
     return result
 
 
@@ -188,6 +194,19 @@ def finish_design(state, project, quality):
         reference=key,
         refinement=True,
     )
+    if project.get("target_year") or project["regulation"] != base["regulation"]:
+        drawing = state["components"]["revisions"][result]
+        drawing.update(
+            regulation=project["regulation"], programme_concept=project["concept"]
+        )
+        from ..programme.packages import PAIRS
+
+        dependency = project["assembly"].get(PAIRS[axis])
+        if dependency in state["components"]["revisions"]:
+            drawing["requires"] = {PAIRS[axis]: dependency}
+    if project["brief"] == "reliability":
+        drawing = state["components"]["revisions"][result]
+        drawing.update(parameters=dict(base["parameters"]), reliability_fix=True)
     project.update(specification=result, disposition="review", latent_defect=defect)
 
 

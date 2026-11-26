@@ -126,11 +126,11 @@ def design_context(state, entry, axis):
     )
 
 
-def question_for(state, world, entry, drawing):
+def question_for(state, world, entry, drawing, *, config=None):
     from ..development import restriction
 
     axis = drawing["slot"]
-    config = state["car_configurations"][entry["car"]]
+    config = config or state["car_configurations"][entry["car"]]
     prior = evidence(state, entry["org"], axis, config["concept"], config["regulation"])
     coupling = INTERACTIONS[axis]
     if prior:

@@ -553,7 +553,13 @@ def check_allowance(pool, request):
 
 
 def project(state, world, cost):
-    scope = project_target(world, cost.program, cost.target_season, cost.generation)
+    scope = project_target(
+        world,
+        cost.program,
+        cost.target_season,
+        cost.generation,
+        planning_year=int(state["date"][:4]) if "programme" in state else None,
+    )
     org = scope["budget_owner"]
     key = cost.project
     plans = state["control"]["projects"]
