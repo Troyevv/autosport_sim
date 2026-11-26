@@ -31,17 +31,26 @@ test('Исследования · от гипотезы до архива и п�
     await button('Утвердить расходы').click()
     await expect(page.getByRole('dialog')).toHaveCount(0)
   }
-  await button('Изменить приоритет').last().click()
+  const cooling = page.locator('.research-card').filter({ has: page.getByRole('heading', { name: /RB21/ }) })
+  await expect(page.locator('.research-card')).toHaveCount(2)
+  await cooling.getByRole('button', { name: 'Изменить приоритет' }).click()
   await page.getByRole('combobox', { name: 'Приоритет', exact: true }).selectOption('high')
   await button('Сохранить приоритет').click()
-  await expect(page.locator('.research-card').first()).toContainText('Высокий приоритет')
+  await expect(cooling).toContainText('Высокий приоритет')
   const progress = async () => {
-    const wait = page.waitForResponse((r) => r.url().endsWith('/research') && r.request().method() === 'GET')
+    const command = page.waitForResponse(
+      (r) => r.url().endsWith('/commands') && r.request().postDataJSON()?.action === 'advance',
+    )
+    const refresh = page.waitForResponse(
+      (r) => r.url().endsWith('/research') && r.request().method() === 'GET',
+    )
     await button('Продолжить').click()
-    await wait
+    expect((await command).ok()).toBe(true)
+    const desk = await (await refresh).json()
+    return desk.reports.length as number
   }
   await progress()
-  await expect(page.locator('.research-card').first()).toContainText('В работе')
+  await expect(cooling).toContainText('В работе')
   const capture = async (name: string) => {
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(page.viewportSize()!.width)
     if (process.env.RESEARCH_EVIDENCE)
@@ -55,8 +64,10 @@ test('Исследования · от гипотезы до архива и п�
       .evaluate((el) => window.scrollTo(0, el.getBoundingClientRect().top + scrollY - 72))
   else await page.evaluate(() => window.scrollTo(0, 0))
   await capture('queue')
-  await progress()
-  await progress()
+  let reports = await progress()
+  for (let day = 0; !reports && day < 4; day++) reports = await progress()
+  expect(reports).toBeGreaterThan(0)
+  await expect(cooling).toHaveCount(0)
   await button('Техническая память').click()
   await expect(page.locator('.research-card').first()).toContainText('Заявочный лист')
   await page.getByLabel('Оценить применимость к').selectOption({ index: 1 })
