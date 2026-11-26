@@ -95,11 +95,9 @@ def shift(state, world, entry, used, kind, key, *, contractor=False, repair=Fals
         raise RuleError("Недостаточно доступных человеко-часов подразделения.")
     site, rental = booked_site(state, org, kind, day, tomorrow, contractor)
     fee = 0
-    if not site and (
-        contractor
-        or org != state["setup"]["org"]
-        or state["setup"]["role"] != "manager"
-    ):
+    from ..council import may_rent
+
+    if not site and (contractor or may_rent(state, org)):
         site = state["estate"]["assets"]["shared:" + kind]
         facilities.act(
             state,
@@ -343,7 +341,7 @@ def service_item(state, world, iid, item, used):
                 batch=item["batch"],
                 instance=other_id,
             )
-    if code == "accepted":
+    if code == "accepted" and "council" not in state:
         from .planning import issue_to_car
 
         issue_to_car(state, world, iid, item)
@@ -352,7 +350,8 @@ def service_item(state, world, iid, item, used):
 def day(state, world, used):
     from .planning import npc_plan
 
-    npc_plan(state, world)
+    if "council" not in state:
+        npc_plan(state, world)
     data = state["production"]
     for iid, item in sorted(
         data["items"].items(), key=lambda pair: (pair[1]["queued"], pair[0])

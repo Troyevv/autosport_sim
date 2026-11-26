@@ -418,7 +418,14 @@ def test_manufacturer_test_requires_actual_measurement():
     c = run(c, "prepare-program", kind="bench-test")
     c = run(c, "advance")
     (plan,) = c["preparations"]
-    assert plan["status"] == "awaiting-result" and len(snapshot(c)["work_log"]) == 1
+    manufacturer_work = [
+        row["fact"]["event_id"]
+        for row in snapshot(c)["work_log"].values()
+        if row["fact"]["org"] == c["org"]
+    ]
+    assert plan["status"] == "awaiting-result" and manufacturer_work == [
+        "compound-design"
+    ]
     test = fact(
         snapshot(c),
         seat,

@@ -1,0 +1,127 @@
+.council {
+  overflow-wrap: anywhere;
+}
+.council-summary,
+.council-summary span {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.council-summary {
+  gap: 12px 32px;
+  border-block: 1px solid #353b43;
+  padding: 14px 0;
+  color: #b9c3cd;
+}
+.council-summary svg {
+  width: 17px;
+  color: #dd9297;
+}
+.council-summary b {
+  color: #edf0f5;
+}
+.council-layout {
+  display: grid;
+  grid-template-columns: minmax(210px, 0.8fr) minmax(0, 2fr);
+  gap: 16px;
+  align-items: start;
+}
+.council-topic {
+  display: grid;
+  width: 100%;
+  text-align: left;
+  gap: 6px;
+  padding: 18px;
+  color: inherit;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid #333b45;
+  cursor: pointer;
+}
+.council-topic[aria-pressed='true'] {
+  background: #30262d;
+  box-shadow: inset 3px 0 #e56c77;
+}
+.council-topic small,
+.council-byline span,
+.council-dossier > small,
+.council-alternatives small {
+  color: #e0a0a6;
+}
+.council-topic span,
+.council-statements small,
+.council-alternatives span {
+  color: #b5bfcb;
+  font-size: 0.85rem;
+}
+.council-dossier {
+  gap: 10px;
+}
+.council-dossier h3,
+.council-alternatives h4,
+.council .research-form h3 {
+  margin: 6px 0 0;
+}
+.council-alternatives {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(185px, 100%), 1fr));
+  gap: 10px;
+}
+.council-alternatives article {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 9px;
+  background: #222831;
+  border: 1px solid #38414c;
+  padding: 14px;
+  border-radius: 6px;
+}
+.council-alternatives b {
+  margin-top: auto;
+}
+.council-statements article {
+  border-left: 2px solid #55505b;
+  padding: 7px 14px;
+  margin: 12px 0;
+}
+.council-byline {
+  display: grid;
+  gap: 4px;
+  margin-bottom: 6px;
+}
+.council-check {
+  display: flex !important;
+  align-items: center;
+}
+.council .research-form textarea {
+  min-height: 74px;
+}
+.council a {
+  color: #edb8bd;
+}
+.council summary {
+  cursor: pointer;
+}
+.council code {
+  font-size: 0.8rem;
+  color: #bbc8d8;
+}
+@media (max-width: 800px) {
+  .council-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .council-topic {
+    padding: 12px 15px;
+  }
+  .council-alternatives {
+    grid-template-columns: 1fr;
+  }
+  .council-summary {
+    gap: 7px 18px;
+  }
+  .council-summary span {
+    font-size: 0.85rem;
+  }
+}

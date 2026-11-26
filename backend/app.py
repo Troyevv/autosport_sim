@@ -240,6 +240,7 @@ def command(cid: str, command: service.Command):
         or command.action
         in (
             "component-usage",
+            "council-observation",
             "confirmed-work",
             "issued-licence",
             "season-classification",
@@ -322,6 +323,15 @@ def commercial_market(cid: str):
 
     with storage.transaction() as db:
         return market.projection(storage.checkpoint(db, cid), WORLD)
+
+
+@app.get("/api/careers/{cid}/council")
+def council_desk(cid: str):
+    from .council import projection
+    from .catalog import LINEUP_WORLD
+
+    with storage.transaction() as db:
+        return projection(storage.checkpoint(db, cid), LINEUP_WORLD)
 
 
 @app.get("/api/careers/{cid}/production")

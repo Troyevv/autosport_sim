@@ -344,7 +344,12 @@ def apply(state, catalog, action, payload=None):
 
     from . import research
 
-    from . import development, production
+    from . import development, production, council
+
+    if action in council.ORDERS and "council" in state:
+        council.command(state, catalog, action, payload)
+        state["revision"] += 1
+        return
 
     if action in production.ORDERS and "production" in state:
         production.command(state, catalog, action, payload)
