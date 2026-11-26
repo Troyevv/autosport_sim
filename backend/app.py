@@ -239,6 +239,7 @@ def command(cid: str, command: service.Command):
         or command.action in service.PRODUCERS
         or command.action
         in (
+            "component-usage",
             "confirmed-work",
             "issued-licence",
             "season-classification",
@@ -321,6 +322,12 @@ def commercial_market(cid: str):
 
     with storage.transaction() as db:
         return market.projection(storage.checkpoint(db, cid), WORLD)
+
+
+@app.get("/api/careers/{cid}/components/{entry}")
+def component_desk(cid: str, entry: str):
+    with storage.transaction() as db:
+        return service.components.desk(storage.checkpoint(db, cid), WORLD, entry)
 
 
 @app.get("/api/careers/{cid}/garage")

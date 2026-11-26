@@ -53,6 +53,7 @@ MIGRATIONS = [
     ],
     [],  # Independent engineering resources and conversion of former depots.
     [],  # Negotiated driver terms, support appointments and temporary lineups.
+    [],  # Open the version-pinned component inventory at the current revision.
 ]
 
 
@@ -210,6 +211,13 @@ def transaction(write=False):
                     state = checkpoint(db, row["id"])
                     initialize(state, LINEUP_WORLD)
                     store(db, row["id"], state)
+            if idx == 19:
+                from .components import initialize
+
+                for row in db.execute("SELECT id FROM career").fetchall():
+                    state = checkpoint(db, row["id"])
+                    initialize(state)
+                    store(db, row["id"], state)
             db.execute(f"PRAGMA user_version={idx + 1}")
         yield db
         db.commit()
@@ -268,6 +276,8 @@ def receipts(db, cid):
                 if item["action"] == "save-livery"
                 else "finance"
                 if item["action"].startswith("finance-")
+                else "engineering"
+                if item["action"].startswith("component-")
                 else "staff"
             ] = json.loads(paint)
         commands.append(item)
