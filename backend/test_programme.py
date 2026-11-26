@@ -427,6 +427,14 @@ def test_waiting_test_reserves_once_releases_on_concept_change_and_annual_limits
         development.commission(s, WORLD, org, "await-tunnel", request, target_year=2026)
         is p
     )
+    rollover = deepcopy(s)
+    rollover["date"] = "2026-01-01"
+    budget.tick(rollover, WORLD)
+    assert (
+        budget.report(rollover, WORLD, org, 2025)["reserved"]["engineering"]
+        == before["reserved"]["engineering"]
+    )
+    assert budget.report(rollover, WORLD, org, 2026)["reserved"]["engineering"] == fee
     programme.command(
         s, WORLD, "programme-concept", dict(entry=e["id"], year=2026, strategy="revise")
     )

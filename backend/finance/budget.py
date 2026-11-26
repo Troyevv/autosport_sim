@@ -520,6 +520,10 @@ def command(state, world, action, args):
 def tick(state, world):
     day = state["date"]
     if day.endswith("-01-01"):
+        # A reserved session has no earned operator fee until a slot actually runs.
+        for term in pending(state):
+            if term.get("awaiting_capacity") and term["earned"] < day:
+                term.update(earned=day, due=day)
         for org in state["accounts"]:
             plan = open_year(state, org, day[:4])
             state["accounts"][org]["budget_cents"] = sum(plan["allocations"].values())

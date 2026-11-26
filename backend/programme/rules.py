@@ -220,8 +220,12 @@ def check_grid(state, world):
     """Record a technical exclusion once for the specific fitted serial and rule."""
     if state["date"][:4] == "2025":
         return
+    from ..research import admitted
+
     book = state["programme"]["inspections"]
     for eid, entry in sorted(world["entries"].items()):
+        if not admitted(state, entry):
+            continue
         for failure in inspection(state, world, entry):
             key = failure["rule"] + "/" + eid + "/" + failure["instance"]
             if key not in book:
