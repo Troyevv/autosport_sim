@@ -66,7 +66,7 @@ export function Portrait({
     : undefined
   if (!view && current && 'org' in current) org = current.org ?? null
   organization =
-    organization || (org ? game?.world.organizations[org] : undefined)
+    org && organization?.id !== org ? game?.world.organizations[org] : organization
   const headAsset = media.find(
     (a) => a.entity === person.face && a.kind === 'generated-head',
   )

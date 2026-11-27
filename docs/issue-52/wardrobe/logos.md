@@ -1,150 +1,152 @@
 # Эмблемы организаций сезона 2025
 
-Проверены 144 записей мира. Для 23 доступны локальные графические эмблемы. Для остальных интерфейс показывает имя или инициалы. На одежде место под неподтверждённый знак остаётся пустым. Последний столбец указывает происхождение файла, открываемого из игры.
+Проверка охватила 144 организации. Для 29 в поставку включена графическая эмблема. Для 8 найден кандидат на Wikimedia Commons, но опубликованная политика среды заблокировала получение двоичного оригинала. Ещё для 107 в доступных источниках не удалось подтвердить право на распространение подходящего изображения. Приведены отдельные результаты для команд и производителей.
 
-| Организация | Вид | Эмблема в поставке |
+Один и тот же локальный ресурс используется на одежде, в навигации, в досье и в гараже. Если соответствующего файла нет, интерфейс показывает имя организации и оставляет место на одежде свободным. Права на логотипы спонсоров дополнительно проверяются по договору и рекламной поверхности.
+
+| Организация | Вид | Результат проверки |
 |---|---|---|
-| 3MO | Производитель | Подтверждённого файла в каталоге нет |
-| Abarth | Производитель | Подтверждённого файла в каталоге нет |
-| Alpine | Производитель | Подтверждённого файла в каталоге нет |
-| Aston Martin | Производитель | [Aston Martin / Simple Icons contributors](https://raw.githubusercontent.com/simple-icons/simple-icons/13.21.0/icons/astonmartin.svg) |
-| Audi | Производитель | [Audi / Simple Icons contributors](https://raw.githubusercontent.com/simple-icons/simple-icons/13.21.0/icons/audi.svg) |
-| Birel ART | Производитель | Подтверждённого файла в каталоге нет |
-| BMW | Производитель | [BMW / Simple Icons contributors](https://raw.githubusercontent.com/simple-icons/simple-icons/13.21.0/icons/bmw.svg) |
-| Cadillac | Производитель | [Cadillac / Simple Icons contributors](https://raw.githubusercontent.com/simple-icons/simple-icons/13.21.0/icons/cadillac.svg) |
-| Chevrolet | Производитель | [Chevrolet / Simple Icons contributors](https://raw.githubusercontent.com/simple-icons/simple-icons/13.21.0/icons/chevrolet.svg) |
-| Cosworth | Производитель | Подтверждённого файла в каталоге нет |
-| CRG | Производитель | Подтверждённого файла в каталоге нет |
-| Dallara | Производитель | Подтверждённого файла в каталоге нет |
-| Energy Corse | Производитель | Подтверждённого файла в каталоге нет |
-| Ferrari | Производитель | [Ferrari / Simple Icons contributors](https://raw.githubusercontent.com/simple-icons/simple-icons/13.21.0/icons/ferrari.svg) |
-| Ford | Производитель | [Ford / Simple Icons contributors](https://raw.githubusercontent.com/simple-icons/simple-icons/13.21.0/icons/ford.svg) |
-| Goodyear | Производитель | Подтверждённого файла в каталоге нет |
-| Hankook | Производитель | Подтверждённого файла в каталоге нет |
-| Henza Kart | Производитель | Подтверждённого файла в каталоге нет |
-| Hewland | Производитель | Подтверждённого файла в каталоге нет |
-| Honda RBPT | Производитель | Подтверждённого файла в каталоге нет |
-| IAME | Производитель | Подтверждённого файла в каталоге нет |
-| Kart Republic | Производитель | Подтверждённого файла в каталоге нет |
-| Lamborghini | Производитель | [Lamborghini / Simple Icons contributors](https://raw.githubusercontent.com/simple-icons/simple-icons/13.21.0/icons/lamborghini.svg) |
-| Lexus | Производитель | Подтверждённого файла в каталоге нет |
-| Maxxis | Производитель | Подтверждённого файла в каталоге нет |
-| McLaren | Производитель | [McLaren / Simple Icons contributors](https://raw.githubusercontent.com/simple-icons/simple-icons/13.21.0/icons/mclaren.svg) |
-| Mecachrome | Производитель | Подтверждённого файла в каталоге нет |
-| Mercedes | Производитель | [Mercedes-Benz / Simple Icons contributors](https://registry.npmjs.org/simple-icons/-/simple-icons-13.21.0.tgz) |
-| Michelin | Производитель | [Trademarked by Michelin/Registrado por Michelin. Upload by: Spider_pig](https://commons.wikimedia.org/wiki/File:Michelin_Wordmark.svg) |
-| Monster K | Производитель | Подтверждённого файла в каталоге нет |
-| Multimatic | Производитель | Подтверждённого файла в каталоге нет |
-| Oreca | Производитель | Подтверждённого файла в каталоге нет |
-| OTK Kart Group | Производитель | Подтверждённого файла в каталоге нет |
-| Parolin | Производитель | Подтверждённого файла в каталоге нет |
-| Peugeot | Производитель | [Peugeot / Simple Icons contributors](https://raw.githubusercontent.com/simple-icons/simple-icons/13.21.0/icons/peugeot.svg) |
-| Pirelli | Производитель | [Pierluigi Cerri](https://commons.wikimedia.org/wiki/File:Pirelli_-_logo_full_(Italy,_1997).svg) |
-| Porsche | Производитель | [Porsche / Simple Icons contributors](https://raw.githubusercontent.com/simple-icons/simple-icons/13.21.0/icons/porsche.svg) |
-| Pratt Miller | Производитель | Подтверждённого файла в каталоге нет |
-| Red Bull Technology | Производитель | Подтверждённого файла в каталоге нет |
-| Renault | Производитель | [Renault / Simple Icons contributors](https://registry.npmjs.org/simple-icons/-/simple-icons-13.21.0.tgz) |
-| SADEV | Производитель | Подтверждённого файла в каталоге нет |
-| Tatuus | Производитель | Подтверждённого файла в каталоге нет |
-| TM Kart | Производитель | Подтверждённого файла в каталоге нет |
-| Toyota | Производитель | [Toyota Motor Corporation / Simple Icons contributors](https://registry.npmjs.org/simple-icons/-/simple-icons-13.21.0.tgz) |
-| Vortex | Производитель | Подтверждённого файла в каталоге нет |
-| Xtrac | Производитель | Подтверждённого файла в каталоге нет |
-| ABT Sportsline | Команда | Подтверждённого файла в каталоге нет |
-| AF Corse | Команда | [AF Corse S.r.l.](https://commons.wikimedia.org/wiki/File:AFCorseLogo.png) |
-| AIX Racing | Команда | Подтверждённого файла в каталоге нет |
-| AKCEL GP | Команда | Подтверждённого файла в каталоге нет |
-| Akkodis ASP Team | Команда | Подтверждённого файла в каталоге нет |
-| AKM Motorsport | Команда | Подтверждённого файла в каталоге нет |
-| Alpine Endurance Team | Команда | Подтверждённого файла в каталоге нет |
-| ART Grand Prix | Команда | Подтверждённого файла в каталоге нет |
-| AS Motorsport | Команда | Подтверждённого файла в каталоге нет |
-| ASD Monster K Factory Team | Команда | Подтверждённого файла в каталоге нет |
-| Aston Martin Aramco F1 Team | Команда | Подтверждённого файла в каталоге нет |
-| Birel ART Racing | Команда | Подтверждённого файла в каталоге нет |
-| BWT Alpine F1 Team | Команда | [Alpine F1 Team](https://commons.wikimedia.org/wiki/File%3AAlpine_F1_Team_Logo.svg) |
-| Cadillac Hertz Team JOTA | Команда | Подтверждённого файла в каталоге нет |
-| Campos Racing | Команда | Подтверждённого файла в каталоге нет |
-| Chris Dittmann Racing | Команда | Подтверждённого файла в каталоге нет |
-| CL Motorsport | Команда | Подтверждённого файла в каталоге нет |
-| CL Racing Team | Команда | Подтверждённого файла в каталоге нет |
-| Comtoyou Racing | Команда | Подтверждённого файла в каталоге нет |
-| Cram Motorsport | Команда | Подтверждённого файла в каталоге нет |
-| CRG | Команда | Подтверждённого файла в каталоге нет |
-| DAMS Lucas Oil | Команда | Подтверждённого файла в каталоге нет |
-| DPK Racing | Команда | Подтверждённого файла в каталоге нет |
-| Drivex | Команда | Подтверждённого файла в каталоге нет |
-| DXR | Команда | Подтверждённого файла в каталоге нет |
-| Dörr Motorsport | Команда | Подтверждённого файла в каталоге нет |
-| EMIL FREY RACING | Команда | Подтверждённого файла в каталоге нет |
-| Energy Corse | Команда | Подтверждённого файла в каталоге нет |
-| Fortec Motorsport | Команда | Подтверждённого файла в каталоге нет |
-| Forza Racing | Команда | Подтверждённого файла в каталоге нет |
-| Fusion Motorsport | Команда | Подтверждённого файла в каталоге нет |
-| G4 Racing | Команда | Подтверждённого файла в каталоге нет |
-| GE.LU.MI.NI | Команда | Подтверждённого файла в каталоге нет |
-| GRS Team | Команда | Подтверждённого файла в каталоге нет |
-| Hagemann Racing | Команда | Подтверждённого файла в каталоге нет |
-| Heart of Racing | Команда | Подтверждённого файла в каталоге нет |
-| Hitech TGR | Команда | Подтверждённого файла в каталоге нет |
-| HRT Ford Performance | Команда | Подтверждённого файла в каталоге нет |
-| Invicta Racing | Команда | Подтверждённого файла в каталоге нет |
-| Iron Lynx | Команда | Подтверждённого файла в каталоге нет |
-| Jenzer Motorsport | Команда | Подтверждённого файла в каталоге нет |
-| JHR Developments | Команда | Подтверждённого файла в каталоге нет |
-| Karting Club Campillos | Команда | Подтверждённого файла в каталоге нет |
-| KBK Competition | Команда | Подтверждённого файла в каталоге нет |
-| Kick Sauber F1 Team | Команда | [Juanchocarbonero](https://commons.wikimedia.org/wiki/File%3ALogo_Sauber_F1.png) |
-| Koski Motorsport | Команда | Подтверждённого файла в каталоге нет |
-| KR Motorsport | Команда | Подтверждённого файла в каталоге нет |
-| KRZ Motorsport | Команда | Подтверждённого файла в каталоге нет |
-| Land Motorsport | Команда | Подтверждённого файла в каталоге нет |
-| Liqui-Moly Roli Motorsport | Команда | Подтверждённого файла в каталоге нет |
-| Maffi Racing | Команда | Подтверждённого файла в каталоге нет |
-| Manthey | Команда | Подтверждённого файла в каталоге нет |
-| McLaren Formula 1 Team | Команда | [McLaren Racing / Simple Icons contributors](https://registry.npmjs.org/simple-icons/-/simple-icons-13.21.0.tgz) |
-| Mercedes AMG PETRONAS F1 Team | Команда | Подтверждённого файла в каталоге нет |
-| Mercedes-AMG Team Landgraf | Команда | Подтверждённого файла в каталоге нет |
-| MoneyGram Haas F1 Team | Команда | [Haas F1 Team](https://commons.wikimedia.org/wiki/File%3AHaas_F1_Team_Logo.svg) |
-| Monlau Motorsport | Команда | Подтверждённого файла в каталоге нет |
-| MP Motorsport | Команда | Подтверждённого файла в каталоге нет |
-| Oracle Red Bull Racing | Команда | Подтверждённого файла в каталоге нет |
-| Parolin Motorsport | Команда | Подтверждённого файла в каталоге нет |
-| Paul Motorsport | Команда | Подтверждённого файла в каталоге нет |
-| Peugeot TotalEnergies | Команда | Подтверждённого файла в каталоге нет |
-| Phinsys by Argenti | Команда | Подтверждённого файла в каталоге нет |
-| PHM Racing | Команда | Подтверждённого файла в каталоге нет |
-| Porsche Penske Motorsport | Команда | Подтверждённого файла в каталоге нет |
-| PREMA Racing | Команда | Подтверждённого файла в каталоге нет |
-| Proton Competition | Команда | Подтверждённого файла в каталоге нет |
-| R-ace GP | Команда | Подтверждённого файла в каталоге нет |
-| Racing Spirit Of Leman | Команда | Подтверждённого файла в каталоге нет |
-| Real Racing | Команда | Подтверждённого файла в каталоге нет |
-| Ricky Flynn Motorsport | Команда | Подтверждённого файла в каталоге нет |
-| Rodin Motorsport | Команда | Подтверждённого файла в каталоге нет |
-| RPM | Команда | Подтверждённого файла в каталоге нет |
-| Saintéloc Racing | Команда | Подтверждённого файла в каталоге нет |
-| Schubert Motorsport | Команда | Подтверждённого файла в каталоге нет |
-| Scuderia Ferrari | Команда | Подтверждённого файла в каталоге нет |
-| TC Racing | Команда | Подтверждённого файла в каталоге нет |
-| Team WRT | Команда | [W Racing Team](https://commons.wikimedia.org/wiki/File:Wrt2023logo.jpg) |
-| Technorace Competition | Команда | Подтверждённого файла в каталоге нет |
-| Tecnicar Motorsport | Команда | Подтверждённого файла в каталоге нет |
-| TEPZ Racing Team | Команда | Подтверждённого файла в каталоге нет |
-| TF Sport | Команда | Подтверждённого файла в каталоге нет |
-| TGI Team Lamborghini by GRT | Команда | Подтверждённого файла в каталоге нет |
-| Tony Kart Racing Team | Команда | Подтверждённого файла в каталоге нет |
-| Toyota Gazoo Racing | Команда | Подтверждённого файла в каталоге нет |
-| TRIDENT | Команда | Подтверждённого файла в каталоге нет |
-| United Autosports | Команда | Подтверждённого файла в каталоге нет |
-| US Racing | Команда | Подтверждённого файла в каталоге нет |
-| Van Amersfoort Racing | Команда | Подтверждённого файла в каталоге нет |
-| VAR by Birel | Команда | Подтверждённого файла в каталоге нет |
-| VDK Racing | Команда | Подтверждённого файла в каталоге нет |
-| VictoryLane | Команда | Подтверждённого файла в каталоге нет |
-| Viola Formula Racing | Команда | Подтверждённого файла в каталоге нет |
-| Visa Cash App Racing Bulls | Команда | Подтверждённого файла в каталоге нет |
-| Ward Racing | Команда | Подтверждённого файла в каталоге нет |
-| Williams Racing | Команда | [DJClements](https://commons.wikimedia.org/wiki/File%3AWilliams_Racing_Monogram.png) |
-| Winward Racing | Команда | Подтверждённого файла в каталоге нет |
-| Xcel Motorsport | Команда | Подтверждённого файла в каталоге нет |
+| 3MO | Производитель | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%223MO%22%20logo) |
+| Abarth | Производитель | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22Abarth%22%20logo) |
+| Alpine | Производитель | [Графический файл](https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/e3abce1356030bda9f4a611f632d96127ae1a93a/logos/optimized/alpine.png) · [условия или источник марки](https://commons.wikimedia.org/wiki/File:Alpine_logo.png) |
+| Aston Martin | Производитель | [Графический файл](https://raw.githubusercontent.com/simple-icons/simple-icons/13.21.0/icons/astonmartin.svg) · [условия или источник марки](https://www.astonmartin.com) |
+| Audi | Производитель | [Графический файл](https://raw.githubusercontent.com/simple-icons/simple-icons/13.21.0/icons/audi.svg) · [условия или источник марки](https://www.audi.com/ci/en/intro/basics/rings.html) |
+| Birel ART | Производитель | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22Birel%20ART%22%20logo) |
+| BMW | Производитель | [Графический файл](https://raw.githubusercontent.com/simple-icons/simple-icons/13.21.0/icons/bmw.svg) · [условия или источник марки](https://bmw.com) |
+| Cadillac | Производитель | [Графический файл](https://raw.githubusercontent.com/simple-icons/simple-icons/13.21.0/icons/cadillac.svg) · [условия или источник марки](https://www.cadillac.com) |
+| Chevrolet | Производитель | [Графический файл](https://raw.githubusercontent.com/simple-icons/simple-icons/13.21.0/icons/chevrolet.svg) · [условия или источник марки](https://www.chevrolet.com/content/dam/chevrolet/na/us/english/index/shopping-tools/download-catalog/02-pdf/2019-chevrolet-corvette-catalog.pdf) |
+| Cosworth | Производитель | Найдена [карточка изображения](https://commons.wikimedia.org/wiki/File:Logo_Cosworth.svg). Оригинал из Commons в среде недоступен. Соответствующей лицензированной копии в подключённых каталогах не найдено. |
+| CRG | Производитель | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22CRG%22%20logo) |
+| Dallara | Производитель | [Графический файл](https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/e3abce1356030bda9f4a611f632d96127ae1a93a/logos/optimized/dallara.png) · [условия или источник марки](https://commons.wikimedia.org/wiki/File:Dallara_logo.svg) |
+| Energy Corse | Производитель | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22Energy%20Corse%22%20logo) |
+| Ferrari | Производитель | [Графический файл](https://raw.githubusercontent.com/simple-icons/simple-icons/13.21.0/icons/ferrari.svg) · [условия или источник марки](https://www.ferrari.com) |
+| Ford | Производитель | [Графический файл](https://raw.githubusercontent.com/simple-icons/simple-icons/13.21.0/icons/ford.svg) · [условия или источник марки](https://secure.ford.com/brochures/) |
+| Goodyear | Производитель | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22Goodyear%22%20logo) |
+| Hankook | Производитель | [Графический файл](https://raw.githubusercontent.com/EastCordTiresInc/codexcode/f8fd2f02d8ef74d624844b0a94337d9cf3ab6997/assets/brands/hankook.svg) · [условия или источник марки](https://commons.wikimedia.org/wiki/File:Hankook_Tire_logo.svg) |
+| Henza Kart | Производитель | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22Henza%20Kart%22%20logo) |
+| Hewland | Производитель | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22Hewland%22%20logo) |
+| Honda RBPT | Производитель | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22Honda%20RBPT%22%20logo) |
+| IAME | Производитель | Найдена [карточка изображения](https://commons.wikimedia.org/wiki/File:IAME_Logo.jpeg). Оригинал из Commons в среде недоступен. Соответствующей лицензированной копии в подключённых каталогах не найдено. |
+| Kart Republic | Производитель | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22Kart%20Republic%22%20logo) |
+| Lamborghini | Производитель | [Графический файл](https://raw.githubusercontent.com/simple-icons/simple-icons/13.21.0/icons/lamborghini.svg) · [условия или источник марки](https://www.lamborghini.com) |
+| Lexus | Производитель | [Графический файл](https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/e3abce1356030bda9f4a611f632d96127ae1a93a/logos/optimized/lexus.png) · [условия или источник марки](https://commons.wikimedia.org/wiki/File:Lexus_logo.svg) |
+| Maxxis | Производитель | Найдена [карточка изображения](https://commons.wikimedia.org/wiki/File:MAXXIS_logo.svg). Оригинал из Commons в среде недоступен. Соответствующей лицензированной копии в подключённых каталогах не найдено. |
+| McLaren | Производитель | [Графический файл](https://raw.githubusercontent.com/simple-icons/simple-icons/13.21.0/icons/mclaren.svg) · [условия или источник марки](https://cars.mclaren.com) |
+| Mecachrome | Производитель | Найдена [карточка изображения](https://commons.wikimedia.org/wiki/File%3ANouveau_logo_Mecachrome.png). Оригинал из Commons в среде недоступен. Соответствующей лицензированной копии в подключённых каталогах не найдено. |
+| Mercedes | Производитель | [Графический файл](https://registry.npmjs.org/simple-icons/-/simple-icons-13.21.0.tgz) · [условия или источник марки](https://commons.wikimedia.org/wiki/File:Mercedes-Benz_logo.svg) |
+| Michelin | Производитель | [Графический файл](https://commons.wikimedia.org/wiki/File:Michelin_Wordmark.svg) |
+| Monster K | Производитель | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22Monster%20K%22%20logo) |
+| Multimatic | Производитель | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22Multimatic%22%20logo) |
+| Oreca | Производитель | Найдена [карточка изображения](https://commons.wikimedia.org/wiki/File:Oreca_logo_%282024%29.svg). Оригинал из Commons в среде недоступен. Соответствующей лицензированной копии в подключённых каталогах не найдено. |
+| OTK Kart Group | Производитель | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22OTK%20Kart%20Group%22%20logo) |
+| Parolin | Производитель | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22Parolin%22%20logo) |
+| Peugeot | Производитель | [Графический файл](https://raw.githubusercontent.com/simple-icons/simple-icons/13.21.0/icons/peugeot.svg) · [условия или источник марки](https://www.peugeot.co.uk) |
+| Pirelli | Производитель | [Графический файл](https://commons.wikimedia.org/wiki/File:Pirelli_-_logo_full_(Italy,_1997).svg) |
+| Porsche | Производитель | [Графический файл](https://raw.githubusercontent.com/simple-icons/simple-icons/13.21.0/icons/porsche.svg) · [условия или источник марки](https://www.porsche.com) |
+| Pratt Miller | Производитель | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22Pratt%20Miller%22%20logo) |
+| Red Bull Technology | Производитель | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22Red%20Bull%20Technology%22%20logo) |
+| Renault | Производитель | [Графический файл](https://registry.npmjs.org/simple-icons/-/simple-icons-13.21.0.tgz) · [условия или источник марки](https://commons.wikimedia.org/wiki/File:Renault_2021.svg) |
+| SADEV | Производитель | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22SADEV%22%20logo) |
+| Tatuus | Производитель | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22Tatuus%22%20logo) |
+| TM Kart | Производитель | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22TM%20Kart%22%20logo) |
+| Toyota | Производитель | [Графический файл](https://registry.npmjs.org/simple-icons/-/simple-icons-13.21.0.tgz) · [условия или источник марки](https://commons.wikimedia.org/wiki/File:Toyota_Logo.svg) |
+| Vortex | Производитель | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22Vortex%22%20logo) |
+| Xtrac | Производитель | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22Xtrac%22%20logo) |
+| ABT Sportsline | Команда | [Графический файл](https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/e3abce1356030bda9f4a611f632d96127ae1a93a/logos/optimized/abt.png) · [условия или источник марки](https://commons.wikimedia.org/wiki/File:ABT_Logo_black.png) |
+| AF Corse | Команда | [Графический файл](https://commons.wikimedia.org/wiki/File:AFCorseLogo.png) |
+| AIX Racing | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22AIX%20Racing%22%20logo) |
+| AKCEL GP | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22AKCEL%20GP%22%20logo) |
+| Akkodis ASP Team | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22Akkodis%20ASP%20Team%22%20logo) |
+| AKM Motorsport | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22AKM%20Motorsport%22%20logo) |
+| Alpine Endurance Team | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22Alpine%20Endurance%20Team%22%20logo) |
+| ART Grand Prix | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22ART%20Grand%20Prix%22%20logo) |
+| AS Motorsport | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22AS%20Motorsport%22%20logo) |
+| ASD Monster K Factory Team | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22ASD%20Monster%20K%20Factory%20Team%22%20logo) |
+| Aston Martin Aramco F1 Team | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22Aston%20Martin%20Aramco%20F1%20Team%22%20logo) |
+| Birel ART Racing | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22Birel%20ART%20Racing%22%20logo) |
+| BWT Alpine F1 Team | Команда | [Графический файл](https://commons.wikimedia.org/wiki/File%3AAlpine_F1_Team_Logo.svg) |
+| Cadillac Hertz Team JOTA | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22Cadillac%20Hertz%20Team%20JOTA%22%20logo) |
+| Campos Racing | Команда | Найдена [карточка изображения](https://commons.wikimedia.org/wiki/File:Logo_Campos_Racing_2021.jpg). Оригинал из Commons в среде недоступен. Соответствующей лицензированной копии в подключённых каталогах не найдено. |
+| Chris Dittmann Racing | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22Chris%20Dittmann%20Racing%22%20logo) |
+| CL Motorsport | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22CL%20Motorsport%22%20logo) |
+| CL Racing Team | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22CL%20Racing%20Team%22%20logo) |
+| Comtoyou Racing | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22Comtoyou%20Racing%22%20logo) |
+| Cram Motorsport | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22Cram%20Motorsport%22%20logo) |
+| CRG | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22CRG%22%20logo) |
+| DAMS Lucas Oil | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22DAMS%20Lucas%20Oil%22%20logo) |
+| DPK Racing | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22DPK%20Racing%22%20logo) |
+| Drivex | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22Drivex%22%20logo) |
+| DXR | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22DXR%22%20logo) |
+| Dörr Motorsport | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22D%C3%B6rr%20Motorsport%22%20logo) |
+| EMIL FREY RACING | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22EMIL%20FREY%20RACING%22%20logo) |
+| Energy Corse | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22Energy%20Corse%22%20logo) |
+| Fortec Motorsport | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22Fortec%20Motorsport%22%20logo) |
+| Forza Racing | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22Forza%20Racing%22%20logo) |
+| Fusion Motorsport | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22Fusion%20Motorsport%22%20logo) |
+| G4 Racing | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22G4%20Racing%22%20logo) |
+| GE.LU.MI.NI | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22GE.LU.MI.NI%22%20logo) |
+| GRS Team | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22GRS%20Team%22%20logo) |
+| Hagemann Racing | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22Hagemann%20Racing%22%20logo) |
+| Heart of Racing | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22Heart%20of%20Racing%22%20logo) |
+| Hitech TGR | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22Hitech%20TGR%22%20logo) |
+| HRT Ford Performance | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22HRT%20Ford%20Performance%22%20logo) |
+| Invicta Racing | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22Invicta%20Racing%22%20logo) |
+| Iron Lynx | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22Iron%20Lynx%22%20logo) |
+| Jenzer Motorsport | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22Jenzer%20Motorsport%22%20logo) |
+| JHR Developments | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22JHR%20Developments%22%20logo) |
+| Karting Club Campillos | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22Karting%20Club%20Campillos%22%20logo) |
+| KBK Competition | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22KBK%20Competition%22%20logo) |
+| Kick Sauber F1 Team | Команда | [Графический файл](https://commons.wikimedia.org/wiki/File%3ALogo_Sauber_F1.png) |
+| Koski Motorsport | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22Koski%20Motorsport%22%20logo) |
+| KR Motorsport | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22KR%20Motorsport%22%20logo) |
+| KRZ Motorsport | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22KRZ%20Motorsport%22%20logo) |
+| Land Motorsport | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22Land%20Motorsport%22%20logo) |
+| Liqui-Moly Roli Motorsport | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22Liqui-Moly%20Roli%20Motorsport%22%20logo) |
+| Maffi Racing | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22Maffi%20Racing%22%20logo) |
+| Manthey | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22Manthey%22%20logo) |
+| McLaren Formula 1 Team | Команда | [Графический файл](https://registry.npmjs.org/simple-icons/-/simple-icons-13.21.0.tgz) · [условия или источник марки](https://commons.wikimedia.org/wiki/File:McLaren_Speedmark.svg) |
+| Mercedes AMG PETRONAS F1 Team | Команда | [Графический файл](https://raw.githubusercontent.com/abarnish1024/f1-embed-logos/5873e0c388d284e267e49206a8e89f61fd656083/F1%20Team%20Logos/merc_logo.png) · [условия или источник марки](https://commons.wikimedia.org/wiki/File:Mercedes_AMG_Petronas_F1_Logo.svg) |
+| Mercedes-AMG Team Landgraf | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22Mercedes-AMG%20Team%20Landgraf%22%20logo) |
+| MoneyGram Haas F1 Team | Команда | [Графический файл](https://commons.wikimedia.org/wiki/File%3AHaas_F1_Team_Logo.svg) |
+| Monlau Motorsport | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22Monlau%20Motorsport%22%20logo) |
+| MP Motorsport | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22MP%20Motorsport%22%20logo) |
+| Oracle Red Bull Racing | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22Oracle%20Red%20Bull%20Racing%22%20logo) |
+| Parolin Motorsport | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22Parolin%20Motorsport%22%20logo) |
+| Paul Motorsport | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22Paul%20Motorsport%22%20logo) |
+| Peugeot TotalEnergies | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22Peugeot%20TotalEnergies%22%20logo) |
+| Phinsys by Argenti | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22Phinsys%20by%20Argenti%22%20logo) |
+| PHM Racing | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22PHM%20Racing%22%20logo) |
+| Porsche Penske Motorsport | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22Porsche%20Penske%20Motorsport%22%20logo) |
+| PREMA Racing | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22PREMA%20Racing%22%20logo) |
+| Proton Competition | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22Proton%20Competition%22%20logo) |
+| R-ace GP | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22R-ace%20GP%22%20logo) |
+| Racing Spirit Of Leman | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22Racing%20Spirit%20Of%20Leman%22%20logo) |
+| Real Racing | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22Real%20Racing%22%20logo) |
+| Ricky Flynn Motorsport | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22Ricky%20Flynn%20Motorsport%22%20logo) |
+| Rodin Motorsport | Команда | Найдена [карточка изображения](https://commons.wikimedia.org/wiki/File:Team-Logo_RodinMotorsport.png). Оригинал из Commons в среде недоступен. Соответствующей лицензированной копии в подключённых каталогах не найдено. |
+| RPM | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22RPM%22%20logo) |
+| Saintéloc Racing | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22Saint%C3%A9loc%20Racing%22%20logo) |
+| Schubert Motorsport | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22Schubert%20Motorsport%22%20logo) |
+| Scuderia Ferrari | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22Scuderia%20Ferrari%22%20logo) |
+| TC Racing | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22TC%20Racing%22%20logo) |
+| Team WRT | Команда | [Графический файл](https://commons.wikimedia.org/wiki/File:Wrt2023logo.jpg) |
+| Technorace Competition | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22Technorace%20Competition%22%20logo) |
+| Tecnicar Motorsport | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22Tecnicar%20Motorsport%22%20logo) |
+| TEPZ Racing Team | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22TEPZ%20Racing%20Team%22%20logo) |
+| TF Sport | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22TF%20Sport%22%20logo) |
+| TGI Team Lamborghini by GRT | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22TGI%20Team%20Lamborghini%20by%20GRT%22%20logo) |
+| Tony Kart Racing Team | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22Tony%20Kart%20Racing%20Team%22%20logo) |
+| Toyota Gazoo Racing | Команда | Найдена [карточка изображения](https://commons.wikimedia.org/wiki/File%3AToyota_Gazoo_Racing_stacked_logo.svg). Оригинал из Commons в среде недоступен. Соответствующей лицензированной копии в подключённых каталогах не найдено. |
+| TRIDENT | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22TRIDENT%22%20logo) |
+| United Autosports | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22United%20Autosports%22%20logo) |
+| US Racing | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22US%20Racing%22%20logo) |
+| Van Amersfoort Racing | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22Van%20Amersfoort%20Racing%22%20logo) |
+| VAR by Birel | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22VAR%20by%20Birel%22%20logo) |
+| VDK Racing | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22VDK%20Racing%22%20logo) |
+| VictoryLane | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22VictoryLane%22%20logo) |
+| Viola Formula Racing | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22Viola%20Formula%20Racing%22%20logo) |
+| Visa Cash App Racing Bulls | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22Visa%20Cash%20App%20Racing%20Bulls%22%20logo) |
+| Ward Racing | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22Ward%20Racing%22%20logo) |
+| Williams Racing | Команда | [Графический файл](https://commons.wikimedia.org/wiki/File%3AWilliams_Racing_Monogram.png) |
+| Winward Racing | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22Winward%20Racing%22%20logo) |
+| Xcel Motorsport | Команда | В проверенных источниках отсутствует подтверждённый файл этой организации с установленными условиями распространения. [Поиск марки](https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=%22Xcel%20Motorsport%22%20logo) |

@@ -8,6 +8,8 @@ import { chromium } from 'playwright'
 const [url, career, target] = process.argv.slice(2)
 if (!url || !career || !target)
   throw Error('Expected game URL, career ID and output directory')
+const perSheet = 16
+const requested = new Set(process.argv.slice(5))
 const output = resolve(target)
 await mkdir(output, { recursive: true })
 const browser = await chromium.launch({
@@ -15,7 +17,7 @@ const browser = await chromium.launch({
 })
 try {
   const page = await browser.newPage({
-    viewport: { width: 1440, height: 1056 },
+    viewport: { width: 1536, height: 1920 },
     deviceScaleFactor: 1,
   })
   const failures = []
@@ -131,8 +133,13 @@ try {
     document.body.replaceChildren()
     document.documentElement.removeAttribute('style')
     const style = document.createElement('style')
-    style.textContent =
-      'body{margin:0;background:#202329;color:white}#proof{display:grid;width:1440px;grid-template-columns:repeat(12,120px);grid-auto-rows:176px}#proof figure{height:176px;margin:0;border:1px solid #444;box-sizing:border-box;background:radial-gradient(at 48% 38%,#52565a,#292c30 76%);text-align:center;overflow:hidden}#proof .career-portrait{display:block;width:118px;height:148px;max-height:none;margin:0}#proof figcaption{font:11px/15px sans-serif;color:white;white-space:nowrap;overflow:hidden}'
+    style.textContent = `
+      body { margin: 0; background: #202329; color: white }
+      #proof { display: grid; width: 1536px; grid-template-columns: repeat(4, 1fr) }
+      #proof figure { margin: 0; padding: 0 0 6px; border: 1px solid #444; background: radial-gradient(at 48% 38%, #52565a, #292c30 76%); text-align: center }
+      #proof .career-portrait { display: block; width: 382px; height: 446px; max-height: none; margin: 0 }
+      #proof figcaption { font: 15px/22px sans-serif; color: white }
+    `
     document.head.append(style)
     const main = document.createElement('main')
     main.id = 'proof'
@@ -197,10 +204,12 @@ try {
     ['roster', subjects],
     ['matrix', looks],
   ]) {
-    for (let i = 0; i < records.length; i += 72) {
+    for (let i = 0; i < records.length; i += perSheet) {
+      const sheet = kind + '-' + String(i / perSheet + 1).padStart(3, '0')
+      if (requested.size && !requested.has(sheet)) continue
       await page.evaluate(
-        ([kind, i]) => window.renderProof(kind, i, 72),
-        [kind, i],
+        ([kind, i, count]) => window.renderProof(kind, i, count),
+        [kind, i, perSheet],
       )
       await page.waitForFunction(
         (start) => document.querySelector('figure')?.dataset.row === start,
@@ -228,7 +237,11 @@ try {
           [...urls].map(async (url) => {
             const im = new Image()
             im.src = url
-            await im.decode()
+            try {
+              await im.decode()
+            } catch {
+              throw Error('Failed to decode portrait layer ' + (url.startsWith('data:') ? 'material texture' : url))
+            }
           }),
         )
         await new Promise(requestAnimationFrame)
@@ -238,10 +251,10 @@ try {
         .screenshot({
           path: join(
             output,
-            kind + '-' + String(i / 72 + 1).padStart(2, '0') + '.jpg',
+            sheet + '.jpg',
           ),
           type: 'jpeg',
-          quality: 92,
+          quality: 96,
         })
     }
   }

@@ -51,6 +51,43 @@ def smooth(value):
     return t * t * (3 - 2 * t)
 
 
+def hanging_hair(rgb, alpha, hair, flesh, shirt, cx, chin, eye, yy, xx):
+    """Trace photographed locks below the ears where the semantic mask loses detail."""
+    sides = abs(xx - cx) / eye
+    below = (yy - chin) / eye
+    # Colour alone cannot distinguish black fabric from black hair. Where the
+    # original plate contains a shirt, rely on its semantic hair trimap.
+    if ((shirt > 0.55) & (alpha > 0.8) & (below > 0)).sum() > eye * eye * 0.2:
+        return np.zeros_like(hair)
+    seed = (alpha > 0.8) & (hair > 0.82) & (sides > 0.67) & (below > -3.3)
+    if seed.sum() < eye * eye * 0.045:
+        return np.zeros_like(hair)
+    region = (alpha > 0.02) & (sides > 0.62) & (below > -3.4)
+    labels = np.full(hair.shape, cv2.GC_BGD, np.uint8)
+    labels[region] = cv2.GC_PR_BGD
+    labels[region & (hair > 0.33)] = cv2.GC_PR_FGD
+    exposed = (alpha > 0.58) & (sides > 1.13) & (below < 0.85)
+    exposed &= (flesh < 0.15) & (shirt < 0.18)
+    labels[exposed & region] = cv2.GC_FGD
+    labels[seed] = cv2.GC_FGD
+    labels[(flesh > 0.92) | (shirt > 0.35)] = cv2.GC_BGD
+    if not (labels == cv2.GC_FGD).any():
+        return np.zeros_like(hair)
+    # The semantic classifier uses the entire portrait. A second pass using
+    # the actual colours on this head follows dark braids and fair wisps alike.
+    cv2.setRNGSeed(1)
+    models = [np.zeros((1, 65), np.float64) for _ in range(2)]
+    cv2.grabCut(rgb, labels, None, *models, 2, cv2.GC_INIT_WITH_MASK)
+    locks = np.uint8(labels % 2)
+    _, groups = cv2.connectedComponents(locks)
+    support = seed | (exposed & (below < -0.33) & (below > -1.3))
+    attached = np.unique(groups[support & (locks > 0)])
+    if not attached.size:
+        return np.zeros_like(hair)
+    mask = np.isin(groups, attached).astype("float32")
+    return cv2.GaussianBlur(mask, (3, 3), 0.55) * smooth((0.38 - shirt) / 0.25)
+
+
 def registration(processor, path):
     photo = Image.open(path).convert("RGBA").resize((W, H), Image.Resampling.LANCZOS)
     rgba = np.asarray(photo)
@@ -100,24 +137,27 @@ def registration(processor, path):
         float
     )
     despill = 1 - smooth((green - 7) / 26)
-    strands = hair_matte * despill
-    # The junior photos sometimes end at a straight crop across flowing hair.
-    # Fade only those cropped ends, according to local strand texture.
-    dense = alpha > 0.52
-    bottom = H - 1 - np.argmax(dense[::-1], axis=0)
-    flat = np.abs(bottom - np.roll(bottom, 3)) < 2
-    flatness = cv2.blur(flat.astype("float32")[None], (13, 1))[0]
+    locks = hanging_hair(rgb, alpha, hair, flesh, shirt, cx, chin, eye, yy, xx)
+    strands = np.maximum(hair_matte, locks) * despill
     luminance = rgb @ [0.2126, 0.7152, 0.0722]
-    local = luminance - cv2.GaussianBlur(luminance, (0, 0), 2)
-    taper = smooth(
-        (bottom - yy + 1 + np.clip(local / 15, -1, 1) * eye * 0.075) / (0.22 * eye)
+    # The studio plate already has a photographic alpha. A second face classifier
+    # can label an earlobe between cheek and hair as background. Above the lower
+    # jaw the original outer silhouette is authoritative, including both ears.
+    photographed_head = smooth((chin - 0.13 * eye - yy) / (0.25 * eye))
+    head = (
+        np.maximum.reduce([skin_matte, opaque_face, strands, photographed_head])
+        * despill
     )
-    cropped = smooth((flatness - 0.48) / 0.4) * smooth((down + 0.9) / 0.38)
-    strands *= 1 - cropped * (1 - taper)
-    head = np.maximum.reduce([skin_matte, opaque_face, strands]) * despill
     # Only reproject hair near and below the jaw above the front of the collar.
     fringe = strands * smooth((down + 0.58) / 0.35)
     support = cv2.dilate(np.uint8(alpha > 0.005), np.ones((3, 3), np.uint8))
+    # A detached patch of original shirt can score as hair in the semantic
+    # trimap. Retain the head component and its soft antialiased boundary.
+    _, components = cv2.connectedComponents(np.uint8(head * alpha > 0.10))
+    label = components[tuple(np.rint(face[1][::-1]).astype(int))]
+    if label:
+        attached = cv2.dilate(np.uint8(components == label), np.ones((3, 3), np.uint8))
+        support *= attached
     planes = [np.uint8(np.clip(p, 0, 1) * support * 255) for p in (head, fringe)]
     matte = Image.fromarray(np.hstack(planes))
 
