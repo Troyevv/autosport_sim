@@ -247,12 +247,9 @@
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     gap: 5px;
   }
-  .season-garage .heading-actions .garage-selectors label {
+  .season-garage .heading-actions .garage-selectors select {
+    width: 100%;
     min-width: 0;
-  }
-  .season-garage .heading-actions .garage-selectors .button {
-    grid-column: 1/-1;
-    justify-self: start;
   }
   .season-garage [data-garage-tab='parts'] .studio-layout {
     display: flex;
