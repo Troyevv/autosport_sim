@@ -21,7 +21,7 @@ SOURCE = Path(__file__).resolve().parents[1]
 
 @contextmanager
 def observe_browser(root):
-    """Only the disposable copy reports a visit, after React renders the career library."""
+    """Only the disposable copy reports a visit, after React renders the playable title screen."""
     visits = Queue()
 
     class Receiver(BaseHTTPRequestHandler):
@@ -36,14 +36,17 @@ def observe_browser(root):
         observer.daemon_threads = True
         port = observer.server_address[1]
         html = root / "frontend/index.html"
-        instrument = """
+        instrument = r"""
 <script>
 const observer = new MutationObserver(() => {
-  const heading = document.querySelector("main h1");
-  if (heading?.textContent === "Карьера в автоспорте") {
+  const menu = document.querySelector(".title-copy");
+  const heading = menu?.querySelector("h1")?.innerText.replace(/\s+/g, " ").trim();
+  const canStart = Array.from(menu?.querySelectorAll("nav button") || [])
+    .some(button => button.textContent.trim() === "Новая карьера" && !button.disabled);
+  if (heading && canStart) {
     observer.disconnect();
     navigator.sendBeacon("http://127.0.0.1:PORT/", JSON.stringify({
-      url: location.origin, title: document.title, heading: heading.textContent
+      url: location.origin, title: document.title, heading
     }));
   }
 });
@@ -137,10 +140,10 @@ def run_smoke(tmp):
                 except Empty:
                     continue
                 assert (
-                    visit["title"] == "APEX — Motorsport Manager"
-                    and visit["heading"] == "Карьера в автоспорте"
+                    visit["title"] == "Autosport Sim · PIT WALL 02"
+                    and visit["heading"] == "Всё решается до старта."
                 )
-                print(f"Browser rendered HQ at {visit['url']} ({agent})", flush=True)
+                print(f"Browser rendered the title screen at {visit['url']} ({agent})", flush=True)
                 return visit["url"]
             raise AssertionError(log.read_text(encoding="utf-8", errors="replace"))
 
