@@ -55,7 +55,7 @@ export function Workspace({ world:catalog, c: initial, media }: SectionProps) {
   const aliases: Record<string,string> = {person:'people',drivers:'people',staff:'people',market:'people',contracts:'people',academy:'people',funding:'people',preparation:'people',leadership:'people',livery:'garage',inventory:'production'}
   const Screen = sections[(aliases[route.page] || route.page) as keyof typeof sections]
   const org = world.organizations[c.org]
-    
+
   const locked = useRef(false),
     retry = useRef<{ command_id: string; revision: number; action: string } | null>(null)
   useEffect(() => {
