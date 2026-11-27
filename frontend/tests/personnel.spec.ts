@@ -34,7 +34,7 @@ test('Рынок, сравнение и переход пилота GT на св
       })
   }
   await page.goto('/?career=' + c.id + '#people')
-  await page.getByRole('button', { name: new RegExp(incumbent) }).click()
+  await page.locator('.staff-card').filter({ hasText: incumbent }).click()
   await dialog.getByRole('button', { name: 'Договор', exact: true }).click()
   await dialog.getByText('Досрочное прекращение договора', {exact:true}).click()
   await dialog.getByRole('button', { name: 'Расторгнуть контракт' }).click()
@@ -92,7 +92,7 @@ test('Рынок, сравнение и переход пилота GT на св
   await advance()
   await page.getByRole('button', { name: 'Состав', exact: true }).click()
   await page.getByLabel('Найти человека').fill(name)
-  await page.getByRole('button', { name: new RegExp(name) }).click()
+  await page.locator('.staff-card').filter({ hasText: name }).click()
   await expect(artist).toHaveAttribute('href', before!)
   await expect(dialog.locator('image[data-layer="fitted-fabric"]')).not.toHaveAttribute('href', oldKit!)
   await expect(dialog).toContainText('McLaren Formula 1 Team')
@@ -113,7 +113,7 @@ test('Рынок, сравнение и переход пилота GT на св
   await expect(dialog.getByRole('heading', { name: 'Профессиональная динамика' })).toBeVisible()
   await page.keyboard.press('Escape')
   await expect(dialog).toHaveCount(0)
-  await expect(page.getByRole('button', { name: new RegExp(name) })).toBeFocused()
+  await expect(page.locator('.staff-card').filter({ hasText: name })).toBeFocused()
   expect(errors).toEqual([])
 })
 

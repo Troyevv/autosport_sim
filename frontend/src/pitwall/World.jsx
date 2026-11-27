@@ -1,5 +1,5 @@
 import { shortDate as short } from './v2/advisory-model'
-import React, { useState } from 'react'
+import React, { useState, useSyncExternalStore } from 'react'
 import { useGame, useStored, dateLabel } from './core'
 import {
   Badge,
@@ -16,14 +16,17 @@ import {
 } from './ui'
 import { RaceCar, PersonPortrait } from './visuals'
 import './world.css'
+const calendarNarrow = window.matchMedia('(max-width:699px)')
+function watchCalendarWidth(update) {
+  calendarNarrow.addEventListener('change', update)
+  return () => calendarNarrow.removeEventListener('change', update)
+}
 export function Calendar() {
+  const narrow = useSyncExternalStore(watchCalendarWidth, () => calendarNarrow.matches)
   const g = useGame(),
     c = g.game.career,
     linkedEvent = g.world.events.find((e) => e.id === g.entity),
-    [mode, setMode] = useStored(
-      'calendar.mode',
-      g.tab === 'list' || window.innerWidth < 700 ? 'list' : 'month',
-    ),
+    [mode, setMode] = useStored('calendar.mode', g.tab === 'list' || narrow ? 'list' : 'month'),
     [series, setSeries] = useStored('calendar.series', linkedEvent?.series || c.series),
     [kind, setKind] = useStored('calendar.kind', 'all'),
     [month, setMonth] = useStored('calendar.month', (linkedEvent?.start || c.date).slice(0, 7))

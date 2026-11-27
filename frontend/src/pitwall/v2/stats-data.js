@@ -78,7 +78,14 @@ export const STAT_CATEGORIES = [
     description: 'Коммерческие бренды и подтверждённые соглашения текущей организации.',
   },
 ]
+export const factContext = (f) => f.body?.data?.context || f.body?.context || {}
 export const FACT_KINDS = {
+  'entry-result': 'Классификация заявки',
+  lap: 'Хронометраж круга',
+  record: 'Подтверждённый рекорд',
+  'session-start': 'Начало сессии',
+  'session-end': 'Завершение сессии',
+  achievement: 'Достижение',
   appointment: 'Назначение',
   licence: 'Лицензия',
   'starting-licence': 'Допуск к серии',
@@ -122,8 +129,9 @@ export function buildStatisticsIndex(g) {
   facts
     .filter((f) => f.access === 'public')
     .forEach((f) => {
-      const x = f.body?.context || {}
-      if (x.person) (factsByPerson[x.person] ??= []).push(f)
+      const x = factContext(f)
+      for (const id of new Set([x.person, ...(f.body?.data?.crew || [])].filter(Boolean)))
+        (factsByPerson[id] ??= []).push(f)
       if (x.org) (factsByOrg[x.org] ??= []).push(f)
     })
   const personRows = people.map((p) => ({

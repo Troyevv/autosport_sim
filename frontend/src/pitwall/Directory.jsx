@@ -853,7 +853,159 @@ function StaffContracts({ children }) {
   )
 }
 
-export function PersonnelDirectory({ children }) {
+function TeamOverview() {
+  const { g, own, seats, c, orgName, positionName } = usePeople()
+  const drivers = own.filter((p) => p.position === 'driver')
+  const heroes =
+    g.role === 'manufacturer'
+      ? own
+          .filter((p) =>
+            ['chief-engineer', 'transmissions', 'engines', 'tyres', 'chief-analyst'].includes(
+              p.position,
+            ),
+          )
+          .slice(0, 2)
+      : drivers.slice(0, 2)
+  const leaders = own.filter((p) => p.position !== 'driver' && !heroes.some((h) => h.id === p.id))
+  const cutoff = new Date(c.date + 'T12:00:00Z')
+  cutoff.setUTCDate(cutoff.getUTCDate() + 180)
+  const deadline = cutoff.toISOString().slice(0, 10)
+  const expiry = own.filter((p) => p.end && p.end >= c.date && p.end <= deadline)
+  const openOffers = c.offers.filter((o) => ['sent', 'countered', 'agreed'].includes(o.status))
+  return (
+    <>
+      <PageHeader
+        eyebrow={orgName(c.org) + ' / Люди'}
+        title={g.role === 'manufacturer' ? 'Люди создают преимущество' : 'Команда начинается с людей'}
+        description={
+          g.role === 'owner'
+            ? 'Руководители, талант и ответственность за будущее организации.'
+            : 'Пилоты, решения штаба и общая работа за каждым результатом.'
+        }
+        actions={
+          <Button
+            aria-label="Открыть кадровый рынок"
+            onClick={() => g.navigate('market')}
+            icon={<Icon name="Search" />}
+          >
+            Кадровый рынок
+          </Button>
+        }
+      />
+      <div className="p-team-layout">
+        <Section
+          title={g.role === 'manufacturer' ? 'Техническое руководство' : 'На стартовой решётке'}
+          eyebrow="Главные действующие лица"
+          action={
+            <Button
+              variant="ghost"
+              onClick={() => g.navigate(g.role === 'manufacturer' ? 'staff' : 'drivers')}
+            >
+              Весь состав <Icon name="ArrowUpRight" />
+            </Button>
+          }
+        >
+          <div className="p-featured-grid">
+            {heroes.map((p) => (
+              <PersonCard
+                key={p.id}
+                person={p}
+                featured
+                number={
+                  g.world.entries[seats.find((seat) => seat.occupant?.id === p.id && seat.entry)?.entry]
+                    ?.number
+                }
+              />
+            ))}
+          </div>
+          {!heroes.length && (
+            <Empty
+              title="Основные места открыты"
+              text="Найдите кандидатов на доступные места в кадровом рынке."
+              action={<Button onClick={() => g.navigate('market')}>Найти кандидатов</Button>}
+            />
+          )}
+        </Section>
+        <aside className="p-command-brief">
+          <span className="p-kicker">Повестка кадрового штаба</span>
+          <h2>Люди и решения</h2>
+          <div className="p-brief-score">
+            <strong>
+              {seats.filter((s) => s.occupant).length}
+              <span>/{seats.length}</span>
+            </strong>
+            <small>Мест в индивидуальном штате</small>
+          </div>
+          <button className="p-brief-task" onClick={() => g.navigate('contracts', 'negotiations')}>
+            <Icon name="MessagesSquare" />
+            <span>
+              <b>
+                {openOffers.length
+                  ? openOffers.length + ' переговоров требуют внимания'
+                  : 'Переговоры под контролем'}
+              </b>
+              <small>Условия, ответы и будущие переходы</small>
+            </span>
+            <Icon name="ChevronRight" />
+          </button>
+          <button className="p-brief-task" onClick={() => g.navigate('contracts')}>
+            <Icon name="CalendarClock" />
+            <span>
+              <b>
+                {expiry.length
+                  ? expiry.length + ' договоров заканчиваются в ближайшие полгода'
+                  : 'Планируйте следующий состав'}
+              </b>
+              <small>Сроки и обязательства в одном месте</small>
+            </span>
+            <Icon name="ChevronRight" />
+          </button>
+          <button className="p-brief-task" onClick={() => g.navigate('preparation')}>
+            <Icon name="Activity" />
+            <span>
+              <b>{c.preparations.filter((x) => x.status === 'scheduled').length} программ подготовки</b>
+              <small>Время, нагрузка и работа штаба</small>
+            </span>
+            <Icon name="ChevronRight" />
+          </button>
+          <div className="p-payroll">
+            <small>Оклад команды / месяц</small>
+            <strong>{money(c.account?.payroll_cents, true)}</strong>
+            <span>Свободные средства · {money(c.available_cents, true)}</span>
+          </div>
+        </aside>
+      </div>
+      <Section
+        title="Лица команды"
+        sub="Каждая должность имеет собственные навыки, историю и условия."
+        action={
+          <Button variant="ghost" onClick={() => g.navigate('staff')}>
+            Персонал <Icon name="ArrowUpRight" />
+          </Button>
+        }
+      >
+        <div className="p-leaders-grid">
+          {leaders.slice(0, 8).map((p) => (
+            <PersonRow key={p.id} p={p} secondary={positionName(p.position)} />
+          ))}
+        </div>
+      </Section>
+      <div className="p-bottom-band">
+        <Icon name="Users" size={30} />
+        <div>
+          <span className="p-kicker">Работа подразделений</span>
+          <h3>{c.collectives.reduce((a, x) => a + x.size, 0)} специалистов за кулисами</h3>
+          <p>Инженеры, производство и бригады — численность, загрузка, усталость и общий опыт.</p>
+        </div>
+        <Button variant="secondary" onClick={() => g.navigate('staff', 'collectives')}>
+          Открыть коллективы
+        </Button>
+      </div>
+    </>
+  )
+}
+
+export function PersonnelDirectory({ children, overview = false }) {
   const g = useGame(),
     c = g.game.career,
     people = g.game.personnel,
@@ -879,8 +1031,10 @@ export function PersonnelDirectory({ children }) {
   return (
     <peopleContext.Provider value={context}>
       <section className="people-module">
-        <PeopleNavigation />
-        {g.route === 'contracts' ? (
+        {!overview && <PeopleNavigation />}
+        {overview ? (
+          <TeamOverview />
+        ) : g.route === 'contracts' ? (
           <StaffContracts>{children}</StaffContracts>
         ) : g.route === 'funding' ? (
           <Funding />

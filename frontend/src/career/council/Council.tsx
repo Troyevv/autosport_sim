@@ -212,7 +212,7 @@ export function Council({
       sectionTab(['agenda', 'meeting', 'execution', 'archive'], 'agenda'),
     ),
     [selected, setSelected] = useState(readRoute().entity),
-    [settings, setSettings] = useState(false)
+    [settings, setSettings] = useState(c.role === 'manager' && readRoute().tab === 'mandate')
   const [decision, setDecision] = useState<keyof typeof decisions>('approve'),
     [alternative, setAlternative] = useState(0)
   const [target, setTarget] = useState<Proposal | null>(null),

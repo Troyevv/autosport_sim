@@ -291,7 +291,7 @@ export function contractRegister(g) {
       { negotiation: true },
     )
   }
-  const funds = collection(game.funding).filter((x) => x.payer === own)
+  const funds = collection(game.funding)
   for (const item of funds.filter((x) => x.source !== 'academy'))
     add('funding', item, personName(item.person), item.person, 'funding', '', '', {
       person: people.find((x) => x.id === item.person),

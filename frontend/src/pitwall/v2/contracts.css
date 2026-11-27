@@ -1,4 +1,4 @@
-@scope (.pitwall) to (.native-screen) {
+@scope (.pitwall) {
   /* PIT WALL — document room. Organization tokens inherit; the paper remains legible. */
   .contract-workspace {
     --contract-ink: #242226;

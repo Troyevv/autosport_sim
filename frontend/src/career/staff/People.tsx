@@ -1,3 +1,4 @@
+import { PersonnelDirectory } from '../../pitwall/Directory'
 import { publishCareerMoment } from '../../pitwall/core/moments'
 import { readRoute, initialTab } from '../../pitwall/core/route'
 import { useRef, useState, type CSSProperties } from 'react'
@@ -147,8 +148,10 @@ export function People({
     setCountry('')
     setError('')
   }
+  const overview = route.page === 'people' && tab === 'roster'
   return (
     <section className="screen staff-desk" data-dossier={employee ? 'open' : undefined}>
+      {overview && <PersonnelDirectory overview>{null}</PersonnelDirectory>}
       <Choices
         items={views.filter(
           ([id]) =>
@@ -159,32 +162,35 @@ export function People({
         onChange={changeTab}
         label="Кадровый центр"
       />
-      <Header
-        section={world.organizations[c.org].name}
-        title={
-          {
-            lineup: 'Состав на сезон',
-            academy: 'Талант требует системы',
-            preparation: 'Готовность создаётся заранее',
-            offers: 'Переговоры и соглашения',
-            programs: c.role === 'owner' ? 'Направление задаёте вы' : 'Цели, ответственность и доверие',
-            groups: 'Коллективы и подразделения',
-            market: 'Найдите своё преимущество',
-            funding: 'Возможность выйти на старт',
-            roster: 'Пилоты и персонал',
-          }[tab]
-        }
-        sub={
-          tab === 'lineup'
-            ? 'Экипажи, спортивный статус и доступность. Будущие договоры вступают в указанный день.'
-            : tab === 'preparation'
-              ? 'Состав участников, стоимость и доступные программы подготовки.'
-              : tab === 'programs'
-                ? 'Мандат связывает решения команды с ожиданиями владельца.'
-                : 'Состав организации, развитие сотрудников и контрактные решения.'
-        }
-      />
-      {tab === 'roster' && (
+      {!overview && (
+        <Header
+          section={world.organizations[c.org].name}
+          title={
+            {
+              lineup: 'Состав на сезон',
+              academy: 'Талант требует системы',
+              preparation: 'Готовность создаётся заранее',
+              offers: 'Переговоры и соглашения',
+              programs:
+                c.role === 'owner' ? 'Направление задаёте вы' : 'Цели, ответственность и доверие',
+              groups: 'Коллективы и подразделения',
+              market: 'Найдите своё преимущество',
+              funding: 'Возможность выйти на старт',
+              roster: 'Пилоты и персонал',
+            }[tab]
+          }
+          sub={
+            tab === 'lineup'
+              ? 'Экипажи, спортивный статус и доступность. Будущие договоры вступают в указанный день.'
+              : tab === 'preparation'
+                ? 'Состав участников, стоимость и доступные программы подготовки.'
+                : tab === 'programs'
+                  ? 'Мандат связывает решения команды с ожиданиями владельца.'
+                  : 'Состав организации, развитие сотрудников и контрактные решения.'
+          }
+        />
+      )}
+      {tab === 'roster' && !overview && (
         <div className="staff-summary">
           <div>
             <Users />

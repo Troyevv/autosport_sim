@@ -7,8 +7,7 @@ const mobile: Record<string, string> = {
   research: 'Исследования',
   development: 'Разработка и испытания',
   production: 'Производство',
-  inventory: 'Склад экземпляров',
-  manufacturer: 'Техническая служба',
+  inventory: 'Склад компонентов',
 }
 export function EngineeringHeading({ route, organization: org, maker, children }: Props) {
   const titles: Record<string, string[]> = {
@@ -58,7 +57,13 @@ export function EngineeringHeading({ route, organization: org, maker, children }
         <small>{section}</small>
         <h1>
           <span className="eng-desktop-title">{title}</span>
-          <span className="eng-mobile-title">{mobile[route]}</span>
+          <span className="eng-mobile-title">
+            {route === 'manufacturer'
+              ? maker
+                ? 'Продукты и клиенты'
+                : 'Партнёры и поддержка'
+              : mobile[route]}
+          </span>
         </h1>
         <p>{description}</p>
       </div>

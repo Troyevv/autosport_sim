@@ -75,7 +75,7 @@ test('Владелец DTM и шинный поставщик WEC работаю
   await expect(page.locator('.role-home')).toContainText('ABT')
   await evidence('headquarters')
   await page.goto(page.url().split('#')[0] + '#people')
-  await page.getByRole('button', { name: new RegExp(driver) }).click()
+  await page.locator('.staff-card').filter({ hasText: driver }).click()
   await expect(page.locator('.staff-dossier')).toContainText('Выносливость')
   await expect(page.locator('.staff-dossier').locator('image[data-layer="fitted-fabric"]')).toHaveCount(1)
   await expect(page.locator('.staff-dossier')).toContainText('Специализация')

@@ -1,6 +1,7 @@
+import { ContractEditor } from '../../pitwall/ContractEditor'
 import { sportingStatus } from './Lineup'
 import { Development } from './Development'
-import {initialTab,readRoute,navigate} from '../../pitwall/core/route'
+import { initialTab, readRoute, navigate } from '../../pitwall/core/route'
 import { useEffect, useState } from 'react'
 import { Button, Choices, Facts, Progress } from '../../ui/components'
 import type { SectionProps } from '../Sections'
@@ -42,7 +43,9 @@ const tabs = [
 export function StaffFile(props: Props) {
   const { employee, c, world, onClose } = props
   const [wet, rain] = useState(false),
-    [tab, view] = useState<(typeof tabs)[number][0]>(()=>initialTab(tabs,'profile',readRoute().tab==='contract'?'terms':readRoute().tab))
+    [tab, view] = useState<(typeof tabs)[number][0]>(() =>
+      initialTab(tabs, 'profile', readRoute().tab === 'contract' ? 'terms' : readRoute().tab),
+    )
   const path = 'careers/' + c.id + '/personnel/' + employee.id
   const result = usePersonnel<Dossier>(path + '?wet=' + wet, c.revision)
   useEffect(() => {
@@ -55,13 +58,52 @@ export function StaffFile(props: Props) {
   const data = result.data
   return (
     <article className="staff-dossier people-module">
-      <div className="p-file-breadcrumb"><button onClick={onClose}>← К списку</button><span>{world.positions[employee.position].name} / Досье</span></div>
-      <header className="p-dossier-hero"><div className="p-dossier-photo"><Portrait person={employee} org={employee.org} color={employee.org ? world.organizations[employee.org].color : '#888888'} driver={employee.position==='driver'} media={props.media} showShoulders/>
-        <span className="p-dossier-rating"><b>{data?.profile.rating ?? employee.rating}</b><small>рейтинг</small></span></div>
-        <div className="p-dossier-title"><span className="p-kicker">{world.positions[employee.position].name} · {employee.country}</span><h1>{employee.name}</h1>
-        {employee.org ? <button className="p-org-link" onClick={()=>navigate('organization','overview',employee.org!)}>{world.organizations[employee.org].name} ↗</button> : <span>Свободный агент</span>}
-        <div className="p-person-facts"><span>{employee.age} лет</span><span><CountryFlag id={employee.country} countries={world.countries}/></span><span>{employee.specialty}</span></div></div>
-        <div className="p-file-actions"><Button onClick={()=>view('terms')}>Договор и условия</Button><Button onClick={()=>view('compare')}>Сравнить</Button></div>
+      <div className="p-file-breadcrumb">
+        <button onClick={onClose}>← К списку</button>
+        <span>{world.positions[employee.position].name} / Досье</span>
+      </div>
+      <header className="p-dossier-hero">
+        <div className="p-dossier-photo">
+          <Portrait
+            person={employee}
+            org={employee.org}
+            color={employee.org ? world.organizations[employee.org].color : '#888888'}
+            driver={employee.position === 'driver'}
+            media={props.media}
+            showShoulders
+          />
+          <span className="p-dossier-rating">
+            <b>{data?.profile.rating ?? employee.rating}</b>
+            <small>рейтинг</small>
+          </span>
+        </div>
+        <div className="p-dossier-title">
+          <span className="p-kicker">
+            {world.positions[employee.position].name} · {employee.country}
+          </span>
+          <h1>{employee.name}</h1>
+          {employee.org ? (
+            <button
+              className="p-org-link"
+              onClick={() => navigate('organization', 'overview', employee.org!)}
+            >
+              {world.organizations[employee.org].name} ↗
+            </button>
+          ) : (
+            <span>Свободный агент</span>
+          )}
+          <div className="p-person-facts">
+            <span>{employee.age} лет</span>
+            <span>
+              <CountryFlag id={employee.country} countries={world.countries} />
+            </span>
+            <span>{employee.specialty}</span>
+          </div>
+        </div>
+        <div className="p-file-actions">
+          <Button onClick={() => view('terms')}>Договор и условия</Button>
+          <Button onClick={() => view('compare')}>Сравнить</Button>
+        </div>
       </header>
       <div className="staff-file">
         <Choices
@@ -141,13 +183,15 @@ export function StaffFile(props: Props) {
         {data && tab === 'teamwork' && (
           <>
             <Handling data={data} />
-            <Connections rows={data.relationships} people={new Set(props.people.map(p => p.id))} />
+            <Connections rows={data.relationships} people={new Set(props.people.map((p) => p.id))} />
           </>
         )}
         {data && tab === 'profile' && data.person.management && <ManagerProfile p={data.person} />}
         {data && tab === 'media' && <MediaProfile data={data} world={world} />}
         {data && tab === 'backing' && <DriverBacking {...props} data={data} />}
-        {data && tab === 'career' && data.person.position === 'driver' && <Scouting {...props} data={data} />}
+        {data && tab === 'career' && data.person.position === 'driver' && (
+          <Scouting {...props} data={data} />
+        )}
         {data && tab === 'career' && <CareerFile {...props} data={data} />}
         {data && tab === 'compare' && <Comparison {...props} data={data} wet={wet} />}
         {data && tab === 'terms' && <Terms {...props} data={data} />}
@@ -237,7 +281,8 @@ function SupportForm({
       .map(([product]) => ({
         entry: e.id,
         product,
-        label: world.organizations[e.org].name + ' · № ' + e.number + ' · ' + world.products[product].name,
+        label:
+          world.organizations[e.org].name + ' · № ' + e.number + ' · ' + world.products[product].name,
       })),
   )
   const [i, pick] = useState(0),
@@ -248,7 +293,13 @@ function SupportForm({
       className="staff-form"
       onSubmit={(e) => {
         e.preventDefault()
-        order('advisor-assign', { seat, entry: clients[i].entry, product: clients[i].product, start, end })
+        order('advisor-assign', {
+          seat,
+          entry: clients[i].entry,
+          product: clients[i].product,
+          start,
+          end,
+        })
       }}
     >
       <label>
@@ -311,7 +362,10 @@ function PeerSkills({
   data,
   wet,
 }: Pick<FileProps, 'world' | 'c' | 'data'> & { peer: Candidate; wet: boolean }) {
-  const other = usePersonnel<Dossier>('careers/' + c.id + '/personnel/' + peer.id + '?wet=' + wet, c.revision)
+  const other = usePersonnel<Dossier>(
+    'careers/' + c.id + '/personnel/' + peer.id + '?wet=' + wet,
+    c.revision,
+  )
   if (other.error)
     return (
       <p role="alert">
@@ -424,7 +478,8 @@ function Terms({ data, c, world, busy, order, onSent }: FileProps) {
   const managed = current && current.org === c.org && data.options.some((o) => o.id === current.seat)
   const options = data.options
   const vacant = (id: string) => !c.assignments.find((a) => a.id === id)?.occupant
-  const first = options.find((o) => o.id === current?.seat) || options.find((o) => vacant(o.id)) || options[0]
+  const first =
+    options.find((o) => o.id === current?.seat) || options.find((o) => vacant(o.id)) || options[0]
   const [seat, target] = useState(first?.id || ''),
     [salary, pay] = useState(String((first?.ask_cents || 0) / 100)),
     [bonus, signing] = useState('0')
@@ -510,147 +565,183 @@ function Terms({ data, c, world, busy, order, onSent }: FileProps) {
               onSent()
           }}
         >
-          <h3>Предложение сотруднику</h3>
-          <label>
-            Должность и место
-            <select
-              value={seat}
-              onChange={(e) => {
-                target(e.target.value)
-                const option = options.find((o) => o.id === e.target.value)
-                pay(String((option?.ask_cents || 0) / 100))
-                if (option?.available) {
-                  from(option.available)
-                  until(seasonEnd(option.available))
-                }
-              }}
-            >
-              {options.map((o) => (
-                <option key={o.id} value={o.id}>
-                  {seatName(o.id, c, world)} ·{' '}
-                  {vacant(o.id) ? 'вакантно' : c.assignments.find((a) => a.id === o.id)?.occupant?.name}
-                </option>
-              ))}
-            </select>
-          </label>
-          {driver && !supporting && (
+          <ContractEditor
+            type={driver ? 'driver' : 'staff'}
+            title={
+              driver
+                ? 'Предложите место в следующей главе.'
+                : data.person.position === 'manager'
+                  ? 'Доверьте организацию руководителю.'
+                  : 'Пригласите специалиста в команду.'
+            }
+            eyebrow="Проект договора"
+            person={data.person}
+            subtitle={world.positions[data.person.position].name}
+            clause="Место и условия"
+            comparison={[
+              [
+                'Оклад / месяц',
+                current?.salary_cents == null ? 'Не раскрыто' : money(current.salary_cents),
+                money(Math.round(Number(salary) * 100)),
+              ],
+              ['Начало', current?.start ? shortDate(current.start) : '—', shortDate(start)],
+              ['До', current?.end ? shortDate(current.end) : '—', shortDate(end)],
+            ]}
+          >
             <label>
-              Статус по договору
-              <select value={status} onChange={(e) => setStatus(e.target.value)}>
-                {Object.entries(sportingStatus).map(([id, text]) => (
-                  <option key={id} value={id}>
-                    {text}
+              Должность и место
+              <select
+                value={seat}
+                onChange={(e) => {
+                  target(e.target.value)
+                  const option = options.find((o) => o.id === e.target.value)
+                  pay(String((option?.ask_cents || 0) / 100))
+                  if (option?.available) {
+                    from(option.available)
+                    until(seasonEnd(option.available))
+                  }
+                }}
+              >
+                {options.map((o) => (
+                  <option key={o.id} value={o.id}>
+                    {seatName(o.id, c, world)} ·{' '}
+                    {vacant(o.id)
+                      ? 'вакантно'
+                      : c.assignments.find((a) => a.id === o.id)?.occupant?.name}
                   </option>
                 ))}
               </select>
             </label>
-          )}
-          {driver && supporting && (
-            <label className="staff-check">
-              <input type="checkbox" checked={combined} onChange={(e) => setCombined(e.target.checked)} />
-              Совмещать резерв и испытания
-            </label>
-          )}
-          {driver && (
-            <label className="staff-check">
-              <input type="checkbox" checked={outside} onChange={(e) => setOutside(e.target.checked)} />
-              Разрешить выступления в другой серии в свободные даты
-            </label>
-          )}
-          {data.person.position !== 'driver' && (
-            <label>
-              Профессиональные полномочия
-              <select value={remit} onChange={(e) => setRemit(e.target.value)}>
-                <option value="standard">В рамках должности</option>
-                <option value="independent">Самостоятельное руководство</option>
-                <option value="supervised">Под контролем руководителя</option>
-              </select>
-            </label>
-          )}
-          {quote.data?.considerations?.map((v) => (
-            <p className="muted" key={v}>
-              {v}
+            {driver && !supporting && (
+              <label>
+                Статус по договору
+                <select value={status} onChange={(e) => setStatus(e.target.value)}>
+                  {Object.entries(sportingStatus).map(([id, text]) => (
+                    <option key={id} value={id}>
+                      {text}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            )}
+            {driver && supporting && (
+              <label className="staff-check">
+                <input
+                  type="checkbox"
+                  checked={combined}
+                  onChange={(e) => setCombined(e.target.checked)}
+                />
+                Совмещать резерв и испытания
+              </label>
+            )}
+            {driver && (
+              <label className="staff-check">
+                <input
+                  type="checkbox"
+                  checked={outside}
+                  onChange={(e) => setOutside(e.target.checked)}
+                />
+                Разрешить выступления в другой серии в свободные даты
+              </label>
+            )}
+            {data.person.position !== 'driver' && (
+              <label>
+                Профессиональные полномочия
+                <select value={remit} onChange={(e) => setRemit(e.target.value)}>
+                  <option value="standard">В рамках должности</option>
+                  <option value="independent">Самостоятельное руководство</option>
+                  <option value="supervised">Под контролем руководителя</option>
+                </select>
+              </label>
+            )}
+            {quote.data?.considerations?.map((v) => (
+              <p className="muted" key={v}>
+                {v}
+              </p>
+            ))}
+            {quote.data?.reason && (
+              <p className="staff-warning" role="status">
+                {quote.data.reason}
+              </p>
+            )}
+            {quote.error && (
+              <p role="alert">
+                {quote.error} <Button onClick={quote.retry}>Повторить расчёт</Button>
+              </p>
+            )}
+            <Dates {...{ start, end, from, until, min: daysAfter(c.date, 2) }} />
+            <div className="staff-pair">
+              <label>
+                Оклад в месяц, €
+                <input
+                  required
+                  type="number"
+                  min=".01"
+                  step=".01"
+                  max={100000000}
+                  value={salary}
+                  onChange={(e) => pay(e.target.value)}
+                />
+              </label>
+              <label>
+                Бонус за подписание, €
+                <input
+                  required
+                  type="number"
+                  min="0"
+                  step=".01"
+                  max={100000000}
+                  value={bonus}
+                  onChange={(e) => signing(e.target.value)}
+                />
+              </label>
+            </div>
+            <Facts
+              items={[
+                ['Ожидаемый оклад', money(expectation || 0)],
+                [
+                  'Выкуп при подписании',
+                  quote.data?.buyout_cents != null ? money(quote.data.buyout_cents) : '—',
+                ],
+                ...(data.person.position === 'driver'
+                  ? ([
+                      [
+                        'Взносы на дату вступления',
+                        quote.data?.support_cents != null ? money(quote.data.support_cents) : '—',
+                      ],
+                      [
+                        'Чистый эффект в месяц',
+                        quote.data?.net_cents != null ? money(quote.data.net_cents) : '—',
+                      ],
+                    ] as [string, string][])
+                  : []),
+                ['Остаток организации', money(c.account.cash_cents)],
+              ]}
+            />
+            <p className="muted">
+              Ответ кандидата придёт на следующий игровой день. При согласии бонус и выкуп списываются
+              сразу. Форма и оклад меняются в день вступления.
             </p>
-          ))}
-          {quote.data?.reason && (
-            <p className="staff-warning" role="status">
-              {quote.data.reason}
-            </p>
-          )}
-          {quote.error && (
-            <p role="alert">
-              {quote.error} <Button onClick={quote.retry}>Повторить расчёт</Button>
-            </p>
-          )}
-          <Dates {...{ start, end, from, until, min: daysAfter(c.date, 2) }} />
-          <div className="staff-pair">
-            <label>
-              Оклад в месяц, €
-              <input
-                required
-                type="number"
-                min=".01"
-                step=".01"
-                max={100000000}
-                value={salary}
-                onChange={(e) => pay(e.target.value)}
-              />
-            </label>
-            <label>
-              Бонус за подписание, €
-              <input
-                required
-                type="number"
-                min="0"
-                step=".01"
-                max={100000000}
-                value={bonus}
-                onChange={(e) => signing(e.target.value)}
-              />
-            </label>
-          </div>
-          <Facts
-            items={[
-              ['Ожидаемый оклад', money(expectation || 0)],
-              [
-                'Выкуп при подписании',
-                quote.data?.buyout_cents != null ? money(quote.data.buyout_cents) : '—',
-              ],
-              ...(data.person.position === 'driver'
-                ? ([
-                    [
-                      'Взносы на дату вступления',
-                      quote.data?.support_cents != null ? money(quote.data.support_cents) : '—',
-                    ],
-                    [
-                      'Чистый эффект в месяц',
-                      quote.data?.net_cents != null ? money(quote.data.net_cents) : '—',
-                    ],
-                  ] as [string, string][])
-                : []),
-              ['Остаток организации', money(c.account.cash_cents)],
-            ]}
-          />
-          <p className="muted">
-            Ответ кандидата придёт на следующий игровой день. При согласии бонус и выкуп списываются сразу.
-            Форма и оклад меняются в день вступления.
-          </p>
-          <Button
-            primary
-            type="submit"
-            disabled={
-              busy ||
-              !quote.data ||
-              !!quote.data.reason ||
-              c.offers.some((o) => o.person === data.person.id && ['sent', 'countered'].includes(o.status))
-            }
-          >
-            {busy ? 'Отправка…' : 'Отправить предложение'}
-          </Button>
+            <Button
+              primary
+              type="submit"
+              disabled={
+                busy ||
+                !quote.data ||
+                !!quote.data.reason ||
+                c.offers.some(
+                  (o) => o.person === data.person.id && ['sent', 'countered'].includes(o.status),
+                )
+              }
+            >
+              {busy ? 'Отправка…' : 'Отправить предложение'}
+            </Button>
+          </ContractEditor>
         </form>
       )}
       {managed && (
-        <details className="staff-release"><summary>Досрочное прекращение договора</summary>
+        <details className="staff-release">
+          <summary>Досрочное прекращение договора</summary>
           {release ? (
             <>
               <p>
@@ -674,7 +765,6 @@ function Terms({ data, c, world, busy, order, onSent }: FileProps) {
           )}
         </details>
       )}
-
     </>
   )
 }

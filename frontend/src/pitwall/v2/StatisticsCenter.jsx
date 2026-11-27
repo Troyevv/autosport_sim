@@ -1,3 +1,4 @@
+import { factContext } from './stats-data'
 import React, { useEffect, useMemo, useState } from 'react'
 import { useGame, useStored, dateLabel, money } from '../core'
 import { Icon, Button, Badge, Tabs } from '../ui'
@@ -375,7 +376,7 @@ export function StatisticsCenter() {
               back={() => go(compare[0]?.type || 'drivers')}
             />
           ) : cat === 'archive' || cat === 'records' ? (
-            <WorldArchive view={cat} index={index} g={g} mode={mode} open={open} />
+            <WorldArchive view={cat} index={index} g={g} open={open} openFact={setSelectedFact} />
           ) : cat === 'journal' ? (
             <Journal index={index} g={g} s={s} set={set} openFact={openFact} open={open} />
           ) : (
@@ -435,8 +436,8 @@ export function StatisticsCenter() {
                 </label>
                 <label>
                   <span>Сезон</span>
-                  <select value={s.season}>
-                    <option value="2025">2025 · фактический</option>
+                  <select value="2025" disabled>
+                    <option value="2025">2025 · стартовый каталог</option>
                   </select>
                 </label>
                 <label>
@@ -670,6 +671,7 @@ function Overview({ index, g, mode, go, open, onDemo }) {
   const own =
       index.lookup[(g.role === 'manufacturer' ? 'manufacturers' : 'teams') + ':' + g.game.career.org],
     firstChamp = index.lookup['championships:' + g.game.career.series]
+  const recordedResults = index.facts.filter((f) => f.kind === 'entry-result')
   const next = index.events
     .filter((e) => e.kind === 'round' && e.start >= g.game.career.date)
     .sort((a, b) => a.start.localeCompare(b.start))[0]
@@ -714,11 +716,15 @@ function Overview({ index, g, mode, go, open, onDemo }) {
           <div className="st-editorial-status">
             <Icon name={'CalendarClock'} size={18} />
             <div>
-              <strong>{'Сезон 2025 ещё не написал свою историю'}</strong>
+              <strong>
+                {recordedResults.length
+                  ? 'Опубликованы результаты сессий'
+                  : 'Сезон ' + g.game.career.date.slice(0, 4) + ' ещё не написал свою историю'}
+              </strong>
               <p>
-                {
-                  'В текущем снимке есть назначения, лицензии и календарь. Завершённых гоночных сессий в источнике пока нет.'
-                }
+                {recordedResults.length
+                  ? 'Классификации доступны в архиве соревнований.'
+                  : 'В журнале есть назначения, лицензии и календарь. Завершённых гоночных сессий в источнике пока нет.'}
               </p>
             </div>
           </div>
@@ -1808,7 +1814,7 @@ function Journal({ index, g, s, set, openFact, open }) {
   )
 }
 function factSummary(f, index) {
-  const c = f.body?.context || {},
+  const c = factContext(f),
     d = f.body?.data || {}
   return (
     [
@@ -1827,7 +1833,7 @@ function factSummary(f, index) {
 }
 function FactDrawer({ fact, g, index, open, close }) {
   const [showTechnical, setTechnical] = useState(false)
-  const c = fact.body?.context || {},
+  const c = factContext(fact),
     d = fact.body?.data || {}
   const ref = React.useRef(null)
   useEffect(() => {
@@ -2136,12 +2142,22 @@ export function EntityStatistics({ type, id }) {
   )
 }
 export default StatisticsCenter
-function WorldArchive({ view, index, g, mode, open, onDemo }) {
-  const [archiveSeries, setArchiveSeries] = useState('f1'),
-    [sort, setSort] = useState('points'),
-    [relative, setRelative] = useState(false),
-    [archiveSeason, setArchiveSeason] = useState('2027')
+function WorldArchive({ view, index, g, open, openFact }) {
+  const [archiveSeries, setArchiveSeries] = useState(g.game.career.series),
+    [year, setYear] = useState(g.game.career.date.slice(0, 4))
   const series = index.lookup['championships:' + archiveSeries]
+  const sport = index.facts.filter(
+    (f) => ['entry-result', 'record', 'lap'].includes(f.kind) && factContext(f).series === archiveSeries,
+  )
+  const season = (f) => String(factContext(f).season || f.day).match(/\d{4}/)?.[0] || f.day.slice(0, 4)
+  const years = [...new Set(['2025', g.game.career.date.slice(0, 4), ...sport.map(season)])]
+    .sort()
+    .reverse()
+  const selected = sport.filter(
+    (f) => season(f) === year && (view === 'records' ? f.kind === 'record' : f.kind !== 'record'),
+  )
+  const [shown, setShown] = useState(20)
+  useEffect(() => setShown(20), [archiveSeries, year, view])
   return (
     <section className="st-world-archive">
       <div className="st-section-heading">
@@ -2170,20 +2186,12 @@ function WorldArchive({ view, index, g, mode, open, onDemo }) {
         </label>
         <label>
           <span>Сезон</span>
-          <select value={'2025'} onChange={(e) => setArchiveSeason(e.target.value)} disabled={true}>
-            <option value={'2025'}>{'2025 · карьера'}</option>
+          <select value={year} onChange={(e) => setYear(e.target.value)} disabled={years.length < 2}>
+            {years.map((y) => (
+              <option key={y}>{y}</option>
+            ))}
           </select>
         </label>
-        {view === 'records' && (
-          <label>
-            <span>Критерий</span>
-            <select value={sort} onChange={(e) => setSort(e.target.value)}>
-              <option value="points">Очки</option>
-              <option value="wins">Победы</option>
-              <option value="podiums">Подиумы</option>
-            </select>
-          </label>
-        )}
       </div>
       <div className="st-archive-series">
         <Mark item={series} size={62} />
@@ -2204,14 +2212,33 @@ function WorldArchive({ view, index, g, mode, open, onDemo }) {
       </div>
       {
         <>
-          <Missing
-            title={
-              view === 'records'
-                ? 'Подтверждённых рекордов ещё нет'
-                : 'Архив сессий ожидает первых результатов'
-            }
-            text="текущей карьеры предоставляет исходный мир, регламент, назначения и календарь. Классификации завершённых сессий, история кругов и спортивные рекорды пока не поступают. Ноль записей не интерпретируется как ноль достижений за всю карьеру."
-          />
+          {selected.length ? (
+            <div className="st-journal-list">
+              {selected.slice(0, shown).map((f) => (
+                <button type="button" key={f.source + f.key} onClick={() => openFact(f)}>
+                  <time>{dateLabel(f.day)}</time>
+                  <Icon name="Flag" />
+                  <span>
+                    <strong>{FACT_KINDS[f.kind]}</strong>
+                    <small>{factSummary(f, index)}</small>
+                  </span>
+                  <Icon name="ChevronRight" />
+                </button>
+              ))}
+              {shown < selected.length && (
+                <Button onClick={() => setShown(shown + 20)}>Показать ещё</Button>
+              )}
+            </div>
+          ) : (
+            <Missing
+              title={
+                view === 'records'
+                  ? 'Подтверждённых рекордов ещё нет'
+                  : 'Архив сессий ожидает первых результатов'
+              }
+              text="Для выбранных чемпионата и сезона в доступной истории нет таких записей. Реестр пополняется после публикации подтверждённых результатов."
+            />
+          )}
           {series.rules.previous_season?.fact && (
             <aside className="st-history-real">
               <Icon name="BookOpen" size={22} />
@@ -2229,10 +2256,7 @@ function WorldArchive({ view, index, g, mode, open, onDemo }) {
           )}
         </>
       }
-      <Source>
-        Концепция задач #37–41. Расчёт реальной статистики, телеметрии и архивов остаётся обязанностью
-        спортивных результатов.
-      </Source>
+      <Source>Источник — подтверждённые записи карьеры и опубликованный регламент серии.</Source>
     </section>
   )
 }

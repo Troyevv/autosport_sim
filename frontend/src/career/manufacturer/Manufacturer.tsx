@@ -1,8 +1,9 @@
+import { ChevronRight, Search, SlidersHorizontal } from 'lucide-react'
 import { RaceCar } from '../../pitwall/visuals'
 import { EngineeringHeading } from '../../pitwall/EngineeringHeading'
 import { initialTab, navigate, readRoute } from '../../pitwall/core/route'
 import { useState, type FormEvent, type ReactNode } from 'react'
-import { Button, Choices, Panel, Stats } from '../../ui/components'
+import { Button, Dialog, Panel, Stats } from '../../ui/components'
 import { type Career, money } from '../api'
 import { type SectionProps } from '../Sections'
 import { useOrder } from '../finance/useOrder'
@@ -11,10 +12,10 @@ import { type Desk, type Case, label } from './model'
 import './manufacturer.css'
 
 const tabs = [
-  ['catalog', 'Каталог'],
+  ['catalog', 'Продукция'],
   ['program', 'Программы'],
   ['research', 'Исследования и разработки'],
-  ['factory', 'Испытания и производство'],
+  ['factory', 'Испытания и цех'],
   ['clients', 'Клиенты'],
   ['cases', 'Запросы'],
   ['advisors', 'Консультанты'],
@@ -50,7 +51,12 @@ export function Manufacturer({
   const request = usePersonnel<Desk>('careers/' + c.id + '/manufacturer', c.revision)
   const orders = useOrder(c, updateCareer, 'manufacturer'),
     staff = useOrder(c, updateCareer, 'staff')
-  const [tab, setTab] = useState<string>(() => initialTab(tabs, maker ? 'catalog' : 'clients')),
+  const serviceTabs = ['clients', 'cases', 'advisors', 'warranty', 'history']
+  const visibleTabs = tabs.filter(([id]) => maker || serviceTabs.includes(id))
+  const tab = initialTab(visibleTabs, maker ? 'catalog' : 'clients')
+  const [query, setQuery] = useState(''),
+    [series, setSeries] = useState('all'),
+    [priorityOpen, showPriority] = useState(false),
     [selected, setSelected] = useState(''),
     [edition, setEdition] = useState(readRoute().entity),
     [year, setYear] = useState(c.date.slice(0, 4)),
@@ -64,11 +70,22 @@ export function Manufacturer({
     d?.catalog.find((p) => p.series === c.series) ??
     d?.catalog[0]
   const version = product?.editions.find((v) => v.id === edition) ?? product?.editions[0]
+  const visibleClients = (d?.clients || []).filter(
+    (row) =>
+      (series === 'all' || row.series === series) &&
+      [row.name, row.car, row.entry, world.organizations[row.terms.maker]?.name, label(row.axis)]
+        .join(' ')
+        .toLocaleLowerCase()
+        .includes(query.trim().toLocaleLowerCase()),
+  )
+  const availableClients = tab === 'clients' ? visibleClients : d?.clients || []
   const client =
-    d?.clients.find((r) => r.entry + r.axis === clientKey) ??
-    d?.clients.find((r) => r.org === readRoute().entity || r.entry === readRoute().entity) ??
-    d?.clients.find((r) => r.series === c.series) ??
-    d?.clients[0]
+    availableClients.find((r) => r.entry + r.axis === clientKey) ??
+    availableClients.find((r) =>
+      [r.org, r.entry, r.terms.maker, r.entry + '|' + r.axis].includes(readRoute().entity),
+    ) ??
+    availableClients.find((r) => r.series === c.series) ??
+    availableClients[0]
   const busy = orders.busy || staff.busy,
     org = (id: string) => world.organizations[id]?.name || id
   async function submit(action: string, payload: unknown, result: string) {
@@ -76,10 +93,13 @@ export function Manufacturer({
     if (await orders.send(action, payload)) setReceipt(result)
   }
   function chooseTab(v: string) {
-    setTab(v)
-    setReceipt('')
-    orders.clear()
-    staff.clear()
+    if (v === tab) return
+    const entity = ['catalog', 'program', 'research', 'factory'].includes(v)
+      ? version?.id
+      : client
+        ? client.entry + '|' + client.axis
+        : ''
+    navigate('manufacturer', v, entity || '')
   }
   const clientSelect = d && client && (
     <Field name="Клиентская заявка">
@@ -198,8 +218,52 @@ export function Manufacturer({
       <EngineeringHeading
         route="manufacturer"
         organization={world.organizations[c.org].name}
-        maker={c.role === 'manufacturer'}
-      />
+        maker={maker}
+      >
+        {maker ? (
+          <Button disabled={!d} onClick={() => showPriority(true)}>
+            <SlidersHorizontal size={16} />
+            Приоритет программы
+          </Button>
+        ) : c.role === 'manager' ? (
+          <Button onClick={() => navigate('council', 'mandate')}>
+            <SlidersHorizontal size={16} />
+            Делегирование
+          </Button>
+        ) : (
+          <span>Наблюдение владельца</span>
+        )}
+      </EngineeringHeading>
+      {priorityOpen && d && (
+        <Dialog
+          title="Приоритет производителя"
+          onClose={() => {
+            if (!busy) showPriority(false)
+          }}
+        >
+          <form
+            className="maker-body"
+            onSubmit={async (ev) => {
+              const payload = form(ev)
+              if (await orders.send('maker-priority', payload)) {
+                showPriority(false)
+                setReceipt('Приоритет программы изменён.')
+              }
+            }}
+          >
+            <p>Правила применяются к новым решениям. Уже утверждённые работы сохраняются.</p>
+            <Field name="Распределение программы">
+              <select name="allocation" defaultValue={d.allocation}>
+                {options(['balanced', 'current', 'next', 'stop-current'])}
+              </select>
+            </Field>
+            {orders.error && <p role="alert">{orders.error}</p>}
+            <Button type="submit" primary disabled={busy}>
+              Сохранить приоритет
+            </Button>
+          </form>
+        </Dialog>
+      )}
       {request.error && (
         <p role="alert">
           {request.error} <Button onClick={request.retry}>Повторить загрузку</Button>
@@ -208,42 +272,18 @@ export function Manufacturer({
       {!request.error && !d && <p role="status">Загрузка инженерных дел…</p>}
       {d && (
         <>
-          {[
-            ['Продукция', ['catalog', 'program', 'research', 'factory']],
-            ['Клиентская служба', ['clients', 'cases', 'advisors']],
-            ['Сервис', ['diagnosis', 'warranty', 'history']],
-          ].map(([group, keys]) => {
-            const items = tabs.filter(
-              ([v]) =>
-                keys.includes(v) &&
-                (maker || ['clients', 'cases', 'advisors', 'warranty', 'history'].includes(v)),
-            )
-            if (!items.length) return null
-            return (
-              <div className="maker-nav-group" key={String(group)}>
-                <span>{group}</span>
-                <Choices label={String(group)} active={tab} onChange={chooseTab} items={items} />
-              </div>
-            )
-          })}
-          <details className="eng-summary-details">
-            <summary>Показатели отдела</summary>{' '}
-            <Stats
-              items={[
-                [
-                  maker ? 'Клиентские команды' : 'Поставщики',
-                  new Set(d.clients.map((r) => (maker ? r.org : r.terms.maker))).size,
-                  'Действующие связи',
-                ],
-                [
-                  'Поручения',
-                  d.projects.filter((p) => p.status !== 'complete').length,
-                  'В очереди и в работе',
-                ],
-                ['Обращения', d.cases.filter((r) => r.status === 'open').length, 'Ожидают решения'],
-              ]}
-            />
-          </details>
+          <nav className="eng-tabs" aria-label="Разделы инженерного штаба">
+            {visibleTabs.map(([id, title]) => (
+              <button
+                type="button"
+                key={id}
+                aria-current={id === tab ? 'page' : undefined}
+                onClick={() => chooseTab(id)}
+              >
+                {title}
+              </button>
+            ))}
+          </nav>
 
           {(orders.error || staff.error) && (
             <p role="alert" className="career-error">
@@ -330,7 +370,15 @@ export function Manufacturer({
           )}
           {['program', 'research', 'factory'].includes(tab) && (
             <div className="maker-grid">
-              <Panel title={tab === 'program' ? 'Технические программы' : 'Поручение специалистам'}>
+              <Panel
+                title={
+                  tab === 'program'
+                    ? 'Продуктовая программа'
+                    : tab === 'research'
+                      ? 'От вопроса к новой редакции'
+                      : 'Проверка, производство, приёмка'
+                }
+              >
                 <div className="maker-body">
                   {productSelect}
                   {product && version && (
@@ -532,83 +580,147 @@ export function Manufacturer({
             </Panel>
           )}
           {tab === 'clients' && (
-            <Panel title="Договор и доступная продукция">
-              <div className="maker-body">
-                {clientSelect}
-                {client && (
-                  <>
-                    <div className="eng-client-feature">
-                      <div className="eng-client-heading">
-                        <div>
-                          <small>{client.series.toUpperCase()} · КЛИЕНТСКАЯ ПРОГРАММА</small>
-                          <h2>{maker ? org(client.org) : org(client.terms.maker)}</h2>
-                          <p>
-                            {client.car} · {label(client.axis)}
-                          </p>
-                        </div>
-                        <Button
-                          onClick={() =>
-                            navigate('organization', 'overview', maker ? client.org : client.terms.maker)
-                          }
-                        >
-                          Организация
-                        </Button>
+            <>
+              <div className="eng-toolbar">
+                <label className="maker-client-search">
+                  <Search size={16} />
+                  <input
+                    type="search"
+                    aria-label="Поиск по заявкам"
+                    placeholder={
+                      maker ? 'Найти клиента, машину или заявку' : 'Найти производителя или продукт'
+                    }
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                  />
+                </label>
+                <select
+                  aria-label="Чемпионат клиента"
+                  value={series}
+                  onChange={(e) => setSeries(e.target.value)}
+                >
+                  <option value="all">Все чемпионаты</option>
+                  {[...new Set(d.clients.map((row) => row.series))].map((id) => (
+                    <option key={id} value={id}>
+                      {world.championships[id]?.name || id}
+                    </option>
+                  ))}
+                </select>
+                <span className="eng-tag">Заявок · {visibleClients.length}</span>
+              </div>
+              <div className="eng-clients-layout">
+                <aside className="eng-client-list" aria-label="Заявки">
+                  {visibleClients.map((row) => (
+                    <button
+                      type="button"
+                      key={row.entry + row.axis}
+                      className={row === client ? 'selected' : ''}
+                      aria-pressed={row === client}
+                      onClick={() => setClient(row.entry + row.axis)}
+                    >
+                      <small>
+                        {row.series.toUpperCase()} · № {world.entries[row.entry]?.number}
+                      </small>
+                      <strong>{maker ? row.name : org(row.terms.maker)}</strong>
+                      <span>
+                        {row.car} · {label(row.axis)}
+                      </span>
+                      <div>
+                        <span className="eng-tag">
+                          {row.terms.support ? 'Техподдержка' : 'Без поддержки'}
+                        </span>
+                        <ChevronRight size={15} />
                       </div>
-                      <div className="eng-client-car">
-                        <RaceCar entryId={client.entry} />
-                      </div>
-                      <div className="eng-client-rights">
-                        <div>
-                          <strong>
-                            {client.terms.support ? 'Поддержка включена' : 'Поддержка не включена'}
-                          </strong>
-                          <span>По действующему договору</span>
-                        </div>
-                        <div>
-                          <strong>{label(client.terms.partnership)}</strong>
-                          <span>
-                            {client.equal
-                              ? 'Единая спецификация для клиентов'
-                              : 'Разрешены совместимые омологированные поколения'}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                    <a href="#commercial?tab=supplies">Договоры поставки и спонсорства</a>
-                    {maker && (
-                      <>
-                        <h3>Передача со склада</h3>
-                        {!client.stock.length && <p>Готовых к поставке экземпляров пока нет.</p>}
-                        {client.stock.map((i) => (
+                    </button>
+                  ))}
+                </aside>
+                <div className="eng-client-detail">
+                  {!client && (
+                    <p>
+                      {d.clients.length
+                        ? 'По заданным условиям заявок нет.'
+                        : 'Договорные программы отсутствуют.'}
+                    </p>
+                  )}
+                  {client && (
+                    <>
+                      <div className="eng-client-feature">
+                        <div className="eng-client-heading">
+                          <div>
+                            <small>{client.series.toUpperCase()} · КЛИЕНТСКАЯ ПРОГРАММА</small>
+                            <h2>{maker ? org(client.org) : org(client.terms.maker)}</h2>
+                            <p>
+                              {client.car} · {label(client.axis)}
+                            </p>
+                          </div>
                           <Button
-                            key={i}
-                            disabled={busy}
                             onClick={() =>
-                              void submit(
-                                'maker-deliver',
-                                { entry: client.entry, instance: i },
-                                'Экземпляр передан на склад клиента.',
+                              navigate(
+                                'organization',
+                                'overview',
+                                maker ? client.org : client.terms.maker,
                               )
                             }
                           >
-                            Передать {d.inventory.find((item) => item.id === i)?.serial ?? i}
+                            Организация
                           </Button>
-                        ))}
-                      </>
-                    )}
-                  </>
-                )}
+                        </div>
+                        <div className="eng-client-car">
+                          <RaceCar entryId={client.entry} />
+                        </div>
+                        <div className="eng-client-rights">
+                          <div>
+                            <strong>
+                              {client.terms.support ? 'Поддержка включена' : 'Поддержка не включена'}
+                            </strong>
+                            <span>По действующему договору</span>
+                          </div>
+                          <div>
+                            <strong>{label(client.terms.partnership)}</strong>
+                            <span>
+                              {client.equal
+                                ? 'Единая спецификация для клиентов'
+                                : 'Разрешены совместимые омологированные поколения'}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <a href="#commercial?tab=supplies">Договоры поставки и спонсорства</a>
+                      {maker && (
+                        <>
+                          <h3>Передача со склада</h3>
+                          {!client.stock.length && <p>Готовых к поставке экземпляров пока нет.</p>}
+                          {client.stock.map((i) => (
+                            <Button
+                              key={i}
+                              disabled={busy}
+                              onClick={() =>
+                                void submit(
+                                  'maker-deliver',
+                                  { entry: client.entry, instance: i },
+                                  'Экземпляр передан на склад клиента.',
+                                )
+                              }
+                            >
+                              Передать {d.inventory.find((item) => item.id === i)?.serial ?? i}
+                            </Button>
+                          ))}
+                        </>
+                      )}
+                    </>
+                  )}
+                </div>
               </div>
-            </Panel>
+            </>
           )}
           {['cases', 'diagnosis', 'warranty'].includes(tab) && (
             <Panel
               title={
                 tab === 'warranty'
-                  ? 'Гарантийные обращения'
+                  ? 'Ответственность по фактам'
                   : tab === 'diagnosis'
-                    ? 'Оценка причин по доступным фактам'
-                    : 'Запросы клиентов'
+                    ? 'Что известно о причине'
+                    : 'Обращения технической службы'
               }
             >
               <div className="maker-body">
@@ -737,6 +849,24 @@ export function Manufacturer({
               </div>
             </Panel>
           )}
+          <details className="eng-summary-details">
+            <summary>Показатели отдела</summary>{' '}
+            <Stats
+              items={[
+                [
+                  maker ? 'Клиентские команды' : 'Поставщики',
+                  new Set(d.clients.map((r) => (maker ? r.org : r.terms.maker))).size,
+                  'Действующие связи',
+                ],
+                [
+                  'Поручения',
+                  d.projects.filter((p) => p.status !== 'complete').length,
+                  'В очереди и в работе',
+                ],
+                ['Обращения', d.cases.filter((r) => r.status === 'open').length, 'Ожидают решения'],
+              ]}
+            />
+          </details>
         </>
       )}
     </section>
