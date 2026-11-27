@@ -183,7 +183,7 @@ export function Icon({ name, size = 18, ...p }) {
   const I = Icons[name] || Icons.Circle
   return <I size={size} {...p} />
 }
-export function Button({ variant = 'primary', icon, children, type = 'button', className = '', ...p }) {
+export function Button({ variant = 'primary', icon = null, children, type = 'button', className = '', ...p }) {
   return (
     <button type={type} className={'button ' + variant + ' ' + className} {...p}>
       {icon}
@@ -194,7 +194,7 @@ export function Button({ variant = 'primary', icon, children, type = 'button', c
 export function Badge({ tone = 'neutral', children }) {
   return <span className={'badge ' + tone}>{children}</span>
 }
-export function PageHeading({ eyebrow, title, description, actions }) {
+export function PageHeading({ eyebrow, title, description = '', actions }) {
   return (
     <header className="page-heading">
       <div>

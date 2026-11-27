@@ -8,7 +8,7 @@ import { type Career, money } from '../api'
 import { type SectionProps } from '../Sections'
 import { useOrder } from '../finance/useOrder'
 import { usePersonnel } from '../staff/model'
-import { type Desk, type Case, label } from './model'
+import { type Desk, type Product, type Case, label } from './model'
 import './manufacturer.css'
 
 const tabs = [
@@ -40,12 +40,95 @@ function options(values: string[]) {
   ))
 }
 
+function ManufacturerWork({
+  action,
+  product,
+  specification,
+  year,
+  goals,
+  busy,
+  error,
+  close,
+  send,
+}: {
+  action: string
+  product: Product
+  specification: string
+  year: string
+  goals: string[]
+  busy: boolean
+  error: string
+  close: () => void
+  send: (payload: Record<string, string | number>) => Promise<void>
+}) {
+  const [goal, setGoal] = useState(goals[0] || '')
+  const restricted = action === 'design' && Boolean(product.years[year]) && goal !== 'durability'
+  return (
+    <Dialog title={label(action) + ' · поручение специалистам'} onClose={close}>
+      <form
+        className="maker-body eng-work-form"
+        onSubmit={(ev) => {
+          ev.preventDefault()
+          const values = new FormData(ev.currentTarget)
+          if (busy || restricted || !goals.includes(goal)) return
+          void send({
+            action,
+            entry: product.entry,
+            axis: product.axis,
+            year: Number(year),
+            objective: goal,
+            specification: String(values.get('edition')),
+            quantity: action === 'produce' ? Number(values.get('quantity')) : 1,
+          })
+        }}
+      >
+        <header>
+          <small>
+            {product.series.toUpperCase()} / {year}
+          </small>
+          <h3>{product.title}</h3>
+          <p>{label(product.axis)}</p>
+        </header>
+        <Field name="Редакция">
+          <select name="edition" defaultValue={specification}>
+            {product.editions.map((edition) => (
+              <option value={edition.id} key={edition.id}>
+                Ред. {edition.version} · {label(edition.status)}
+              </option>
+            ))}
+          </select>
+        </Field>
+        <Field name="Техническая цель">
+          <select value={goal} onChange={(ev) => setGoal(ev.target.value)}>
+            {options(goals)}
+          </select>
+        </Field>
+        {action === 'produce' && (
+          <Field name="Количество в партии">
+            <input type="number" name="quantity" required min={1} max={24} step={1} defaultValue={1} />
+          </Field>
+        )}
+        {product.years[year] && <p>{product.years[year]}</p>}
+        {error && <p role="alert">{error}</p>}
+        <div className="form-actions">
+          <Button type="button" onClick={close} disabled={busy}>
+            Назад
+          </Button>
+          <Button type="submit" primary disabled={busy || restricted || !goal}>
+            Утвердить поручение
+          </Button>
+        </div>
+      </form>
+    </Dialog>
+  )
+}
+
 export function Manufacturer({
   c,
   world,
   updateCareer,
 }: SectionProps & { updateCareer: (c: Career) => void }) {
-  const [quantity, setQuantity] = useState(1)
+  const [work, setWork] = useState('')
   const [caseKind, setCaseKind] = useState('change')
   const maker = c.role === 'manufacturer'
   const request = usePersonnel<Desk>('careers/' + c.id + '/manufacturer', c.revision)
@@ -60,7 +143,6 @@ export function Manufacturer({
     [selected, setSelected] = useState(''),
     [edition, setEdition] = useState(readRoute().entity),
     [year, setYear] = useState(c.date.slice(0, 4)),
-    [target, setTarget] = useState('output'),
     [clientKey, setClient] = useState(''),
     [receipt, setReceipt] = useState('')
   const d = request.data
@@ -119,7 +201,6 @@ export function Manufacturer({
         onChange={(e) => {
           setSelected(e.target.value)
           setEdition('')
-          setTarget('output')
         }}
       >
         {d.catalog.map((p) => (
@@ -263,6 +344,27 @@ export function Manufacturer({
             </Button>
           </form>
         </Dialog>
+      )}
+      {work && d && product && version && (
+        <ManufacturerWork
+          key={work + product.entry + product.axis}
+          action={work}
+          product={product}
+          specification={version.id}
+          year={year}
+          goals={d.targets[product.axis] || []}
+          busy={busy}
+          error={orders.error}
+          close={() => {
+            if (!busy) setWork('')
+          }}
+          send={async (payload) => {
+            if (await orders.send('maker-work', payload)) {
+              setWork('')
+              setReceipt('Поручение добавлено в календарь работ.')
+            }
+          }}
+        />
       )}
       {request.error && (
         <p role="alert">
@@ -414,57 +516,18 @@ export function Manufacturer({
                         </>
                       ) : (
                         <>
-                          <Field name="Редакция">
-                            <select value={version.id} onChange={(e) => setEdition(e.target.value)}>
-                              {product.editions.map((v) => (
-                                <option key={v.id} value={v.id}>
-                                  Ред. {v.version} · {label(v.status)}
-                                </option>
-                              ))}
-                            </select>
-                          </Field>
-                          <Field name="Техническая цель">
-                            <select value={target} onChange={(e) => setTarget(e.target.value)}>
-                              {options(d.targets[product.axis])}
-                            </select>
-                          </Field>
                           {product.years[year] && <p>{product.years[year]}</p>}
-                          {tab === 'factory' && (
-                            <Field name="Количество в партии">
-                              <input
-                                type="number"
-                                min={1}
-                                max={24}
-                                value={quantity}
-                                onChange={(e) => setQuantity(Number(e.target.value))}
-                              />
-                            </Field>
-                          )}
                           {(tab === 'research'
                             ? ['research', 'design']
                             : ['lab', 'bench', 'produce']
                           ).map((a) => (
                             <Button
                               key={a}
-                              disabled={
-                                busy ||
-                                (a === 'design' && !!product.years[year] && target !== 'durability')
-                              }
-                              onClick={() =>
-                                void submit(
-                                  'maker-work',
-                                  {
-                                    action: a,
-                                    entry: product.entry,
-                                    axis: product.axis,
-                                    year: Number(year),
-                                    objective: target,
-                                    specification: version.id,
-                                    quantity: a === 'produce' ? quantity : 1,
-                                  },
-                                  'Поручение добавлено в календарь работ.',
-                                )
-                              }
+                              disabled={busy || !d.targets[product.axis]?.length}
+                              onClick={() => {
+                                orders.clear()
+                                setWork(a)
+                              }}
                             >
                               {label(a)}
                             </Button>

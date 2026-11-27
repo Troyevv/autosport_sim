@@ -28,6 +28,7 @@ test('Производитель поручает работу КБ и назн�
   await page.getByLabel('Целевой сезон').selectOption('2026')
   const refreshed = page.waitForResponse(r => r.url().endsWith('/manufacturer') && r.request().method() === 'GET')
   await button('Разработка').click()
+  await page.getByRole('dialog').getByRole('button', {name:'Утвердить поручение'}).click()
   await refreshed
   await expect(page.getByText('Разработка · В очереди')).toBeVisible()
   await capture('design')
