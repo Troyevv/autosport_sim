@@ -33,7 +33,7 @@ for (const [series, org] of [
     await page.getByLabel('Основной цвет').fill('#0085ae')
     await page.getByLabel('Гоночный номер').fill('052')
     await expect.poll(picture).not.toBe(initial)
-    await page.getByRole('button', { name: 'Спонсоры', exact: true }).click()
+    await page.getByRole('button', { name: 'Размещения', exact: true }).click()
     await page.getByRole('button', { name: 'Добавить знак', exact: true }).click()
     await page.getByRole('button', { name: 'Сохранить в карьере' }).click()
     await expect(page.getByRole('status').filter({ hasText: 'Ливрея сохранена в карьере' })).toBeVisible()

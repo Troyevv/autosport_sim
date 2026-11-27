@@ -17,9 +17,9 @@ type Draft = { base: Livery; current: Livery; past: Livery[] }
 const studioDrafts = new Map<string, Record<string, Draft>>()
 const tabs = [
   ['overview', 'Автомобиль'],
-  ['livery', 'Ливрея'],
-  ['sponsors', 'Спонсоры'],
   ['parts', 'Компоненты'],
+  ['livery', 'Ливрея'],
+  ['sponsors', 'Размещения'],
   ['history', 'История сборки'],
 ] as const
 export function SeasonGarage(props: Props) {
@@ -195,47 +195,41 @@ function Studio({ c, world, catalog, updateCareer }: Props & { catalog: Catalog 
   return (
     <section className="screen season-garage">
       <PageHeading
-        eyebrow={world.championships[series].name + ' / Технический центр'}
-        title={(tab === 'livery' ? 'Ливрея ' : '') + car.name + ' · №' + livery.number}
-        description={org.name}
+        eyebrow={org.name + ' / ' + world.championships[series].name}
+        title={tab === 'livery' ? 'Ливрея ' + car.name : car.name + ' · №' + livery.number}
         actions={
           <div className="garage-selectors">
-            <label>
-              Чемпионат
-              <select
-                value={series}
-                disabled={saving}
-                onChange={(e) => {
-                  const s = e.target.value,
-                    grid = entries.filter((v) => v.championship === s)
-                  setSeries(s)
-                  choose((grid.find((v) => v.org === c.org) || grid[0]).id)
-                }}
-              >
-                {Object.values(world.championships)
-                  .filter((s) => s.playable !== false)
-                  .map((s) => (
-                    <option key={s.id} value={s.id}>
-                      {s.name}
-                    </option>
-                  ))}
-              </select>
-            </label>
-            <label>
-              Заявка
-              <select value={entryId} disabled={saving} onChange={(e) => choose(e.target.value)}>
-                {filtered.map((e) => (
-                  <option value={e.id} key={e.id}>
-                    №{catalog.entries[e.id].livery.number} ·{' '}
-                    {e.entrant ?? world.organizations[e.org].name}
+            <select
+              aria-label="Чемпионат"
+              value={series}
+              disabled={saving}
+              onChange={(e) => {
+                const s = e.target.value,
+                  grid = entries.filter((v) => v.championship === s)
+                setSeries(s)
+                choose((grid.find((v) => v.org === c.org) || grid[0]).id)
+              }}
+            >
+              {Object.values(world.championships)
+                .filter((s) => s.playable !== false)
+                .map((s) => (
+                  <option key={s.id} value={s.id}>
+                    {s.name}
                   </option>
                 ))}
-              </select>
-            </label>
-            <button className="button ghost" onClick={() => open('gallery')}>
-              <Images size={16} />
-              Стартовая сетка
-            </button>
+            </select>
+            <select
+              aria-label="Заявка"
+              value={entryId}
+              disabled={saving}
+              onChange={(e) => choose(e.target.value)}
+            >
+              {filtered.map((e) => (
+                <option value={e.id} key={e.id}>
+                  №{catalog.entries[e.id].livery.number} · {e.entrant ?? world.organizations[e.org].name}
+                </option>
+              ))}
+            </select>
           </div>
         }
       />
@@ -690,6 +684,10 @@ function Studio({ c, world, catalog, updateCareer }: Props & { catalog: Catalog 
           </div>
         </div>
       )}
+      <button className="button ghost" onClick={() => open('gallery')}>
+        <Images size={16} />
+        Стартовая сетка
+      </button>
       <a
         className="garage-credits"
         href="/assets/garage/2025-v1/CREDITS.txt"
