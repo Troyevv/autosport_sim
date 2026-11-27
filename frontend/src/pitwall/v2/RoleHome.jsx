@@ -429,7 +429,7 @@ function OwnerHome() {
           return (
             <article key={p.id}>
               <div>
-                <Badge tone="good">{p.status === 'admitted' ? 'Допуск подтверждён' : p.status}</Badge>
+                <Badge tone={p.status === 'admitted' ? 'good' : 'neutral'}>{{ admitted: 'Допуск подтверждён', withdrawn: 'Заявка отозвана', closed: 'Программа закрыта' }[p.status] || 'Статус уточняется'}</Badge>
                 <h3>{g.world.championships[p.series]?.name || p.series}</h3>
                 <p>{g.world.organizations[p.org]?.name}</p>
                 <small>В портфеле с {short(p.since)}</small>

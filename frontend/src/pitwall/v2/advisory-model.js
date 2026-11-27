@@ -126,6 +126,7 @@ export const metric = (key) => METRICS[key] || [key, 'ед. источника']
 
 export function orgName(g, id) {
   if (id === 'consolidated') return 'Консолидированный отчёт'
+  if (id?.startsWith('group:')) return 'Группа компаний · ' + (g.world.organizations[id.slice(6)]?.name || 'консолидированный бюджет')
   if (id === 'person:player') return 'Личный счёт'
   if (id?.startsWith('owner:')) return 'Капитал владельца'
   if (id?.startsWith('academy:'))

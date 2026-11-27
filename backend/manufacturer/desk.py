@@ -187,7 +187,10 @@ def projection(state, world):
             dict(
                 id=iid,
                 serial=components.serial(iid),
-                axis=components.spec(state, iid)["slot"],
+                axis=drawing["slot"],
+                title=drawing["title"],
+                version=drawing["version"],
+                specification=drawing["id"],
                 status=item["status"],
                 rejected=item["rejected"],
                 checks=item["checks"],
@@ -196,6 +199,7 @@ def projection(state, world):
             )
             for iid in production.inventory(state, org)
             if maker and (item := state["production"]["items"].get(iid))
+            and (drawing := components.spec(state, iid))
         ],
         catalog=list(catalog.values()),
         clients=clients,

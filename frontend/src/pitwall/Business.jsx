@@ -301,8 +301,8 @@ function useBusiness() {
               ? 'Консолидированный отчёт'
               : g.world.programs[id]
                 ? g.world.championships[g.world.programs[id].championship]?.name
-                : id || 'Не указано')
-  const personName = (id) => g.game.personnel.find((p) => p.id === id)?.name || g.world.names[id] || id
+                : g.game.projections.commercial?.brands?.find((brand) => brand.id === id)?.name || 'Не указано')
+  const personName = (id) => g.game.personnel.find((p) => p.id === id)?.name || g.world.names[id] || 'Имя не указано'
   return {
     g,
     org,
@@ -437,6 +437,8 @@ function FinanceView({ tab }) {
     return b.orgName(id)
   }
   function contractName(id) {
+    if (id?.startsWith('works-funding:')) return 'Заводская поддержка · ' + b.orgName(id.split(':')[1])
+    if (id?.startsWith('access:') || id?.startsWith('regional-access:')) return 'Доступ к инфраструктуре · ' + b.orgName(id.split(':')[1])
     const person = g.game.personnel.find((p) => id?.includes(p.id))
     if (person) return person.name
     const all = [...arr(base.commercial?.contracts), ...arr(base.commercial?.supplies)]
@@ -981,7 +983,7 @@ function BudgetView({ tab, cap = false }) {
           (limit ? (
             <>
               <div className="limit-hero">
-                <span className="eyebrow">{limit.version}</span>
+                <span className="eyebrow">{/^f1-(\d{4})-financial-issue(\d+)$/i.test(limit.version) ? limit.version.replace(/^f1-(\d{4})-financial-issue(\d+)$/i, 'Финансовый регламент Formula 1 · $1 · выпуск $2') : 'Финансовый регламент'}</span>
                 <h2>{money(limit.remaining_cents, true)}</h2>
                 <p>Остаток регламентного лимита</p>
                 <Meter value={limit.spent_cents + limit.committed_cents} max={limit.limit_cents} />
@@ -1280,6 +1282,7 @@ function FacilitiesView({ tab }) {
     [query, setQuery] = useState(''),
     [kind, setKind] = useState('all'),
     [country, setCountry] = useState('all')
+  const facilityOwner = (asset) => g.world.organizations[asset.owner]?.name || 'Независимый оператор'
   const assets = arr(desk.assets),
     own = assets.filter((a) => a.owner === org),
     bookings = arr(desk.bookings),
@@ -1289,7 +1292,7 @@ function FacilitiesView({ tab }) {
         (kind === 'all' || a.kind === kind) &&
         (country === 'all' || a.country === country) &&
         (!query ||
-          [desk.types?.[a.kind], b.orgName(a.owner), g.world.countries?.[a.country]]
+          [desk.types?.[a.kind], facilityOwner(a), g.world.countries?.[a.country]]
             .join(' ')
             .toLowerCase()
             .includes(query.toLowerCase())),
@@ -1330,14 +1333,14 @@ function FacilitiesView({ tab }) {
     openContractForm(g, {
       contractType: 'facilitylease',
       contractMeta: {
-        counterparty: b.orgName(a.owner),
+        counterparty: facilityOwner(a),
         facility: desk.types[a.kind],
         daily_cents: desk.quotes[a.kind][a.country].daily_cents,
         available_cents: b.available,
       },
       title: 'Резервирование: ' + desk.types[a.kind],
       description:
-        b.orgName(a.owner) +
+        facilityOwner(a) +
         ' · ' +
         g.world.countries[a.country] +
         '. Ориентир по исходному каталогу: ' +
@@ -1399,7 +1402,7 @@ function FacilitiesView({ tab }) {
           <div className="facility-name">
             <h3>{desk.types?.[a.kind] || a.kind}</h3>
             <p>
-              {tab === 'rent' ? b.orgName(a.owner) : g.world.organizations[org].base} ·{' '}
+              {tab === 'rent' ? facilityOwner(a) : g.world.organizations[org].base} ·{' '}
               {g.world.countries[a.country]}
             </p>
             <Badge tone={a.status === 'active' ? 'good' : 'warning'}>{txt(a.status)}</Badge>
@@ -1438,7 +1441,7 @@ function FacilitiesView({ tab }) {
                         content: (
                           <Facts
                             rows={[
-                              ['Владелец', b.orgName(a.owner)],
+                              ['Владелец', facilityOwner(a)],
                               ['Местоположение', g.world.countries[a.country]],
                               ['Уровень', a.level],
                               ['Состояние', a.condition + '%'],
@@ -1534,10 +1537,11 @@ function FacilitiesView({ tab }) {
                   <div>
                     <h3>{txt(w.process)}</h3>
                     <small>{period(w.start, w.end)}</small>
+                    <small>Подтверждённая очередь · {w.confirmed_queue.length}</small>
                   </div>
                   <div>
                     <span>
-                      {w.available_slots} свободно из {w.installed_slots}
+                      {w.available_slots} доступно · {w.installed_slots} собственных
                     </span>
                     <Meter value={w.available_slots} max={w.installed_slots} />
                   </div>
@@ -2267,8 +2271,8 @@ function CommercialView({ tab }) {
                 ['Скидка', money(x.original_discount_cents), money(x.discount_cents)],
                 [
                   'Испытания',
-                  x.original_testing ? 'Запрошены' : 'Не запрошены',
-                  x.testing ? 'Согласованы' : 'Не включены',
+                  x.original_testing == null ? 'Не раскрыто' : x.original_testing ? 'Запрошены' : 'Не запрошены',
+                  x.testing == null ? 'Не раскрыто' : x.testing ? 'Согласованы' : 'Не включены',
                 ],
                 [
                   'Стоимость поставки',
@@ -2876,7 +2880,7 @@ function CommercialView({ tab }) {
                           x.development ? 'Разработка' : null,
                         ]
                           .filter(Boolean)
-                          .join(' · ') || 'Стандартная поставка'}
+                          .join(' · ') || ([x.support, x.testing, x.development].some((v) => v == null) ? 'Права не раскрыты' : 'Стандартная поставка')}
                   </span>
                 ),
               },

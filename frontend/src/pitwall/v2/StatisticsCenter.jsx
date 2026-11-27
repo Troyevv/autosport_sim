@@ -1090,7 +1090,7 @@ function Profile({
                   <time>{dateLabel(f.day)}</time>
                   <section>
                     <span>{f.origin === 'initial' ? 'ИСХОДНОЕ СОСТОЯНИЕ МИРА' : 'СОБЫТИЕ КАРЬЕРЫ'}</span>
-                    <h4>{FACT_KINDS[f.kind] || f.kind}</h4>
+                    <h4>{FACT_KINDS[f.kind] || 'Событие карьеры'}</h4>
                     <p>{factSummary(f, index)}</p>
                     <button type="button" className="st-text-link" onClick={() => onFact(f)}>
                       Посмотреть источник
@@ -1776,7 +1776,7 @@ function Journal({ index, g, s, set, openFact, open }) {
             <time>{dateLabel(String(f.day || '').slice(0, 10))}</time>
             <Icon name={f.access === 'public' ? 'Globe2' : 'LockKeyhole'} size={16} />
             <span>
-              <strong>{FACT_KINDS[f.kind] || f.kind}</strong>
+              <strong>{FACT_KINDS[f.kind] || 'Событие карьеры'}</strong>
               <small>{factSummary(f, index)}</small>
             </span>
             <em>{f.origin === 'initial' ? 'Начало карьеры' : 'Симуляция'}</em>
@@ -1894,7 +1894,7 @@ function FactDrawer({ fact, g, index, open, close }) {
         <header>
           <div>
             <span className="st-kicker">ИСТОЧНИК СОБЫТИЯ</span>
-            <h3>{FACT_KINDS[fact.kind] || fact.kind}</h3>
+            <h3>{FACT_KINDS[fact.kind] || 'Событие карьеры'}</h3>
           </div>
           <button type="button" aria-label="Закрыть источник события" onClick={close}>
             <Icon name="X" size={20} />
@@ -1959,9 +1959,8 @@ function FactDrawer({ fact, g, index, open, close }) {
           {showTechnical && (
             <div className="st-source-details">
               <p>Источник: {fact.source || 'журнал карьеры'}</p>
-              <p>Тип: {fact.kind}</p>
+              <p>Тип события · {FACT_KINDS[fact.kind] || 'Запись журнала'}</p>
               <p>Версия схемы: {fact.body?.version ?? 'не указана'}</p>
-              <code>{fact.key || fact.id}</code>
             </div>
           )}
         </div>
@@ -2008,7 +2007,7 @@ export function EntityStatistics({ type, id }) {
   const chronology = publicFacts.slice(0, expanded ? 20 : 6)
   const inspect = (f) =>
     g.openDialog({
-      title: 'Подтверждённое событие · ' + (FACT_KINDS[f.kind] || f.kind),
+      title: 'Подтверждённое событие · ' + (FACT_KINDS[f.kind] || 'Событие карьеры'),
       content: (
         <div className="st-demo-detail">
           <Source>
@@ -2064,7 +2063,7 @@ export function EntityStatistics({ type, id }) {
                 <button type="button" key={f.key || i} onClick={() => inspect(f)}>
                   <time>{dateLabel(f.day)}</time>
                   <span>
-                    <strong>{FACT_KINDS[f.kind] || f.kind}</strong>
+                    <strong>{FACT_KINDS[f.kind] || 'Событие карьеры'}</strong>
                     <small>{factSummary(f, index)}</small>
                   </span>
                   <Icon name="ArrowUpRight" size={14} />

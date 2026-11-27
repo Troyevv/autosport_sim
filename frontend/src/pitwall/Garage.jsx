@@ -30,9 +30,10 @@ export default function Garage() {
       entries.find((e) => e.id === chosen) ||
       entries.find((e) => e.org === game.career.org) ||
       entries[0]
+  const own = entry?.org === game.career.org && g.role !== 'manufacturer'
   const [wing, setWing] = useState('standard')
   const result = usePersonnel(
-    entry ? 'careers/' + game.career.id + '/components/' + encodeURIComponent(entry.id) : null,
+    own ? 'careers/' + game.career.id + '/components/' + encodeURIComponent(entry.id) : null,
     game.career.revision,
   )
   useEffect(() => {
@@ -52,7 +53,6 @@ export default function Garage() {
     org = world.organizations[entry.org],
     catalog = game.garageCatalog || g.data.catalog,
     paint = game.career.liveries[entry.id] || catalog.entries[entry.id].livery,
-    own = entry.org === game.career.org && g.role !== 'manufacturer',
     tab = g.route === 'livery' ? 'livery' : g.tab || 'overview',
     desk = result.data || {},
     parts = desk.parts || {},
@@ -61,6 +61,7 @@ export default function Garage() {
   function select(id) {
     setChosen(id)
     g.setSelectedEntry(id)
+    g.navigate(g.route, g.tab, id)
     setWing('standard')
   }
   function passport(part, slot) {
@@ -91,9 +92,11 @@ export default function Garage() {
           </details>
           <details>
             <summary>Регистрационные данные</summary>
-            <code>{p.instance || p.id}</code>
-            <br />
-            <code>{p.specification}</code>
+            <Facts rows={[
+              ['Серийный номер', p.serial || 'Не указан'],
+              ['Чертёж', p.title || p.label],
+              ['Редакция чертежа', p.version ?? 'Не раскрыта'],
+            ]} />
           </details>
           {own && g.role === 'manager' && (
             <Button onClick={() => g.navigate('inventory', '', p.instance || p.id)}>
@@ -115,8 +118,13 @@ export default function Garage() {
               aria-label="Чемпионат гаража"
               value={series}
               onChange={(e) => {
-                setSeries(e.target.value)
-                setChosen('')
+                const nextSeries = e.target.value
+                const cars = Object.values(world.entries).filter(
+                  (car) => car.championship === nextSeries && catalog.entries[car.id],
+                )
+                setSeries(nextSeries)
+                const next = cars.find((car) => car.org === game.career.org) || cars[0]
+                if (next) select(next.id)
               }}
             >
               {Object.values(world.championships)
@@ -210,7 +218,10 @@ export default function Garage() {
           </div>
         </>
       )}
-      {result.error && (
+      {!own && ['history', 'components'].includes(tab) && (
+        <p className="muted">Состав сборки и история эксплуатации доступны сотрудникам команды.</p>
+      )}
+      {own && result.error && (
         <p role="alert">
           {result.error} <Button onClick={result.retry}>Повторить</Button>
         </p>
@@ -321,7 +332,7 @@ export default function Garage() {
           <Components entry={entry.id} c={game.career} update={g.updateCareer} />
         </details>
       )}
-      {tab === 'history' && (
+      {tab === 'history' && own && (
         <details>
           <summary>Паспорта сборки и учёт использования</summary>
           <Components historyOnly entry={entry.id} c={game.career} update={g.updateCareer} />
@@ -366,7 +377,7 @@ export default function Garage() {
           </Button>
         </Panel>
       )}
-      {tab === 'history' && (
+      {tab === 'history' && own && (
         <Panel title="История сборки и оформления">
           <DataTable
             rows={(desk.history || []).map((x) => ({
@@ -414,6 +425,12 @@ function Livery({ entry, paint, catalog, own }) {
     selected = draft.decals[layer],
     allowed = catalog.entries[entry.id].allowed_assets,
     areas = (id) => catalog.entries[entry.id].commercial_zones?.[id] || catalog.sponsors[id]?.zones || []
+  const factory = catalog.entries[entry.id].livery
+  const defaultPaint = {
+    ...factory,
+    decals: factory.decals.filter((decal) => allowed.includes(decal.asset) && areas(decal.asset).includes(decal.zone)),
+  }
+  const customized = JSON.stringify(draft) !== JSON.stringify(defaultPaint)
   function update(next, drag = false) {
     if (!own) return
     if (!drag || !dragActive.current) setPast((p) => [...p.slice(-49), draft])
@@ -457,6 +474,7 @@ function Livery({ entry, paint, catalog, own }) {
     }))
     g.openForm({
       title: 'Добавить разрешённый знак',
+      submitLabel: 'Добавить',
       fields: [
         {
           name: 'asset',
@@ -469,6 +487,7 @@ function Livery({ entry, paint, catalog, own }) {
           name: 'zone',
           label: 'Зона',
           type: 'select',
+          defaultValue: areas(allowed[0])[0],
           options: Object.entries(areaNames).map(([value, label]) => ({
             value,
             label,
@@ -653,7 +672,7 @@ function Livery({ entry, paint, catalog, own }) {
                 ))}
               </div>
               {own && (
-                <Button variant="secondary" disabled={draft.decals.length >= 16} onClick={add}>
+                <Button variant="secondary" disabled={draft.decals.length >= 16 || !allowed.length} onClick={add}>
                   <Icon name="Plus" />
                   Добавить знак
                 </Button>
@@ -770,7 +789,7 @@ function Livery({ entry, paint, catalog, own }) {
           )}
         </aside>
       </div>
-      {dirty && (
+      {own && (dirty || customized) && (
         <div className="livery-savebar">
           <Button
             className="livery-preview"
@@ -787,12 +806,13 @@ function Livery({ entry, paint, catalog, own }) {
           </Button>
           <Button
             variant="ghost"
+            disabled={!customized}
             onClick={() =>
               g.confirm({
                 title: 'Вернуть стартовое оформление?',
                 description:
                   'Цвета, рисунок и знаки будут взяты из исходного каталога. Изменение останется черновиком до сохранения.',
-                onConfirm: () => update(catalog.entries[entry.id].livery),
+                onConfirm: () => update(defaultPaint),
               })
             }
           >
@@ -800,6 +820,7 @@ function Livery({ entry, paint, catalog, own }) {
           </Button>
           <Button
             variant="ghost"
+            disabled={!dirty}
             onClick={() =>
               g.confirm({
                 title: 'Сбросить черновик?',
@@ -817,7 +838,7 @@ function Livery({ entry, paint, catalog, own }) {
           >
             Сбросить
           </Button>
-          <Button disabled={!/^\d{1,3}$/.test(draft.number)} onClick={save}>
+          <Button disabled={!dirty || !/^\d{1,3}$/.test(draft.number)} onClick={save}>
             <Icon name="Save" />
             Сохранить ливрею
           </Button>

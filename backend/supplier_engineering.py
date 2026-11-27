@@ -50,7 +50,11 @@ def agreement(state, world, e, axis, day=None):
         id=signed["id"] if signed else entry_agreement(e["id"], axis),
         maker=maker,
         partnership=signed["partnership"] if signed else "works" if works else "client",
-        support=signed["support"] if signed else True,
+        support=signed.get("support") if signed else True,
+        start=signed.get("start") if signed else None,
+        end=signed.get("end") if signed else None,
+        testing=signed.get("testing") if signed else None,
+        development=signed.get("development") if signed else None,
         signed=bool(signed),
     )
 

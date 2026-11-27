@@ -110,7 +110,7 @@ export function CareerView({
     openForm: openDialog,
     confirm: (spec) => openDialog({ ...spec, confirm: true }),
     closeDialog: () =>
-      openDialog((current) => (current?.content?.type === EventMoment ? current : null)),
+      openDialog((current) => (current?.content?.type === EventMoment && current !== dialog ? current : null)),
     openPerson: (id, tab = 'profile') => navigate('person', tab, id),
     openOrganization: (id) => navigate('organization', 'overview', id),
     canGoBack: history.length > 1,

@@ -17,6 +17,7 @@ import {
   ContractFacts,
 } from './v2/Contracts'
 import { useOrder } from '../career/finance/useOrder'
+import { CountryFlag } from '../career/Country'
 import { usePersonnel } from '../career/staff/model'
 import { explain } from '../career/api'
 const PeopleContext = createContext(null)
@@ -242,13 +243,13 @@ function FormError({ error }) {
     </p>
   ) : null
 }
-function FormActions({ submit, busy, onCancel }) {
+function FormActions({ submit, busy, disabled = false, onCancel }) {
   return (
     <div className="p-form-actions">
       <Button variant="secondary" onClick={onCancel}>
         Отмена
       </Button>
-      <Button type="submit" disabled={busy}>
+      <Button type="submit" disabled={busy || disabled}>
         {busy ? 'Проверяем условия…' : submit}
       </Button>
     </div>
@@ -509,7 +510,7 @@ function PersonCard({ person, featured = false, number, subtitle }) {
           <span className="p-kicker">{subtitle || positionName(p.position)}</span>
           <h3>{p.name}</h3>
           <p>
-            {p.country && <span>{p.country.toUpperCase()}</span>}
+            {p.country && <span><CountryFlag id={p.country} countries={g.world.countries} /> {p.country.toUpperCase()}</span>}
             {p.age != null && <span>{p.age} лет</span>}
             <span>{p.org === c.org ? 'В составе' : orgName(p.org)}</span>
           </p>
@@ -900,7 +901,7 @@ function Directory({ source, market = false, presetPosition = '' }) {
                 <span>
                   <b>{p.name}</b>
                   <small>
-                    {p.country?.toUpperCase()} · {p.age} лет · {orgName(p.org)}
+                    <CountryFlag id={p.country} countries={world.countries} /> {p.country?.toUpperCase()} · {p.age} лет · {orgName(p.org)}
                   </small>
                 </span>
               </button>
@@ -1109,6 +1110,7 @@ function Drivers() {
     )
   const data = g.game.projections?.lineup || g.game.lineup || {},
     drivers = rows(data.drivers)
+  const driversBySeat = new Map(drivers.map((d) => [d.seat, d]))
   const raceSeats = seats.filter((s) => s.position === 'driver' && s.entry),
     supporting = seats.filter((s) => s.position === 'driver' && !s.entry)
   return (
@@ -1121,7 +1123,7 @@ function Drivers() {
       />
       <div className="p-race-grid">
         {raceSeats.map((s) => {
-          const d = drivers.find((x) => x.seat === s.id),
+          const d = driversBySeat.get(s.id),
             person = own.find((x) => x.id === s.occupant?.id) || s.occupant,
             e = world.entries?.[s.entry]
           return (
@@ -1148,10 +1150,10 @@ function Drivers() {
                       [
                         'Доступность',
                         d?.absence
-                          ? (d.absence.reason === 'injury' ? 'Травма' : 'Временная недоступность') +
+                          ? ({injury:'Травма',illness:'Заболевание',suspension:'Дисквалификация'}[d.absence.reason] || 'Временная недоступность') +
                             ' · до ' +
                             date(d.absence.expected_return)
-                          : 'В составе',
+                          : 'Допущен',
                       ],
                       ['Фактические условия', d?.actual?.message || 'Нет подтверждённых различий'],
                       ['Претензии', d?.grievances ?? 0],
@@ -1188,9 +1190,12 @@ function Drivers() {
                 p={own.find((x) => x.id === s.occupant.id) || s.occupant}
                 secondary={dutyNames[s.duty] || p.seatName(s.id)}
                 action={
-                  g.role === 'manager' && c.preparation_options?.some((x) => x.id === 'simulator') ? (
+                  driversBySeat.get(s.id)?.simulator ? (
+                    <span role="status">Симулятор запланирован до {date(driversBySeat.get(s.id).simulator.end)}</span>
+                  ) : g.role === 'manager' && c.preparation_options?.some((x) => x.id === 'simulator') ? (
                     <Button
                       variant="secondary"
+                      disabled={!!driversBySeat.get(s.id)?.absence}
                       onClick={() =>
                         openForm(
                           'Подготовка на симуляторе',
@@ -1254,10 +1259,7 @@ function Drivers() {
       </div>
       <Section title="История договорённостей">
         {rows(data.history).length ? (
-          rows(data.history)
-            .slice()
-            .reverse()
-            .map((r) => (
+          rows(data.history).map((r) => (
               <article className="p-history-line" key={r.id}>
                 <time>{date(r.date)}</time>
                 <div>
@@ -1346,7 +1348,7 @@ function ReplacementForm({ window: w }) {
         </div>
       )}
       <FormError error={error} />
-      <FormActions submit="Подтвердить замену" onCancel={g.closeDialog} />
+      <FormActions submit="Подтвердить замену" disabled={!candidate || !!candidate.reason} onCancel={g.closeDialog} />
     </form>
   )
 }
@@ -1910,7 +1912,7 @@ function NegotiationForm({ person, dossier, previousOffer }) {
                   setSeat(e.target.value)
                   const o = options.find((x) => x.id === e.target.value)
                   setSalary(o?.ask_cents == null ? '' : String(o.ask_cents / 100))
-                  if (o?.available) setStart(o.available)
+                  if (o?.available) setStart([o.available, addDays(c.date, 2)].sort().at(-1))
                 }}
               >
                 {options.map((o) => (
@@ -3002,7 +3004,7 @@ function Dossier({ personId }) {
         </div>
         <div className="p-dossier-title">
           <span className="p-kicker">
-            {p.positionName(person.position)} · {person.country?.toUpperCase()}
+            {p.positionName(person.position)} · <CountryFlag id={person.country} countries={p.world.countries} /> {person.country?.toUpperCase()}
           </span>
           <h1>{person.name}</h1>
           <button className="p-org-link" onClick={() => person.org && g.openOrganization(person.org)}>
@@ -3467,8 +3469,8 @@ function DevelopmentHistory({ data }) {
 function PublicProfile({ person, data }) {
   const { world } = usePeople()
   const context = rows(data?.calendar_context),
-    [eventId, select] = useState(context.find((x) => x.home)?.event || context[0]?.event || ''),
-    event = context.find((x) => x.event === eventId) || context[0]
+    [eventId, select] = useState(''),
+    event = context.find((x) => x.event === eventId) || context.find((x) => x.home) || context[0]
   return (
     <>
       <div className="p-public-metrics">
@@ -3524,7 +3526,7 @@ function PublicProfile({ person, data }) {
           action={
             event && (
               <Field label="Этап">
-                <select value={eventId} onChange={(e) => select(e.target.value)}>
+                <select value={event.event} onChange={(e) => select(e.target.value)}>
                   {context.map((x) => (
                     <option key={x.event} value={x.event}>
                       {date(x.date)} · {x.name}

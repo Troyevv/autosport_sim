@@ -15,8 +15,8 @@ import { type Desk, type Project, type Report, decisions, version } from './mode
 import '../research/research.css'
 import './development.css'
 
-function Measurements({ r }: { r: Report }) {
-  const [label, unit] = units[r.metric]
+export function Measurements({ r }: { r: Report }) {
+  const [label, unit] = units[r.metric] || [r.metric, '']
   return (
     <section className="measurement">
       <h4>

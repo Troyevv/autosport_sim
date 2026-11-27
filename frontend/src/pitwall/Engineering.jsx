@@ -1,3 +1,4 @@
+import { regulationName } from '../career/programme/model'
 import React, { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import {
@@ -36,6 +37,10 @@ import { useGame, useStored, money, dateLabel } from './core'
 import { PersonPortrait, RaceCar } from './visuals'
 
 import './engineering.css'
+import { Measurements } from '../career/development/Development'
+import { labels as productionLabels } from '../career/production/model'
+import { fmt, units } from '../garage/quantities'
+import { deploymentLabels } from '../career/programme/model'
 import { useOrder } from '../career/finance/useOrder'
 const EC = createContext(null)
 const useE = () => useContext(EC)
@@ -776,7 +781,7 @@ function WorkForm({ kind = 'research', source, defaults = {}, onClose }) {
   const lead = maker
     ? e.career.assignments?.find(
         (a) =>
-          a.position ===
+          a.org === e.career.org && a.position ===
           (kind === 'test'
             ? 'analyst'
             : axis === 'transmission'
@@ -1159,6 +1164,10 @@ function itemOpen(e, id) {
 function sourceProjects(e, kind) {
   const desk =
     e.desks[kind === 'production' ? 'production' : kind === 'research' ? 'research' : 'development']
+  const years = new Map(list(e.desks.manufacturer?.projects).map((p) => [p.id, p.year]))
+  for (const plan of list(e.desks.programme?.plans)) {
+    for (const work of plan.calendar) years.set(work.id, plan.year)
+  }
   return list(kind === 'production' ? desk.batches : desk.projects)
     .filter((p) => kind === 'production' || kind === 'research' || p.kind === kind)
     .map((p) => ({
@@ -1177,14 +1186,13 @@ function sourceProjects(e, kind) {
             ? 'cancelled'
             : kind),
       year:
-        p.year ||
+        p.year || years.get(p.id) ||
         Number(p.season?.slice(-4) || p.commissioned?.slice(0, 4)) ||
         Number(e.date?.slice(0, 4)),
       axis:
         p.axis ||
         desk.entries?.find((x) => x.id === p.entry)?.choices?.find((c) => c.id === p.specification)
           ?.slot,
-      source: true,
       kind,
     }))
 }
@@ -1212,6 +1220,7 @@ function ProjectRows({ projects, empty, action }) {
               </small>
               <strong>{p.title || AXES[p.axis] || 'Техническое поручение'}</strong>
               <span>
+                {p.source?.label && <small>{p.source.label}</small>}
                 {p.reason ||
                   p.conclusion ||
                   GOALS[p.objective] ||
@@ -1220,7 +1229,9 @@ function ProjectRows({ projects, empty, action }) {
               </span>
             </div>
             <div className="eng-work-progress">
-              <Tag status={p.stage} />
+              <Tag status={p.disposition || p.status || p.stage} />
+              {p.rush && <small>Срочная партия</small>}
+              {p.priority && <small>{PRIORITY[p.priority]} приоритет</small>}
               <Progress value={p.worked || 0} max={p.required || 1} />
             </div>
             <div className="eng-work-amount">
@@ -1248,7 +1259,7 @@ function ProjectRows({ projects, empty, action }) {
 function Programme() {
   const e = useE(),
     d = e.desks.programme
-  const [selected, setSelected] = useState('')
+  const [selected, setSelected] = useStored('engineering.programme.selection', '')
   const plans = list(d.plans),
     plan = plans.find((p) => p.id === selected) || plans[0]
   if (!plan)
@@ -1280,10 +1291,19 @@ function Programme() {
             </button>
           ))}
         </div>
-        <span className="eng-generation-priority">
-          <i />
-          {ALLOCATION[d.priority] || d.priority}
-        </span>
+        {e.role === 'manager' ? (
+          <B icon={SlidersHorizontal} onClick={() => e.openForm({
+            title: 'Изменить приоритет',
+            description: 'Выбранное поколение получит свободных специалистов и площадки первым. Оплаченные обязательства сохраняются.',
+            initial: { allocation: d.priority },
+            fields: [{ key: 'allocation', label: 'Распределение работ', type: 'select', options: opts(ALLOCATION) }],
+            onSubmit: (v) => e.run('programme-priority', { allocation: v.allocation }),
+          })}>
+            Изменить приоритет · {ALLOCATION[d.priority]}
+          </B>
+        ) : (
+          <span className="eng-generation-priority">{ALLOCATION[d.priority]}</span>
+        )}
       </div>
       {e.tab === 'plans' ? (
         <>
@@ -1431,8 +1451,8 @@ function Programme() {
             </p>
             <Facts
               items={[
-                ['Регламент', plan.regulation],
-                ['Концепция', plan.concept],
+                ['Регламент', regulationName(e.world, plan.regulation)],
+                ['Концепция', e.world.engineering.concepts?.[plan.concept]?.name || plan.name],
                 ['Технический руководитель', e.name(head)],
               ]}
             />
@@ -1629,7 +1649,7 @@ function PackagePlan({ plan, pkg }) {
               },
             ]
           : []),
-        { key: 'reason', label: 'Обоснование решения', type: 'textarea' },
+
       ],
       description:
         decision === 'withdraw'
@@ -1718,11 +1738,23 @@ function PackagePlan({ plan, pkg }) {
       </div>
       <details className="eng-details">
         <summary>Зависимости и риск пакета</summary>
-        <p>{pkg.advice}</p>
+        <p>{pkg.advice} Установлено {pkg.installed} из {pkg.required} экземпляров.</p>
         {pkg.parts.map((p) => (
-          <p key={p.axis}>
-            <strong>{p.label}:</strong> {p.risk}
-          </p>
+          <section key={p.axis} aria-label={p.label}>
+            <h3>{p.label}</h3>
+            <p>{p.risk}</p>
+            {(p.targets || []).map((target) => (
+              <p key={target.entry}>№{target.number} · {deploymentLabels[target.status] || target.status}</p>
+            ))}
+            <p>Выделено со склада для пакета · {p.serials.length}</p>
+            {e.manage && !withdrawn && (p.fits || []).map((fit) => (
+              <B key={fit.entry + fit.instance} onClick={() => e.confirm({
+                title: 'Установить экземпляр',
+                description: fit.label,
+                onSubmit: () => e.run('component-install', { entry: fit.entry, instance: fit.instance }),
+              })}>Установить · {fit.label}</B>
+            ))}
+          </section>
         ))}
       </details>
       {e.manage && !withdrawn && (
@@ -1869,7 +1901,7 @@ function WorkCalendar({ plan }) {
       end: p.forecast_end,
     })),
     ...e.projects
-      .filter((p) => !plan || (p.entry === plan.entry && p.year === plan.year))
+      .filter((p) => !plan || (p.entry === plan.entry && p.year === plan.year && !plan.calendar.some((work) => work.id === p.id)))
       .map((p) => ({
         ...p,
         title: AXES[p.axis],
@@ -1994,8 +2026,20 @@ function History({ rows = [] }) {
                 <small>
                   {dateLabel(r.date)} {''}
                 </small>
-                <h3>{r.title || r.observation || STATES[r.code] || r.code || 'Передача экземпляра'}</h3>
+                <h3>{r.title || r.observation || productionLabels[r.code] || STATES[r.code] || r.code || 'Передача экземпляра'}</h3>
                 {r.reason && <p>{r.reason}</p>}
+                {r.positions?.length > 0 && (
+                  <details className="eng-details">
+                    <summary>Протокол обсуждения</summary>
+                    <p>{r.observation}</p>
+                    {r.positions.map((position) => (
+                      <div key={position.person}>
+                        <Person id={position.person} role={position.stance} compact />
+                        <p>{position.argument}</p>
+                      </div>
+                    ))}
+                  </details>
+                )}
                 {r.instance && (
                   <B variant="quiet" onClick={() => itemOpen(e, r.instance)}>
                     Паспорт экземпляра
@@ -2051,6 +2095,8 @@ function councilDecision(e, p, initial = 'approve', option = p.recommended || 0)
         key: 'reason',
         label: 'Обоснование для штаба',
         type: 'textarea',
+        required: false,
+        maxLength: 400,
         wide: true,
       },
     ],
@@ -2120,29 +2166,43 @@ function Council() {
       />
     )
   if (e.tab === 'execution') {
-    const decided = proposals.filter((p) => p.project || p.work || p.execution)
+    const decided = proposals.filter((p) => p.execution)
     return (
       <Card title="От решения к исполнению">
         <ProjectRows
-          projects={[
-            ...e.projects.filter((p) => p.proposal),
-            ...decided
-              .filter((p) => !p.project)
-              .map((p) => ({
-                id: p.work || p.id,
-                entry: p.entry,
-                title: p.subject,
-                stage: p.execution?.status || 'research',
-                kind: 'research',
-                required: p.execution?.required,
-                worked: p.execution?.worked,
-                cost_cents: p.chosen?.cost_cents || 0,
-                reason: p.execution?.reason,
-              })),
-          ]}
+          projects={decided.map((p) => ({
+            id: p.work || p.id,
+            entry: p.entry,
+            title: p.chosen?.title || p.subject,
+            stage: p.execution.status,
+            kind: p.chosen?.action || 'research',
+            required: p.execution.required,
+            worked: p.execution.worked,
+            cost_cents: p.chosen?.cost_cents,
+            reason: p.execution.reason,
+          }))}
           empty="Решений к исполнению пока нет"
           action={<B onClick={() => e.navigate('council', 'agenda')}>Вернуться к повестке</B>}
         />
+        {e.role === 'manager' && decided.filter((p) =>
+          p.chosen && ['queued', 'active'].includes(p.execution.status)
+        ).map((p) => (
+          <div className="eng-row" key={p.id}>
+            <span>{p.chosen.title} · {e.entryTitle(p.entry)}</span>
+            <B onClick={() => e.openForm({
+              title: 'Изменить поручение',
+              initial: { change: 'priority', reason: '' },
+              fields: [
+                { key: 'change', label: 'Изменение', type: 'select', options: [
+                  { value: 'priority', label: 'Понизить приоритет' },
+                  ...(p.chosen.action === 'produce' ? [{ value: 'cancel', label: 'Отменить партию' }] : []),
+                ] },
+                { key: 'reason', label: 'Причина вмешательства', type: 'textarea', maxLength: 400 },
+              ],
+              onSubmit: ({ change, reason }) => e.run('council-intervene', { proposal: p.id, change, reason }),
+            })}>Изменить поручение</B>
+          </div>
+        ))}
       </Card>
     )
   }
@@ -2352,7 +2412,11 @@ function Research() {
       (axis === 'all' || p.axis === axis) &&
       JSON.stringify(p).toLowerCase().includes(e.query.toLowerCase()),
   )
-  const reports = list(d.reports)
+  const [targetId, setTarget] = useStored('engineering.research.target', '')
+  const target = d.targets?.find((t) => t.id === targetId) || d.targets?.[0]
+  const reports = list(d.reports).filter((r) =>
+    (axis === 'all' || r.axis === axis) && JSON.stringify(r).toLowerCase().includes(e.query.toLowerCase())
+  )
   if (e.tab === 'memory')
     return (
       <>
@@ -2374,15 +2438,12 @@ function Research() {
               </option>
             ))}
           </select>
+          {target && <select aria-label="Оценить применимость к" value={target.id} onChange={(ev) => setTarget(ev.target.value)}>
+            {d.targets.map((t) => <option key={t.id} value={t.id}>{t.title}</option>)}
+          </select>}
         </div>
         <div className="eng-memory-grid">
-          {reports
-            .filter(
-              (r) =>
-                (axis === 'all' || r.axis === axis) &&
-                JSON.stringify(r).toLowerCase().includes(e.query.toLowerCase()),
-            )
-            .map((r) => (
+          {reports.map((r) => (
               <Card
                 key={r.id}
                 title={r.hypothesis || AXES[r.axis]}
@@ -2412,6 +2473,16 @@ function Research() {
                     ['Регламент', r.regulation || 'В рамках выбранной программы'],
                   ]}
                 />
+                {target && <p>{target.title} · применимость заключения {r.applicability[target.id]}%</p>}
+                <details className="eng-details">
+                  <summary>Материалы и личный вклад</summary>
+                  <Facts items={[
+                    ['Исходная концепция', r.concept], ['Редакция', r.baseline],
+                    ['Источник', r.source.reference],
+                    ...Object.values(r.participants).map((author) => [author.name, author.skill + ' · ' + author.hours + ' ч']),
+                    ...d.handovers.filter((h) => h.report === r.id).map((h) => [dateLabel(h.date) + ' · передача дел', h.mentor_name + ' → ' + h.recipient_name]),
+                  ]} />
+                </details>
                 <div className="eng-inline-actions">
                   <B
                     onClick={() =>
@@ -2449,7 +2520,7 @@ function Research() {
           <Card title="Архив технических заключений">
             <Empty
               icon={FileText}
-              title="Исследования ещё не завершены"
+              title={d.reports?.length ? 'По заданным условиям заключений нет.' : 'Исследования ещё не завершены'}
               action={
                 e.manage && (
                   <B primary onClick={() => openWork(e, 'research')}>
@@ -2545,7 +2616,7 @@ function Research() {
           action={<SearchBox value={e.query} onChange={e.setQuery} placeholder="Поиск исследования" />}
         >
           <ProjectRows
-            projects={projects}
+            projects={projects.filter((p) => !p.finished)}
             empty="Центр готов к новой гипотезе"
             action={e.manage && <B onClick={() => openWork(e, 'research')}>Поручить исследование</B>}
           />
@@ -2575,13 +2646,18 @@ function Research() {
   )
 }
 function handover(e, r) {
-  const staff = Object.entries(e.desks.research.staff || {}),
-    mentor = r.lead || Object.keys(r.participants || {})[0] || staff[0]?.[0]
+  const desk = e.desks.research
+  const project = desk.projects.find((p) => p.id === r.project)
+  const team = new Set(Object.values(desk.entries.find((entry) => entry.id === project?.entry)?.staff || {}))
+  const staff = Object.entries(desk.staff).filter(([id]) => team.has(id))
+  const mentors = staff.filter(([id]) => r.readers[id])
+  const recipients = staff.filter(([id]) => !r.readers[id])
+  const mentor = mentors[0]?.[0]
   e.openForm({
     title: 'Передать знания по заключению',
     initial: {
       mentor,
-      recipient: staff.find(([id]) => id !== mentor)?.[0] || '',
+      recipient: recipients[0]?.[0] || '',
       target: '',
     },
     fields: [
@@ -2589,13 +2665,13 @@ function handover(e, r) {
         key: 'mentor',
         label: 'Наставник',
         type: 'select',
-        options: staff.map(([value, label]) => ({ value, label })),
+        options: mentors.map(([value, label]) => ({ value, label })),
       },
       {
         key: 'recipient',
         label: 'Получатель знаний',
         type: 'select',
-        options: staff.map(([value, label]) => ({ value, label })),
+        options: recipients.map(([value, label]) => ({ value, label })),
       },
       { key: 'target', label: 'Для какой задачи', required: false, wide: true },
     ],
@@ -2622,7 +2698,6 @@ function Development() {
           .filter((p) => p.status === 'complete')
           .map((p) => ({
             ...p,
-            source: true,
             stage: p.disposition || 'completed',
           }))
       : sourceProjects(e, isTest ? 'test' : 'design')
@@ -2782,24 +2857,22 @@ function ProjectDossier({ id }) {
           : change('council-intervene', { proposal: p.proposal, change: 'cancel', reason: v.reason }),
     })
   }
+  const drawing = p.kind === 'design' ? p : e.projects.find((work) =>
+    work.kind === 'design' && work.specification && work.specification === p.candidate)
+  const tested = drawing?.specification && e.projects.some((test) => test.kind === 'test' &&
+    test.candidate === drawing.specification && test.finished)
   function release(disposition) {
+    if (!drawing) return
     e.openForm({
       title: disposition === 'released' ? 'Выпустить редакцию' : 'Отозвать редакцию',
-      initial: { reason: '' },
-      fields: [
-        {
-          key: 'reason',
-          label: 'Обоснование технического решения',
-          type: 'textarea',
-        },
-      ],
+      fields: [],
       danger: disposition === 'withdrawn',
       description:
         disposition === 'released'
           ? 'Выпущенный чертёж можно передать в производство. Допуск к установке проверяется отдельно.'
           : 'Новые заказы и поставки по этой редакции остановятся. Существующие экземпляры сохраняют паспорта и историю.',
       onSubmit: () =>
-        change(e.maker ? 'maker-review' : 'development-review', { project: p.id, disposition }),
+        change(e.maker ? 'maker-review' : 'development-review', { project: drawing.id, disposition }),
     })
   }
   return (
@@ -2848,19 +2921,14 @@ function ProjectDossier({ id }) {
           </Tag>
         </Card>
       )}
-      {p.report && (
-        <Card title="Протокол испытания">
-          <p>{p.report.conclusion || p.report.finding || p.report.interpretation}</p>
-          <Facts
-            items={[
-              ['Показатель', METRICS[p.report.metric] || p.report.metric],
-              ['Разница', p.report.difference],
-              ['Неопределённость', p.report.uncertainty],
-              ['Условия', p.report.conditions],
-            ]}
-          />
-        </Card>
-      )}
+      {p.forecast && <details className="eng-details">
+        <summary>Прогноз специалистов и риски</summary>
+        <Facts items={Object.entries(p.forecast).map(([key, range]) => [
+          units[key]?.[0] || METRICS[key] || key,
+          range.map(fmt).join(' – ') + ' ' + (units[key]?.[1] || ''),
+        ])} />
+      </details>}
+      {p.report?.a && p.report?.b && <Card title="Протокол испытания"><Measurements r={p.report} /></Card>}
       {physical.length > 0 && (
         <Card title="Физические экземпляры партии">
           <div className="eng-serial-list">
@@ -2924,10 +2992,15 @@ function ProjectDossier({ id }) {
                 <strong>Рассмотреть протокол</strong>
                 <p>Выпуск разрешает производство; отзыв сохраняет неудачный опыт.</p>
               </div>
-              <B variant="danger" onClick={() => release('withdrawn')}>
+              {drawing && drawing.disposition !== 'withdrawn' && (
+                <B icon={Gauge} onClick={() => openWork(e, 'test', drawing)}>
+                  Назначить испытание
+                </B>
+              )}
+              <B variant="danger" disabled={!drawing || drawing.disposition === 'withdrawn'} onClick={() => release('withdrawn')}>
                 Отозвать
               </B>
-              <B primary disabled={p.report?.outcome === 'defect'} onClick={() => release('released')}>
+              <B primary disabled={!tested || !!drawing?.findings?.length || drawing.disposition === 'released'} onClick={() => release('released')}>
                 Выпустить редакцию
               </B>
             </>
@@ -3034,7 +3107,7 @@ function ProjectDossier({ id }) {
               </B>
             </>
           )}
-          {['released', 'production', 'quality', 'stock'].includes(p.stage) && (
+          {p.kind === 'design' && p.specification && !['withdrawn','review'].includes(p.stage) && (
             <B variant="quiet" onClick={() => release('withdrawn')}>
               Отозвать редакцию
             </B>
@@ -3300,7 +3373,7 @@ function Inventory({ initialStatus = 'all', quality = false }) {
           >
             <div>
               <strong>{i.label || AXES[i.slot || i.axis]}</strong>
-              <code>{i.serial || i.id}</code>
+              <code>{i.serial || 'Серийный номер не указан'}</code>
             </div>
             <Tag status={i.status} />
             <span className="eng-item-version">Ред. {i.version || '—'}</span>
@@ -3389,9 +3462,7 @@ function ItemDossier({ id }) {
   const installable =
     item.status === 'stock' && !item.rejected && !item.damaged && project?.stage !== 'withdrawn'
   function install() {
-    const entries = compatible.length
-      ? compatible
-      : list(e.desks.production.entries).map((x) => ({ entry: x.id }))
+    const entries = compatible
     e.openForm({
       title: 'Установить физический экземпляр',
       initial: {
@@ -3479,18 +3550,18 @@ function ItemDossier({ id }) {
       )}
       {e.manage && (
         <div className="eng-inline-actions">
-          {item.status === 'inspection' && (
+          {(item.actions || item.decisions || []).includes('accept') && (
             <B primary icon={ShieldCheck} onClick={() => itemDisposition(e, item, 'accept')}>
               Принять по протоколу
             </B>
           )}
-          {item.status === 'repair' && (
+          {item.status === 'repair' && (item.actions || item.decisions || []).includes('inspect') && (
             <B primary onClick={() => itemDisposition(e, item, 'inspect')}>
               Вернуть на контроль
             </B>
           )}
           {installable && !e.maker && (
-            <B primary icon={Wrench} onClick={install}>
+            <B primary icon={Wrench} disabled={!compatible.length} onClick={install}>
               Установить на автомобиль
             </B>
           )}
@@ -3501,7 +3572,7 @@ function ItemDossier({ id }) {
           )}
           {['stock', 'inspection'].includes(item.status) && (
             <>
-              <B onClick={() => itemDisposition(e, item, 'inspect')}>Повторная проверка</B>
+              {(item.actions || item.decisions || []).includes('inspect') && <B onClick={() => itemDisposition(e, item, 'inspect')}>Повторная проверка</B>}
               {(item.actions || item.decisions || []).includes('repair') && (
                 <B onClick={() => itemDisposition(e, item, 'repair')}>Ремонт</B>
               )}
@@ -3548,10 +3619,14 @@ function ItemDossier({ id }) {
         <Note>Списанный экземпляр сохраняется в реестре. Повторная установка недоступна.</Note>
       )}
       <Card title="Совместимость и происхождение">
-        <p className="eng-break">{item.specification}</p>
+        <p className="eng-break">{[item.title || AXES[item.slot || item.axis], item.version && 'Ред. ' + item.version].filter(Boolean).join(' · ')}</p>
         {(item.targets || []).map((t) => (
           <div className="eng-row" key={t.entry}>
-            <span>{e.entryTitle(t.entry)}</span>
+            <span>{e.entryTitle(t.entry)}
+              {(e.desks.production.entries?.find((entry) => entry.id === t.entry)?.crew || []).map((p) =>
+                <small key={p.id}>{p.name} · {({first:'Первый пилот',second:'Второй пилот',equal:'Равноправный пилот'})[p.status] || p.status}</small>
+              )}
+            </span>
             <Tag tone={t.reason ? 'warn' : 'good'}>{t.reason || 'Совместим'}</Tag>
           </div>
         ))}
@@ -3573,7 +3648,7 @@ function ItemDossier({ id }) {
           .filter((h) => h.instance === item.id)
           .map((h) => (
             <p key={h.id}>
-              {dateLabel(h.date)} · {h.title} · {h.reason}
+              {dateLabel(h.date)} · {productionLabels[h.code] || h.title || h.code} · {e.entryTitle(h.entry)}
             </p>
           ))}
         {!(item.fits || []).length &&
@@ -3926,7 +4001,7 @@ function delivery(e, item, initialClient) {
         type: 'select',
         options: clients.map((c) => ({
           value: c.entry,
-          label: c.series.toUpperCase() + ' · ' + c.name + ' · ' + c.entry,
+          label: c.series.toUpperCase() + ' · ' + c.name + ' · ' + e.entryNumber(c.entry),
         })),
       },
     ],
@@ -4012,6 +4087,18 @@ function rollout(e, product, year) {
     onSubmit: (v) => e.run('maker-rollout', { entry: product.entry, specification: v.specification }),
   })
 }
+function contractRight(value, included, excluded) {
+  if (value == null) return 'Сведения не указаны'
+  return value ? included : excluded
+}
+
+function contractPeriod(terms) {
+  if (terms.start && terms.end) return dateLabel(terms.start) + ' — ' + dateLabel(terms.end)
+  if (terms.start) return 'С ' + dateLabel(terms.start)
+  if (terms.end) return 'До ' + dateLabel(terms.end)
+  return 'Даты не указаны'
+}
+
 function Clients() {
   const e = useE(),
     d = e.desks.manufacturer
@@ -4054,7 +4141,7 @@ function Clients() {
           s.org === c.org &&
           s.sponsor === c.terms.maker &&
           s.product === c.axis &&
-          s.series === c.series,
+          s.series === c.series && (!s.entries || s.entries.includes(c.entry)),
       )
     : []
   const ready = c ? e.items.filter((i) => !deliverable(e, i, c)) : []
@@ -4073,7 +4160,7 @@ function Clients() {
         >
           <option value="all">Все чемпионаты</option>
           {[...new Set(all.map((c) => c.series))].map((s) => (
-            <option key={s}>{s}</option>
+            <option key={s} value={s}>{e.world.championships[s]?.name || s.toUpperCase()}</option>
           ))}
         </select>
         <Tag>{rows.length} заявок</Tag>
@@ -4088,7 +4175,7 @@ function Clients() {
               onClick={() => setPicked(c.entry + '|' + c.axis)}
             >
               <small>
-                {c.series.toUpperCase()} · {c.entry}
+                {e.world.championships[c.series]?.name || c.series.toUpperCase()} · {e.entryNumber(c.entry)}
               </small>
               <strong>{e.maker ? c.name : e.org(c.terms.maker)}</strong>
               <span>
@@ -4096,7 +4183,7 @@ function Clients() {
               </span>
               <div>
                 <Tag tone={c.terms.support ? 'good' : 'muted'}>
-                  {c.terms.support ? 'Техподдержка' : 'Без поддержки'}
+                  {contractRight(c.terms.support, 'Техподдержка', 'Без поддержки')}
                 </Tag>
                 <ChevronRight size={15} />
               </div>
@@ -4110,7 +4197,7 @@ function Clients() {
                 <small>{c.series.toUpperCase()} · КЛИЕНТСКАЯ ПРОГРАММА</small>
                 <h2>{e.maker ? c.name : e.org(c.terms.maker)}</h2>
                 <p>
-                  {c.car} · {AXES[c.axis]} · {c.entry}
+                  {c.car} · {AXES[c.axis]} · {e.entryNumber(c.entry)}
                 </p>
               </div>
               <B
@@ -4127,7 +4214,7 @@ function Clients() {
             <div className="eng-client-rights">
               <div>
                 <ShieldCheck size={22} />
-                <strong>{c.terms.support ? 'Поддержка включена' : 'Поддержка не включена'}</strong>
+                <strong>{contractRight(c.terms.support, 'Поддержка включена', 'Поддержка не включена')}</strong>
                 <span>По действующему договору</span>
               </div>
               <div>
@@ -4164,14 +4251,14 @@ function Clients() {
                       technical: 'Технический партнёр',
                       client: 'Клиент',
                       commercial: 'Коммерческий партнёр',
-                    }[c.terms.partnership] || c.terms.partnership,
+                    }[c.terms.partnership] || 'Вид партнёрства не указан',
                   ],
-                  ['Договор', c.terms.id],
-                  ['Период', dateLabel(c.terms.start) + ' — ' + dateLabel(c.terms.end)],
-                  ['Испытания', c.terms.testing ? 'Предусмотрены договором' : 'Не включены'],
+                  ['Договор', [AXES[c.axis], e.org(c.terms.maker) + ' → ' + c.name].join(' · ')],
+                  ['Период', contractPeriod(c.terms)],
+                  ['Испытания', contractRight(c.terms.testing, 'Предусмотрены договором', 'Не включены')],
                   [
                     'Совместная разработка',
-                    c.terms.development ? 'Предусмотрена договором' : 'Не включена',
+                    contractRight(c.terms.development, 'Предусмотрена договором', 'Не включена'),
                   ],
                 ]}
               />
@@ -4187,8 +4274,8 @@ function Clients() {
                     {money(s.sale_cents)} · скидка {money(s.discount_cents || 0)}
                   </p>
                   <p>
-                    Поддержка {s.support ? 'включена' : 'не включена'} · испытания{' '}
-                    {s.testing ? 'разрешены' : 'не включены'}
+                    Поддержка {contractRight(s.support, 'включена', 'не включена')} · испытания{' '}
+                    {contractRight(s.testing, 'разрешены', 'не включены')}
                   </p>
                   {s.start > e.date && (
                     <small>Будущие права не изменяют текущий договор до даты начала.</small>
@@ -4304,7 +4391,7 @@ function newCase(e, initial) {
         wide: true,
         options: clients.map((c) => ({
           value: c.entry + '|' + c.axis,
-          label: c.series.toUpperCase() + ' · ' + c.name + ' · ' + c.entry + ' · ' + AXES[c.axis],
+          label: c.series.toUpperCase() + ' · ' + c.name + ' · ' + e.entryNumber(c.entry) + ' · ' + AXES[c.axis],
         })),
       },
       {
@@ -4451,7 +4538,7 @@ function Cases() {
             </div>
             <div>
               <small>
-                {dateLabel(c.date)} · {e.org(c.client)} · {c.entry}
+                {dateLabel(c.date)} · {e.org(c.client)} · {e.entryNumber(c.entry)}
               </small>
               <strong>
                 {
@@ -4649,7 +4736,7 @@ function CaseDossier({ id }) {
       <div className="eng-project-head">
         <div>
           <small>
-            {e.org(c.client)} · {c.entry} · {dateLabel(c.date)}
+            {e.org(c.client)} · {e.entryNumber(c.entry)} · {dateLabel(c.date)}
           </small>
           <h3>
             {AXES[c.axis]} · {GOALS[c.objective]}
@@ -4663,7 +4750,7 @@ function CaseDossier({ id }) {
           ['Производитель', e.org(c.supplier)],
           [
             'Экземпляр',
-            c.instance ? e.items.find((i) => i.id === c.instance)?.serial || c.instance : 'Не указан',
+            c.instance ? e.items.find((i) => i.id === c.instance)?.serial || 'Серийный номер не раскрыт' : 'Не указан',
           ],
           ['Разрешённый протокол', c.reference || 'Не передан'],
         ]}
@@ -4753,7 +4840,7 @@ function CaseDossier({ id }) {
 function Advisors() {
   const e = useE(),
     d = e.desks.manufacturer
-  const own = e.career.assignments?.find((a) => a.occupant && a.position === 'technical-advisor')
+  const own = e.career.assignments?.find((a) => a.org === e.career.org && a.occupant && a.position === 'technical-advisor')
 
   const rows = list(d.assignments)
     .filter((a) => a.status !== 'cancelled')
@@ -4891,17 +4978,19 @@ export default function Engineering() {
     desks.development.staff?.[id] ||
     desks.production.people?.[id] ||
     desks.programme.people?.[id] ||
-    id ||
-    'Не назначен'
-  const org = (id) => world.organizations?.[id]?.name || id || 'Организация'
+    world.names?.[id] ||
+    (id ? 'Имя не указано' : 'Не назначен')
+  const org = (id) => world.organizations?.[id]?.name || 'Организация не указана'
   const entry = (id) => world.entries?.[id] || list(world.entries).find((x) => x.id === id)
+  const entryNumber = (id) => {
+    const number = entry(id)?.number
+    return number == null ? 'Номер заявки не указан' : '№' + number
+  }
   const entryTitle = (id) =>
     desks.research.entries?.find((x) => x.id === id)?.title ||
     desks.development.entries?.find((x) => x.id === id)?.title ||
     desks.production.entries?.find((x) => x.id === id)?.title ||
-    desks.manufacturer.clients?.find((x) => x.entry === id)?.name ||
-    [org(entry(id)?.org), entry(id)?.number ? '№' + entry(id).number : ''].filter(Boolean).join(' ') ||
-    id
+    (entry(id) ? org(entry(id).org) + ' · ' + entryNumber(id) : 'Заявка не указана')
   const close = () => setDialog(null)
   const run = (action, args) =>
     order.send(
@@ -4972,6 +5061,7 @@ export default function Engineering() {
     org,
     entry,
     entryTitle,
+    entryNumber,
     projects,
     items,
 

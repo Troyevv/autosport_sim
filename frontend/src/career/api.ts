@@ -38,6 +38,8 @@ export type World = {
   engineering: {
     seasons: Record<string, { year: number; status: string; championship: string }>
     generations: Record<string, { category: string }>
+    concepts: Record<string, { name: string }>
+    technical_rules: Record<string, { season: string; category: string; version: number }>
     cost_cap: { base_cents: number; currency: string; reference_rounds: number; start: string }
   }
   version: string

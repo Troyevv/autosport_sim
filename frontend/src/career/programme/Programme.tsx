@@ -11,17 +11,8 @@ import type { SectionProps } from '../Sections'
 import { usePersonnel } from '../staff/model'
 import { useOrder } from '../finance/useOrder'
 import { modes } from '../council/model'
-import { type Desk, type Plan, type Proposal, priorities, strategies, kinds, leads } from './model'
+import { type Desk, type Plan, type Proposal, deploymentLabels, regulationName, priorities, strategies, kinds, leads } from './model'
 import './programme.css'
-
-const deploymentLabels: Record<string, string> = {
-  installed: 'Установлен',
-  allocated: 'Выделен со склада',
-  waiting: 'Ожидает экземпляр',
-  priority: 'Ожидает по приоритету пилотов',
-  incompatible: 'Несовместим',
-  shared: 'Учтено в другом пакете',
-}
 
 function Packages({
   plan,
@@ -450,7 +441,7 @@ export function Programme({
                 <div className="programme-body">
                   <h3>{strategies[plan.strategy]}</h3>
                   <p>{plan.name}</p>
-                  <p className="programme-id">{plan.concept}</p>
+                  <p className="programme-id">{world.engineering.concepts?.[plan.concept]?.name || plan.name}</p>
                   <p>
                     Штаб оценивает совместную работу узлов по чертежам и протоколам. Пересмотр требует
                     двух исследований и проверки сборки.
@@ -496,7 +487,7 @@ export function Programme({
               <Panel title={plan.rule.origin}>
                 <Facts
                   items={[
-                    ['Редакция', plan.regulation],
+                    ['Редакция', regulationName(world, plan.regulation)],
                     ['Объявлен', dateLabel(plan.rule.announced, true)],
                     ['Действует с', dateLabel(plan.rule.effective, true)],
                     ...(plan.rule.freeze
