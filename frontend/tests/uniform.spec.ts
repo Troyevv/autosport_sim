@@ -6,7 +6,7 @@ test('Лицо и масштаб сохраняются при смене фор
   const created = await page.request.post('/api/careers', {
     data: {
       name: 'Проверка формы',
-      org: 'team-mclaren-formula-1-team',
+      org: 'team-mercedes-amg-petronas-f1-team',
       role: 'owner',
       series: 'f1',
       seed: 31,
@@ -34,6 +34,14 @@ test('Лицо и масштаб сохраняются при смене фор
     await expect(svg).toHaveAttribute('data-category', value)
     await expect(svg).toHaveAttribute('viewBox', frame!)
     await expect(face).toHaveAttribute('href', image!)
+    const emblem = svg.locator('[data-layer=organization-badge]')
+    await expect(emblem).toHaveAttribute('href', /\/api\/media\/logo\/team-mercedes-amg-petronas-f1-team/)
+    expect(await emblem.evaluate(async node => {
+      const image = new Image()
+      image.src = node.getAttribute('href')!
+      await image.decode()
+      return image.naturalWidth > 8 && image.naturalHeight > 8 && node.getAttribute('preserveAspectRatio')?.includes('meet')
+    })).toBe(true)
     await expect(face).toHaveAttribute('mask', /^url\(#/)
     await expect(
       svg.locator('mask image[href*="portrait-matte"]').first(),

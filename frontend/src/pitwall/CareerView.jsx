@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { Calendar, Championships, Messages } from './World'
 import { PersonnelDirectory } from './Directory'
 import Business from './Business'
@@ -88,6 +88,14 @@ export function CareerView({
     window.addEventListener('autosport-career-moment', present)
     return () => window.removeEventListener('autosport-career-moment', present)
   }, [c.id])
+  const personSource = useRef(null)
+  const returningToPerson = useRef(null)
+  const leaveDossier = (fallback) => {
+    const source = personSource.current
+    returningToPerson.current = source ? { route: source.route, person: entity } : null
+    personSource.current = null
+    navigate(source?.route || fallback, source?.tab, source?.entity)
+  }
   const org = world.organizations[c.org]
   const ctx = {
     world,
@@ -111,7 +119,12 @@ export function CareerView({
     confirm: (spec) => openDialog({ ...spec, confirm: true }),
     closeDialog: () =>
       openDialog((current) => (current?.content?.type === EventMoment && current !== dialog ? current : null)),
-    openPerson: (id, tab = 'profile') => navigate('person', tab, id),
+    openPerson: (id, personTab = 'profile') => {
+      if (route !== 'person') personSource.current = { route, tab, entity }
+      navigate('person', personTab, id)
+    },
+    leaveDossier,
+    hasDossierSource: Boolean(personSource.current),
     openOrganization: (id) => navigate('organization', 'overview', id),
     canGoBack: history.length > 1,
     goBack: () => history.back(),
@@ -139,6 +152,15 @@ export function CareerView({
     analytics
   const status = desk.error || directory.error
   const waiting = projection && (!desk.game || !directory.data)
+  useEffect(() => {
+    if (route === 'person') return
+    personSource.current = null
+    const source = returningToPerson.current
+    if (!source || waiting) return
+    returningToPerson.current = null
+    if (route === source.route)
+      document.querySelector('button[data-dossier-for="' + CSS.escape(source.person) + '"]')?.focus()
+  }, [route, waiting])
   if (waiting && status)
     content = (
       <section role="alert">

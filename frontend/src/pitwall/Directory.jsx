@@ -490,6 +490,7 @@ function PersonCard({ person, featured = false, number, subtitle }) {
   return (
     <article className={'p-person-card' + (featured ? ' featured' : '')}>
       <button
+        data-dossier-for={p.id}
         className="p-person-main"
         type="button"
         onClick={() => g.openPerson(p.id, 'profile')}
@@ -553,7 +554,7 @@ function PersonRow({ p, secondary, action }) {
   const { g, positionName, orgName } = usePeople()
   return (
     <div className="p-person-row">
-      <button type="button" className="p-row-person" onClick={() => g.openPerson(p.id, 'profile')}>
+      <button type="button" className="p-row-person" data-dossier-for={p.id} onClick={() => g.openPerson(p.id, 'profile')}>
         <span className="p-mini-photo">
           <PersonPortrait person={p} role={p.position} />
         </span>
@@ -894,7 +895,7 @@ function Directory({ source, market = false, presetPosition = '' }) {
           </div>
           {shown.map((p) => (
             <article className="p-roster-line" key={p.id}>
-              <button className="p-row-person" onClick={() => g.openPerson(p.id, 'profile')}>
+              <button className="p-row-person" data-dossier-for={p.id} onClick={() => g.openPerson(p.id, 'profile')}>
                 <span className="p-mini-photo">
                   <PersonPortrait person={p} role={p.position} />
                 </span>
@@ -1770,6 +1771,9 @@ function NegotiationForm({ person, dossier, previousOffer }) {
       options.find((x) => x.id === dossier?.current?.seat) ||
       options.find((x) => !seats.find((s) => s.id === x.id)?.occupant) ||
       options[0]
+  const earliest = (option) => [option?.available, addDays(c.date, 3)].filter(Boolean).sort().at(-1)
+  const initialStart = [previousOffer?.start, earliest(first)].filter(Boolean).sort().at(-1)
+  const seasonEnd = (day) => String(Number(day.slice(0, 4)) + 1) + '-01-01'
   const [seat, setSeat] = useState(first?.id || ''),
     [salary, setSalary] = useState(
       previousOffer?.salary_cents != null
@@ -1779,10 +1783,8 @@ function NegotiationForm({ person, dossier, previousOffer }) {
           : String(first.ask_cents / 100),
     ),
     [bonus, setBonus] = useState(String((previousOffer?.bonus_cents || 0) / 100)),
-    [start, setStart] = useState(
-      [previousOffer?.start || first?.available, addDays(c.date, 3)].filter(Boolean).sort().at(-1),
-    ),
-    [end, setEnd] = useState(previousOffer?.end || String(Number(c.date.slice(0, 4)) + 1) + '-01-01'),
+    [start, setStart] = useState(initialStart),
+    [end, setEnd] = useState(previousOffer?.end || seasonEnd(initialStart)),
     [quote, setQuote] = useState(null),
     [error, setError] = useState(''),
     [busy, setBusy] = useState(false)
@@ -1912,7 +1914,9 @@ function NegotiationForm({ person, dossier, previousOffer }) {
                   setSeat(e.target.value)
                   const o = options.find((x) => x.id === e.target.value)
                   setSalary(o?.ask_cents == null ? '' : String(o.ask_cents / 100))
-                  if (o?.available) setStart([o.available, addDays(c.date, 2)].sort().at(-1))
+                  const day = earliest(o)
+                  setStart(day)
+                  if (end <= day) setEnd(seasonEnd(day))
                 }}
               >
                 {options.map((o) => (
@@ -2389,6 +2393,7 @@ function FundingForm({ academy, person: initialPerson }) {
         : recipientOrgs[0] || '',
   )
   const candidateDossier = useDossier(selected || initialPerson?.id || '')
+  const dossierReady = candidateDossier.data || g.game.dossiers?.[candidate?.id]
   const obligation = Math.ceil(
     (Math.max(0, Number(monthly) * 100) * Math.max(0, daySpan(c.date, end))) / 28,
   )
@@ -2400,9 +2405,7 @@ function FundingForm({ academy, person: initialPerson }) {
     if (!candidate || candidate.position !== 'driver')
       return setError('Выберите пилота из результатов поиска.')
     if (!(amount > 0) || until <= c.date) return setError('Проверьте сумму и срок финансирования.')
-    const dossier = candidateDossier.data || g.game.dossiers?.[candidate.id],
-      current = dossier?.current
-    if (!dossier)
+    if (!dossierReady)
       return setError(
         'Подождите загрузки публичного досье: нужно проверить действующие договоры пилота.',
       )
@@ -2579,9 +2582,17 @@ function FundingForm({ academy, person: initialPerson }) {
           note="Условия проверены. Подтвердите создание обязательства; изменение поля вернёт вас к проверке."
         />
       )}
-      <FormError error={error} />
+      <FormError error={error || candidateDossier.error} />
+      {candidateDossier.error && (
+        <Button variant="secondary" onClick={candidateDossier.retry}>Повторить загрузку досье</Button>
+      )}
       <FormActions
-        submit={review ? 'Подписать соглашение' : 'Проверить перед подписью'}
+        disabled={Boolean(candidate && !dossierReady)}
+        submit={
+          candidateDossier.loading
+            ? 'Загружаем договоры пилота…'
+            : review ? 'Подписать соглашение' : 'Проверить перед подписью'
+        }
         onCancel={g.closeDialog}
       />
     </form>
@@ -2975,6 +2986,16 @@ function Dossier({ personId }) {
       backing: 'support',
     },
     tab = alias[g.tab] || g.tab || 'profile'
+  const fallback = person.org === c.org ? 'people' : 'market'
+  useEffect(() => {
+    function closeDossier(event) {
+      if (event.key !== 'Escape' || event.defaultPrevented) return
+      if (document.querySelector('[role="dialog"], [role="menu"], [aria-modal="true"]')) return
+      g.leaveDossier(fallback)
+    }
+    document.addEventListener('keydown', closeDossier)
+    return () => document.removeEventListener('keydown', closeDossier)
+  }, [g.leaveDossier, fallback])
   if (!person.id)
     return (
       <Empty
@@ -2986,9 +3007,9 @@ function Dossier({ personId }) {
   return (
     <>
       <div className="p-file-breadcrumb">
-        <button type="button" onClick={() => g.navigate(person.org === c.org ? 'people' : 'market')}>
+        <button type="button" onClick={() => g.leaveDossier(fallback)}>
           <Icon name="ArrowLeft" size={16} />
-          {person.org === c.org ? 'Команда и люди' : 'Кадровый рынок'}
+          {g.hasDossierSource ? 'К списку' : person.org === c.org ? 'Команда и люди' : 'Кадровый рынок'}
         </button>
         <span>{p.positionName(person.position)} / Досье</span>
       </div>
@@ -3218,6 +3239,7 @@ function CareerFile({ person, data }) {
   const p = usePeople(),
     { g, c, openForm } = p
   const history = rows(data?.history)
+  const nextObservation = rows(data?.reports).at(-1)?.next
   return (
     <>
       <div className="p-career-summary">
@@ -3318,7 +3340,7 @@ function CareerFile({ person, data }) {
               ))}
               <Button
                 variant="secondary"
-                disabled={!data?.scout_available}
+                disabled={!data?.scout_available || nextObservation > c.date}
                 onClick={() =>
                   openForm(
                     'Наблюдение · ' + person.name,
@@ -3326,7 +3348,7 @@ function CareerFile({ person, data }) {
                   )
                 }
               >
-                Поручить наблюдение
+                {nextObservation > c.date ? 'Следующее наблюдение · ' + date(nextObservation) : 'Поручить наблюдение'}
               </Button>
             </>
           )}

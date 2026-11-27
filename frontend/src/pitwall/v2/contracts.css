@@ -1993,7 +1993,9 @@
     justify-content: center;
     max-width: 80px;
   }
-  .contract-organization-mark img {
+  .contract-organization-mark.has-logo > img {
+    width: 100%;
+    min-width: 0;
     max-width: 100%;
     max-height: 100%;
     object-fit: contain;

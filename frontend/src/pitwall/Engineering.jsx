@@ -1528,7 +1528,7 @@ function Programme() {
                   <div>
                     <strong>{AXES[doc.component] || doc.component}</strong>
                     <small>
-                      {doc.design ? 'Доступен чертёж' : 'Документация поставщика'} · {e.org(doc.issuer)}
+                      {doc.design ? 'Доступен чертёж' : 'Документация поставщика'} · {doc.issuer || 'Изготовитель не указан'}
                     </small>
                   </div>
                 </article>

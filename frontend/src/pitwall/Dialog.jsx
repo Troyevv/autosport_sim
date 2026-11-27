@@ -48,7 +48,10 @@ export function Dialog({ spec, close }) {
           (contractType ? 'contract-dialog contract-kind-' + contractType : '')
         }
         onKeyDown={(e) => {
-          if (e.key === 'Escape') close()
+          if (e.key === 'Escape') {
+            e.stopPropagation()
+            close()
+          }
           if (e.key === 'Tab') {
             const els = Array.from(
               ref.current.querySelectorAll(
