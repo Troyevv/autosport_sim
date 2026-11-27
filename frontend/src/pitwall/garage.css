@@ -77,7 +77,7 @@
     overflow: hidden;
   }
   .components-car > .studio-stage {
-    height: 220px;
+    height: 100%;
     max-width: 650px;
     margin: auto;
     background: none;
@@ -261,10 +261,11 @@
       font-size: var(--type-caption);
     }
     .garage-hero > footer {
-      left: 18px;
-      right: 18px;
-      bottom: 16px;
-      gap: 10px;
+      position: static;
+      padding: .6rem .85rem;
+      gap: .6rem;
+      background: var(--panel, #202020);
+      border-top: 1px solid #ffffff20;
     }
     .garage-hero > footer .button {
       font-size: var(--type-secondary);
@@ -320,9 +321,6 @@
     .components-car {
       height: 185px;
     }
-    .components-car > .studio-stage {
-      height: 185px;
-    }
     .components-car > .badge {
       font-size: var(--type-caption);
       top: 14px;
@@ -376,9 +374,6 @@
       inset: 15px 0 16%;
     }
     .components-car {
-      height: 140px;
-    }
-    .components-car > .studio-stage {
       height: 140px;
     }
     .components-car > .badge {

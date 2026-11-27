@@ -1436,7 +1436,7 @@ input::placeholder {
   }
   .topbar-left,
   .topbar-right {
-    gap: 8px;
+    gap: clamp(2px, 1vw, 8px);
   }
   .top-date {
     border-left: 0;

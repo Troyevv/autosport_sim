@@ -1,0 +1,1666 @@
+role,route,viewport_width,viewport_height,heading,content_width,overflow_px,clipped_labels,cars,car_crop_px
+manager,overview,1366,768,Команда ждёт вашего решения.,1102,0,0,1,0
+manager,overview,1920,1080,Команда ждёт вашего решения.,1613,0,0,1,0
+manager,overview,2560,1440,Команда ждёт вашего решения.,2208,0,0,1,0
+manager,overview,3840,2160,Команда ждёт вашего решения.,2304,0,0,1,0
+manager,overview,390,844,Команда ждёт вашего решения.,390,0,0,1,0
+manager,briefings,1366,768,На связи с вашей командой.,1102,0,0,0,0
+manager,briefings,1920,1080,На связи с вашей командой.,1613,0,0,0,0
+manager,briefings,2560,1440,На связи с вашей командой.,2208,0,0,0,0
+manager,briefings,3840,2160,На связи с вашей командой.,2304,0,0,0,0
+manager,briefings,390,844,На связи с вашей командой.,390,0,0,0,0
+manager,briefings?tab=finance,1366,768,На связи с вашей командой.,1102,0,0,0,0
+manager,briefings?tab=finance,1920,1080,На связи с вашей командой.,1613,0,0,0,0
+manager,briefings?tab=finance,2560,1440,На связи с вашей командой.,2208,0,0,0,0
+manager,briefings?tab=finance,3840,2160,На связи с вашей командой.,2304,0,0,0,0
+manager,briefings?tab=finance,390,844,На связи с вашей командой.,390,0,0,0,0
+manager,briefings?tab=production,1366,768,На связи с вашей командой.,1102,0,0,0,0
+manager,briefings?tab=production,1920,1080,На связи с вашей командой.,1613,0,0,0,0
+manager,briefings?tab=production,2560,1440,На связи с вашей командой.,2208,0,0,0,0
+manager,briefings?tab=production,3840,2160,На связи с вашей командой.,2304,0,0,0,0
+manager,briefings?tab=production,390,844,На связи с вашей командой.,390,0,0,0,0
+manager,briefings?tab=drivers,1366,768,На связи с вашей командой.,1102,0,0,0,0
+manager,briefings?tab=drivers,1920,1080,На связи с вашей командой.,1613,0,0,0,0
+manager,briefings?tab=drivers,2560,1440,На связи с вашей командой.,2208,0,0,0,0
+manager,briefings?tab=drivers,3840,2160,На связи с вашей командой.,2304,0,0,0,0
+manager,briefings?tab=drivers,390,844,На связи с вашей командой.,390,0,0,0,0
+manager,briefings?tab=staff,1366,768,На связи с вашей командой.,1102,0,0,0,0
+manager,briefings?tab=staff,1920,1080,На связи с вашей командой.,1613,0,0,0,0
+manager,briefings?tab=staff,2560,1440,На связи с вашей командой.,2208,0,0,0,0
+manager,briefings?tab=staff,3840,2160,На связи с вашей командой.,2304,0,0,0,0
+manager,briefings?tab=staff,390,844,На связи с вашей командой.,390,0,0,0,0
+manager,briefings?tab=council,1366,768,На связи с вашей командой.,1102,0,0,0,0
+manager,briefings?tab=council,1920,1080,На связи с вашей командой.,1613,0,0,0,0
+manager,briefings?tab=council,2560,1440,На связи с вашей командой.,2208,0,0,0,0
+manager,briefings?tab=council,3840,2160,На связи с вашей командой.,2304,0,0,0,0
+manager,briefings?tab=council,390,844,На связи с вашей командой.,390,0,0,0,0
+manager,inbox,1366,768,Входящие,1102,0,0,0,0
+manager,inbox,1920,1080,Входящие,1613,0,0,0,0
+manager,inbox,2560,1440,Входящие,2208,0,0,0,0
+manager,inbox,3840,2160,Входящие,2304,0,0,0,0
+manager,inbox,390,844,Входящие,390,0,0,0,0
+manager,calendar,1366,768,Календарь,1102,0,0,0,0
+manager,calendar,1920,1080,Календарь,1613,0,0,0,0
+manager,calendar,2560,1440,Календарь,2208,0,0,0,0
+manager,calendar,3840,2160,Календарь,2304,0,0,0,0
+manager,calendar,390,844,Календарь,390,0,0,0,0
+manager,garage,1366,768,SF-25 · №16,1102,0,0,1,0
+manager,garage,1920,1080,SF-25 · №16,1613,0,0,1,0
+manager,garage,2560,1440,SF-25 · №16,2208,0,0,1,0
+manager,garage,3840,2160,SF-25 · №16,2304,0,0,1,0
+manager,garage,390,844,SF-25 · №16,390,0,0,1,0
+manager,garage?tab=components&entity=f1-16,1366,768,SF-25 · №16,1102,0,0,1,0
+manager,garage?tab=components&entity=f1-16,1920,1080,SF-25 · №16,1613,0,0,1,0
+manager,garage?tab=components&entity=f1-16,2560,1440,SF-25 · №16,2208,0,0,1,0
+manager,garage?tab=components&entity=f1-16,3840,2160,SF-25 · №16,2304,0,0,1,0
+manager,garage?tab=components&entity=f1-16,390,844,SF-25 · №16,390,0,0,1,0
+manager,livery?tab=livery&entity=f1-16,1366,768,Ливрея SF-25,1102,0,0,1,0
+manager,livery?tab=livery&entity=f1-16,1920,1080,Ливрея SF-25,1613,0,0,1,0
+manager,livery?tab=livery&entity=f1-16,2560,1440,Ливрея SF-25,2208,0,0,1,0
+manager,livery?tab=livery&entity=f1-16,3840,2160,Ливрея SF-25,2304,0,0,1,0
+manager,livery?tab=livery&entity=f1-16,390,844,Ливрея SF-25,390,0,0,1,0
+manager,garage?tab=sponsors&entity=f1-16,1366,768,SF-25 · №16,1102,0,0,0,0
+manager,garage?tab=sponsors&entity=f1-16,1920,1080,SF-25 · №16,1613,0,0,0,0
+manager,garage?tab=sponsors&entity=f1-16,2560,1440,SF-25 · №16,2208,0,0,0,0
+manager,garage?tab=sponsors&entity=f1-16,3840,2160,SF-25 · №16,2304,0,0,0,0
+manager,garage?tab=sponsors&entity=f1-16,390,844,SF-25 · №16,390,0,0,0,0
+manager,garage?tab=history&entity=f1-16,1366,768,SF-25 · №16,1102,0,0,0,0
+manager,garage?tab=history&entity=f1-16,1920,1080,SF-25 · №16,1613,0,0,0,0
+manager,garage?tab=history&entity=f1-16,2560,1440,SF-25 · №16,2208,0,0,0,0
+manager,garage?tab=history&entity=f1-16,3840,2160,SF-25 · №16,2304,0,0,0,0
+manager,garage?tab=history&entity=f1-16,390,844,SF-25 · №16,390,0,0,0,0
+manager,livery,1366,768,Ливрея SF-25,1102,0,0,1,0
+manager,livery,1920,1080,Ливрея SF-25,1613,0,0,1,0
+manager,livery,2560,1440,Ливрея SF-25,2208,0,0,1,0
+manager,livery,3840,2160,Ливрея SF-25,2304,0,0,1,0
+manager,livery,390,844,Ливрея SF-25,390,0,0,1,0
+manager,garage?tab=overview&entity=f1-16,1366,768,SF-25 · №16,1102,0,0,1,0
+manager,garage?tab=overview&entity=f1-16,1920,1080,SF-25 · №16,1613,0,0,1,0
+manager,garage?tab=overview&entity=f1-16,2560,1440,SF-25 · №16,2208,0,0,1,0
+manager,garage?tab=overview&entity=f1-16,3840,2160,SF-25 · №16,2304,0,0,1,0
+manager,garage?tab=overview&entity=f1-16,390,844,SF-25 · №16,390,0,0,1,0
+manager,drivers,1366,768,Состав есть. Теперь важны компетенции и нагрузка.,1102,0,0,0,0
+manager,drivers,1920,1080,Состав есть. Теперь важны компетенции и нагрузка.,1613,0,0,0,0
+manager,drivers,2560,1440,Состав есть. Теперь важны компетенции и нагрузка.,2208,0,0,0,0
+manager,drivers,3840,2160,Состав есть. Теперь важны компетенции и нагрузка.,2304,0,0,0,0
+manager,drivers,390,844,Состав есть. Теперь важны компетенции и нагрузка.,390,0,0,0,0
+manager,preparation,1366,768,Состав есть. Теперь важны компетенции и нагрузка.,1102,0,0,0,0
+manager,preparation,1920,1080,Состав есть. Теперь важны компетенции и нагрузка.,1613,0,0,0,0
+manager,preparation,2560,1440,Состав есть. Теперь важны компетенции и нагрузка.,2208,0,0,0,0
+manager,preparation,3840,2160,Состав есть. Теперь важны компетенции и нагрузка.,2304,0,0,0,0
+manager,preparation,390,844,Состав есть. Теперь важны компетенции и нагрузка.,390,0,0,0,0
+manager,engineering,1366,768,Согласовать карту просвета днища и жёсткость подвески.,1102,0,0,1,0
+manager,engineering,1920,1080,Согласовать карту просвета днища и жёсткость подвески.,1613,0,0,1,0
+manager,engineering,2560,1440,Согласовать карту просвета днища и жёсткость подвески.,2208,0,0,1,0
+manager,engineering,3840,2160,Согласовать карту просвета днища и жёсткость подвески.,2304,0,0,1,0
+manager,engineering,390,844,Согласовать карту просвета днища и жёсткость подвески.,390,0,0,1,0
+manager,engineering?tab=plans,1366,768,Согласовать карту просвета днища и жёсткость подвески.,1102,0,0,1,0
+manager,engineering?tab=plans,1920,1080,Согласовать карту просвета днища и жёсткость подвески.,1613,0,0,1,0
+manager,engineering?tab=plans,2560,1440,Согласовать карту просвета днища и жёсткость подвески.,2208,0,0,1,0
+manager,engineering?tab=plans,3840,2160,Согласовать карту просвета днища и жёсткость подвески.,2304,0,0,1,0
+manager,engineering?tab=plans,390,844,Согласовать карту просвета днища и жёсткость подвески.,390,0,0,1,0
+manager,engineering?tab=resources,1366,768,Машина начинается с людейТехническая программа,1102,0,0,0,0
+manager,engineering?tab=resources,1920,1080,Машина начинается с людейТехническая программа,1613,0,0,0,0
+manager,engineering?tab=resources,2560,1440,Машина начинается с людейТехническая программа,2208,0,0,0,0
+manager,engineering?tab=resources,3840,2160,Машина начинается с людейТехническая программа,2304,0,0,0,0
+manager,engineering?tab=resources,390,844,Машина начинается с людейТехническая программа,390,0,0,0,0
+manager,engineering?tab=calendar,1366,768,Машина начинается с людейТехническая программа,1102,0,0,0,0
+manager,engineering?tab=calendar,1920,1080,Машина начинается с людейТехническая программа,1613,0,0,0,0
+manager,engineering?tab=calendar,2560,1440,Машина начинается с людейТехническая программа,2208,0,0,0,0
+manager,engineering?tab=calendar,3840,2160,Машина начинается с людейТехническая программа,2304,0,0,0,0
+manager,engineering?tab=calendar,390,844,Машина начинается с людейТехническая программа,390,0,0,0,0
+manager,engineering?tab=concept,1366,768,Машина начинается с людейТехническая программа,1102,0,0,1,0
+manager,engineering?tab=concept,1920,1080,Машина начинается с людейТехническая программа,1613,0,0,1,0
+manager,engineering?tab=concept,2560,1440,Машина начинается с людейТехническая программа,2208,0,0,1,0
+manager,engineering?tab=concept,3840,2160,Машина начинается с людейТехническая программа,2304,0,0,1,0
+manager,engineering?tab=concept,390,844,Машина начинается с людейТехническая программа,390,0,0,1,0
+manager,engineering?tab=rules,1366,768,Машина начинается с людейТехническая программа,1102,0,0,0,0
+manager,engineering?tab=rules,1920,1080,Машина начинается с людейТехническая программа,1613,0,0,0,0
+manager,engineering?tab=rules,2560,1440,Машина начинается с людейТехническая программа,2208,0,0,0,0
+manager,engineering?tab=rules,3840,2160,Машина начинается с людейТехническая программа,2304,0,0,0,0
+manager,engineering?tab=rules,390,844,Машина начинается с людейТехническая программа,390,0,0,0,0
+manager,engineering?tab=history,1366,768,Машина начинается с людейТехническая программа,1102,0,0,0,0
+manager,engineering?tab=history,1920,1080,Машина начинается с людейТехническая программа,1613,0,0,0,0
+manager,engineering?tab=history,2560,1440,Машина начинается с людейТехническая программа,2208,0,0,0,0
+manager,engineering?tab=history,3840,2160,Машина начинается с людейТехническая программа,2304,0,0,0,0
+manager,engineering?tab=history,390,844,Машина начинается с людейТехническая программа,390,0,0,0,0
+manager,council,1366,768,Согласовать карту просвета днища и жёсткость подвески.,1102,0,0,0,0
+manager,council,1920,1080,Согласовать карту просвета днища и жёсткость подвески.,1613,0,0,0,0
+manager,council,2560,1440,Согласовать карту просвета днища и жёсткость подвески.,2208,0,0,0,0
+manager,council,3840,2160,Согласовать карту просвета днища и жёсткость подвески.,2304,0,0,0,0
+manager,council,390,844,Согласовать карту просвета днища и жёсткость подвески.,390,0,0,0,0
+manager,council?tab=agenda,1366,768,Согласовать карту просвета днища и жёсткость подвески.,1102,0,0,0,0
+manager,council?tab=agenda,1920,1080,Согласовать карту просвета днища и жёсткость подвески.,1613,0,0,0,0
+manager,council?tab=agenda,2560,1440,Согласовать карту просвета днища и жёсткость подвески.,2208,0,0,0,0
+manager,council?tab=agenda,3840,2160,Согласовать карту просвета днища и жёсткость подвески.,2304,0,0,0,0
+manager,council?tab=agenda,390,844,Согласовать карту просвета днища и жёсткость подвески.,390,0,0,0,0
+manager,council?tab=meeting,1366,768,"Решения, за которыми стоят людиРешения штаба",1102,0,0,0,0
+manager,council?tab=meeting,1920,1080,"Решения, за которыми стоят людиРешения штаба",1613,0,0,0,0
+manager,council?tab=meeting,2560,1440,"Решения, за которыми стоят людиРешения штаба",2208,0,0,0,0
+manager,council?tab=meeting,3840,2160,"Решения, за которыми стоят людиРешения штаба",2304,0,0,0,0
+manager,council?tab=meeting,390,844,"Решения, за которыми стоят людиРешения штаба",390,0,0,0,0
+manager,council?tab=execution,1366,768,"Решения, за которыми стоят людиРешения штаба",1102,0,0,0,0
+manager,council?tab=execution,1920,1080,"Решения, за которыми стоят людиРешения штаба",1613,0,0,0,0
+manager,council?tab=execution,2560,1440,"Решения, за которыми стоят людиРешения штаба",2208,0,0,0,0
+manager,council?tab=execution,3840,2160,"Решения, за которыми стоят людиРешения штаба",2304,0,0,0,0
+manager,council?tab=execution,390,844,"Решения, за которыми стоят людиРешения штаба",390,0,0,0,0
+manager,council?tab=archive,1366,768,"Решения, за которыми стоят людиРешения штаба",1102,0,0,0,0
+manager,council?tab=archive,1920,1080,"Решения, за которыми стоят людиРешения штаба",1613,0,0,0,0
+manager,council?tab=archive,2560,1440,"Решения, за которыми стоят людиРешения штаба",2208,0,0,0,0
+manager,council?tab=archive,3840,2160,"Решения, за которыми стоят людиРешения штаба",2304,0,0,0,0
+manager,council?tab=archive,390,844,"Решения, за которыми стоят людиРешения штаба",390,0,0,0,0
+manager,research,1366,768,Согласовать карту просвета днища и жёсткость подвески.,1102,0,0,0,0
+manager,research,1920,1080,Согласовать карту просвета днища и жёсткость подвески.,1613,0,0,0,0
+manager,research,2560,1440,Согласовать карту просвета днища и жёсткость подвески.,2208,0,0,0,0
+manager,research,3840,2160,Согласовать карту просвета днища и жёсткость подвески.,2304,0,0,0,0
+manager,research,390,844,Согласовать карту просвета днища и жёсткость подвески.,390,0,0,0,0
+manager,research?tab=queue,1366,768,Согласовать карту просвета днища и жёсткость подвески.,1102,0,0,0,0
+manager,research?tab=queue,1920,1080,Согласовать карту просвета днища и жёсткость подвески.,1613,0,0,0,0
+manager,research?tab=queue,2560,1440,Согласовать карту просвета днища и жёсткость подвески.,2208,0,0,0,0
+manager,research?tab=queue,3840,2160,Согласовать карту просвета днища и жёсткость подвески.,2304,0,0,0,0
+manager,research?tab=queue,390,844,Согласовать карту просвета днища и жёсткость подвески.,390,0,0,0,0
+manager,research?tab=memory,1366,768,Сначала — правильный вопросИсследования,1102,0,0,0,0
+manager,research?tab=memory,1920,1080,Сначала — правильный вопросИсследования,1613,0,0,0,0
+manager,research?tab=memory,2560,1440,Сначала — правильный вопросИсследования,2208,0,0,0,0
+manager,research?tab=memory,3840,2160,Сначала — правильный вопросИсследования,2304,0,0,0,0
+manager,research?tab=memory,390,844,Сначала — правильный вопросИсследования,390,0,0,0,0
+manager,development,1366,768,Согласовать карту просвета днища и жёсткость подвески.,1102,0,0,0,0
+manager,development,1920,1080,Согласовать карту просвета днища и жёсткость подвески.,1613,0,0,0,0
+manager,development,2560,1440,Согласовать карту просвета днища и жёсткость подвески.,2208,0,0,0,0
+manager,development,3840,2160,Согласовать карту просвета днища и жёсткость подвески.,2304,0,0,0,0
+manager,development,390,844,Согласовать карту просвета днища и жёсткость подвески.,390,0,0,0,0
+manager,development?tab=design,1366,768,От гипотезы к проверкеРазработка и испытания,1102,0,0,0,0
+manager,development?tab=design,1920,1080,От гипотезы к проверкеРазработка и испытания,1613,0,0,0,0
+manager,development?tab=design,2560,1440,От гипотезы к проверкеРазработка и испытания,2208,0,0,0,0
+manager,development?tab=design,3840,2160,От гипотезы к проверкеРазработка и испытания,2304,0,0,0,0
+manager,development?tab=design,390,844,От гипотезы к проверкеРазработка и испытания,390,0,0,0,0
+manager,development?tab=test,1366,768,От гипотезы к проверкеРазработка и испытания,1102,0,0,0,0
+manager,development?tab=test,1920,1080,От гипотезы к проверкеРазработка и испытания,1613,0,0,0,0
+manager,development?tab=test,2560,1440,От гипотезы к проверкеРазработка и испытания,2208,0,0,0,0
+manager,development?tab=test,3840,2160,От гипотезы к проверкеРазработка и испытания,2304,0,0,0,0
+manager,development?tab=test,390,844,От гипотезы к проверкеРазработка и испытания,390,0,0,0,0
+manager,development?tab=archive,1366,768,От гипотезы к проверкеРазработка и испытания,1102,0,0,0,0
+manager,development?tab=archive,1920,1080,От гипотезы к проверкеРазработка и испытания,1613,0,0,0,0
+manager,development?tab=archive,2560,1440,От гипотезы к проверкеРазработка и испытания,2208,0,0,0,0
+manager,development?tab=archive,3840,2160,От гипотезы к проверкеРазработка и испытания,2304,0,0,0,0
+manager,development?tab=archive,390,844,От гипотезы к проверкеРазработка и испытания,390,0,0,0,0
+manager,cap,1366,768,Ближайшие выплаты нужно держать в резерве,1102,0,0,0,0
+manager,cap,1920,1080,Ближайшие выплаты нужно держать в резерве,1613,0,0,0,0
+manager,cap,2560,1440,Ближайшие выплаты нужно держать в резерве,2208,0,0,0,0
+manager,cap,3840,2160,Ближайшие выплаты нужно держать в резерве,2304,0,0,0,0
+manager,cap,390,844,Ближайшие выплаты нужно держать в резерве,390,0,0,0,0
+manager,cap?tab=atr,1366,768,Регламентные лимиты,1102,0,0,0,0
+manager,cap?tab=atr,1920,1080,Регламентные лимиты,1613,0,0,0,0
+manager,cap?tab=atr,2560,1440,Регламентные лимиты,2208,0,0,0,0
+manager,cap?tab=atr,3840,2160,Регламентные лимиты,2304,0,0,0,0
+manager,cap?tab=atr,390,844,Регламентные лимиты,390,0,0,0,0
+manager,cap?tab=audits,1366,768,Регламентные лимиты,1102,0,0,0,0
+manager,cap?tab=audits,1920,1080,Регламентные лимиты,1613,0,0,0,0
+manager,cap?tab=audits,2560,1440,Регламентные лимиты,2208,0,0,0,0
+manager,cap?tab=audits,3840,2160,Регламентные лимиты,2304,0,0,0,0
+manager,cap?tab=audits,390,844,Регламентные лимиты,390,0,0,0,0
+manager,production,1366,768,Есть рекомендации по резерву компонентов,1102,0,0,0,0
+manager,production,1920,1080,Есть рекомендации по резерву компонентов,1613,0,0,0,0
+manager,production,2560,1440,Есть рекомендации по резерву компонентов,2208,0,0,0,0
+manager,production,3840,2160,Есть рекомендации по резерву компонентов,2304,0,0,0,0
+manager,production,390,844,Есть рекомендации по резерву компонентов,390,0,0,0,0
+manager,production?tab=queue,1366,768,Есть рекомендации по резерву компонентов,1102,0,0,0,0
+manager,production?tab=queue,1920,1080,Есть рекомендации по резерву компонентов,1613,0,0,0,0
+manager,production?tab=queue,2560,1440,Есть рекомендации по резерву компонентов,2208,0,0,0,0
+manager,production?tab=queue,3840,2160,Есть рекомендации по резерву компонентов,2304,0,0,0,0
+manager,production?tab=queue,390,844,Есть рекомендации по резерву компонентов,390,0,0,0,0
+manager,production?tab=stock,1366,768,Превратить чертёж в детальПроизводство,1102,0,0,0,0
+manager,production?tab=stock,1920,1080,Превратить чертёж в детальПроизводство,1613,0,0,0,0
+manager,production?tab=stock,2560,1440,Превратить чертёж в детальПроизводство,2208,0,0,0,0
+manager,production?tab=stock,3840,2160,Превратить чертёж в детальПроизводство,2304,0,0,0,0
+manager,production?tab=stock,390,844,Превратить чертёж в детальПроизводство,390,0,0,0,0
+manager,production?tab=quality,1366,768,Превратить чертёж в детальПроизводство,1102,0,0,0,0
+manager,production?tab=quality,1920,1080,Превратить чертёж в детальПроизводство,1613,0,0,0,0
+manager,production?tab=quality,2560,1440,Превратить чертёж в детальПроизводство,2208,0,0,0,0
+manager,production?tab=quality,3840,2160,Превратить чертёж в детальПроизводство,2304,0,0,0,0
+manager,production?tab=quality,390,844,Превратить чертёж в детальПроизводство,390,0,0,0,0
+manager,production?tab=needs,1366,768,Превратить чертёж в детальПроизводство,1102,0,0,0,0
+manager,production?tab=needs,1920,1080,Превратить чертёж в детальПроизводство,1613,0,0,0,0
+manager,production?tab=needs,2560,1440,Превратить чертёж в детальПроизводство,2208,0,0,0,0
+manager,production?tab=needs,3840,2160,Превратить чертёж в детальПроизводство,2304,0,0,0,0
+manager,production?tab=needs,390,844,Превратить чертёж в детальПроизводство,390,0,0,0,0
+manager,production?tab=archive,1366,768,Превратить чертёж в детальПроизводство,1102,0,0,0,0
+manager,production?tab=archive,1920,1080,Превратить чертёж в детальПроизводство,1613,0,0,0,0
+manager,production?tab=archive,2560,1440,Превратить чертёж в детальПроизводство,2208,0,0,0,0
+manager,production?tab=archive,3840,2160,Превратить чертёж в детальПроизводство,2304,0,0,0,0
+manager,production?tab=archive,390,844,Превратить чертёж в детальПроизводство,390,0,0,0,0
+manager,inventory,1366,768,Есть рекомендации по резерву компонентов,1102,0,0,0,0
+manager,inventory,1920,1080,Есть рекомендации по резерву компонентов,1613,0,0,0,0
+manager,inventory,2560,1440,Есть рекомендации по резерву компонентов,2208,0,0,0,0
+manager,inventory,3840,2160,Есть рекомендации по резерву компонентов,2304,0,0,0,0
+manager,inventory,390,844,Есть рекомендации по резерву компонентов,390,0,0,0,0
+manager,manufacturer,1366,768,Согласовать карту просвета днища и жёсткость подвески.,1102,0,0,1,0
+manager,manufacturer,1920,1080,Согласовать карту просвета днища и жёсткость подвески.,1613,0,0,1,0
+manager,manufacturer,2560,1440,Согласовать карту просвета днища и жёсткость подвески.,2208,0,0,1,0
+manager,manufacturer,3840,2160,Согласовать карту просвета днища и жёсткость подвески.,2304,0,0,1,0
+manager,manufacturer,390,844,Согласовать карту просвета днища и жёсткость подвески.,390,0,0,1,0
+manager,manufacturer?tab=clients,1366,768,Работа с производителямиПартнёры и поддержка,1102,0,0,1,0
+manager,manufacturer?tab=clients,1920,1080,Работа с производителямиПартнёры и поддержка,1613,0,0,1,0
+manager,manufacturer?tab=clients,2560,1440,Работа с производителямиПартнёры и поддержка,2208,0,0,1,0
+manager,manufacturer?tab=clients,3840,2160,Работа с производителямиПартнёры и поддержка,2304,0,0,1,0
+manager,manufacturer?tab=clients,390,844,Работа с производителямиПартнёры и поддержка,390,0,0,1,0
+manager,manufacturer?tab=cases,1366,768,Работа с производителямиПартнёры и поддержка,1102,0,0,0,0
+manager,manufacturer?tab=cases,1920,1080,Работа с производителямиПартнёры и поддержка,1613,0,0,0,0
+manager,manufacturer?tab=cases,2560,1440,Работа с производителямиПартнёры и поддержка,2208,0,0,0,0
+manager,manufacturer?tab=cases,3840,2160,Работа с производителямиПартнёры и поддержка,2304,0,0,0,0
+manager,manufacturer?tab=cases,390,844,Работа с производителямиПартнёры и поддержка,390,0,0,0,0
+manager,manufacturer?tab=advisors,1366,768,Работа с производителямиПартнёры и поддержка,1102,0,0,0,0
+manager,manufacturer?tab=advisors,1920,1080,Работа с производителямиПартнёры и поддержка,1613,0,0,0,0
+manager,manufacturer?tab=advisors,2560,1440,Работа с производителямиПартнёры и поддержка,2208,0,0,0,0
+manager,manufacturer?tab=advisors,3840,2160,Работа с производителямиПартнёры и поддержка,2304,0,0,0,0
+manager,manufacturer?tab=advisors,390,844,Работа с производителямиПартнёры и поддержка,390,0,0,0,0
+manager,manufacturer?tab=warranty,1366,768,Работа с производителямиПартнёры и поддержка,1102,0,0,0,0
+manager,manufacturer?tab=warranty,1920,1080,Работа с производителямиПартнёры и поддержка,1613,0,0,0,0
+manager,manufacturer?tab=warranty,2560,1440,Работа с производителямиПартнёры и поддержка,2208,0,0,0,0
+manager,manufacturer?tab=warranty,3840,2160,Работа с производителямиПартнёры и поддержка,2304,0,0,0,0
+manager,manufacturer?tab=warranty,390,844,Работа с производителямиПартнёры и поддержка,390,0,0,0,0
+manager,manufacturer?tab=history,1366,768,Работа с производителямиПартнёры и поддержка,1102,0,0,0,0
+manager,manufacturer?tab=history,1920,1080,Работа с производителямиПартнёры и поддержка,1613,0,0,0,0
+manager,manufacturer?tab=history,2560,1440,Работа с производителямиПартнёры и поддержка,2208,0,0,0,0
+manager,manufacturer?tab=history,3840,2160,Работа с производителямиПартнёры и поддержка,2304,0,0,0,0
+manager,manufacturer?tab=history,390,844,Работа с производителямиПартнёры и поддержка,390,0,0,0,0
+manager,facilities,1366,768,Есть рекомендации по резерву компонентов,1102,0,0,0,0
+manager,facilities,1920,1080,Есть рекомендации по резерву компонентов,1613,0,0,0,0
+manager,facilities,2560,1440,Есть рекомендации по резерву компонентов,2208,0,0,0,0
+manager,facilities,3840,2160,Есть рекомендации по резерву компонентов,2304,0,0,0,0
+manager,facilities,390,844,Есть рекомендации по резерву компонентов,390,0,0,0,0
+manager,facilities?tab=capacity,1366,768,Инфраструктура,1102,0,0,0,0
+manager,facilities?tab=capacity,1920,1080,Инфраструктура,1613,0,0,0,0
+manager,facilities?tab=capacity,2560,1440,Инфраструктура,2208,0,0,0,0
+manager,facilities?tab=capacity,3840,2160,Инфраструктура,2304,0,0,0,0
+manager,facilities?tab=capacity,390,844,Инфраструктура,390,0,0,0,0
+manager,facilities?tab=rent,1366,768,Инфраструктура,1102,0,0,0,0
+manager,facilities?tab=rent,1920,1080,Инфраструктура,1613,0,0,0,0
+manager,facilities?tab=rent,2560,1440,Инфраструктура,2208,0,0,0,0
+manager,facilities?tab=rent,3840,2160,Инфраструктура,2304,0,0,0,0
+manager,facilities?tab=rent,390,844,Инфраструктура,390,0,0,0,0
+manager,facilities?tab=bookings,1366,768,Инфраструктура,1102,0,0,0,0
+manager,facilities?tab=bookings,1920,1080,Инфраструктура,1613,0,0,0,0
+manager,facilities?tab=bookings,2560,1440,Инфраструктура,2208,0,0,0,0
+manager,facilities?tab=bookings,3840,2160,Инфраструктура,2304,0,0,0,0
+manager,facilities?tab=bookings,390,844,Инфраструктура,390,0,0,0,0
+manager,staff,1366,768,Состав есть. Теперь важны компетенции и нагрузка.,1102,0,0,0,0
+manager,staff,1920,1080,Состав есть. Теперь важны компетенции и нагрузка.,1613,0,0,0,0
+manager,staff,2560,1440,Состав есть. Теперь важны компетенции и нагрузка.,2208,0,0,0,0
+manager,staff,3840,2160,Состав есть. Теперь важны компетенции и нагрузка.,2304,0,0,0,0
+manager,staff,390,844,Состав есть. Теперь важны компетенции и нагрузка.,390,0,0,0,0
+manager,staff?tab=collectives,1366,768,Штаб и подразделения,1102,0,0,0,0
+manager,staff?tab=collectives,1920,1080,Штаб и подразделения,1613,0,0,0,0
+manager,staff?tab=collectives,2560,1440,Штаб и подразделения,2208,0,0,0,0
+manager,staff?tab=collectives,3840,2160,Штаб и подразделения,2304,0,0,0,0
+manager,staff?tab=collectives,390,844,Штаб и подразделения,390,0,0,0,0
+manager,market,1366,768,Найдите своё преимущество,1102,0,0,0,0
+manager,market,1920,1080,Найдите своё преимущество,1613,0,0,0,0
+manager,market,2560,1440,Найдите своё преимущество,2208,0,0,0,0
+manager,market,3840,2160,Найдите своё преимущество,2304,0,0,0,0
+manager,market,390,844,Найдите своё преимущество,390,0,0,0,0
+manager,market?tab=shortlist,1366,768,Найдите своё преимущество,1102,0,0,0,0
+manager,market?tab=shortlist,1920,1080,Найдите своё преимущество,1613,0,0,0,0
+manager,market?tab=shortlist,2560,1440,Найдите своё преимущество,2208,0,0,0,0
+manager,market?tab=shortlist,3840,2160,Найдите своё преимущество,2304,0,0,0,0
+manager,market?tab=shortlist,390,844,Найдите своё преимущество,390,0,0,0,0
+manager,market?tab=scouting,1366,768,Найдите своё преимущество,1102,0,0,0,0
+manager,market?tab=scouting,1920,1080,Найдите своё преимущество,1613,0,0,0,0
+manager,market?tab=scouting,2560,1440,Найдите своё преимущество,2208,0,0,0,0
+manager,market?tab=scouting,3840,2160,Найдите своё преимущество,2304,0,0,0,0
+manager,market?tab=scouting,390,844,Найдите своё преимущество,390,0,0,0,0
+manager,contracts,1366,768,Состав сегодня. Решения на завтра.,1102,0,0,0,0
+manager,contracts,1920,1080,Состав сегодня. Решения на завтра.,1613,0,0,0,0
+manager,contracts,2560,1440,Состав сегодня. Решения на завтра.,2208,0,0,0,0
+manager,contracts,3840,2160,Состав сегодня. Решения на завтра.,2304,0,0,0,0
+manager,contracts,390,844,Состав сегодня. Решения на завтра.,390,0,0,0,0
+manager,contracts?tab=negotiations,1366,768,Состав сегодня. Решения на завтра.,1102,0,0,0,0
+manager,contracts?tab=negotiations,1920,1080,Состав сегодня. Решения на завтра.,1613,0,0,0,0
+manager,contracts?tab=negotiations,2560,1440,Состав сегодня. Решения на завтра.,2208,0,0,0,0
+manager,contracts?tab=negotiations,3840,2160,Состав сегодня. Решения на завтра.,2304,0,0,0,0
+manager,contracts?tab=negotiations,390,844,Состав сегодня. Решения на завтра.,390,0,0,0,0
+manager,contracts?tab=future,1366,768,Состав сегодня. Решения на завтра.,1102,0,0,0,0
+manager,contracts?tab=future,1920,1080,Состав сегодня. Решения на завтра.,1613,0,0,0,0
+manager,contracts?tab=future,2560,1440,Состав сегодня. Решения на завтра.,2208,0,0,0,0
+manager,contracts?tab=future,3840,2160,Состав сегодня. Решения на завтра.,2304,0,0,0,0
+manager,contracts?tab=future,390,844,Состав сегодня. Решения на завтра.,390,0,0,0,0
+manager,academy,1366,768,Состав есть. Теперь важны компетенции и нагрузка.,1102,0,0,0,0
+manager,academy,1920,1080,Состав есть. Теперь важны компетенции и нагрузка.,1613,0,0,0,0
+manager,academy,2560,1440,Состав есть. Теперь важны компетенции и нагрузка.,2208,0,0,0,0
+manager,academy,3840,2160,Состав есть. Теперь важны компетенции и нагрузка.,2304,0,0,0,0
+manager,academy,390,844,Состав есть. Теперь важны компетенции и нагрузка.,390,0,0,0,0
+manager,funding,1366,768,Возможность выйти на старт,1102,0,0,0,0
+manager,funding,1920,1080,Возможность выйти на старт,1613,0,0,0,0
+manager,funding,2560,1440,Возможность выйти на старт,2208,0,0,0,0
+manager,funding,3840,2160,Возможность выйти на старт,2304,0,0,0,0
+manager,funding,390,844,Возможность выйти на старт,390,0,0,0,0
+manager,funding?tab=all,1366,768,Возможность выйти на старт,1102,0,0,0,0
+manager,funding?tab=all,1920,1080,Возможность выйти на старт,1613,0,0,0,0
+manager,funding?tab=all,2560,1440,Возможность выйти на старт,2208,0,0,0,0
+manager,funding?tab=all,3840,2160,Возможность выйти на старт,2304,0,0,0,0
+manager,funding?tab=all,390,844,Возможность выйти на старт,390,0,0,0,0
+manager,leadership,1366,768,Состав есть. Теперь важны компетенции и нагрузка.,1102,0,0,0,0
+manager,leadership,1920,1080,Состав есть. Теперь важны компетенции и нагрузка.,1613,0,0,0,0
+manager,leadership,2560,1440,Состав есть. Теперь важны компетенции и нагрузка.,2208,0,0,0,0
+manager,leadership,3840,2160,Состав есть. Теперь важны компетенции и нагрузка.,2304,0,0,0,0
+manager,leadership,390,844,Состав есть. Теперь важны компетенции и нагрузка.,390,0,0,0,0
+manager,finance,1366,768,Ближайшие выплаты нужно держать в резерве,1102,0,0,0,0
+manager,finance,1920,1080,Ближайшие выплаты нужно держать в резерве,1613,0,0,0,0
+manager,finance,2560,1440,Ближайшие выплаты нужно держать в резерве,2208,0,0,0,0
+manager,finance,3840,2160,Ближайшие выплаты нужно держать в резерве,2304,0,0,0,0
+manager,finance,390,844,Ближайшие выплаты нужно держать в резерве,390,0,0,0,0
+manager,finance?tab=results,1366,768,Финансы,1102,0,0,0,0
+manager,finance?tab=results,1920,1080,Финансы,1613,0,0,0,0
+manager,finance?tab=results,2560,1440,Финансы,2208,0,0,0,0
+manager,finance?tab=results,3840,2160,Финансы,2304,0,0,0,0
+manager,finance?tab=results,390,844,Финансы,390,0,0,0,0
+manager,finance?tab=journal,1366,768,Финансы,1102,0,0,0,0
+manager,finance?tab=journal,1920,1080,Финансы,1613,0,0,0,0
+manager,finance?tab=journal,2560,1440,Финансы,2208,0,0,0,0
+manager,finance?tab=journal,3840,2160,Финансы,2304,0,0,0,0
+manager,finance?tab=journal,390,844,Финансы,390,0,0,0,0
+manager,finance?tab=terms,1366,768,Финансы,1102,0,0,0,0
+manager,finance?tab=terms,1920,1080,Финансы,1613,0,0,0,0
+manager,finance?tab=terms,2560,1440,Финансы,2208,0,0,0,0
+manager,finance?tab=terms,3840,2160,Финансы,2304,0,0,0,0
+manager,finance?tab=terms,390,844,Финансы,390,0,0,0,0
+manager,finance?tab=forecast,1366,768,Финансы,1102,0,0,0,0
+manager,finance?tab=forecast,1920,1080,Финансы,1613,0,0,0,0
+manager,finance?tab=forecast,2560,1440,Финансы,2208,0,0,0,0
+manager,finance?tab=forecast,3840,2160,Финансы,2304,0,0,0,0
+manager,finance?tab=forecast,390,844,Финансы,390,0,0,0,0
+manager,budget,1366,768,Ближайшие выплаты нужно держать в резерве,1102,0,0,0,0
+manager,budget,1920,1080,Ближайшие выплаты нужно держать в резерве,1613,0,0,0,0
+manager,budget,2560,1440,Ближайшие выплаты нужно держать в резерве,2208,0,0,0,0
+manager,budget,3840,2160,Ближайшие выплаты нужно держать в резерве,2304,0,0,0,0
+manager,budget,390,844,Ближайшие выплаты нужно держать в резерве,390,0,0,0,0
+manager,budget?tab=requests,1366,768,Бюджет сезона,1102,0,0,0,0
+manager,budget?tab=requests,1920,1080,Бюджет сезона,1613,0,0,0,0
+manager,budget?tab=requests,2560,1440,Бюджет сезона,2208,0,0,0,0
+manager,budget?tab=requests,3840,2160,Бюджет сезона,2304,0,0,0,0
+manager,budget?tab=requests,390,844,Бюджет сезона,390,0,0,0,0
+manager,commercial,1366,768,Коммерческий центр,1102,0,0,0,0
+manager,commercial,1920,1080,Коммерческий центр,1613,0,0,0,0
+manager,commercial,2560,1440,Коммерческий центр,2208,0,0,0,0
+manager,commercial,3840,2160,Коммерческий центр,2304,0,0,0,0
+manager,commercial,390,844,Коммерческий центр,390,0,0,0,0
+manager,commercial?tab=offers,1366,768,Коммерческий центр,1102,0,0,0,0
+manager,commercial?tab=offers,1920,1080,Коммерческий центр,1613,0,0,0,0
+manager,commercial?tab=offers,2560,1440,Коммерческий центр,2208,0,0,0,0
+manager,commercial?tab=offers,3840,2160,Коммерческий центр,2304,0,0,0,0
+manager,commercial?tab=offers,390,844,Коммерческий центр,390,0,0,0,0
+manager,commercial?tab=contracts,1366,768,Коммерческий центр,1102,0,0,0,0
+manager,commercial?tab=contracts,1920,1080,Коммерческий центр,1613,0,0,0,0
+manager,commercial?tab=contracts,2560,1440,Коммерческий центр,2208,0,0,0,0
+manager,commercial?tab=contracts,3840,2160,Коммерческий центр,2304,0,0,0,0
+manager,commercial?tab=contracts,390,844,Коммерческий центр,390,0,0,0,0
+manager,commercial?tab=supplies,1366,768,Коммерческий центр,1102,0,0,0,0
+manager,commercial?tab=supplies,1920,1080,Коммерческий центр,1613,0,0,0,0
+manager,commercial?tab=supplies,2560,1440,Коммерческий центр,2208,0,0,0,0
+manager,commercial?tab=supplies,3840,2160,Коммерческий центр,2304,0,0,0,0
+manager,commercial?tab=supplies,390,844,Коммерческий центр,390,0,0,0,0
+manager,rights,1366,768,Рекламные права,1102,0,0,0,0
+manager,rights,1920,1080,Рекламные права,1613,0,0,0,0
+manager,rights,2560,1440,Рекламные права,2208,0,0,0,0
+manager,rights,3840,2160,Рекламные права,2304,0,0,0,0
+manager,rights,390,844,Рекламные права,390,0,0,0,0
+manager,rights?tab=pending,1366,768,Рекламные права,1102,0,0,0,0
+manager,rights?tab=pending,1920,1080,Рекламные права,1613,0,0,0,0
+manager,rights?tab=pending,2560,1440,Рекламные права,2208,0,0,0,0
+manager,rights?tab=pending,3840,2160,Рекламные права,2304,0,0,0,0
+manager,rights?tab=pending,390,844,Рекламные права,390,0,0,0,0
+manager,rights?tab=fulfilled,1366,768,Рекламные права,1102,0,0,0,0
+manager,rights?tab=fulfilled,1920,1080,Рекламные права,1613,0,0,0,0
+manager,rights?tab=fulfilled,2560,1440,Рекламные права,2208,0,0,0,0
+manager,rights?tab=fulfilled,3840,2160,Рекламные права,2304,0,0,0,0
+manager,rights?tab=fulfilled,390,844,Рекламные права,390,0,0,0,0
+manager,capital,1366,768,Капитал должен работать на устойчивость программ,1102,0,0,0,0
+manager,capital,1920,1080,Капитал должен работать на устойчивость программ,1613,0,0,0,0
+manager,capital,2560,1440,Капитал должен работать на устойчивость программ,2208,0,0,0,0
+manager,capital,3840,2160,Капитал должен работать на устойчивость программ,2304,0,0,0,0
+manager,capital,390,844,Капитал должен работать на устойчивость программ,390,0,0,0,0
+manager,capital?tab=loans,1366,768,Собственность и капитал,1102,0,0,0,0
+manager,capital?tab=loans,1920,1080,Собственность и капитал,1613,0,0,0,0
+manager,capital?tab=loans,2560,1440,Собственность и капитал,2208,0,0,0,0
+manager,capital?tab=loans,3840,2160,Собственность и капитал,2304,0,0,0,0
+manager,capital?tab=loans,390,844,Собственность и капитал,390,0,0,0,0
+manager,capital?tab=assets,1366,768,Собственность и капитал,1102,0,0,0,0
+manager,capital?tab=assets,1920,1080,Собственность и капитал,1613,0,0,0,0
+manager,capital?tab=assets,2560,1440,Собственность и капитал,2208,0,0,0,0
+manager,capital?tab=assets,3840,2160,Собственность и капитал,2304,0,0,0,0
+manager,capital?tab=assets,390,844,Собственность и капитал,390,0,0,0,0
+manager,capital?tab=history,1366,768,Собственность и капитал,1102,0,0,0,0
+manager,capital?tab=history,1920,1080,Собственность и капитал,1613,0,0,0,0
+manager,capital?tab=history,2560,1440,Собственность и капитал,2208,0,0,0,0
+manager,capital?tab=history,3840,2160,Собственность и капитал,2304,0,0,0,0
+manager,capital?tab=history,390,844,Собственность и капитал,390,0,0,0,0
+manager,economy,1366,768,Экономика организации,1102,0,0,0,0
+manager,economy,1920,1080,Экономика организации,1613,0,0,0,0
+manager,economy,2560,1440,Экономика организации,2208,0,0,0,0
+manager,economy,3840,2160,Экономика организации,2304,0,0,0,0
+manager,economy,390,844,Экономика организации,390,0,0,0,0
+manager,economy?tab=annual,1366,768,Экономика организации,1102,0,0,0,0
+manager,economy?tab=annual,1920,1080,Экономика организации,1613,0,0,0,0
+manager,economy?tab=annual,2560,1440,Экономика организации,2208,0,0,0,0
+manager,economy?tab=annual,3840,2160,Экономика организации,2304,0,0,0,0
+manager,economy?tab=annual,390,844,Экономика организации,390,0,0,0,0
+manager,economy?tab=markets,1366,768,Экономика организации,1102,0,0,0,0
+manager,economy?tab=markets,1920,1080,Экономика организации,1613,0,0,0,0
+manager,economy?tab=markets,2560,1440,Экономика организации,2208,0,0,0,0
+manager,economy?tab=markets,3840,2160,Экономика организации,2304,0,0,0,0
+manager,economy?tab=markets,390,844,Экономика организации,390,0,0,0,0
+manager,agreements,1366,768,Люди. Партнёры. Обязательства.,1102,0,0,0,0
+manager,agreements,1920,1080,Люди. Партнёры. Обязательства.,1613,0,0,0,0
+manager,agreements,2560,1440,Люди. Партнёры. Обязательства.,2208,0,0,0,0
+manager,agreements,3840,2160,Люди. Партнёры. Обязательства.,2304,0,0,0,0
+manager,agreements,390,844,Люди. Партнёры. Обязательства.,390,0,0,0,0
+manager,world,1366,768,Мир соревнований,1102,0,0,21,0
+manager,world,1920,1080,Мир соревнований,1613,0,0,21,0
+manager,world,2560,1440,Мир соревнований,2208,0,0,21,0
+manager,world,3840,2160,Мир соревнований,2304,0,0,21,0
+manager,world,390,844,Мир соревнований,390,0,0,20,0
+manager,world?tab=calendar,1366,768,Мир соревнований,1102,0,0,0,0
+manager,world?tab=calendar,1920,1080,Мир соревнований,1613,0,0,0,0
+manager,world?tab=calendar,2560,1440,Мир соревнований,2208,0,0,0,0
+manager,world?tab=calendar,3840,2160,Мир соревнований,2304,0,0,0,0
+manager,world?tab=calendar,390,844,Мир соревнований,390,0,0,0,0
+manager,world?tab=rules,1366,768,Мир соревнований,1102,0,0,0,0
+manager,world?tab=rules,1920,1080,Мир соревнований,1613,0,0,0,0
+manager,world?tab=rules,2560,1440,Мир соревнований,2208,0,0,0,0
+manager,world?tab=rules,3840,2160,Мир соревнований,2304,0,0,0,0
+manager,world?tab=rules,390,844,Мир соревнований,390,0,0,0,0
+manager,world?tab=history,1366,768,Мир соревнований,1102,0,0,0,0
+manager,world?tab=history,1920,1080,Мир соревнований,1613,0,0,0,0
+manager,world?tab=history,2560,1440,Мир соревнований,2208,0,0,0,0
+manager,world?tab=history,3840,2160,Мир соревнований,2304,0,0,0,0
+manager,world?tab=history,390,844,Мир соревнований,390,0,0,0,0
+manager,statistics,1366,768,Мир автоспорта.,1102,0,0,0,0
+manager,statistics,1920,1080,Мир автоспорта.,1613,0,0,0,0
+manager,statistics,2560,1440,Мир автоспорта.,2208,0,0,0,0
+manager,statistics,3840,2160,Мир автоспорта.,2304,0,0,0,0
+manager,statistics,390,844,Мир автоспорта.,390,0,0,0,0
+manager,world?tab=entries,1366,768,Мир соревнований,1102,0,0,21,0
+manager,world?tab=entries,1920,1080,Мир соревнований,1613,0,0,21,0
+manager,world?tab=entries,2560,1440,Мир соревнований,2208,0,0,21,0
+manager,world?tab=entries,3840,2160,Мир соревнований,2304,0,0,21,0
+manager,world?tab=entries,390,844,Мир соревнований,390,0,0,20,0
+manager,organization,1366,768,Scuderia Ferrari HP,1102,0,0,1,0
+manager,organization,1920,1080,Scuderia Ferrari HP,1613,0,0,1,0
+manager,organization,2560,1440,Scuderia Ferrari HP,2208,0,0,1,0
+manager,organization,3840,2160,Scuderia Ferrari HP,2304,0,0,1,0
+manager,organization,390,844,Scuderia Ferrari HP,390,0,0,1,0
+manager,organization?tab=people,1366,768,Scuderia Ferrari HP,1102,0,0,0,0
+manager,organization?tab=people,1920,1080,Scuderia Ferrari HP,1613,0,0,0,0
+manager,organization?tab=people,2560,1440,Scuderia Ferrari HP,2208,0,0,0,0
+manager,organization?tab=people,3840,2160,Scuderia Ferrari HP,2304,0,0,0,0
+manager,organization?tab=people,390,844,Scuderia Ferrari HP,390,0,0,0,0
+manager,organization?tab=programs,1366,768,Scuderia Ferrari HP,1102,0,0,1,0
+manager,organization?tab=programs,1920,1080,Scuderia Ferrari HP,1613,0,0,1,0
+manager,organization?tab=programs,2560,1440,Scuderia Ferrari HP,2208,0,0,1,0
+manager,organization?tab=programs,3840,2160,Scuderia Ferrari HP,2304,0,0,1,0
+manager,organization?tab=programs,390,844,Scuderia Ferrari HP,390,0,0,1,0
+manager,organization?tab=history,1366,768,Scuderia Ferrari HP,1102,0,0,0,0
+manager,organization?tab=history,1920,1080,Scuderia Ferrari HP,1613,0,0,0,0
+manager,organization?tab=history,2560,1440,Scuderia Ferrari HP,2208,0,0,0,0
+manager,organization?tab=history,3840,2160,Scuderia Ferrari HP,2304,0,0,0,0
+manager,organization?tab=history,390,844,Scuderia Ferrari HP,390,0,0,0,0
+manager,people,1366,768,Состав есть. Теперь важны компетенции и нагрузка.,1102,0,0,0,0
+manager,people,1920,1080,Состав есть. Теперь важны компетенции и нагрузка.,1613,0,0,0,0
+manager,people,2560,1440,Состав есть. Теперь важны компетенции и нагрузка.,2208,0,0,0,0
+manager,people,3840,2160,Состав есть. Теперь важны компетенции и нагрузка.,2304,0,0,0,0
+manager,people,390,844,Состав есть. Теперь важны компетенции и нагрузка.,390,0,0,0,0
+manager,garage?tab=parts,1366,768,SF-25 · №16,1102,0,0,0,0
+manager,garage?tab=parts,1920,1080,SF-25 · №16,1613,0,0,0,0
+manager,garage?tab=parts,2560,1440,SF-25 · №16,2208,0,0,0,0
+manager,garage?tab=parts,3840,2160,SF-25 · №16,2304,0,0,0,0
+manager,garage?tab=parts,390,844,SF-25 · №16,390,0,0,0,0
+manager,statistics?tab=contracts,1366,768,Мир автоспорта.,1102,0,0,0,0
+manager,statistics?tab=contracts,1920,1080,Мир автоспорта.,1613,0,0,0,0
+manager,statistics?tab=contracts,2560,1440,Мир автоспорта.,2208,0,0,0,0
+manager,statistics?tab=contracts,3840,2160,Мир автоспорта.,2304,0,0,0,0
+manager,statistics?tab=contracts,390,844,Мир автоспорта.,390,0,0,0,0
+manager,statistics?tab=drivers,1366,768,Мир автоспорта.,1102,0,0,0,0
+manager,statistics?tab=drivers,1920,1080,Мир автоспорта.,1613,0,0,0,0
+manager,statistics?tab=drivers,2560,1440,Мир автоспорта.,2208,0,0,0,0
+manager,statistics?tab=drivers,3840,2160,Мир автоспорта.,2304,0,0,0,0
+manager,statistics?tab=drivers,390,844,Мир автоспорта.,390,0,0,0,0
+manager,statistics?tab=staff,1366,768,Мир автоспорта.,1102,0,0,0,0
+manager,statistics?tab=staff,1920,1080,Мир автоспорта.,1613,0,0,0,0
+manager,statistics?tab=staff,2560,1440,Мир автоспорта.,2208,0,0,0,0
+manager,statistics?tab=staff,3840,2160,Мир автоспорта.,2304,0,0,0,0
+manager,statistics?tab=staff,390,844,Мир автоспорта.,390,0,0,0,0
+manager,statistics?tab=overview,1366,768,Мир автоспорта.,1102,0,0,0,0
+manager,statistics?tab=overview,1920,1080,Мир автоспорта.,1613,0,0,0,0
+manager,statistics?tab=overview,2560,1440,Мир автоспорта.,2208,0,0,0,0
+manager,statistics?tab=overview,3840,2160,Мир автоспорта.,2304,0,0,0,0
+manager,statistics?tab=overview,390,844,Мир автоспорта.,390,0,0,0,0
+manager,person?entity=driver-026&tab=public,1366,768,Nele Hahn,1102,0,0,0,0
+manager,person?entity=driver-026&tab=public,1920,1080,Nele Hahn,1613,0,0,0,0
+manager,person?entity=driver-026&tab=public,2560,1440,Nele Hahn,2208,0,0,0,0
+manager,person?entity=driver-026&tab=public,3840,2160,Nele Hahn,2304,0,0,0,0
+manager,person?entity=driver-026&tab=public,390,844,Nele Hahn,390,0,0,0,0
+manager,person?entity=driver-026&tab=statistics,1366,768,Nele Hahn,1102,0,0,0,0
+manager,person?entity=driver-026&tab=statistics,1920,1080,Nele Hahn,1613,0,0,0,0
+manager,person?entity=driver-026&tab=statistics,2560,1440,Nele Hahn,2208,0,0,0,0
+manager,person?entity=driver-026&tab=statistics,3840,2160,Nele Hahn,2304,0,0,0,0
+manager,person?entity=driver-026&tab=statistics,390,844,Nele Hahn,390,0,0,0,0
+manager,person?entity=staff-96e4b22ca925&tab=profile,1366,768,Matteo Marini,1102,0,0,0,0
+manager,person?entity=staff-96e4b22ca925&tab=profile,1920,1080,Matteo Marini,1613,0,0,0,0
+manager,person?entity=staff-96e4b22ca925&tab=profile,2560,1440,Matteo Marini,2208,0,0,0,0
+manager,person?entity=staff-96e4b22ca925&tab=profile,3840,2160,Matteo Marini,2304,0,0,0,0
+manager,person?entity=staff-96e4b22ca925&tab=profile,390,844,Matteo Marini,390,0,0,0,0
+manager,person?entity=staff-96e4b22ca925&tab=contract,1366,768,Matteo Marini,1102,0,0,0,0
+manager,person?entity=staff-96e4b22ca925&tab=contract,1920,1080,Matteo Marini,1613,0,0,0,0
+manager,person?entity=staff-96e4b22ca925&tab=contract,2560,1440,Matteo Marini,2208,0,0,0,0
+manager,person?entity=staff-96e4b22ca925&tab=contract,3840,2160,Matteo Marini,2304,0,0,0,0
+manager,person?entity=staff-96e4b22ca925&tab=contract,390,844,Matteo Marini,390,0,0,0,0
+manager,person?entity=staff-96e4b22ca925&tab=work,1366,768,Matteo Marini,1102,0,0,0,0
+manager,person?entity=staff-96e4b22ca925&tab=work,1920,1080,Matteo Marini,1613,0,0,0,0
+manager,person?entity=staff-96e4b22ca925&tab=work,2560,1440,Matteo Marini,2208,0,0,0,0
+manager,person?entity=staff-96e4b22ca925&tab=work,3840,2160,Matteo Marini,2304,0,0,0,0
+manager,person?entity=staff-96e4b22ca925&tab=work,390,844,Matteo Marini,390,0,0,0,0
+manager,person?entity=staff-96e4b22ca925&tab=compare,1366,768,Matteo Marini,1102,0,0,0,0
+manager,person?entity=staff-96e4b22ca925&tab=compare,1920,1080,Matteo Marini,1613,0,0,0,0
+manager,person?entity=staff-96e4b22ca925&tab=compare,2560,1440,Matteo Marini,2208,0,0,0,0
+manager,person?entity=staff-96e4b22ca925&tab=compare,3840,2160,Matteo Marini,2304,0,0,0,0
+manager,person?entity=staff-96e4b22ca925&tab=compare,390,844,Matteo Marini,390,0,0,0,0
+manager,person?entity=staff-96e4b22ca925&tab=career,1366,768,Matteo Marini,1102,0,0,0,0
+manager,person?entity=staff-96e4b22ca925&tab=career,1920,1080,Matteo Marini,1613,0,0,0,0
+manager,person?entity=staff-96e4b22ca925&tab=career,2560,1440,Matteo Marini,2208,0,0,0,0
+manager,person?entity=staff-96e4b22ca925&tab=career,3840,2160,Matteo Marini,2304,0,0,0,0
+manager,person?entity=staff-96e4b22ca925&tab=career,390,844,Matteo Marini,390,0,0,0,0
+manager,person?entity=staff-96e4b22ca925&tab=public,1366,768,Matteo Marini,1102,0,0,0,0
+manager,person?entity=staff-96e4b22ca925&tab=public,1920,1080,Matteo Marini,1613,0,0,0,0
+manager,person?entity=staff-96e4b22ca925&tab=public,2560,1440,Matteo Marini,2208,0,0,0,0
+manager,person?entity=staff-96e4b22ca925&tab=public,3840,2160,Matteo Marini,2304,0,0,0,0
+manager,person?entity=staff-96e4b22ca925&tab=public,390,844,Matteo Marini,390,0,0,0,0
+manager,person?entity=staff-96e4b22ca925&tab=statistics,1366,768,Matteo Marini,1102,0,0,0,0
+manager,person?entity=staff-96e4b22ca925&tab=statistics,1920,1080,Matteo Marini,1613,0,0,0,0
+manager,person?entity=staff-96e4b22ca925&tab=statistics,2560,1440,Matteo Marini,2208,0,0,0,0
+manager,person?entity=staff-96e4b22ca925&tab=statistics,3840,2160,Matteo Marini,2304,0,0,0,0
+manager,person?entity=staff-96e4b22ca925&tab=statistics,390,844,Matteo Marini,390,0,0,0,0
+manager,person?entity=driver-026&tab=profile,1366,768,Nele Hahn,1102,0,0,0,0
+manager,person?entity=driver-026&tab=profile,1920,1080,Nele Hahn,1613,0,0,0,0
+manager,person?entity=driver-026&tab=profile,2560,1440,Nele Hahn,2208,0,0,0,0
+manager,person?entity=driver-026&tab=profile,3840,2160,Nele Hahn,2304,0,0,0,0
+manager,person?entity=driver-026&tab=profile,390,844,Nele Hahn,390,0,0,0,0
+manager,person?entity=driver-026&tab=contract,1366,768,Nele Hahn,1102,0,0,0,0
+manager,person?entity=driver-026&tab=contract,1920,1080,Nele Hahn,1613,0,0,0,0
+manager,person?entity=driver-026&tab=contract,2560,1440,Nele Hahn,2208,0,0,0,0
+manager,person?entity=driver-026&tab=contract,3840,2160,Nele Hahn,2304,0,0,0,0
+manager,person?entity=driver-026&tab=contract,390,844,Nele Hahn,390,0,0,0,0
+manager,person?entity=driver-026&tab=work,1366,768,Nele Hahn,1102,0,0,0,0
+manager,person?entity=driver-026&tab=work,1920,1080,Nele Hahn,1613,0,0,0,0
+manager,person?entity=driver-026&tab=work,2560,1440,Nele Hahn,2208,0,0,0,0
+manager,person?entity=driver-026&tab=work,3840,2160,Nele Hahn,2304,0,0,0,0
+manager,person?entity=driver-026&tab=work,390,844,Nele Hahn,390,0,0,0,0
+manager,person?entity=driver-026&tab=compare,1366,768,Nele Hahn,1102,0,0,0,0
+manager,person?entity=driver-026&tab=compare,1920,1080,Nele Hahn,1613,0,0,0,0
+manager,person?entity=driver-026&tab=compare,2560,1440,Nele Hahn,2208,0,0,0,0
+manager,person?entity=driver-026&tab=compare,3840,2160,Nele Hahn,2304,0,0,0,0
+manager,person?entity=driver-026&tab=compare,390,844,Nele Hahn,390,0,0,0,0
+manager,person?entity=driver-026&tab=career,1366,768,Nele Hahn,1102,0,0,0,0
+manager,person?entity=driver-026&tab=career,1920,1080,Nele Hahn,1613,0,0,0,0
+manager,person?entity=driver-026&tab=career,2560,1440,Nele Hahn,2208,0,0,0,0
+manager,person?entity=driver-026&tab=career,3840,2160,Nele Hahn,2304,0,0,0,0
+manager,person?entity=driver-026&tab=career,390,844,Nele Hahn,390,0,0,0,0
+manager,organization?tab=uniform,1366,768,Scuderia Ferrari HP,1102,0,0,0,0
+manager,organization?tab=uniform,1920,1080,Scuderia Ferrari HP,1613,0,0,0,0
+manager,organization?tab=uniform,2560,1440,Scuderia Ferrari HP,2208,0,0,0,0
+manager,organization?tab=uniform,3840,2160,Scuderia Ferrari HP,2304,0,0,0,0
+manager,organization?tab=uniform,390,844,Scuderia Ferrari HP,390,0,0,0,0
+manufacturer,overview,1366,768,Клиенты рассчитывают на вашу технику.,1102,0,0,0,0
+manufacturer,overview,1920,1080,Клиенты рассчитывают на вашу технику.,1613,0,0,0,0
+manufacturer,overview,2560,1440,Клиенты рассчитывают на вашу технику.,2208,0,0,0,0
+manufacturer,overview,3840,2160,Клиенты рассчитывают на вашу технику.,2304,0,0,0,0
+manufacturer,overview,390,844,Клиенты рассчитывают на вашу технику.,390,0,0,0,0
+manufacturer,briefings,1366,768,На связи с вашей командой.,1102,0,0,0,0
+manufacturer,briefings,1920,1080,На связи с вашей командой.,1613,0,0,0,0
+manufacturer,briefings,2560,1440,На связи с вашей командой.,2208,0,0,0,0
+manufacturer,briefings,3840,2160,На связи с вашей командой.,2304,0,0,0,0
+manufacturer,briefings,390,844,На связи с вашей командой.,390,0,0,0,0
+manufacturer,briefings?tab=finance,1366,768,На связи с вашей командой.,1102,0,0,0,0
+manufacturer,briefings?tab=finance,1920,1080,На связи с вашей командой.,1613,0,0,0,0
+manufacturer,briefings?tab=finance,2560,1440,На связи с вашей командой.,2208,0,0,0,0
+manufacturer,briefings?tab=finance,3840,2160,На связи с вашей командой.,2304,0,0,0,0
+manufacturer,briefings?tab=finance,390,844,На связи с вашей командой.,390,0,0,0,0
+manufacturer,briefings?tab=production,1366,768,На связи с вашей командой.,1102,0,0,0,0
+manufacturer,briefings?tab=production,1920,1080,На связи с вашей командой.,1613,0,0,0,0
+manufacturer,briefings?tab=production,2560,1440,На связи с вашей командой.,2208,0,0,0,0
+manufacturer,briefings?tab=production,3840,2160,На связи с вашей командой.,2304,0,0,0,0
+manufacturer,briefings?tab=production,390,844,На связи с вашей командой.,390,0,0,0,0
+manufacturer,briefings?tab=staff,1366,768,На связи с вашей командой.,1102,0,0,0,0
+manufacturer,briefings?tab=staff,1920,1080,На связи с вашей командой.,1613,0,0,0,0
+manufacturer,briefings?tab=staff,2560,1440,На связи с вашей командой.,2208,0,0,0,0
+manufacturer,briefings?tab=staff,3840,2160,На связи с вашей командой.,2304,0,0,0,0
+manufacturer,briefings?tab=staff,390,844,На связи с вашей командой.,390,0,0,0,0
+manufacturer,briefings?tab=manufacturer,1366,768,На связи с вашей командой.,1102,0,0,0,0
+manufacturer,briefings?tab=manufacturer,1920,1080,На связи с вашей командой.,1613,0,0,0,0
+manufacturer,briefings?tab=manufacturer,2560,1440,На связи с вашей командой.,2208,0,0,0,0
+manufacturer,briefings?tab=manufacturer,3840,2160,На связи с вашей командой.,2304,0,0,0,0
+manufacturer,briefings?tab=manufacturer,390,844,На связи с вашей командой.,390,0,0,0,0
+manufacturer,inbox,1366,768,Входящие,1102,0,0,0,0
+manufacturer,inbox,1920,1080,Входящие,1613,0,0,0,0
+manufacturer,inbox,2560,1440,Входящие,2208,0,0,0,0
+manufacturer,inbox,3840,2160,Входящие,2304,0,0,0,0
+manufacturer,inbox,390,844,Входящие,390,0,0,0,0
+manufacturer,manufacturer,1366,768,Продукт начинается с проверяемой спецификации,1102,0,0,2,0
+manufacturer,manufacturer,1920,1080,Продукт начинается с проверяемой спецификации,1613,0,0,2,0
+manufacturer,manufacturer,2560,1440,Продукт начинается с проверяемой спецификации,2208,0,0,2,0
+manufacturer,manufacturer,3840,2160,Продукт начинается с проверяемой спецификации,2304,0,0,2,0
+manufacturer,manufacturer,390,844,Продукт начинается с проверяемой спецификации,390,0,0,2,0
+manufacturer,manufacturer?tab=catalog,1366,768,Продукт начинается с проверяемой спецификации,1102,0,0,2,0
+manufacturer,manufacturer?tab=catalog,1920,1080,Продукт начинается с проверяемой спецификации,1613,0,0,2,0
+manufacturer,manufacturer?tab=catalog,2560,1440,Продукт начинается с проверяемой спецификации,2208,0,0,2,0
+manufacturer,manufacturer?tab=catalog,3840,2160,Продукт начинается с проверяемой спецификации,2304,0,0,2,0
+manufacturer,manufacturer?tab=catalog,390,844,Продукт начинается с проверяемой спецификации,390,0,0,2,0
+manufacturer,manufacturer?tab=program,1366,768,Технология. Производство. Доверие.Продукты и клиенты,1102,0,0,0,0
+manufacturer,manufacturer?tab=program,1920,1080,Технология. Производство. Доверие.Продукты и клиенты,1613,0,0,0,0
+manufacturer,manufacturer?tab=program,2560,1440,Технология. Производство. Доверие.Продукты и клиенты,2208,0,0,0,0
+manufacturer,manufacturer?tab=program,3840,2160,Технология. Производство. Доверие.Продукты и клиенты,2304,0,0,0,0
+manufacturer,manufacturer?tab=program,390,844,Технология. Производство. Доверие.Продукты и клиенты,390,0,0,0,0
+manufacturer,manufacturer?tab=research,1366,768,Технология. Производство. Доверие.Продукты и клиенты,1102,0,0,0,0
+manufacturer,manufacturer?tab=research,1920,1080,Технология. Производство. Доверие.Продукты и клиенты,1613,0,0,0,0
+manufacturer,manufacturer?tab=research,2560,1440,Технология. Производство. Доверие.Продукты и клиенты,2208,0,0,0,0
+manufacturer,manufacturer?tab=research,3840,2160,Технология. Производство. Доверие.Продукты и клиенты,2304,0,0,0,0
+manufacturer,manufacturer?tab=research,390,844,Технология. Производство. Доверие.Продукты и клиенты,390,0,0,0,0
+manufacturer,manufacturer?tab=factory,1366,768,Технология. Производство. Доверие.Продукты и клиенты,1102,0,0,0,0
+manufacturer,manufacturer?tab=factory,1920,1080,Технология. Производство. Доверие.Продукты и клиенты,1613,0,0,0,0
+manufacturer,manufacturer?tab=factory,2560,1440,Технология. Производство. Доверие.Продукты и клиенты,2208,0,0,0,0
+manufacturer,manufacturer?tab=factory,3840,2160,Технология. Производство. Доверие.Продукты и клиенты,2304,0,0,0,0
+manufacturer,manufacturer?tab=factory,390,844,Технология. Производство. Доверие.Продукты и клиенты,390,0,0,0,0
+manufacturer,manufacturer?tab=clients,1366,768,Технология. Производство. Доверие.Продукты и клиенты,1102,0,0,1,0
+manufacturer,manufacturer?tab=clients,1920,1080,Технология. Производство. Доверие.Продукты и клиенты,1613,0,0,1,0
+manufacturer,manufacturer?tab=clients,2560,1440,Технология. Производство. Доверие.Продукты и клиенты,2208,0,0,1,0
+manufacturer,manufacturer?tab=clients,3840,2160,Технология. Производство. Доверие.Продукты и клиенты,2304,0,0,1,0
+manufacturer,manufacturer?tab=clients,390,844,Технология. Производство. Доверие.Продукты и клиенты,390,0,0,1,0
+manufacturer,manufacturer?tab=cases,1366,768,Технология. Производство. Доверие.Продукты и клиенты,1102,0,0,0,0
+manufacturer,manufacturer?tab=cases,1920,1080,Технология. Производство. Доверие.Продукты и клиенты,1613,0,0,0,0
+manufacturer,manufacturer?tab=cases,2560,1440,Технология. Производство. Доверие.Продукты и клиенты,2208,0,0,0,0
+manufacturer,manufacturer?tab=cases,3840,2160,Технология. Производство. Доверие.Продукты и клиенты,2304,0,0,0,0
+manufacturer,manufacturer?tab=cases,390,844,Технология. Производство. Доверие.Продукты и клиенты,390,0,0,0,0
+manufacturer,manufacturer?tab=advisors,1366,768,Технология. Производство. Доверие.Продукты и клиенты,1102,0,0,0,0
+manufacturer,manufacturer?tab=advisors,1920,1080,Технология. Производство. Доверие.Продукты и клиенты,1613,0,0,0,0
+manufacturer,manufacturer?tab=advisors,2560,1440,Технология. Производство. Доверие.Продукты и клиенты,2208,0,0,0,0
+manufacturer,manufacturer?tab=advisors,3840,2160,Технология. Производство. Доверие.Продукты и клиенты,2304,0,0,0,0
+manufacturer,manufacturer?tab=advisors,390,844,Технология. Производство. Доверие.Продукты и клиенты,390,0,0,0,0
+manufacturer,manufacturer?tab=diagnosis,1366,768,Технология. Производство. Доверие.Продукты и клиенты,1102,0,0,0,0
+manufacturer,manufacturer?tab=diagnosis,1920,1080,Технология. Производство. Доверие.Продукты и клиенты,1613,0,0,0,0
+manufacturer,manufacturer?tab=diagnosis,2560,1440,Технология. Производство. Доверие.Продукты и клиенты,2208,0,0,0,0
+manufacturer,manufacturer?tab=diagnosis,3840,2160,Технология. Производство. Доверие.Продукты и клиенты,2304,0,0,0,0
+manufacturer,manufacturer?tab=diagnosis,390,844,Технология. Производство. Доверие.Продукты и клиенты,390,0,0,0,0
+manufacturer,manufacturer?tab=warranty,1366,768,Технология. Производство. Доверие.Продукты и клиенты,1102,0,0,0,0
+manufacturer,manufacturer?tab=warranty,1920,1080,Технология. Производство. Доверие.Продукты и клиенты,1613,0,0,0,0
+manufacturer,manufacturer?tab=warranty,2560,1440,Технология. Производство. Доверие.Продукты и клиенты,2208,0,0,0,0
+manufacturer,manufacturer?tab=warranty,3840,2160,Технология. Производство. Доверие.Продукты и клиенты,2304,0,0,0,0
+manufacturer,manufacturer?tab=warranty,390,844,Технология. Производство. Доверие.Продукты и клиенты,390,0,0,0,0
+manufacturer,manufacturer?tab=history,1366,768,Технология. Производство. Доверие.Продукты и клиенты,1102,0,0,0,0
+manufacturer,manufacturer?tab=history,1920,1080,Технология. Производство. Доверие.Продукты и клиенты,1613,0,0,0,0
+manufacturer,manufacturer?tab=history,2560,1440,Технология. Производство. Доверие.Продукты и клиенты,2208,0,0,0,0
+manufacturer,manufacturer?tab=history,3840,2160,Технология. Производство. Доверие.Продукты и клиенты,2304,0,0,0,0
+manufacturer,manufacturer?tab=history,390,844,Технология. Производство. Доверие.Продукты и клиенты,390,0,0,0,0
+manufacturer,production,1366,768,Мощности свободны для следующего решения,1102,0,0,0,0
+manufacturer,production,1920,1080,Мощности свободны для следующего решения,1613,0,0,0,0
+manufacturer,production,2560,1440,Мощности свободны для следующего решения,2208,0,0,0,0
+manufacturer,production,3840,2160,Мощности свободны для следующего решения,2304,0,0,0,0
+manufacturer,production,390,844,Мощности свободны для следующего решения,390,0,0,0,0
+manufacturer,inventory,1366,768,Мощности свободны для следующего решения,1102,0,0,0,0
+manufacturer,inventory,1920,1080,Мощности свободны для следующего решения,1613,0,0,0,0
+manufacturer,inventory,2560,1440,Мощности свободны для следующего решения,2208,0,0,0,0
+manufacturer,inventory,3840,2160,Мощности свободны для следующего решения,2304,0,0,0,0
+manufacturer,inventory,390,844,Мощности свободны для следующего решения,390,0,0,0,0
+manufacturer,facilities,1366,768,Мощности свободны для следующего решения,1102,0,0,0,0
+manufacturer,facilities,1920,1080,Мощности свободны для следующего решения,1613,0,0,0,0
+manufacturer,facilities,2560,1440,Мощности свободны для следующего решения,2208,0,0,0,0
+manufacturer,facilities,3840,2160,Мощности свободны для следующего решения,2304,0,0,0,0
+manufacturer,facilities,390,844,Мощности свободны для следующего решения,390,0,0,0,0
+manufacturer,facilities?tab=capacity,1366,768,Инфраструктура,1102,0,0,0,0
+manufacturer,facilities?tab=capacity,1920,1080,Инфраструктура,1613,0,0,0,0
+manufacturer,facilities?tab=capacity,2560,1440,Инфраструктура,2208,0,0,0,0
+manufacturer,facilities?tab=capacity,3840,2160,Инфраструктура,2304,0,0,0,0
+manufacturer,facilities?tab=capacity,390,844,Инфраструктура,390,0,0,0,0
+manufacturer,facilities?tab=rent,1366,768,Инфраструктура,1102,0,0,0,0
+manufacturer,facilities?tab=rent,1920,1080,Инфраструктура,1613,0,0,0,0
+manufacturer,facilities?tab=rent,2560,1440,Инфраструктура,2208,0,0,0,0
+manufacturer,facilities?tab=rent,3840,2160,Инфраструктура,2304,0,0,0,0
+manufacturer,facilities?tab=rent,390,844,Инфраструктура,390,0,0,0,0
+manufacturer,facilities?tab=bookings,1366,768,Инфраструктура,1102,0,0,0,0
+manufacturer,facilities?tab=bookings,1920,1080,Инфраструктура,1613,0,0,0,0
+manufacturer,facilities?tab=bookings,2560,1440,Инфраструктура,2208,0,0,0,0
+manufacturer,facilities?tab=bookings,3840,2160,Инфраструктура,2304,0,0,0,0
+manufacturer,facilities?tab=bookings,390,844,Инфраструктура,390,0,0,0,0
+manufacturer,staff,1366,768,Состав есть. Теперь важны компетенции и нагрузка.,1102,0,0,0,0
+manufacturer,staff,1920,1080,Состав есть. Теперь важны компетенции и нагрузка.,1613,0,0,0,0
+manufacturer,staff,2560,1440,Состав есть. Теперь важны компетенции и нагрузка.,2208,0,0,0,0
+manufacturer,staff,3840,2160,Состав есть. Теперь важны компетенции и нагрузка.,2304,0,0,0,0
+manufacturer,staff,390,844,Состав есть. Теперь важны компетенции и нагрузка.,390,0,0,0,0
+manufacturer,staff?tab=collectives,1366,768,Штаб и подразделения,1102,0,0,0,0
+manufacturer,staff?tab=collectives,1920,1080,Штаб и подразделения,1613,0,0,0,0
+manufacturer,staff?tab=collectives,2560,1440,Штаб и подразделения,2208,0,0,0,0
+manufacturer,staff?tab=collectives,3840,2160,Штаб и подразделения,2304,0,0,0,0
+manufacturer,staff?tab=collectives,390,844,Штаб и подразделения,390,0,0,0,0
+manufacturer,market,1366,768,Найдите своё преимущество,1102,0,0,0,0
+manufacturer,market,1920,1080,Найдите своё преимущество,1613,0,0,0,0
+manufacturer,market,2560,1440,Найдите своё преимущество,2208,0,0,0,0
+manufacturer,market,3840,2160,Найдите своё преимущество,2304,0,0,0,0
+manufacturer,market,390,844,Найдите своё преимущество,390,0,0,0,0
+manufacturer,market?tab=shortlist,1366,768,Найдите своё преимущество,1102,0,0,0,0
+manufacturer,market?tab=shortlist,1920,1080,Найдите своё преимущество,1613,0,0,0,0
+manufacturer,market?tab=shortlist,2560,1440,Найдите своё преимущество,2208,0,0,0,0
+manufacturer,market?tab=shortlist,3840,2160,Найдите своё преимущество,2304,0,0,0,0
+manufacturer,market?tab=shortlist,390,844,Найдите своё преимущество,390,0,0,0,0
+manufacturer,market?tab=scouting,1366,768,Найдите своё преимущество,1102,0,0,0,0
+manufacturer,market?tab=scouting,1920,1080,Найдите своё преимущество,1613,0,0,0,0
+manufacturer,market?tab=scouting,2560,1440,Найдите своё преимущество,2208,0,0,0,0
+manufacturer,market?tab=scouting,3840,2160,Найдите своё преимущество,2304,0,0,0,0
+manufacturer,market?tab=scouting,390,844,Найдите своё преимущество,390,0,0,0,0
+manufacturer,contracts,1366,768,Состав сегодня. Решения на завтра.,1102,0,0,0,0
+manufacturer,contracts,1920,1080,Состав сегодня. Решения на завтра.,1613,0,0,0,0
+manufacturer,contracts,2560,1440,Состав сегодня. Решения на завтра.,2208,0,0,0,0
+manufacturer,contracts,3840,2160,Состав сегодня. Решения на завтра.,2304,0,0,0,0
+manufacturer,contracts,390,844,Состав сегодня. Решения на завтра.,390,0,0,0,0
+manufacturer,contracts?tab=negotiations,1366,768,Состав сегодня. Решения на завтра.,1102,0,0,0,0
+manufacturer,contracts?tab=negotiations,1920,1080,Состав сегодня. Решения на завтра.,1613,0,0,0,0
+manufacturer,contracts?tab=negotiations,2560,1440,Состав сегодня. Решения на завтра.,2208,0,0,0,0
+manufacturer,contracts?tab=negotiations,3840,2160,Состав сегодня. Решения на завтра.,2304,0,0,0,0
+manufacturer,contracts?tab=negotiations,390,844,Состав сегодня. Решения на завтра.,390,0,0,0,0
+manufacturer,contracts?tab=future,1366,768,Состав сегодня. Решения на завтра.,1102,0,0,0,0
+manufacturer,contracts?tab=future,1920,1080,Состав сегодня. Решения на завтра.,1613,0,0,0,0
+manufacturer,contracts?tab=future,2560,1440,Состав сегодня. Решения на завтра.,2208,0,0,0,0
+manufacturer,contracts?tab=future,3840,2160,Состав сегодня. Решения на завтра.,2304,0,0,0,0
+manufacturer,contracts?tab=future,390,844,Состав сегодня. Решения на завтра.,390,0,0,0,0
+manufacturer,preparation,1366,768,Состав есть. Теперь важны компетенции и нагрузка.,1102,0,0,0,0
+manufacturer,preparation,1920,1080,Состав есть. Теперь важны компетенции и нагрузка.,1613,0,0,0,0
+manufacturer,preparation,2560,1440,Состав есть. Теперь важны компетенции и нагрузка.,2208,0,0,0,0
+manufacturer,preparation,3840,2160,Состав есть. Теперь важны компетенции и нагрузка.,2304,0,0,0,0
+manufacturer,preparation,390,844,Состав есть. Теперь важны компетенции и нагрузка.,390,0,0,0,0
+manufacturer,leadership,1366,768,Состав есть. Теперь важны компетенции и нагрузка.,1102,0,0,0,0
+manufacturer,leadership,1920,1080,Состав есть. Теперь важны компетенции и нагрузка.,1613,0,0,0,0
+manufacturer,leadership,2560,1440,Состав есть. Теперь важны компетенции и нагрузка.,2208,0,0,0,0
+manufacturer,leadership,3840,2160,Состав есть. Теперь важны компетенции и нагрузка.,2304,0,0,0,0
+manufacturer,leadership,390,844,Состав есть. Теперь важны компетенции и нагрузка.,390,0,0,0,0
+manufacturer,commercial,1366,768,Коммерческий центр,1102,0,0,0,0
+manufacturer,commercial,1920,1080,Коммерческий центр,1613,0,0,0,0
+manufacturer,commercial,2560,1440,Коммерческий центр,2208,0,0,0,0
+manufacturer,commercial,3840,2160,Коммерческий центр,2304,0,0,0,0
+manufacturer,commercial,390,844,Коммерческий центр,390,0,0,0,0
+manufacturer,commercial?tab=offers,1366,768,Коммерческий центр,1102,0,0,0,0
+manufacturer,commercial?tab=offers,1920,1080,Коммерческий центр,1613,0,0,0,0
+manufacturer,commercial?tab=offers,2560,1440,Коммерческий центр,2208,0,0,0,0
+manufacturer,commercial?tab=offers,3840,2160,Коммерческий центр,2304,0,0,0,0
+manufacturer,commercial?tab=offers,390,844,Коммерческий центр,390,0,0,0,0
+manufacturer,commercial?tab=contracts,1366,768,Коммерческий центр,1102,0,0,0,0
+manufacturer,commercial?tab=contracts,1920,1080,Коммерческий центр,1613,0,0,0,0
+manufacturer,commercial?tab=contracts,2560,1440,Коммерческий центр,2208,0,0,0,0
+manufacturer,commercial?tab=contracts,3840,2160,Коммерческий центр,2304,0,0,0,0
+manufacturer,commercial?tab=contracts,390,844,Коммерческий центр,390,0,0,0,0
+manufacturer,commercial?tab=supplies,1366,768,Коммерческий центр,1102,0,0,0,0
+manufacturer,commercial?tab=supplies,1920,1080,Коммерческий центр,1613,0,0,0,0
+manufacturer,commercial?tab=supplies,2560,1440,Коммерческий центр,2208,0,0,0,0
+manufacturer,commercial?tab=supplies,3840,2160,Коммерческий центр,2304,0,0,0,0
+manufacturer,commercial?tab=supplies,390,844,Коммерческий центр,390,0,0,0,0
+manufacturer,rights,1366,768,Рекламные права,1102,0,0,0,0
+manufacturer,rights,1920,1080,Рекламные права,1613,0,0,0,0
+manufacturer,rights,2560,1440,Рекламные права,2208,0,0,0,0
+manufacturer,rights,3840,2160,Рекламные права,2304,0,0,0,0
+manufacturer,rights,390,844,Рекламные права,390,0,0,0,0
+manufacturer,rights?tab=pending,1366,768,Рекламные права,1102,0,0,0,0
+manufacturer,rights?tab=pending,1920,1080,Рекламные права,1613,0,0,0,0
+manufacturer,rights?tab=pending,2560,1440,Рекламные права,2208,0,0,0,0
+manufacturer,rights?tab=pending,3840,2160,Рекламные права,2304,0,0,0,0
+manufacturer,rights?tab=pending,390,844,Рекламные права,390,0,0,0,0
+manufacturer,rights?tab=fulfilled,1366,768,Рекламные права,1102,0,0,0,0
+manufacturer,rights?tab=fulfilled,1920,1080,Рекламные права,1613,0,0,0,0
+manufacturer,rights?tab=fulfilled,2560,1440,Рекламные права,2208,0,0,0,0
+manufacturer,rights?tab=fulfilled,3840,2160,Рекламные права,2304,0,0,0,0
+manufacturer,rights?tab=fulfilled,390,844,Рекламные права,390,0,0,0,0
+manufacturer,agreements,1366,768,Договорённости превращают технологии в бизнес.,1102,0,0,0,0
+manufacturer,agreements,1920,1080,Договорённости превращают технологии в бизнес.,1613,0,0,0,0
+manufacturer,agreements,2560,1440,Договорённости превращают технологии в бизнес.,2208,0,0,0,0
+manufacturer,agreements,3840,2160,Договорённости превращают технологии в бизнес.,2304,0,0,0,0
+manufacturer,agreements,390,844,Договорённости превращают технологии в бизнес.,390,0,0,0,0
+manufacturer,finance,1366,768,Ближайшие выплаты нужно держать в резерве,1102,0,0,0,0
+manufacturer,finance,1920,1080,Ближайшие выплаты нужно держать в резерве,1613,0,0,0,0
+manufacturer,finance,2560,1440,Ближайшие выплаты нужно держать в резерве,2208,0,0,0,0
+manufacturer,finance,3840,2160,Ближайшие выплаты нужно держать в резерве,2304,0,0,0,0
+manufacturer,finance,390,844,Ближайшие выплаты нужно держать в резерве,390,0,0,0,0
+manufacturer,finance?tab=results,1366,768,Финансы,1102,0,0,0,0
+manufacturer,finance?tab=results,1920,1080,Финансы,1613,0,0,0,0
+manufacturer,finance?tab=results,2560,1440,Финансы,2208,0,0,0,0
+manufacturer,finance?tab=results,3840,2160,Финансы,2304,0,0,0,0
+manufacturer,finance?tab=results,390,844,Финансы,390,0,0,0,0
+manufacturer,finance?tab=journal,1366,768,Финансы,1102,0,0,0,0
+manufacturer,finance?tab=journal,1920,1080,Финансы,1613,0,0,0,0
+manufacturer,finance?tab=journal,2560,1440,Финансы,2208,0,0,0,0
+manufacturer,finance?tab=journal,3840,2160,Финансы,2304,0,0,0,0
+manufacturer,finance?tab=journal,390,844,Финансы,390,0,0,0,0
+manufacturer,finance?tab=terms,1366,768,Финансы,1102,0,0,0,0
+manufacturer,finance?tab=terms,1920,1080,Финансы,1613,0,0,0,0
+manufacturer,finance?tab=terms,2560,1440,Финансы,2208,0,0,0,0
+manufacturer,finance?tab=terms,3840,2160,Финансы,2304,0,0,0,0
+manufacturer,finance?tab=terms,390,844,Финансы,390,0,0,0,0
+manufacturer,finance?tab=forecast,1366,768,Финансы,1102,0,0,0,0
+manufacturer,finance?tab=forecast,1920,1080,Финансы,1613,0,0,0,0
+manufacturer,finance?tab=forecast,2560,1440,Финансы,2208,0,0,0,0
+manufacturer,finance?tab=forecast,3840,2160,Финансы,2304,0,0,0,0
+manufacturer,finance?tab=forecast,390,844,Финансы,390,0,0,0,0
+manufacturer,budget,1366,768,Ближайшие выплаты нужно держать в резерве,1102,0,0,0,0
+manufacturer,budget,1920,1080,Ближайшие выплаты нужно держать в резерве,1613,0,0,0,0
+manufacturer,budget,2560,1440,Ближайшие выплаты нужно держать в резерве,2208,0,0,0,0
+manufacturer,budget,3840,2160,Ближайшие выплаты нужно держать в резерве,2304,0,0,0,0
+manufacturer,budget,390,844,Ближайшие выплаты нужно держать в резерве,390,0,0,0,0
+manufacturer,budget?tab=requests,1366,768,Бюджет сезона,1102,0,0,0,0
+manufacturer,budget?tab=requests,1920,1080,Бюджет сезона,1613,0,0,0,0
+manufacturer,budget?tab=requests,2560,1440,Бюджет сезона,2208,0,0,0,0
+manufacturer,budget?tab=requests,3840,2160,Бюджет сезона,2304,0,0,0,0
+manufacturer,budget?tab=requests,390,844,Бюджет сезона,390,0,0,0,0
+manufacturer,capital,1366,768,Капитал должен работать на устойчивость программ,1102,0,0,0,0
+manufacturer,capital,1920,1080,Капитал должен работать на устойчивость программ,1613,0,0,0,0
+manufacturer,capital,2560,1440,Капитал должен работать на устойчивость программ,2208,0,0,0,0
+manufacturer,capital,3840,2160,Капитал должен работать на устойчивость программ,2304,0,0,0,0
+manufacturer,capital,390,844,Капитал должен работать на устойчивость программ,390,0,0,0,0
+manufacturer,capital?tab=loans,1366,768,Собственность и капитал,1102,0,0,0,0
+manufacturer,capital?tab=loans,1920,1080,Собственность и капитал,1613,0,0,0,0
+manufacturer,capital?tab=loans,2560,1440,Собственность и капитал,2208,0,0,0,0
+manufacturer,capital?tab=loans,3840,2160,Собственность и капитал,2304,0,0,0,0
+manufacturer,capital?tab=loans,390,844,Собственность и капитал,390,0,0,0,0
+manufacturer,capital?tab=assets,1366,768,Собственность и капитал,1102,0,0,0,0
+manufacturer,capital?tab=assets,1920,1080,Собственность и капитал,1613,0,0,0,0
+manufacturer,capital?tab=assets,2560,1440,Собственность и капитал,2208,0,0,0,0
+manufacturer,capital?tab=assets,3840,2160,Собственность и капитал,2304,0,0,0,0
+manufacturer,capital?tab=assets,390,844,Собственность и капитал,390,0,0,0,0
+manufacturer,capital?tab=history,1366,768,Собственность и капитал,1102,0,0,0,0
+manufacturer,capital?tab=history,1920,1080,Собственность и капитал,1613,0,0,0,0
+manufacturer,capital?tab=history,2560,1440,Собственность и капитал,2208,0,0,0,0
+manufacturer,capital?tab=history,3840,2160,Собственность и капитал,2304,0,0,0,0
+manufacturer,capital?tab=history,390,844,Собственность и капитал,390,0,0,0,0
+manufacturer,economy,1366,768,Экономика организации,1102,0,0,0,0
+manufacturer,economy,1920,1080,Экономика организации,1613,0,0,0,0
+manufacturer,economy,2560,1440,Экономика организации,2208,0,0,0,0
+manufacturer,economy,3840,2160,Экономика организации,2304,0,0,0,0
+manufacturer,economy,390,844,Экономика организации,390,0,0,0,0
+manufacturer,economy?tab=annual,1366,768,Экономика организации,1102,0,0,0,0
+manufacturer,economy?tab=annual,1920,1080,Экономика организации,1613,0,0,0,0
+manufacturer,economy?tab=annual,2560,1440,Экономика организации,2208,0,0,0,0
+manufacturer,economy?tab=annual,3840,2160,Экономика организации,2304,0,0,0,0
+manufacturer,economy?tab=annual,390,844,Экономика организации,390,0,0,0,0
+manufacturer,economy?tab=markets,1366,768,Экономика организации,1102,0,0,0,0
+manufacturer,economy?tab=markets,1920,1080,Экономика организации,1613,0,0,0,0
+manufacturer,economy?tab=markets,2560,1440,Экономика организации,2208,0,0,0,0
+manufacturer,economy?tab=markets,3840,2160,Экономика организации,2304,0,0,0,0
+manufacturer,economy?tab=markets,390,844,Экономика организации,390,0,0,0,0
+manufacturer,economy?tab=supply,1366,768,Экономика организации,1102,0,0,0,0
+manufacturer,economy?tab=supply,1920,1080,Экономика организации,1613,0,0,0,0
+manufacturer,economy?tab=supply,2560,1440,Экономика организации,2208,0,0,0,0
+manufacturer,economy?tab=supply,3840,2160,Экономика организации,2304,0,0,0,0
+manufacturer,economy?tab=supply,390,844,Экономика организации,390,0,0,0,0
+manufacturer,world,1366,768,Мир соревнований,1102,0,0,31,0
+manufacturer,world,1920,1080,Мир соревнований,1613,0,0,31,0
+manufacturer,world,2560,1440,Мир соревнований,2208,0,0,31,0
+manufacturer,world,3840,2160,Мир соревнований,2304,0,0,31,0
+manufacturer,world,390,844,Мир соревнований,390,0,0,30,0
+manufacturer,world?tab=calendar,1366,768,Мир соревнований,1102,0,0,0,0
+manufacturer,world?tab=calendar,1920,1080,Мир соревнований,1613,0,0,0,0
+manufacturer,world?tab=calendar,2560,1440,Мир соревнований,2208,0,0,0,0
+manufacturer,world?tab=calendar,3840,2160,Мир соревнований,2304,0,0,0,0
+manufacturer,world?tab=calendar,390,844,Мир соревнований,390,0,0,0,0
+manufacturer,world?tab=rules,1366,768,Мир соревнований,1102,0,0,0,0
+manufacturer,world?tab=rules,1920,1080,Мир соревнований,1613,0,0,0,0
+manufacturer,world?tab=rules,2560,1440,Мир соревнований,2208,0,0,0,0
+manufacturer,world?tab=rules,3840,2160,Мир соревнований,2304,0,0,0,0
+manufacturer,world?tab=rules,390,844,Мир соревнований,390,0,0,0,0
+manufacturer,world?tab=history,1366,768,Мир соревнований,1102,0,0,0,0
+manufacturer,world?tab=history,1920,1080,Мир соревнований,1613,0,0,0,0
+manufacturer,world?tab=history,2560,1440,Мир соревнований,2208,0,0,0,0
+manufacturer,world?tab=history,3840,2160,Мир соревнований,2304,0,0,0,0
+manufacturer,world?tab=history,390,844,Мир соревнований,390,0,0,0,0
+manufacturer,calendar,1366,768,Календарь,1102,0,0,0,0
+manufacturer,calendar,1920,1080,Календарь,1613,0,0,0,0
+manufacturer,calendar,2560,1440,Календарь,2208,0,0,0,0
+manufacturer,calendar,3840,2160,Календарь,2304,0,0,0,0
+manufacturer,calendar,390,844,Календарь,390,0,0,0,0
+manufacturer,statistics,1366,768,Мир автоспорта.,1102,0,0,0,0
+manufacturer,statistics,1920,1080,Мир автоспорта.,1613,0,0,0,0
+manufacturer,statistics,2560,1440,Мир автоспорта.,2208,0,0,0,0
+manufacturer,statistics,3840,2160,Мир автоспорта.,2304,0,0,0,0
+manufacturer,statistics,390,844,Мир автоспорта.,390,0,0,0,0
+manufacturer,person?entity=staff-96e4b22ca925,1366,768,Matteo Marini,1102,0,0,0,0
+manufacturer,person?entity=staff-96e4b22ca925,1920,1080,Matteo Marini,1613,0,0,0,0
+manufacturer,person?entity=staff-96e4b22ca925,2560,1440,Matteo Marini,2208,0,0,0,0
+manufacturer,person?entity=staff-96e4b22ca925,3840,2160,Matteo Marini,2304,0,0,0,0
+manufacturer,person?entity=staff-96e4b22ca925,390,844,Matteo Marini,390,0,0,0,0
+manufacturer,person?tab=career&entity=staff-96e4b22ca925,1366,768,Matteo Marini,1102,0,0,0,0
+manufacturer,person?tab=career&entity=staff-96e4b22ca925,1920,1080,Matteo Marini,1613,0,0,0,0
+manufacturer,person?tab=career&entity=staff-96e4b22ca925,2560,1440,Matteo Marini,2208,0,0,0,0
+manufacturer,person?tab=career&entity=staff-96e4b22ca925,3840,2160,Matteo Marini,2304,0,0,0,0
+manufacturer,person?tab=career&entity=staff-96e4b22ca925,390,844,Matteo Marini,390,0,0,0,0
+manufacturer,person?tab=statistics&entity=staff-96e4b22ca925,1366,768,Matteo Marini,1102,0,0,0,0
+manufacturer,person?tab=statistics&entity=staff-96e4b22ca925,1920,1080,Matteo Marini,1613,0,0,0,0
+manufacturer,person?tab=statistics&entity=staff-96e4b22ca925,2560,1440,Matteo Marini,2208,0,0,0,0
+manufacturer,person?tab=statistics&entity=staff-96e4b22ca925,3840,2160,Matteo Marini,2304,0,0,0,0
+manufacturer,person?tab=statistics&entity=staff-96e4b22ca925,390,844,Matteo Marini,390,0,0,0,0
+manufacturer,person?tab=public&entity=staff-96e4b22ca925,1366,768,Matteo Marini,1102,0,0,0,0
+manufacturer,person?tab=public&entity=staff-96e4b22ca925,1920,1080,Matteo Marini,1613,0,0,0,0
+manufacturer,person?tab=public&entity=staff-96e4b22ca925,2560,1440,Matteo Marini,2208,0,0,0,0
+manufacturer,person?tab=public&entity=staff-96e4b22ca925,3840,2160,Matteo Marini,2304,0,0,0,0
+manufacturer,person?tab=public&entity=staff-96e4b22ca925,390,844,Matteo Marini,390,0,0,0,0
+manufacturer,person?tab=work&entity=staff-96e4b22ca925,1366,768,Matteo Marini,1102,0,0,0,0
+manufacturer,person?tab=work&entity=staff-96e4b22ca925,1920,1080,Matteo Marini,1613,0,0,0,0
+manufacturer,person?tab=work&entity=staff-96e4b22ca925,2560,1440,Matteo Marini,2208,0,0,0,0
+manufacturer,person?tab=work&entity=staff-96e4b22ca925,3840,2160,Matteo Marini,2304,0,0,0,0
+manufacturer,person?tab=work&entity=staff-96e4b22ca925,390,844,Matteo Marini,390,0,0,0,0
+manufacturer,person?tab=compare&entity=staff-96e4b22ca925,1366,768,Matteo Marini,1102,0,0,0,0
+manufacturer,person?tab=compare&entity=staff-96e4b22ca925,1920,1080,Matteo Marini,1613,0,0,0,0
+manufacturer,person?tab=compare&entity=staff-96e4b22ca925,2560,1440,Matteo Marini,2208,0,0,0,0
+manufacturer,person?tab=compare&entity=staff-96e4b22ca925,3840,2160,Matteo Marini,2304,0,0,0,0
+manufacturer,person?tab=compare&entity=staff-96e4b22ca925,390,844,Matteo Marini,390,0,0,0,0
+manufacturer,person?tab=contract&entity=staff-96e4b22ca925,1366,768,Matteo Marini,1102,0,0,0,0
+manufacturer,person?tab=contract&entity=staff-96e4b22ca925,1920,1080,Matteo Marini,1613,0,0,0,0
+manufacturer,person?tab=contract&entity=staff-96e4b22ca925,2560,1440,Matteo Marini,2208,0,0,0,0
+manufacturer,person?tab=contract&entity=staff-96e4b22ca925,3840,2160,Matteo Marini,2304,0,0,0,0
+manufacturer,person?tab=contract&entity=staff-96e4b22ca925,390,844,Matteo Marini,390,0,0,0,0
+manufacturer,person?entity=market-aramis-vale,1366,768,Aramis Vale,1102,0,0,0,0
+manufacturer,person?entity=market-aramis-vale,1920,1080,Aramis Vale,1613,0,0,0,0
+manufacturer,person?entity=market-aramis-vale,2560,1440,Aramis Vale,2208,0,0,0,0
+manufacturer,person?entity=market-aramis-vale,3840,2160,Aramis Vale,2304,0,0,0,0
+manufacturer,person?entity=market-aramis-vale,390,844,Aramis Vale,390,0,0,0,0
+manufacturer,person?tab=career&entity=market-aramis-vale,1366,768,Aramis Vale,1102,0,0,0,0
+manufacturer,person?tab=career&entity=market-aramis-vale,1920,1080,Aramis Vale,1613,0,0,0,0
+manufacturer,person?tab=career&entity=market-aramis-vale,2560,1440,Aramis Vale,2208,0,0,0,0
+manufacturer,person?tab=career&entity=market-aramis-vale,3840,2160,Aramis Vale,2304,0,0,0,0
+manufacturer,person?tab=career&entity=market-aramis-vale,390,844,Aramis Vale,390,0,0,0,0
+manufacturer,person?tab=statistics&entity=market-aramis-vale,1366,768,Aramis Vale,1102,0,0,0,0
+manufacturer,person?tab=statistics&entity=market-aramis-vale,1920,1080,Aramis Vale,1613,0,0,0,0
+manufacturer,person?tab=statistics&entity=market-aramis-vale,2560,1440,Aramis Vale,2208,0,0,0,0
+manufacturer,person?tab=statistics&entity=market-aramis-vale,3840,2160,Aramis Vale,2304,0,0,0,0
+manufacturer,person?tab=statistics&entity=market-aramis-vale,390,844,Aramis Vale,390,0,0,0,0
+manufacturer,person?tab=public&entity=market-aramis-vale,1366,768,Aramis Vale,1102,0,0,0,0
+manufacturer,person?tab=public&entity=market-aramis-vale,1920,1080,Aramis Vale,1613,0,0,0,0
+manufacturer,person?tab=public&entity=market-aramis-vale,2560,1440,Aramis Vale,2208,0,0,0,0
+manufacturer,person?tab=public&entity=market-aramis-vale,3840,2160,Aramis Vale,2304,0,0,0,0
+manufacturer,person?tab=public&entity=market-aramis-vale,390,844,Aramis Vale,390,0,0,0,0
+manufacturer,person?tab=work&entity=market-aramis-vale,1366,768,Aramis Vale,1102,0,0,0,0
+manufacturer,person?tab=work&entity=market-aramis-vale,1920,1080,Aramis Vale,1613,0,0,0,0
+manufacturer,person?tab=work&entity=market-aramis-vale,2560,1440,Aramis Vale,2208,0,0,0,0
+manufacturer,person?tab=work&entity=market-aramis-vale,3840,2160,Aramis Vale,2304,0,0,0,0
+manufacturer,person?tab=work&entity=market-aramis-vale,390,844,Aramis Vale,390,0,0,0,0
+manufacturer,person?tab=compare&entity=market-aramis-vale,1366,768,Aramis Vale,1102,0,0,0,0
+manufacturer,person?tab=compare&entity=market-aramis-vale,1920,1080,Aramis Vale,1613,0,0,0,0
+manufacturer,person?tab=compare&entity=market-aramis-vale,2560,1440,Aramis Vale,2208,0,0,0,0
+manufacturer,person?tab=compare&entity=market-aramis-vale,3840,2160,Aramis Vale,2304,0,0,0,0
+manufacturer,person?tab=compare&entity=market-aramis-vale,390,844,Aramis Vale,390,0,0,0,0
+manufacturer,person?tab=contract&entity=market-aramis-vale,1366,768,Aramis Vale,1102,0,0,0,0
+manufacturer,person?tab=contract&entity=market-aramis-vale,1920,1080,Aramis Vale,1613,0,0,0,0
+manufacturer,person?tab=contract&entity=market-aramis-vale,2560,1440,Aramis Vale,2208,0,0,0,0
+manufacturer,person?tab=contract&entity=market-aramis-vale,3840,2160,Aramis Vale,2304,0,0,0,0
+manufacturer,person?tab=contract&entity=market-aramis-vale,390,844,Aramis Vale,390,0,0,0,0
+manufacturer,person?tab=support&entity=market-aramis-vale,1366,768,Aramis Vale,1102,0,0,0,0
+manufacturer,person?tab=support&entity=market-aramis-vale,1920,1080,Aramis Vale,1613,0,0,0,0
+manufacturer,person?tab=support&entity=market-aramis-vale,2560,1440,Aramis Vale,2208,0,0,0,0
+manufacturer,person?tab=support&entity=market-aramis-vale,3840,2160,Aramis Vale,2304,0,0,0,0
+manufacturer,person?tab=support&entity=market-aramis-vale,390,844,Aramis Vale,390,0,0,0,0
+manufacturer,statistics?tab=contracts,1366,768,Мир автоспорта.,1102,0,0,0,0
+manufacturer,statistics?tab=contracts,1920,1080,Мир автоспорта.,1613,0,0,0,0
+manufacturer,statistics?tab=contracts,2560,1440,Мир автоспорта.,2208,0,0,0,0
+manufacturer,statistics?tab=contracts,3840,2160,Мир автоспорта.,2304,0,0,0,0
+manufacturer,statistics?tab=contracts,390,844,Мир автоспорта.,390,0,0,0,0
+manufacturer,statistics?tab=drivers,1366,768,Мир автоспорта.,1102,0,0,0,0
+manufacturer,statistics?tab=drivers,1920,1080,Мир автоспорта.,1613,0,0,0,0
+manufacturer,statistics?tab=drivers,2560,1440,Мир автоспорта.,2208,0,0,0,0
+manufacturer,statistics?tab=drivers,3840,2160,Мир автоспорта.,2304,0,0,0,0
+manufacturer,statistics?tab=drivers,390,844,Мир автоспорта.,390,0,0,0,0
+manufacturer,statistics?tab=staff,1366,768,Мир автоспорта.,1102,0,0,0,0
+manufacturer,statistics?tab=staff,1920,1080,Мир автоспорта.,1613,0,0,0,0
+manufacturer,statistics?tab=staff,2560,1440,Мир автоспорта.,2208,0,0,0,0
+manufacturer,statistics?tab=staff,3840,2160,Мир автоспорта.,2304,0,0,0,0
+manufacturer,statistics?tab=staff,390,844,Мир автоспорта.,390,0,0,0,0
+manufacturer,statistics?tab=overview,1366,768,Мир автоспорта.,1102,0,0,0,0
+manufacturer,statistics?tab=overview,1920,1080,Мир автоспорта.,1613,0,0,0,0
+manufacturer,statistics?tab=overview,2560,1440,Мир автоспорта.,2208,0,0,0,0
+manufacturer,statistics?tab=overview,3840,2160,Мир автоспорта.,2304,0,0,0,0
+manufacturer,statistics?tab=overview,390,844,Мир автоспорта.,390,0,0,0,0
+manufacturer,person?entity=driver-026&tab=profile,1366,768,Nele Hahn,1102,0,0,0,0
+manufacturer,person?entity=driver-026&tab=profile,1920,1080,Nele Hahn,1613,0,0,0,0
+manufacturer,person?entity=driver-026&tab=profile,2560,1440,Nele Hahn,2208,0,0,0,0
+manufacturer,person?entity=driver-026&tab=profile,3840,2160,Nele Hahn,2304,0,0,0,0
+manufacturer,person?entity=driver-026&tab=profile,390,844,Nele Hahn,390,0,0,0,0
+manufacturer,person?entity=driver-026&tab=contract,1366,768,Nele Hahn,1102,0,0,0,0
+manufacturer,person?entity=driver-026&tab=contract,1920,1080,Nele Hahn,1613,0,0,0,0
+manufacturer,person?entity=driver-026&tab=contract,2560,1440,Nele Hahn,2208,0,0,0,0
+manufacturer,person?entity=driver-026&tab=contract,3840,2160,Nele Hahn,2304,0,0,0,0
+manufacturer,person?entity=driver-026&tab=contract,390,844,Nele Hahn,390,0,0,0,0
+manufacturer,person?entity=driver-026&tab=work,1366,768,Nele Hahn,1102,0,0,0,0
+manufacturer,person?entity=driver-026&tab=work,1920,1080,Nele Hahn,1613,0,0,0,0
+manufacturer,person?entity=driver-026&tab=work,2560,1440,Nele Hahn,2208,0,0,0,0
+manufacturer,person?entity=driver-026&tab=work,3840,2160,Nele Hahn,2304,0,0,0,0
+manufacturer,person?entity=driver-026&tab=work,390,844,Nele Hahn,390,0,0,0,0
+manufacturer,person?entity=driver-026&tab=compare,1366,768,Nele Hahn,1102,0,0,0,0
+manufacturer,person?entity=driver-026&tab=compare,1920,1080,Nele Hahn,1613,0,0,0,0
+manufacturer,person?entity=driver-026&tab=compare,2560,1440,Nele Hahn,2208,0,0,0,0
+manufacturer,person?entity=driver-026&tab=compare,3840,2160,Nele Hahn,2304,0,0,0,0
+manufacturer,person?entity=driver-026&tab=compare,390,844,Nele Hahn,390,0,0,0,0
+manufacturer,person?entity=driver-026&tab=career,1366,768,Nele Hahn,1102,0,0,0,0
+manufacturer,person?entity=driver-026&tab=career,1920,1080,Nele Hahn,1613,0,0,0,0
+manufacturer,person?entity=driver-026&tab=career,2560,1440,Nele Hahn,2208,0,0,0,0
+manufacturer,person?entity=driver-026&tab=career,3840,2160,Nele Hahn,2304,0,0,0,0
+manufacturer,person?entity=driver-026&tab=career,390,844,Nele Hahn,390,0,0,0,0
+manufacturer,person?entity=driver-026&tab=public,1366,768,Nele Hahn,1102,0,0,0,0
+manufacturer,person?entity=driver-026&tab=public,1920,1080,Nele Hahn,1613,0,0,0,0
+manufacturer,person?entity=driver-026&tab=public,2560,1440,Nele Hahn,2208,0,0,0,0
+manufacturer,person?entity=driver-026&tab=public,3840,2160,Nele Hahn,2304,0,0,0,0
+manufacturer,person?entity=driver-026&tab=public,390,844,Nele Hahn,390,0,0,0,0
+manufacturer,person?entity=staff-96e4b22ca925&tab=profile,1366,768,Matteo Marini,1102,0,0,0,0
+manufacturer,person?entity=staff-96e4b22ca925&tab=profile,1920,1080,Matteo Marini,1613,0,0,0,0
+manufacturer,person?entity=staff-96e4b22ca925&tab=profile,2560,1440,Matteo Marini,2208,0,0,0,0
+manufacturer,person?entity=staff-96e4b22ca925&tab=profile,3840,2160,Matteo Marini,2304,0,0,0,0
+manufacturer,person?entity=staff-96e4b22ca925&tab=profile,390,844,Matteo Marini,390,0,0,0,0
+manufacturer,person?entity=staff-96e4b22ca925&tab=contract,1366,768,Matteo Marini,1102,0,0,0,0
+manufacturer,person?entity=staff-96e4b22ca925&tab=contract,1920,1080,Matteo Marini,1613,0,0,0,0
+manufacturer,person?entity=staff-96e4b22ca925&tab=contract,2560,1440,Matteo Marini,2208,0,0,0,0
+manufacturer,person?entity=staff-96e4b22ca925&tab=contract,3840,2160,Matteo Marini,2304,0,0,0,0
+manufacturer,person?entity=staff-96e4b22ca925&tab=contract,390,844,Matteo Marini,390,0,0,0,0
+manufacturer,person?entity=staff-96e4b22ca925&tab=work,1366,768,Matteo Marini,1102,0,0,0,0
+manufacturer,person?entity=staff-96e4b22ca925&tab=work,1920,1080,Matteo Marini,1613,0,0,0,0
+manufacturer,person?entity=staff-96e4b22ca925&tab=work,2560,1440,Matteo Marini,2208,0,0,0,0
+manufacturer,person?entity=staff-96e4b22ca925&tab=work,3840,2160,Matteo Marini,2304,0,0,0,0
+manufacturer,person?entity=staff-96e4b22ca925&tab=work,390,844,Matteo Marini,390,0,0,0,0
+manufacturer,person?entity=staff-96e4b22ca925&tab=compare,1366,768,Matteo Marini,1102,0,0,0,0
+manufacturer,person?entity=staff-96e4b22ca925&tab=compare,1920,1080,Matteo Marini,1613,0,0,0,0
+manufacturer,person?entity=staff-96e4b22ca925&tab=compare,2560,1440,Matteo Marini,2208,0,0,0,0
+manufacturer,person?entity=staff-96e4b22ca925&tab=compare,3840,2160,Matteo Marini,2304,0,0,0,0
+manufacturer,person?entity=staff-96e4b22ca925&tab=compare,390,844,Matteo Marini,390,0,0,0,0
+manufacturer,person?entity=staff-96e4b22ca925&tab=career,1366,768,Matteo Marini,1102,0,0,0,0
+manufacturer,person?entity=staff-96e4b22ca925&tab=career,1920,1080,Matteo Marini,1613,0,0,0,0
+manufacturer,person?entity=staff-96e4b22ca925&tab=career,2560,1440,Matteo Marini,2208,0,0,0,0
+manufacturer,person?entity=staff-96e4b22ca925&tab=career,3840,2160,Matteo Marini,2304,0,0,0,0
+manufacturer,person?entity=staff-96e4b22ca925&tab=career,390,844,Matteo Marini,390,0,0,0,0
+manufacturer,person?entity=staff-96e4b22ca925&tab=public,1366,768,Matteo Marini,1102,0,0,0,0
+manufacturer,person?entity=staff-96e4b22ca925&tab=public,1920,1080,Matteo Marini,1613,0,0,0,0
+manufacturer,person?entity=staff-96e4b22ca925&tab=public,2560,1440,Matteo Marini,2208,0,0,0,0
+manufacturer,person?entity=staff-96e4b22ca925&tab=public,3840,2160,Matteo Marini,2304,0,0,0,0
+manufacturer,person?entity=staff-96e4b22ca925&tab=public,390,844,Matteo Marini,390,0,0,0,0
+manufacturer,person?entity=driver-026&tab=statistics,1366,768,Nele Hahn,1102,0,0,0,0
+manufacturer,person?entity=driver-026&tab=statistics,1920,1080,Nele Hahn,1613,0,0,0,0
+manufacturer,person?entity=driver-026&tab=statistics,2560,1440,Nele Hahn,2208,0,0,0,0
+manufacturer,person?entity=driver-026&tab=statistics,3840,2160,Nele Hahn,2304,0,0,0,0
+manufacturer,person?entity=driver-026&tab=statistics,390,844,Nele Hahn,390,0,0,0,0
+manufacturer,person?entity=staff-96e4b22ca925&tab=statistics,1366,768,Matteo Marini,1102,0,0,0,0
+manufacturer,person?entity=staff-96e4b22ca925&tab=statistics,1920,1080,Matteo Marini,1613,0,0,0,0
+manufacturer,person?entity=staff-96e4b22ca925&tab=statistics,2560,1440,Matteo Marini,2208,0,0,0,0
+manufacturer,person?entity=staff-96e4b22ca925&tab=statistics,3840,2160,Matteo Marini,2304,0,0,0,0
+manufacturer,person?entity=staff-96e4b22ca925&tab=statistics,390,844,Matteo Marini,390,0,0,0,0
+manufacturer,organization?tab=people,1366,768,SADEV,1102,0,0,0,0
+manufacturer,organization?tab=people,1920,1080,SADEV,1613,0,0,0,0
+manufacturer,organization?tab=people,2560,1440,SADEV,2208,0,0,0,0
+manufacturer,organization?tab=people,3840,2160,SADEV,2304,0,0,0,0
+manufacturer,organization?tab=people,390,844,SADEV,390,0,0,0,0
+manufacturer,organization?tab=uniform,1366,768,SADEV,1102,0,0,0,0
+manufacturer,organization?tab=uniform,1920,1080,SADEV,1613,0,0,0,0
+manufacturer,organization?tab=uniform,2560,1440,SADEV,2208,0,0,0,0
+manufacturer,organization?tab=uniform,3840,2160,SADEV,2304,0,0,0,0
+manufacturer,organization?tab=uniform,390,844,SADEV,390,0,0,0,0
+owner,overview,1366,768,Вы задаёте направление.,1102,0,0,1,0
+owner,overview,1920,1080,Вы задаёте направление.,1613,0,0,1,0
+owner,overview,2560,1440,Вы задаёте направление.,2208,0,0,1,0
+owner,overview,3840,2160,Вы задаёте направление.,2304,0,0,1,0
+owner,overview,390,844,Вы задаёте направление.,390,0,0,1,0
+owner,briefings,1366,768,Совет организации.,1102,0,0,0,0
+owner,briefings,1920,1080,Совет организации.,1613,0,0,0,0
+owner,briefings,2560,1440,Совет организации.,2208,0,0,0,0
+owner,briefings,3840,2160,Совет организации.,2304,0,0,0,0
+owner,briefings,390,844,Совет организации.,390,0,0,0,0
+owner,briefings?tab=finance,1366,768,Совет организации.,1102,0,0,0,0
+owner,briefings?tab=finance,1920,1080,Совет организации.,1613,0,0,0,0
+owner,briefings?tab=finance,2560,1440,Совет организации.,2208,0,0,0,0
+owner,briefings?tab=finance,3840,2160,Совет организации.,2304,0,0,0,0
+owner,briefings?tab=finance,390,844,Совет организации.,390,0,0,0,0
+owner,briefings?tab=leadership,1366,768,Совет организации.,1102,0,0,0,0
+owner,briefings?tab=leadership,1920,1080,Совет организации.,1613,0,0,0,0
+owner,briefings?tab=leadership,2560,1440,Совет организации.,2208,0,0,0,0
+owner,briefings?tab=leadership,3840,2160,Совет организации.,2304,0,0,0,0
+owner,briefings?tab=leadership,390,844,Совет организации.,390,0,0,0,0
+owner,briefings?tab=academy,1366,768,Совет организации.,1102,0,0,0,0
+owner,briefings?tab=academy,1920,1080,Совет организации.,1613,0,0,0,0
+owner,briefings?tab=academy,2560,1440,Совет организации.,2208,0,0,0,0
+owner,briefings?tab=academy,3840,2160,Совет организации.,2304,0,0,0,0
+owner,briefings?tab=academy,390,844,Совет организации.,390,0,0,0,0
+owner,briefings?tab=engineering,1366,768,Совет организации.,1102,0,0,0,0
+owner,briefings?tab=engineering,1920,1080,Совет организации.,1613,0,0,0,0
+owner,briefings?tab=engineering,2560,1440,Совет организации.,2208,0,0,0,0
+owner,briefings?tab=engineering,3840,2160,Совет организации.,2304,0,0,0,0
+owner,briefings?tab=engineering,390,844,Совет организации.,390,0,0,0,0
+owner,briefings?tab=capital,1366,768,Совет организации.,1102,0,0,0,0
+owner,briefings?tab=capital,1920,1080,Совет организации.,1613,0,0,0,0
+owner,briefings?tab=capital,2560,1440,Совет организации.,2208,0,0,0,0
+owner,briefings?tab=capital,3840,2160,Совет организации.,2304,0,0,0,0
+owner,briefings?tab=capital,390,844,Совет организации.,390,0,0,0,0
+owner,engineering,1366,768,Согласовать карту просвета днища и жёсткость подвески.,1102,0,0,1,0
+owner,engineering,1920,1080,Согласовать карту просвета днища и жёсткость подвески.,1613,0,0,1,0
+owner,engineering,2560,1440,Согласовать карту просвета днища и жёсткость подвески.,2208,0,0,1,0
+owner,engineering,3840,2160,Согласовать карту просвета днища и жёсткость подвески.,2304,0,0,1,0
+owner,engineering,390,844,Согласовать карту просвета днища и жёсткость подвески.,390,0,0,1,0
+owner,engineering?tab=plans,1366,768,Согласовать карту просвета днища и жёсткость подвески.,1102,0,0,1,0
+owner,engineering?tab=plans,1920,1080,Согласовать карту просвета днища и жёсткость подвески.,1613,0,0,1,0
+owner,engineering?tab=plans,2560,1440,Согласовать карту просвета днища и жёсткость подвески.,2208,0,0,1,0
+owner,engineering?tab=plans,3840,2160,Согласовать карту просвета днища и жёсткость подвески.,2304,0,0,1,0
+owner,engineering?tab=plans,390,844,Согласовать карту просвета днища и жёсткость подвески.,390,0,0,1,0
+owner,engineering?tab=resources,1366,768,Машина начинается с людейТехническая программа,1102,0,0,0,0
+owner,engineering?tab=resources,1920,1080,Машина начинается с людейТехническая программа,1613,0,0,0,0
+owner,engineering?tab=resources,2560,1440,Машина начинается с людейТехническая программа,2208,0,0,0,0
+owner,engineering?tab=resources,3840,2160,Машина начинается с людейТехническая программа,2304,0,0,0,0
+owner,engineering?tab=resources,390,844,Машина начинается с людейТехническая программа,390,0,0,0,0
+owner,engineering?tab=calendar,1366,768,Машина начинается с людейТехническая программа,1102,0,0,0,0
+owner,engineering?tab=calendar,1920,1080,Машина начинается с людейТехническая программа,1613,0,0,0,0
+owner,engineering?tab=calendar,2560,1440,Машина начинается с людейТехническая программа,2208,0,0,0,0
+owner,engineering?tab=calendar,3840,2160,Машина начинается с людейТехническая программа,2304,0,0,0,0
+owner,engineering?tab=calendar,390,844,Машина начинается с людейТехническая программа,390,0,0,0,0
+owner,engineering?tab=concept,1366,768,Машина начинается с людейТехническая программа,1102,0,0,1,0
+owner,engineering?tab=concept,1920,1080,Машина начинается с людейТехническая программа,1613,0,0,1,0
+owner,engineering?tab=concept,2560,1440,Машина начинается с людейТехническая программа,2208,0,0,1,0
+owner,engineering?tab=concept,3840,2160,Машина начинается с людейТехническая программа,2304,0,0,1,0
+owner,engineering?tab=concept,390,844,Машина начинается с людейТехническая программа,390,0,0,1,0
+owner,engineering?tab=rules,1366,768,Машина начинается с людейТехническая программа,1102,0,0,0,0
+owner,engineering?tab=rules,1920,1080,Машина начинается с людейТехническая программа,1613,0,0,0,0
+owner,engineering?tab=rules,2560,1440,Машина начинается с людейТехническая программа,2208,0,0,0,0
+owner,engineering?tab=rules,3840,2160,Машина начинается с людейТехническая программа,2304,0,0,0,0
+owner,engineering?tab=rules,390,844,Машина начинается с людейТехническая программа,390,0,0,0,0
+owner,engineering?tab=history,1366,768,Машина начинается с людейТехническая программа,1102,0,0,0,0
+owner,engineering?tab=history,1920,1080,Машина начинается с людейТехническая программа,1613,0,0,0,0
+owner,engineering?tab=history,2560,1440,Машина начинается с людейТехническая программа,2208,0,0,0,0
+owner,engineering?tab=history,3840,2160,Машина начинается с людейТехническая программа,2304,0,0,0,0
+owner,engineering?tab=history,390,844,Машина начинается с людейТехническая программа,390,0,0,0,0
+owner,inbox,1366,768,Входящие,1102,0,0,0,0
+owner,inbox,1920,1080,Входящие,1613,0,0,0,0
+owner,inbox,2560,1440,Входящие,2208,0,0,0,0
+owner,inbox,3840,2160,Входящие,2304,0,0,0,0
+owner,inbox,390,844,Входящие,390,0,0,0,0
+owner,leadership,1366,768,Проверяйте руководителя по его мандату,1102,0,0,0,0
+owner,leadership,1920,1080,Проверяйте руководителя по его мандату,1613,0,0,0,0
+owner,leadership,2560,1440,Проверяйте руководителя по его мандату,2208,0,0,0,0
+owner,leadership,3840,2160,Проверяйте руководителя по его мандату,2304,0,0,0,0
+owner,leadership,390,844,Проверяйте руководителя по его мандату,390,0,0,0,0
+owner,staff,1366,768,Проверяйте руководителя по его мандату,1102,0,0,0,0
+owner,staff,1920,1080,Проверяйте руководителя по его мандату,1613,0,0,0,0
+owner,staff,2560,1440,Проверяйте руководителя по его мандату,2208,0,0,0,0
+owner,staff,3840,2160,Проверяйте руководителя по его мандату,2304,0,0,0,0
+owner,staff,390,844,Проверяйте руководителя по его мандату,390,0,0,0,0
+owner,staff?tab=collectives,1366,768,Штаб и подразделения,1102,0,0,0,0
+owner,staff?tab=collectives,1920,1080,Штаб и подразделения,1613,0,0,0,0
+owner,staff?tab=collectives,2560,1440,Штаб и подразделения,2208,0,0,0,0
+owner,staff?tab=collectives,3840,2160,Штаб и подразделения,2304,0,0,0,0
+owner,staff?tab=collectives,390,844,Штаб и подразделения,390,0,0,0,0
+owner,market,1366,768,Найдите своё преимущество,1102,0,0,0,0
+owner,market,1920,1080,Найдите своё преимущество,1613,0,0,0,0
+owner,market,2560,1440,Найдите своё преимущество,2208,0,0,0,0
+owner,market,3840,2160,Найдите своё преимущество,2304,0,0,0,0
+owner,market,390,844,Найдите своё преимущество,390,0,0,0,0
+owner,market?tab=shortlist,1366,768,Найдите своё преимущество,1102,0,0,0,0
+owner,market?tab=shortlist,1920,1080,Найдите своё преимущество,1613,0,0,0,0
+owner,market?tab=shortlist,2560,1440,Найдите своё преимущество,2208,0,0,0,0
+owner,market?tab=shortlist,3840,2160,Найдите своё преимущество,2304,0,0,0,0
+owner,market?tab=shortlist,390,844,Найдите своё преимущество,390,0,0,0,0
+owner,market?tab=scouting,1366,768,Найдите своё преимущество,1102,0,0,0,0
+owner,market?tab=scouting,1920,1080,Найдите своё преимущество,1613,0,0,0,0
+owner,market?tab=scouting,2560,1440,Найдите своё преимущество,2208,0,0,0,0
+owner,market?tab=scouting,3840,2160,Найдите своё преимущество,2304,0,0,0,0
+owner,market?tab=scouting,390,844,Найдите своё преимущество,390,0,0,0,0
+owner,contracts,1366,768,Состав сегодня. Решения на завтра.,1102,0,0,0,0
+owner,contracts,1920,1080,Состав сегодня. Решения на завтра.,1613,0,0,0,0
+owner,contracts,2560,1440,Состав сегодня. Решения на завтра.,2208,0,0,0,0
+owner,contracts,3840,2160,Состав сегодня. Решения на завтра.,2304,0,0,0,0
+owner,contracts,390,844,Состав сегодня. Решения на завтра.,390,0,0,0,0
+owner,contracts?tab=negotiations,1366,768,Состав сегодня. Решения на завтра.,1102,0,0,0,0
+owner,contracts?tab=negotiations,1920,1080,Состав сегодня. Решения на завтра.,1613,0,0,0,0
+owner,contracts?tab=negotiations,2560,1440,Состав сегодня. Решения на завтра.,2208,0,0,0,0
+owner,contracts?tab=negotiations,3840,2160,Состав сегодня. Решения на завтра.,2304,0,0,0,0
+owner,contracts?tab=negotiations,390,844,Состав сегодня. Решения на завтра.,390,0,0,0,0
+owner,contracts?tab=future,1366,768,Состав сегодня. Решения на завтра.,1102,0,0,0,0
+owner,contracts?tab=future,1920,1080,Состав сегодня. Решения на завтра.,1613,0,0,0,0
+owner,contracts?tab=future,2560,1440,Состав сегодня. Решения на завтра.,2208,0,0,0,0
+owner,contracts?tab=future,3840,2160,Состав сегодня. Решения на завтра.,2304,0,0,0,0
+owner,contracts?tab=future,390,844,Состав сегодня. Решения на завтра.,390,0,0,0,0
+owner,capital,1366,768,Капитал должен работать на устойчивость программ,1102,0,0,0,0
+owner,capital,1920,1080,Капитал должен работать на устойчивость программ,1613,0,0,0,0
+owner,capital,2560,1440,Капитал должен работать на устойчивость программ,2208,0,0,0,0
+owner,capital,3840,2160,Капитал должен работать на устойчивость программ,2304,0,0,0,0
+owner,capital,390,844,Капитал должен работать на устойчивость программ,390,0,0,0,0
+owner,capital?tab=loans,1366,768,Собственность и капитал,1102,0,0,0,0
+owner,capital?tab=loans,1920,1080,Собственность и капитал,1613,0,0,0,0
+owner,capital?tab=loans,2560,1440,Собственность и капитал,2208,0,0,0,0
+owner,capital?tab=loans,3840,2160,Собственность и капитал,2304,0,0,0,0
+owner,capital?tab=loans,390,844,Собственность и капитал,390,0,0,0,0
+owner,capital?tab=assets,1366,768,Собственность и капитал,1102,0,0,0,0
+owner,capital?tab=assets,1920,1080,Собственность и капитал,1613,0,0,0,0
+owner,capital?tab=assets,2560,1440,Собственность и капитал,2208,0,0,0,0
+owner,capital?tab=assets,3840,2160,Собственность и капитал,2304,0,0,0,0
+owner,capital?tab=assets,390,844,Собственность и капитал,390,0,0,0,0
+owner,capital?tab=history,1366,768,Собственность и капитал,1102,0,0,0,0
+owner,capital?tab=history,1920,1080,Собственность и капитал,1613,0,0,0,0
+owner,capital?tab=history,2560,1440,Собственность и капитал,2208,0,0,0,0
+owner,capital?tab=history,3840,2160,Собственность и капитал,2304,0,0,0,0
+owner,capital?tab=history,390,844,Собственность и капитал,390,0,0,0,0
+owner,capital?tab=ownership,1366,768,Собственность и капитал,1102,0,0,0,0
+owner,capital?tab=ownership,1920,1080,Собственность и капитал,1613,0,0,0,0
+owner,capital?tab=ownership,2560,1440,Собственность и капитал,2208,0,0,0,0
+owner,capital?tab=ownership,3840,2160,Собственность и капитал,2304,0,0,0,0
+owner,capital?tab=ownership,390,844,Собственность и капитал,390,0,0,0,0
+owner,capital?tab=overview,1366,768,Капитал должен работать на устойчивость программ,1102,0,0,0,0
+owner,capital?tab=overview,1920,1080,Капитал должен работать на устойчивость программ,1613,0,0,0,0
+owner,capital?tab=overview,2560,1440,Капитал должен работать на устойчивость программ,2208,0,0,0,0
+owner,capital?tab=overview,3840,2160,Капитал должен работать на устойчивость программ,2304,0,0,0,0
+owner,capital?tab=overview,390,844,Капитал должен работать на устойчивость программ,390,0,0,0,0
+owner,capital?tab=programs,1366,768,Собственность и капитал,1102,0,0,0,0
+owner,capital?tab=programs,1920,1080,Собственность и капитал,1613,0,0,0,0
+owner,capital?tab=programs,2560,1440,Собственность и капитал,2208,0,0,0,0
+owner,capital?tab=programs,3840,2160,Собственность и капитал,2304,0,0,0,0
+owner,capital?tab=programs,390,844,Собственность и капитал,390,0,0,0,0
+owner,facilities,1366,768,Есть рекомендации по резерву компонентов,1102,0,0,0,0
+owner,facilities,1920,1080,Есть рекомендации по резерву компонентов,1613,0,0,0,0
+owner,facilities,2560,1440,Есть рекомендации по резерву компонентов,2208,0,0,0,0
+owner,facilities,3840,2160,Есть рекомендации по резерву компонентов,2304,0,0,0,0
+owner,facilities,390,844,Есть рекомендации по резерву компонентов,390,0,0,0,0
+owner,facilities?tab=capacity,1366,768,Инфраструктура,1102,0,0,0,0
+owner,facilities?tab=capacity,1920,1080,Инфраструктура,1613,0,0,0,0
+owner,facilities?tab=capacity,2560,1440,Инфраструктура,2208,0,0,0,0
+owner,facilities?tab=capacity,3840,2160,Инфраструктура,2304,0,0,0,0
+owner,facilities?tab=capacity,390,844,Инфраструктура,390,0,0,0,0
+owner,facilities?tab=rent,1366,768,Инфраструктура,1102,0,0,0,0
+owner,facilities?tab=rent,1920,1080,Инфраструктура,1613,0,0,0,0
+owner,facilities?tab=rent,2560,1440,Инфраструктура,2208,0,0,0,0
+owner,facilities?tab=rent,3840,2160,Инфраструктура,2304,0,0,0,0
+owner,facilities?tab=rent,390,844,Инфраструктура,390,0,0,0,0
+owner,facilities?tab=bookings,1366,768,Инфраструктура,1102,0,0,0,0
+owner,facilities?tab=bookings,1920,1080,Инфраструктура,1613,0,0,0,0
+owner,facilities?tab=bookings,2560,1440,Инфраструктура,2208,0,0,0,0
+owner,facilities?tab=bookings,3840,2160,Инфраструктура,2304,0,0,0,0
+owner,facilities?tab=bookings,390,844,Инфраструктура,390,0,0,0,0
+owner,finance,1366,768,Ближайшие выплаты нужно держать в резерве,1102,0,0,0,0
+owner,finance,1920,1080,Ближайшие выплаты нужно держать в резерве,1613,0,0,0,0
+owner,finance,2560,1440,Ближайшие выплаты нужно держать в резерве,2208,0,0,0,0
+owner,finance,3840,2160,Ближайшие выплаты нужно держать в резерве,2304,0,0,0,0
+owner,finance,390,844,Ближайшие выплаты нужно держать в резерве,390,0,0,0,0
+owner,finance?tab=results,1366,768,Финансы,1102,0,0,0,0
+owner,finance?tab=results,1920,1080,Финансы,1613,0,0,0,0
+owner,finance?tab=results,2560,1440,Финансы,2208,0,0,0,0
+owner,finance?tab=results,3840,2160,Финансы,2304,0,0,0,0
+owner,finance?tab=results,390,844,Финансы,390,0,0,0,0
+owner,finance?tab=journal,1366,768,Финансы,1102,0,0,0,0
+owner,finance?tab=journal,1920,1080,Финансы,1613,0,0,0,0
+owner,finance?tab=journal,2560,1440,Финансы,2208,0,0,0,0
+owner,finance?tab=journal,3840,2160,Финансы,2304,0,0,0,0
+owner,finance?tab=journal,390,844,Финансы,390,0,0,0,0
+owner,finance?tab=terms,1366,768,Финансы,1102,0,0,0,0
+owner,finance?tab=terms,1920,1080,Финансы,1613,0,0,0,0
+owner,finance?tab=terms,2560,1440,Финансы,2208,0,0,0,0
+owner,finance?tab=terms,3840,2160,Финансы,2304,0,0,0,0
+owner,finance?tab=terms,390,844,Финансы,390,0,0,0,0
+owner,finance?tab=forecast,1366,768,Финансы,1102,0,0,0,0
+owner,finance?tab=forecast,1920,1080,Финансы,1613,0,0,0,0
+owner,finance?tab=forecast,2560,1440,Финансы,2208,0,0,0,0
+owner,finance?tab=forecast,3840,2160,Финансы,2304,0,0,0,0
+owner,finance?tab=forecast,390,844,Финансы,390,0,0,0,0
+owner,budget,1366,768,Ближайшие выплаты нужно держать в резерве,1102,0,0,0,0
+owner,budget,1920,1080,Ближайшие выплаты нужно держать в резерве,1613,0,0,0,0
+owner,budget,2560,1440,Ближайшие выплаты нужно держать в резерве,2208,0,0,0,0
+owner,budget,3840,2160,Ближайшие выплаты нужно держать в резерве,2304,0,0,0,0
+owner,budget,390,844,Ближайшие выплаты нужно держать в резерве,390,0,0,0,0
+owner,budget?tab=requests,1366,768,Бюджет сезона,1102,0,0,0,0
+owner,budget?tab=requests,1920,1080,Бюджет сезона,1613,0,0,0,0
+owner,budget?tab=requests,2560,1440,Бюджет сезона,2208,0,0,0,0
+owner,budget?tab=requests,3840,2160,Бюджет сезона,2304,0,0,0,0
+owner,budget?tab=requests,390,844,Бюджет сезона,390,0,0,0,0
+owner,cap,1366,768,Ближайшие выплаты нужно держать в резерве,1102,0,0,0,0
+owner,cap,1920,1080,Ближайшие выплаты нужно держать в резерве,1613,0,0,0,0
+owner,cap,2560,1440,Ближайшие выплаты нужно держать в резерве,2208,0,0,0,0
+owner,cap,3840,2160,Ближайшие выплаты нужно держать в резерве,2304,0,0,0,0
+owner,cap,390,844,Ближайшие выплаты нужно держать в резерве,390,0,0,0,0
+owner,cap?tab=atr,1366,768,Регламентные лимиты,1102,0,0,0,0
+owner,cap?tab=atr,1920,1080,Регламентные лимиты,1613,0,0,0,0
+owner,cap?tab=atr,2560,1440,Регламентные лимиты,2208,0,0,0,0
+owner,cap?tab=atr,3840,2160,Регламентные лимиты,2304,0,0,0,0
+owner,cap?tab=atr,390,844,Регламентные лимиты,390,0,0,0,0
+owner,cap?tab=audits,1366,768,Регламентные лимиты,1102,0,0,0,0
+owner,cap?tab=audits,1920,1080,Регламентные лимиты,1613,0,0,0,0
+owner,cap?tab=audits,2560,1440,Регламентные лимиты,2208,0,0,0,0
+owner,cap?tab=audits,3840,2160,Регламентные лимиты,2304,0,0,0,0
+owner,cap?tab=audits,390,844,Регламентные лимиты,390,0,0,0,0
+owner,economy,1366,768,Экономика организации,1102,0,0,0,0
+owner,economy,1920,1080,Экономика организации,1613,0,0,0,0
+owner,economy,2560,1440,Экономика организации,2208,0,0,0,0
+owner,economy,3840,2160,Экономика организации,2304,0,0,0,0
+owner,economy,390,844,Экономика организации,390,0,0,0,0
+owner,economy?tab=annual,1366,768,Экономика организации,1102,0,0,0,0
+owner,economy?tab=annual,1920,1080,Экономика организации,1613,0,0,0,0
+owner,economy?tab=annual,2560,1440,Экономика организации,2208,0,0,0,0
+owner,economy?tab=annual,3840,2160,Экономика организации,2304,0,0,0,0
+owner,economy?tab=annual,390,844,Экономика организации,390,0,0,0,0
+owner,economy?tab=markets,1366,768,Экономика организации,1102,0,0,0,0
+owner,economy?tab=markets,1920,1080,Экономика организации,1613,0,0,0,0
+owner,economy?tab=markets,2560,1440,Экономика организации,2208,0,0,0,0
+owner,economy?tab=markets,3840,2160,Экономика организации,2304,0,0,0,0
+owner,economy?tab=markets,390,844,Экономика организации,390,0,0,0,0
+owner,academy,1366,768,Проверяйте руководителя по его мандату,1102,0,0,0,0
+owner,academy,1920,1080,Проверяйте руководителя по его мандату,1613,0,0,0,0
+owner,academy,2560,1440,Проверяйте руководителя по его мандату,2208,0,0,0,0
+owner,academy,3840,2160,Проверяйте руководителя по его мандату,2304,0,0,0,0
+owner,academy,390,844,Проверяйте руководителя по его мандату,390,0,0,0,0
+owner,funding,1366,768,Возможность выйти на старт,1102,0,0,0,0
+owner,funding,1920,1080,Возможность выйти на старт,1613,0,0,0,0
+owner,funding,2560,1440,Возможность выйти на старт,2208,0,0,0,0
+owner,funding,3840,2160,Возможность выйти на старт,2304,0,0,0,0
+owner,funding,390,844,Возможность выйти на старт,390,0,0,0,0
+owner,funding?tab=all,1366,768,Возможность выйти на старт,1102,0,0,0,0
+owner,funding?tab=all,1920,1080,Возможность выйти на старт,1613,0,0,0,0
+owner,funding?tab=all,2560,1440,Возможность выйти на старт,2208,0,0,0,0
+owner,funding?tab=all,3840,2160,Возможность выйти на старт,2304,0,0,0,0
+owner,funding?tab=all,390,844,Возможность выйти на старт,390,0,0,0,0
+owner,preparation,1366,768,Проверяйте руководителя по его мандату,1102,0,0,0,0
+owner,preparation,1920,1080,Проверяйте руководителя по его мандату,1613,0,0,0,0
+owner,preparation,2560,1440,Проверяйте руководителя по его мандату,2208,0,0,0,0
+owner,preparation,3840,2160,Проверяйте руководителя по его мандату,2304,0,0,0,0
+owner,preparation,390,844,Проверяйте руководителя по его мандату,390,0,0,0,0
+owner,commercial,1366,768,Коммерческий центр,1102,0,0,0,0
+owner,commercial,1920,1080,Коммерческий центр,1613,0,0,0,0
+owner,commercial,2560,1440,Коммерческий центр,2208,0,0,0,0
+owner,commercial,3840,2160,Коммерческий центр,2304,0,0,0,0
+owner,commercial,390,844,Коммерческий центр,390,0,0,0,0
+owner,commercial?tab=offers,1366,768,Коммерческий центр,1102,0,0,0,0
+owner,commercial?tab=offers,1920,1080,Коммерческий центр,1613,0,0,0,0
+owner,commercial?tab=offers,2560,1440,Коммерческий центр,2208,0,0,0,0
+owner,commercial?tab=offers,3840,2160,Коммерческий центр,2304,0,0,0,0
+owner,commercial?tab=offers,390,844,Коммерческий центр,390,0,0,0,0
+owner,commercial?tab=contracts,1366,768,Коммерческий центр,1102,0,0,0,0
+owner,commercial?tab=contracts,1920,1080,Коммерческий центр,1613,0,0,0,0
+owner,commercial?tab=contracts,2560,1440,Коммерческий центр,2208,0,0,0,0
+owner,commercial?tab=contracts,3840,2160,Коммерческий центр,2304,0,0,0,0
+owner,commercial?tab=contracts,390,844,Коммерческий центр,390,0,0,0,0
+owner,commercial?tab=supplies,1366,768,Коммерческий центр,1102,0,0,0,0
+owner,commercial?tab=supplies,1920,1080,Коммерческий центр,1613,0,0,0,0
+owner,commercial?tab=supplies,2560,1440,Коммерческий центр,2208,0,0,0,0
+owner,commercial?tab=supplies,3840,2160,Коммерческий центр,2304,0,0,0,0
+owner,commercial?tab=supplies,390,844,Коммерческий центр,390,0,0,0,0
+owner,rights,1366,768,Рекламные права,1102,0,0,0,0
+owner,rights,1920,1080,Рекламные права,1613,0,0,0,0
+owner,rights,2560,1440,Рекламные права,2208,0,0,0,0
+owner,rights,3840,2160,Рекламные права,2304,0,0,0,0
+owner,rights,390,844,Рекламные права,390,0,0,0,0
+owner,rights?tab=pending,1366,768,Рекламные права,1102,0,0,0,0
+owner,rights?tab=pending,1920,1080,Рекламные права,1613,0,0,0,0
+owner,rights?tab=pending,2560,1440,Рекламные права,2208,0,0,0,0
+owner,rights?tab=pending,3840,2160,Рекламные права,2304,0,0,0,0
+owner,rights?tab=pending,390,844,Рекламные права,390,0,0,0,0
+owner,rights?tab=fulfilled,1366,768,Рекламные права,1102,0,0,0,0
+owner,rights?tab=fulfilled,1920,1080,Рекламные права,1613,0,0,0,0
+owner,rights?tab=fulfilled,2560,1440,Рекламные права,2208,0,0,0,0
+owner,rights?tab=fulfilled,3840,2160,Рекламные права,2304,0,0,0,0
+owner,rights?tab=fulfilled,390,844,Рекламные права,390,0,0,0,0
+owner,agreements,1366,768,"Обязательства, которые определяют будущее.",1102,0,0,0,0
+owner,agreements,1920,1080,"Обязательства, которые определяют будущее.",1613,0,0,0,0
+owner,agreements,2560,1440,"Обязательства, которые определяют будущее.",2208,0,0,0,0
+owner,agreements,3840,2160,"Обязательства, которые определяют будущее.",2304,0,0,0,0
+owner,agreements,390,844,"Обязательства, которые определяют будущее.",390,0,0,0,0
+owner,world,1366,768,Мир соревнований,1102,0,0,21,0
+owner,world,1920,1080,Мир соревнований,1613,0,0,21,0
+owner,world,2560,1440,Мир соревнований,2208,0,0,21,0
+owner,world,3840,2160,Мир соревнований,2304,0,0,21,0
+owner,world,390,844,Мир соревнований,390,0,0,20,0
+owner,world?tab=calendar,1366,768,Мир соревнований,1102,0,0,0,0
+owner,world?tab=calendar,1920,1080,Мир соревнований,1613,0,0,0,0
+owner,world?tab=calendar,2560,1440,Мир соревнований,2208,0,0,0,0
+owner,world?tab=calendar,3840,2160,Мир соревнований,2304,0,0,0,0
+owner,world?tab=calendar,390,844,Мир соревнований,390,0,0,0,0
+owner,world?tab=rules,1366,768,Мир соревнований,1102,0,0,0,0
+owner,world?tab=rules,1920,1080,Мир соревнований,1613,0,0,0,0
+owner,world?tab=rules,2560,1440,Мир соревнований,2208,0,0,0,0
+owner,world?tab=rules,3840,2160,Мир соревнований,2304,0,0,0,0
+owner,world?tab=rules,390,844,Мир соревнований,390,0,0,0,0
+owner,world?tab=history,1366,768,Мир соревнований,1102,0,0,0,0
+owner,world?tab=history,1920,1080,Мир соревнований,1613,0,0,0,0
+owner,world?tab=history,2560,1440,Мир соревнований,2208,0,0,0,0
+owner,world?tab=history,3840,2160,Мир соревнований,2304,0,0,0,0
+owner,world?tab=history,390,844,Мир соревнований,390,0,0,0,0
+owner,calendar,1366,768,Календарь,1102,0,0,0,0
+owner,calendar,1920,1080,Календарь,1613,0,0,0,0
+owner,calendar,2560,1440,Календарь,2208,0,0,0,0
+owner,calendar,3840,2160,Календарь,2304,0,0,0,0
+owner,calendar,390,844,Календарь,390,0,0,0,0
+owner,statistics,1366,768,Мир автоспорта.,1102,0,0,0,0
+owner,statistics,1920,1080,Мир автоспорта.,1613,0,0,0,0
+owner,statistics,2560,1440,Мир автоспорта.,2208,0,0,0,0
+owner,statistics,3840,2160,Мир автоспорта.,2304,0,0,0,0
+owner,statistics,390,844,Мир автоспорта.,390,0,0,0,0
+owner,organization,1366,768,McLaren Formula 1 Team,1102,0,0,1,0
+owner,organization,1920,1080,McLaren Formula 1 Team,1613,0,0,1,0
+owner,organization,2560,1440,McLaren Formula 1 Team,2208,0,0,1,0
+owner,organization,3840,2160,McLaren Formula 1 Team,2304,0,0,1,0
+owner,organization,390,844,McLaren Formula 1 Team,390,0,0,1,0
+owner,organization?tab=people,1366,768,McLaren Formula 1 Team,1102,0,0,0,0
+owner,organization?tab=people,1920,1080,McLaren Formula 1 Team,1613,0,0,0,0
+owner,organization?tab=people,2560,1440,McLaren Formula 1 Team,2208,0,0,0,0
+owner,organization?tab=people,3840,2160,McLaren Formula 1 Team,2304,0,0,0,0
+owner,organization?tab=people,390,844,McLaren Formula 1 Team,390,0,0,0,0
+owner,organization?tab=programs,1366,768,McLaren Formula 1 Team,1102,0,0,1,0
+owner,organization?tab=programs,1920,1080,McLaren Formula 1 Team,1613,0,0,1,0
+owner,organization?tab=programs,2560,1440,McLaren Formula 1 Team,2208,0,0,1,0
+owner,organization?tab=programs,3840,2160,McLaren Formula 1 Team,2304,0,0,1,0
+owner,organization?tab=programs,390,844,McLaren Formula 1 Team,390,0,0,1,0
+owner,organization?tab=history,1366,768,McLaren Formula 1 Team,1102,0,0,0,0
+owner,organization?tab=history,1920,1080,McLaren Formula 1 Team,1613,0,0,0,0
+owner,organization?tab=history,2560,1440,McLaren Formula 1 Team,2208,0,0,0,0
+owner,organization?tab=history,3840,2160,McLaren Formula 1 Team,2304,0,0,0,0
+owner,organization?tab=history,390,844,McLaren Formula 1 Team,390,0,0,0,0
+owner,person?entity=staff-96e4b22ca925,1366,768,Matteo Marini,1102,0,0,0,0
+owner,person?entity=staff-96e4b22ca925,1920,1080,Matteo Marini,1613,0,0,0,0
+owner,person?entity=staff-96e4b22ca925,2560,1440,Matteo Marini,2208,0,0,0,0
+owner,person?entity=staff-96e4b22ca925,3840,2160,Matteo Marini,2304,0,0,0,0
+owner,person?entity=staff-96e4b22ca925,390,844,Matteo Marini,390,0,0,0,0
+owner,person?tab=career&entity=staff-96e4b22ca925,1366,768,Matteo Marini,1102,0,0,0,0
+owner,person?tab=career&entity=staff-96e4b22ca925,1920,1080,Matteo Marini,1613,0,0,0,0
+owner,person?tab=career&entity=staff-96e4b22ca925,2560,1440,Matteo Marini,2208,0,0,0,0
+owner,person?tab=career&entity=staff-96e4b22ca925,3840,2160,Matteo Marini,2304,0,0,0,0
+owner,person?tab=career&entity=staff-96e4b22ca925,390,844,Matteo Marini,390,0,0,0,0
+owner,person?tab=statistics&entity=staff-96e4b22ca925,1366,768,Matteo Marini,1102,0,0,0,0
+owner,person?tab=statistics&entity=staff-96e4b22ca925,1920,1080,Matteo Marini,1613,0,0,0,0
+owner,person?tab=statistics&entity=staff-96e4b22ca925,2560,1440,Matteo Marini,2208,0,0,0,0
+owner,person?tab=statistics&entity=staff-96e4b22ca925,3840,2160,Matteo Marini,2304,0,0,0,0
+owner,person?tab=statistics&entity=staff-96e4b22ca925,390,844,Matteo Marini,390,0,0,0,0
+owner,person?tab=public&entity=staff-96e4b22ca925,1366,768,Matteo Marini,1102,0,0,0,0
+owner,person?tab=public&entity=staff-96e4b22ca925,1920,1080,Matteo Marini,1613,0,0,0,0
+owner,person?tab=public&entity=staff-96e4b22ca925,2560,1440,Matteo Marini,2208,0,0,0,0
+owner,person?tab=public&entity=staff-96e4b22ca925,3840,2160,Matteo Marini,2304,0,0,0,0
+owner,person?tab=public&entity=staff-96e4b22ca925,390,844,Matteo Marini,390,0,0,0,0
+owner,person?tab=work&entity=staff-96e4b22ca925,1366,768,Matteo Marini,1102,0,0,0,0
+owner,person?tab=work&entity=staff-96e4b22ca925,1920,1080,Matteo Marini,1613,0,0,0,0
+owner,person?tab=work&entity=staff-96e4b22ca925,2560,1440,Matteo Marini,2208,0,0,0,0
+owner,person?tab=work&entity=staff-96e4b22ca925,3840,2160,Matteo Marini,2304,0,0,0,0
+owner,person?tab=work&entity=staff-96e4b22ca925,390,844,Matteo Marini,390,0,0,0,0
+owner,person?tab=compare&entity=staff-96e4b22ca925,1366,768,Matteo Marini,1102,0,0,0,0
+owner,person?tab=compare&entity=staff-96e4b22ca925,1920,1080,Matteo Marini,1613,0,0,0,0
+owner,person?tab=compare&entity=staff-96e4b22ca925,2560,1440,Matteo Marini,2208,0,0,0,0
+owner,person?tab=compare&entity=staff-96e4b22ca925,3840,2160,Matteo Marini,2304,0,0,0,0
+owner,person?tab=compare&entity=staff-96e4b22ca925,390,844,Matteo Marini,390,0,0,0,0
+owner,person?tab=contract&entity=staff-96e4b22ca925,1366,768,Matteo Marini,1102,0,0,0,0
+owner,person?tab=contract&entity=staff-96e4b22ca925,1920,1080,Matteo Marini,1613,0,0,0,0
+owner,person?tab=contract&entity=staff-96e4b22ca925,2560,1440,Matteo Marini,2208,0,0,0,0
+owner,person?tab=contract&entity=staff-96e4b22ca925,3840,2160,Matteo Marini,2304,0,0,0,0
+owner,person?tab=contract&entity=staff-96e4b22ca925,390,844,Matteo Marini,390,0,0,0,0
+owner,person?entity=driver-026,1366,768,Nele Hahn,1102,0,0,0,0
+owner,person?entity=driver-026,1920,1080,Nele Hahn,1613,0,0,0,0
+owner,person?entity=driver-026,2560,1440,Nele Hahn,2208,0,0,0,0
+owner,person?entity=driver-026,3840,2160,Nele Hahn,2304,0,0,0,0
+owner,person?entity=driver-026,390,844,Nele Hahn,390,0,0,0,0
+owner,person?tab=career&entity=driver-026,1366,768,Nele Hahn,1102,0,0,0,0
+owner,person?tab=career&entity=driver-026,1920,1080,Nele Hahn,1613,0,0,0,0
+owner,person?tab=career&entity=driver-026,2560,1440,Nele Hahn,2208,0,0,0,0
+owner,person?tab=career&entity=driver-026,3840,2160,Nele Hahn,2304,0,0,0,0
+owner,person?tab=career&entity=driver-026,390,844,Nele Hahn,390,0,0,0,0
+owner,person?tab=statistics&entity=driver-026,1366,768,Nele Hahn,1102,0,0,0,0
+owner,person?tab=statistics&entity=driver-026,1920,1080,Nele Hahn,1613,0,0,0,0
+owner,person?tab=statistics&entity=driver-026,2560,1440,Nele Hahn,2208,0,0,0,0
+owner,person?tab=statistics&entity=driver-026,3840,2160,Nele Hahn,2304,0,0,0,0
+owner,person?tab=statistics&entity=driver-026,390,844,Nele Hahn,390,0,0,0,0
+owner,person?tab=public&entity=driver-026,1366,768,Nele Hahn,1102,0,0,0,0
+owner,person?tab=public&entity=driver-026,1920,1080,Nele Hahn,1613,0,0,0,0
+owner,person?tab=public&entity=driver-026,2560,1440,Nele Hahn,2208,0,0,0,0
+owner,person?tab=public&entity=driver-026,3840,2160,Nele Hahn,2304,0,0,0,0
+owner,person?tab=public&entity=driver-026,390,844,Nele Hahn,390,0,0,0,0
+owner,person?tab=work&entity=driver-026,1366,768,Nele Hahn,1102,0,0,0,0
+owner,person?tab=work&entity=driver-026,1920,1080,Nele Hahn,1613,0,0,0,0
+owner,person?tab=work&entity=driver-026,2560,1440,Nele Hahn,2208,0,0,0,0
+owner,person?tab=work&entity=driver-026,3840,2160,Nele Hahn,2304,0,0,0,0
+owner,person?tab=work&entity=driver-026,390,844,Nele Hahn,390,0,0,0,0
+owner,person?tab=compare&entity=driver-026,1366,768,Nele Hahn,1102,0,0,0,0
+owner,person?tab=compare&entity=driver-026,1920,1080,Nele Hahn,1613,0,0,0,0
+owner,person?tab=compare&entity=driver-026,2560,1440,Nele Hahn,2208,0,0,0,0
+owner,person?tab=compare&entity=driver-026,3840,2160,Nele Hahn,2304,0,0,0,0
+owner,person?tab=compare&entity=driver-026,390,844,Nele Hahn,390,0,0,0,0
+owner,person?tab=contract&entity=driver-026,1366,768,Nele Hahn,1102,0,0,0,0
+owner,person?tab=contract&entity=driver-026,1920,1080,Nele Hahn,1613,0,0,0,0
+owner,person?tab=contract&entity=driver-026,2560,1440,Nele Hahn,2208,0,0,0,0
+owner,person?tab=contract&entity=driver-026,3840,2160,Nele Hahn,2304,0,0,0,0
+owner,person?tab=contract&entity=driver-026,390,844,Nele Hahn,390,0,0,0,0
+owner,person?tab=support&entity=driver-026,1366,768,Nele Hahn,1102,0,0,0,0
+owner,person?tab=support&entity=driver-026,1920,1080,Nele Hahn,1613,0,0,0,0
+owner,person?tab=support&entity=driver-026,2560,1440,Nele Hahn,2208,0,0,0,0
+owner,person?tab=support&entity=driver-026,3840,2160,Nele Hahn,2304,0,0,0,0
+owner,person?tab=support&entity=driver-026,390,844,Nele Hahn,390,0,0,0,0
+owner,person?entity=market-aramis-vale,1366,768,Aramis Vale,1102,0,0,0,0
+owner,person?entity=market-aramis-vale,1920,1080,Aramis Vale,1613,0,0,0,0
+owner,person?entity=market-aramis-vale,2560,1440,Aramis Vale,2208,0,0,0,0
+owner,person?entity=market-aramis-vale,3840,2160,Aramis Vale,2304,0,0,0,0
+owner,person?entity=market-aramis-vale,390,844,Aramis Vale,390,0,0,0,0
+owner,person?tab=career&entity=market-aramis-vale,1366,768,Aramis Vale,1102,0,0,0,0
+owner,person?tab=career&entity=market-aramis-vale,1920,1080,Aramis Vale,1613,0,0,0,0
+owner,person?tab=career&entity=market-aramis-vale,2560,1440,Aramis Vale,2208,0,0,0,0
+owner,person?tab=career&entity=market-aramis-vale,3840,2160,Aramis Vale,2304,0,0,0,0
+owner,person?tab=career&entity=market-aramis-vale,390,844,Aramis Vale,390,0,0,0,0
+owner,person?tab=statistics&entity=market-aramis-vale,1366,768,Aramis Vale,1102,0,0,0,0
+owner,person?tab=statistics&entity=market-aramis-vale,1920,1080,Aramis Vale,1613,0,0,0,0
+owner,person?tab=statistics&entity=market-aramis-vale,2560,1440,Aramis Vale,2208,0,0,0,0
+owner,person?tab=statistics&entity=market-aramis-vale,3840,2160,Aramis Vale,2304,0,0,0,0
+owner,person?tab=statistics&entity=market-aramis-vale,390,844,Aramis Vale,390,0,0,0,0
+owner,person?tab=public&entity=market-aramis-vale,1366,768,Aramis Vale,1102,0,0,0,0
+owner,person?tab=public&entity=market-aramis-vale,1920,1080,Aramis Vale,1613,0,0,0,0
+owner,person?tab=public&entity=market-aramis-vale,2560,1440,Aramis Vale,2208,0,0,0,0
+owner,person?tab=public&entity=market-aramis-vale,3840,2160,Aramis Vale,2304,0,0,0,0
+owner,person?tab=public&entity=market-aramis-vale,390,844,Aramis Vale,390,0,0,0,0
+owner,person?tab=work&entity=market-aramis-vale,1366,768,Aramis Vale,1102,0,0,0,0
+owner,person?tab=work&entity=market-aramis-vale,1920,1080,Aramis Vale,1613,0,0,0,0
+owner,person?tab=work&entity=market-aramis-vale,2560,1440,Aramis Vale,2208,0,0,0,0
+owner,person?tab=work&entity=market-aramis-vale,3840,2160,Aramis Vale,2304,0,0,0,0
+owner,person?tab=work&entity=market-aramis-vale,390,844,Aramis Vale,390,0,0,0,0
+owner,person?tab=compare&entity=market-aramis-vale,1366,768,Aramis Vale,1102,0,0,0,0
+owner,person?tab=compare&entity=market-aramis-vale,1920,1080,Aramis Vale,1613,0,0,0,0
+owner,person?tab=compare&entity=market-aramis-vale,2560,1440,Aramis Vale,2208,0,0,0,0
+owner,person?tab=compare&entity=market-aramis-vale,3840,2160,Aramis Vale,2304,0,0,0,0
+owner,person?tab=compare&entity=market-aramis-vale,390,844,Aramis Vale,390,0,0,0,0
+owner,person?tab=contract&entity=market-aramis-vale,1366,768,Aramis Vale,1102,0,0,0,0
+owner,person?tab=contract&entity=market-aramis-vale,1920,1080,Aramis Vale,1613,0,0,0,0
+owner,person?tab=contract&entity=market-aramis-vale,2560,1440,Aramis Vale,2208,0,0,0,0
+owner,person?tab=contract&entity=market-aramis-vale,3840,2160,Aramis Vale,2304,0,0,0,0
+owner,person?tab=contract&entity=market-aramis-vale,390,844,Aramis Vale,390,0,0,0,0
+owner,person?tab=support&entity=market-aramis-vale,1366,768,Aramis Vale,1102,0,0,0,0
+owner,person?tab=support&entity=market-aramis-vale,1920,1080,Aramis Vale,1613,0,0,0,0
+owner,person?tab=support&entity=market-aramis-vale,2560,1440,Aramis Vale,2208,0,0,0,0
+owner,person?tab=support&entity=market-aramis-vale,3840,2160,Aramis Vale,2304,0,0,0,0
+owner,person?tab=support&entity=market-aramis-vale,390,844,Aramis Vale,390,0,0,0,0
+owner,statistics?tab=contracts,1366,768,Мир автоспорта.,1102,0,0,0,0
+owner,statistics?tab=contracts,1920,1080,Мир автоспорта.,1613,0,0,0,0
+owner,statistics?tab=contracts,2560,1440,Мир автоспорта.,2208,0,0,0,0
+owner,statistics?tab=contracts,3840,2160,Мир автоспорта.,2304,0,0,0,0
+owner,statistics?tab=contracts,390,844,Мир автоспорта.,390,0,0,0,0
+owner,statistics?tab=drivers,1366,768,Мир автоспорта.,1102,0,0,0,0
+owner,statistics?tab=drivers,1920,1080,Мир автоспорта.,1613,0,0,0,0
+owner,statistics?tab=drivers,2560,1440,Мир автоспорта.,2208,0,0,0,0
+owner,statistics?tab=drivers,3840,2160,Мир автоспорта.,2304,0,0,0,0
+owner,statistics?tab=drivers,390,844,Мир автоспорта.,390,0,0,0,0
+owner,statistics?tab=staff,1366,768,Мир автоспорта.,1102,0,0,0,0
+owner,statistics?tab=staff,1920,1080,Мир автоспорта.,1613,0,0,0,0
+owner,statistics?tab=staff,2560,1440,Мир автоспорта.,2208,0,0,0,0
+owner,statistics?tab=staff,3840,2160,Мир автоспорта.,2304,0,0,0,0
+owner,statistics?tab=staff,390,844,Мир автоспорта.,390,0,0,0,0
+owner,statistics?tab=overview,1366,768,Мир автоспорта.,1102,0,0,0,0
+owner,statistics?tab=overview,1920,1080,Мир автоспорта.,1613,0,0,0,0
+owner,statistics?tab=overview,2560,1440,Мир автоспорта.,2208,0,0,0,0
+owner,statistics?tab=overview,3840,2160,Мир автоспорта.,2304,0,0,0,0
+owner,statistics?tab=overview,390,844,Мир автоспорта.,390,0,0,0,0
+owner,manufacturer?tab=advisors,1366,768,Работа с производителямиПартнёры и поддержка,1102,0,0,0,0
+owner,manufacturer?tab=advisors,1920,1080,Работа с производителямиПартнёры и поддержка,1613,0,0,0,0
+owner,manufacturer?tab=advisors,2560,1440,Работа с производителямиПартнёры и поддержка,2208,0,0,0,0
+owner,manufacturer?tab=advisors,3840,2160,Работа с производителямиПартнёры и поддержка,2304,0,0,0,0
+owner,manufacturer?tab=advisors,390,844,Работа с производителямиПартнёры и поддержка,390,0,0,0,0
+owner,person?entity=driver-026&tab=profile,1366,768,Nele Hahn,1102,0,0,0,0
+owner,person?entity=driver-026&tab=profile,1920,1080,Nele Hahn,1613,0,0,0,0
+owner,person?entity=driver-026&tab=profile,2560,1440,Nele Hahn,2208,0,0,0,0
+owner,person?entity=driver-026&tab=profile,3840,2160,Nele Hahn,2304,0,0,0,0
+owner,person?entity=driver-026&tab=profile,390,844,Nele Hahn,390,0,0,0,0
+owner,person?entity=driver-026&tab=contract,1366,768,Nele Hahn,1102,0,0,0,0
+owner,person?entity=driver-026&tab=contract,1920,1080,Nele Hahn,1613,0,0,0,0
+owner,person?entity=driver-026&tab=contract,2560,1440,Nele Hahn,2208,0,0,0,0
+owner,person?entity=driver-026&tab=contract,3840,2160,Nele Hahn,2304,0,0,0,0
+owner,person?entity=driver-026&tab=contract,390,844,Nele Hahn,390,0,0,0,0
+owner,person?entity=driver-026&tab=work,1366,768,Nele Hahn,1102,0,0,0,0
+owner,person?entity=driver-026&tab=work,1920,1080,Nele Hahn,1613,0,0,0,0
+owner,person?entity=driver-026&tab=work,2560,1440,Nele Hahn,2208,0,0,0,0
+owner,person?entity=driver-026&tab=work,3840,2160,Nele Hahn,2304,0,0,0,0
+owner,person?entity=driver-026&tab=work,390,844,Nele Hahn,390,0,0,0,0
+owner,person?entity=driver-026&tab=compare,1366,768,Nele Hahn,1102,0,0,0,0
+owner,person?entity=driver-026&tab=compare,1920,1080,Nele Hahn,1613,0,0,0,0
+owner,person?entity=driver-026&tab=compare,2560,1440,Nele Hahn,2208,0,0,0,0
+owner,person?entity=driver-026&tab=compare,3840,2160,Nele Hahn,2304,0,0,0,0
+owner,person?entity=driver-026&tab=compare,390,844,Nele Hahn,390,0,0,0,0
+owner,person?entity=driver-026&tab=career,1366,768,Nele Hahn,1102,0,0,0,0
+owner,person?entity=driver-026&tab=career,1920,1080,Nele Hahn,1613,0,0,0,0
+owner,person?entity=driver-026&tab=career,2560,1440,Nele Hahn,2208,0,0,0,0
+owner,person?entity=driver-026&tab=career,3840,2160,Nele Hahn,2304,0,0,0,0
+owner,person?entity=driver-026&tab=career,390,844,Nele Hahn,390,0,0,0,0
+owner,person?entity=driver-026&tab=public,1366,768,Nele Hahn,1102,0,0,0,0
+owner,person?entity=driver-026&tab=public,1920,1080,Nele Hahn,1613,0,0,0,0
+owner,person?entity=driver-026&tab=public,2560,1440,Nele Hahn,2208,0,0,0,0
+owner,person?entity=driver-026&tab=public,3840,2160,Nele Hahn,2304,0,0,0,0
+owner,person?entity=driver-026&tab=public,390,844,Nele Hahn,390,0,0,0,0
+owner,person?entity=driver-026&tab=statistics,1366,768,Nele Hahn,1102,0,0,0,0
+owner,person?entity=driver-026&tab=statistics,1920,1080,Nele Hahn,1613,0,0,0,0
+owner,person?entity=driver-026&tab=statistics,2560,1440,Nele Hahn,2208,0,0,0,0
+owner,person?entity=driver-026&tab=statistics,3840,2160,Nele Hahn,2304,0,0,0,0
+owner,person?entity=driver-026&tab=statistics,390,844,Nele Hahn,390,0,0,0,0
+owner,person?entity=staff-96e4b22ca925&tab=profile,1366,768,Matteo Marini,1102,0,0,0,0
+owner,person?entity=staff-96e4b22ca925&tab=profile,1920,1080,Matteo Marini,1613,0,0,0,0
+owner,person?entity=staff-96e4b22ca925&tab=profile,2560,1440,Matteo Marini,2208,0,0,0,0
+owner,person?entity=staff-96e4b22ca925&tab=profile,3840,2160,Matteo Marini,2304,0,0,0,0
+owner,person?entity=staff-96e4b22ca925&tab=profile,390,844,Matteo Marini,390,0,0,0,0
+owner,person?entity=staff-96e4b22ca925&tab=contract,1366,768,Matteo Marini,1102,0,0,0,0
+owner,person?entity=staff-96e4b22ca925&tab=contract,1920,1080,Matteo Marini,1613,0,0,0,0
+owner,person?entity=staff-96e4b22ca925&tab=contract,2560,1440,Matteo Marini,2208,0,0,0,0
+owner,person?entity=staff-96e4b22ca925&tab=contract,3840,2160,Matteo Marini,2304,0,0,0,0
+owner,person?entity=staff-96e4b22ca925&tab=contract,390,844,Matteo Marini,390,0,0,0,0
+owner,person?entity=staff-96e4b22ca925&tab=work,1366,768,Matteo Marini,1102,0,0,0,0
+owner,person?entity=staff-96e4b22ca925&tab=work,1920,1080,Matteo Marini,1613,0,0,0,0
+owner,person?entity=staff-96e4b22ca925&tab=work,2560,1440,Matteo Marini,2208,0,0,0,0
+owner,person?entity=staff-96e4b22ca925&tab=work,3840,2160,Matteo Marini,2304,0,0,0,0
+owner,person?entity=staff-96e4b22ca925&tab=work,390,844,Matteo Marini,390,0,0,0,0
+owner,person?entity=staff-96e4b22ca925&tab=compare,1366,768,Matteo Marini,1102,0,0,0,0
+owner,person?entity=staff-96e4b22ca925&tab=compare,1920,1080,Matteo Marini,1613,0,0,0,0
+owner,person?entity=staff-96e4b22ca925&tab=compare,2560,1440,Matteo Marini,2208,0,0,0,0
+owner,person?entity=staff-96e4b22ca925&tab=compare,3840,2160,Matteo Marini,2304,0,0,0,0
+owner,person?entity=staff-96e4b22ca925&tab=compare,390,844,Matteo Marini,390,0,0,0,0
+owner,person?entity=staff-96e4b22ca925&tab=career,1366,768,Matteo Marini,1102,0,0,0,0
+owner,person?entity=staff-96e4b22ca925&tab=career,1920,1080,Matteo Marini,1613,0,0,0,0
+owner,person?entity=staff-96e4b22ca925&tab=career,2560,1440,Matteo Marini,2208,0,0,0,0
+owner,person?entity=staff-96e4b22ca925&tab=career,3840,2160,Matteo Marini,2304,0,0,0,0
+owner,person?entity=staff-96e4b22ca925&tab=career,390,844,Matteo Marini,390,0,0,0,0
+owner,person?entity=staff-96e4b22ca925&tab=public,1366,768,Matteo Marini,1102,0,0,0,0
+owner,person?entity=staff-96e4b22ca925&tab=public,1920,1080,Matteo Marini,1613,0,0,0,0
+owner,person?entity=staff-96e4b22ca925&tab=public,2560,1440,Matteo Marini,2208,0,0,0,0
+owner,person?entity=staff-96e4b22ca925&tab=public,3840,2160,Matteo Marini,2304,0,0,0,0
+owner,person?entity=staff-96e4b22ca925&tab=public,390,844,Matteo Marini,390,0,0,0,0
+owner,person?entity=staff-96e4b22ca925&tab=statistics,1366,768,Matteo Marini,1102,0,0,0,0
+owner,person?entity=staff-96e4b22ca925&tab=statistics,1920,1080,Matteo Marini,1613,0,0,0,0
+owner,person?entity=staff-96e4b22ca925&tab=statistics,2560,1440,Matteo Marini,2208,0,0,0,0
+owner,person?entity=staff-96e4b22ca925&tab=statistics,3840,2160,Matteo Marini,2304,0,0,0,0
+owner,person?entity=staff-96e4b22ca925&tab=statistics,390,844,Matteo Marini,390,0,0,0,0
+owner,organization?tab=uniform,1366,768,McLaren Formula 1 Team,1102,0,0,0,0
+owner,organization?tab=uniform,1920,1080,McLaren Formula 1 Team,1613,0,0,0,0
+owner,organization?tab=uniform,2560,1440,McLaren Formula 1 Team,2208,0,0,0,0
+owner,organization?tab=uniform,3840,2160,McLaren Formula 1 Team,2304,0,0,0,0
+owner,organization?tab=uniform,390,844,McLaren Formula 1 Team,390,0,0,0,0

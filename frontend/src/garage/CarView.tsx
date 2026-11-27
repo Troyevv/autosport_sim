@@ -81,7 +81,10 @@ export function CarView({
     <div className="car-stand" data-state={status}>
       <div
         className="car-cutout"
-        style={{ width: (g.length / 5.65) * 93 + '%', aspectRatio: g.size.join(' / ') }}
+        style={{
+          width: `min(${(g.length / 5.65) * 93}cqw, ${(g.size[0] / g.size[1]) * 94}cqh)`,
+          aspectRatio: g.size.join(' / '),
+        }}
       >
         <canvas className="garage-floor" aria-hidden="true" ref={floor} />
         <canvas

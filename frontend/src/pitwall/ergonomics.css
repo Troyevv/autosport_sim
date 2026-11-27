@@ -64,7 +64,7 @@
 
 @media (min-width: 901px) {
   .pitwall .sidebar { width: var(--rail-width); }
-  .pitwall .main-inner { width: 100%; max-width: none; padding-inline: var(--page-gutter); }
+  .pitwall .main-inner { width: 100%; max-width: 144rem; margin-inline: auto; padding-inline: var(--page-gutter); }
   .pitwall .nav-item { min-height: 3.25rem; font-size: var(--type-body); }
   .pitwall .topbar { min-height: 4.25rem; padding-inline: var(--page-gutter); }
 }

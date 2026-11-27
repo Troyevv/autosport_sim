@@ -998,9 +998,7 @@
   .p-race-seat .p-person-card {
     border: 0;
   }
-  .p-race-seat .p-person-card.featured .p-photo {
-    height: 320px;
-  }
+
   .p-race-seat .p-person-card.featured .p-card-identity {
     background: linear-gradient(90deg, #2e2e2e, #232323);
   }
@@ -4678,5 +4676,42 @@
   /* Keep the full touch target inside short form viewports. */
   :scope .p-form-actions {
     bottom: 0;
+  }
+}
+
+
+@scope (.people-module) {
+  .p-person-card {
+    container: person-card / inline-size;
+  }
+
+  @media (min-width: 901px) {
+    .p-race-grid {
+      grid-template-columns: repeat(auto-fit, minmax(min(30rem, 100%), 1fr));
+      gap: var(--section-gap);
+    }
+    .p-directory-cards {
+      grid-template-columns: repeat(auto-fill, minmax(min(17rem, 100%), 1fr));
+    }
+  }
+
+  @container person-card (min-width: 29rem) {
+    .p-person-main {
+      display: grid;
+      grid-template-columns: minmax(10rem, 42%) minmax(0, 1fr);
+      align-items: stretch;
+    }
+    .p-person-card .p-person-main .p-photo {
+      height: auto;
+      aspect-ratio: 6 / 7;
+      max-height: 22rem;
+    }
+    .p-person-main .p-card-identity {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: var(--card-inset);
+      overflow-wrap: anywhere;
+    }
   }
 }

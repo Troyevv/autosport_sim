@@ -248,7 +248,7 @@ function Studio({ c, world, catalog, updateCareer }: Props & { catalog: Catalog 
       {tab === 'overview' && (
         <>
           <section className="garage-hero">
-            <div className="studio-stage" onDoubleClick={() => open('preview')}>
+            <div className="studio-stage legacy-studio-stage" onDoubleClick={() => open('preview')}>
               <CarView {...viewProps} />
             </div>
             <div>
@@ -397,7 +397,7 @@ function Studio({ c, world, catalog, updateCareer }: Props & { catalog: Catalog 
                   </div>
                 </header>
               )}
-              <div className="studio-stage">
+              <div className="studio-stage legacy-studio-stage">
                 {!editing && (
                   <>
                     <header>
