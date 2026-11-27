@@ -74,7 +74,6 @@ export function PersonPortrait({ person, id, size, role, className = '' }) {
         driver={(current.position || role) === 'driver'}
         organization={o}
         media={g.data.media || []}
-        showShoulders
       />
     </span>
   )

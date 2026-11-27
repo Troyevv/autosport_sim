@@ -33,7 +33,7 @@ export function UniformEditor({ org }) {
     c = g.game.career,
     order = useOrder(c, g.updateCareer, 'uniform')
   const [category, choose] = useState(org.kind === 'supplier' ? 'advisor' : 'driver')
-  const [view, setView] = useState('garment'),
+  const [view, setView] = useState('portrait'),
     [model, selectModel] = useState('')
   const [draft, edit] = useState(c.organization_uniforms?.[org.id] || {}),
     [mounts, place] = useState({}),
@@ -102,7 +102,7 @@ export function UniformEditor({ org }) {
           <span>{org.name}</span>
           <div className="uniform-camera" aria-label="Режим примерки">
             {[
-              ['outfit', 'На сотруднике'],
+              ['portrait', 'На сотруднике'],
               ['garment', 'Только форма'],
             ].map(([id, name]) => (
               <button type="button" key={id} aria-pressed={view === id} onClick={() => setView(id)}>
@@ -123,7 +123,6 @@ export function UniformEditor({ org }) {
             color={org.color}
             driver={category === 'driver'}
             media={g.data.media}
-            showShoulders
           />
         )}
         <div>

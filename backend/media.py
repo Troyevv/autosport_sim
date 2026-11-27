@@ -13,6 +13,7 @@ ASSETS.extend(json.loads((ROOT / "logos" / "catalog.json").read_text(encoding="u
 ASSETS.extend(
     json.loads((ROOT / "wardrobe" / "catalog.json").read_text(encoding="utf-8"))
 )
+ASSETS.extend(json.loads((ROOT / "wardrobe/mattes/catalog.json").read_text(encoding="utf-8")))
 registration = json.loads(
     (ROOT / "wardrobe" / "registration.json").read_text(encoding="utf-8")
 )

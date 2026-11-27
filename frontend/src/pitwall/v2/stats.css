@@ -482,13 +482,13 @@
   }
   .st-mark .person-portrait {
     width: 100% !important;
-    height: 120% !important;
+    height: 100% !important;
     align-self: flex-start;
     display: block;
   }
   .st-mark .person-portrait > svg {
-    max-width: 100%;
-    height: auto;
+    width: 100%;
+    height: 100%;
   }
   .st-mark-drivers,
   .st-mark-staff {

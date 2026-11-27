@@ -70,7 +70,6 @@ export function StaffFile(props: Props) {
             color={employee.org ? world.organizations[employee.org].color : '#888888'}
             driver={employee.position === 'driver'}
             media={props.media}
-            showShoulders
           />
           <span className="p-dossier-rating">
             <b>{data?.profile.rating ?? employee.rating}</b>

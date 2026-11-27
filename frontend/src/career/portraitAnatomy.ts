@@ -44,7 +44,9 @@ function paint(
       ctx.drawImage(photo, 0, 0)
       const shade = ctx.getImageData(0, 0, w, h),
         pixels = shade.data
-      const dye = colors.map((c) => [1, 3, 5].map((i) => parseInt(c.slice(i, i + 2), 16)))
+      const dye = colors.map((c) =>
+        [1, 3, 5].map((i) => parseInt(c.slice(i, i + 2), 16)),
+      )
       for (let i = 0; i < pixels.length; i += 4) {
         if (!pixels[i + 3]) continue
         const grey = pixels[i],
@@ -60,7 +62,8 @@ function paint(
               zones[i + 2] * dye[2][channel]) /
             total
           // Even black technical textiles reflect diffuse light off yarn and raised seams.
-          const dyed = Math.min(1, light) * (0.94 * pigment + 6) + (255 - pigment) * shine
+          const dyed =
+            Math.min(1, light) * (0.94 * pigment + 6) + (255 - pigment) * shine
           pixels[i + channel] = grey * (1 - coverage) + dyed * coverage
         }
       }
@@ -108,25 +111,30 @@ export function fitGarment(anatomy: Anatomy | undefined, template: Template) {
     (anatomy?.body[1][13] ?? 193) - 45,
     36,
   ]
-  const [left, right] = template.collar
-  const scale = (eye * 1.54) / (right - left)
-  return { x: cx - ((left + right) * scale) / 2, y: chin + eye * 0.13, scale, cx, chin, eye }
+  const [left, right, front] = template.collar
+  const aperture = (eye * (anatomy?.neck ?? 1.54)) / (right - left)
+  const faceWidth = eye * (anatomy?.breadth ?? 2.24)
+  const scale = Math.min(
+    Math.max(aperture, (2.42 * faceWidth) / template.chest),
+    (2.95 * faceWidth) / template.chest,
+  )
+  return {
+    x: cx - ((left + right) * scale) / 2,
+    y: chin + eye * template.drop - front * scale,
+    scale,
+    cx,
+    chin,
+    eye,
+  }
 }
-export function portraitCamera(
-  anatomy: Anatomy | undefined,
-  template: Template,
-  framing: 'face' | 'portrait' | 'outfit',
-) {
-  const fit = fitGarment(anatomy, template)
-  const top = anatomy?.camera[1] ?? 0
-  if (framing === 'outfit')
-    return [
-      fit.x - template.width * fit.scale * 0.055,
-      top - 4,
-      template.width * fit.scale * 1.11,
-      fit.y + template.height * fit.scale * 0.93 - top,
-    ]
-  const bottom = fit.chin + fit.eye * (framing === 'face' ? 1.65 : 2.95)
-  const height = Math.max(bottom - top, anatomy?.camera[3] || 0)
-  return [fit.cx - (height * 3) / 7, top, (height * 6) / 7, height]
+// One broadcast bust frame for every appointment and every screen. Interocular
+// distance is the ruler, so a change of uniform cannot change the shot.
+export function portraitCamera({
+  cx,
+  chin,
+  eye,
+}: ReturnType<typeof fitGarment>) {
+  const height = eye * 7.75
+  const width = (height * 6) / 7
+  return [cx - width / 2, chin - eye * 4.75, width, height]
 }

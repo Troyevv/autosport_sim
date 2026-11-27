@@ -166,10 +166,10 @@ export type Career = Save & {
     payroll_cents: number
   }[]
 }
-export type Anatomy = { anchor?:number[]; hair?:string; skin?:string; unavailable?:boolean; camera: number[]; body: number[][]; nativeWidth: number }
+export type Anatomy = { anchor?:number[]; matte?:[string, number]; fringe?:boolean; neck?:number; breadth?:number; keyLight?:number; camera: number[]; body: number[][]; nativeWidth: number }
 export type Garment = { rig: { span: number; collar: number[]; seat: number[] }; outline: number[][] }
 export type Asset = {
-  template?: {width:number;height:number;collar:number[]}
+  template?: {width:number;height:number;collar:number[];lip:number[];drop:number;chest:number}
   anatomy?: Anatomy
   garment?: Garment
   kind: string

@@ -14,10 +14,16 @@ def test_bundled_artwork_complete_and_unique():
     assert set(used).isdisjoint(WORLD["reserve"])
     assert set(used) | set(WORLD["reserve"]) == faces
     assert len(WORLD["reserve"]) >= 200
+    matte_slots = set()
     for a in media.index():
         path = media.ROOT / a["path"]
         assert hashlib.sha256(path.read_bytes()).hexdigest() == a["sha256"]
         if a["kind"] == "generated-head":
+            atlas, slot = a["anatomy"]["matte"]
+            assert ("portrait-matte", atlas) in keys
+            assert 0 <= slot < 16 and (atlas, slot) not in matte_slots
+            matte_slots.add((atlas, slot))
+            assert a["anatomy"]["neck"] > 0 and a["anatomy"]["breadth"] > 0
             assert len(a["anatomy"]["body"][0]) == len(a["anatomy"]["body"][1]) == 27
             with Image.open(path) as im:
                 assert im.mode == "RGBA" and im.size == (480, 560)

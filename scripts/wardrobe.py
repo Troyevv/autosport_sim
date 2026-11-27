@@ -23,6 +23,48 @@ COLLARS = {
     "advisor": (236, 368, 48),
     "neutral": (224, 372, 48),
 }
+# Front lip of each photographed collar, traced from left seam to right seam
+# at regular horizontal intervals. Distances are fractions of the measured depth.
+# The last value seats the lip below the chin, in interocular distances.
+NECKLINES = {
+    "driver": ([0.22, 0.61, 0.80, 0.91, 0.97, 1, 0.97, 0.91, 0.80, 0.61, 0.22], 0.60),
+    "mechanic": (
+        [0.23, 0.58, 0.74, 0.84, 0.91, 1.12, 0.91, 0.84, 0.74, 0.58, 0.23],
+        0.68,
+    ),
+    "engineering": (
+        [0.15, 0.49, 0.67, 0.81, 0.91, 1, 0.91, 0.81, 0.67, 0.49, 0.15],
+        0.94,
+    ),
+    "executive": (
+        [0.18, 0.46, 0.62, 0.77, 0.9, 1.03, 0.90, 0.77, 0.62, 0.46, 0.18],
+        0.90,
+    ),
+    "advisor": ([0.23, 0.60, 0.81, 0.92, 0.97, 1, 0.97, 0.92, 0.81, 0.60, 0.23], 0.62),
+    "neutral": ([0.10, 0.56, 0.77, 0.91, 0.97, 1, 0.97, 0.91, 0.77, 0.56, 0.10], 1.00),
+}
+
+
+def front_lip(luminance, left, right, depth, guide):
+    """Trace the actual seam where the dark inner collar meets the front cloth."""
+    smooth_luma = np.asarray(
+        Image.fromarray(np.uint8(luminance)).filter(ImageFilter.GaussianBlur(1.3)),
+        dtype=float,
+    )
+    slope = np.gradient(smooth_luma, axis=0)
+    columns = np.arange(left, right + 1)
+    expected = np.interp(
+        columns, np.linspace(left, right, len(guide)), np.array(guide) * depth
+    )
+    measured = []
+    for x, y in zip(columns, expected):
+        rows = np.arange(max(0, int(y - 0.13 * depth)), int(y + 0.23 * depth + 4))
+        strongest = np.argmax(slope[rows, x] - 0.03 * np.abs(rows - y))
+        measured.append(rows[strongest] + 1.3)
+    padded = np.pad(measured, 2, mode="edge")
+    seam = np.median(np.lib.stride_tricks.sliding_window_view(padded, 5), axis=1)
+    samples = np.interp(np.linspace(left, right, 33), columns, seam)
+    return np.round(samples / depth, 4).tolist()
 
 
 def prepare(path):
@@ -107,26 +149,23 @@ def prepare(path):
         )
 
     cloth = asset("uniform", texture_file)
-    cloth["template"] = dict(width=w, height=h, collar=[left, right, front])
+    lip, drop = NECKLINES[path.stem]
+    # Chest breadth at the level of the armholes, measured on the fixed master.
+    cols = np.flatnonzero(alpha[round(0.28 * h)] > 127)
+    cloth["template"] = dict(
+        width=w,
+        height=h,
+        collar=[left, right, front],
+        lip=front_lip(lum, left, right, front, lip),
+        drop=drop,
+        chest=int(cols[-1] - cols[0]),
+    )
     return [cloth, asset("uniform-mask", mask_file)]
 
 
 if __name__ == "__main__":
     OUTPUT.mkdir(exist_ok=True)
     assets = [item for path in sorted(SOURCE.glob("*.webp")) for item in prepare(path)]
-    arms = OUTPUT / "paddock-forearms.webp"
-    assets.append(
-        dict(
-            kind="skin-detail",
-            entity="paddock-forearms",
-            path="wardrobe/" + arms.name,
-            sha256=hashlib.sha256(arms.read_bytes()).hexdigest(),
-            source="https://github.com/Troyevv/autosport_sim",
-            author="Autosport Sim / OpenAI ImageGen",
-            license="MIT",
-            changes="Фотографический слой предплечий, зарегистрированный по краю рукавов поло.",
-        )
-    )
     (OUTPUT / "catalog.json").write_text(
         json.dumps(assets, ensure_ascii=False, indent=2) + "\n"
     )
