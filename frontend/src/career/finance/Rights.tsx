@@ -1,4 +1,4 @@
-import {businessTab,BusinessTabs} from '../../pitwall/BusinessTabs'
+import { businessTab, BusinessTabs } from '../../pitwall/BusinessTabs'
 import { useState, type FormEvent } from 'react'
 import { Button, Dialog, Header, Panel } from '../../ui/components'
 import { usePersonnel } from '../staff/model'
@@ -21,14 +21,26 @@ type Inventory = {
   items: Check[]
   mounts: Record<string, { x: number; scale: number }>
 }
-export function Rights({ c, world, updateCareer }: SectionProps & { updateCareer: (c: Career) => void }) {
-  const result = usePersonnel<Inventory[]>('careers/' + c.id + '/rights?revision=' + c.revision, c.revision)
+export function Rights({
+  c,
+  world,
+  updateCareer,
+}: SectionProps & { updateCareer: (c: Career) => void }) {
+  const result = usePersonnel<Inventory[]>(
+    'careers/' + c.id + '/rights?revision=' + c.revision,
+    c.revision,
+  )
   const market = usePersonnel<Market>('careers/' + c.id + '/commercial', c.revision)
   const [edit, setEdit] = useState<{ d: Inventory; r: Check } | null>(null),
     order = useOrder(c, updateCareer)
   const tab = businessTab('rights')
-  const inventory = result.data?.map(d => ({...d,items:d.items.filter(r => tab==='all' || r.fulfilled === (tab==='fulfilled'))})).filter(d => d.items.length || tab==='all')
-  const brand = (id: string) => market.data?.brands.find((b) => b.id === id)?.name ?? id
+  const inventory = result.data
+    ?.map((d) => ({
+      ...d,
+      items: d.items.filter((r) => tab === 'all' || r.fulfilled === (tab === 'fulfilled')),
+    }))
+    .filter((d) => d.items.length || tab === 'all')
+  const brand = (id: string) => market.data?.brands.find((b) => b.id === id)?.name ?? 'Партнёр'
   async function apply(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
     if (!edit) return
@@ -51,7 +63,21 @@ export function Rights({ c, world, updateCareer }: SectionProps & { updateCareer
         title="Рекламные права"
         sub="Инвентарь договоров и проверка фактических размещений на игровую дату."
       />
-      <BusinessTabs page="rights"/>
+      <BusinessTabs page="rights" />
+      {result.data && (
+        <div className="rights-coverage">
+          <strong>
+            {result.data.flatMap((d) => d.items).filter((r) => r.fulfilled).length}{' '}
+            <small>/ {result.data.flatMap((d) => d.items).length}</small>
+          </strong>
+          <span>размещений выполнено</span>
+          <progress
+            aria-label="Исполнение рекламных прав"
+            value={result.data.flatMap((d) => d.items).filter((r) => r.fulfilled).length}
+            max={Math.max(1, result.data.flatMap((d) => d.items).length)}
+          />
+        </div>
+      )}
       {result.error && (
         <p role="alert">
           {result.error} <Button onClick={result.retry}>Повторить</Button>
@@ -65,7 +91,9 @@ export function Rights({ c, world, updateCareer }: SectionProps & { updateCareer
       )}
       {inventory?.map((d) => (
         <Panel key={d.contract} title={brand(d.sponsor)} action={<small>До {d.end}</small>}>
-          {d.items.length === 0 && <p className="panel-body">Обязательные поверхности не согласованы.</p>}
+          {d.items.length === 0 && (
+            <p className="panel-body">Обязательные поверхности не согласованы.</p>
+          )}
           {d.items.map((r) => (
             <div className="result rights-row" key={r.zone + (r.entry || '')}>
               <span>
@@ -85,12 +113,13 @@ export function Rights({ c, world, updateCareer }: SectionProps & { updateCareer
                   </span>
                 )}
                 <small>
-                  <meter min={0} max={100} value={r.share} aria-label="Доля поверхности"/> {r.share}% · {r.shared ? 'Допускает совместное размещение' : 'Индивидуальное размещение'} ·{' '}
+                  <meter min={0} max={100} value={r.share} aria-label="Доля поверхности" /> {r.share}% ·{' '}
+                  {r.shared ? 'Допускает совместное размещение' : 'Индивидуальное размещение'} ·{' '}
                   {r.fulfilled ? 'Размещено' : 'Требуется размещение'}
                 </small>
               </span>
               {r.entry ? (
-                <a className="btn" href={'#livery?entity='+encodeURIComponent(r.entry)}>
+                <a className="btn" href={'#livery?entity=' + encodeURIComponent(r.entry)}>
                   В гараж
                 </a>
               ) : (
@@ -137,7 +166,9 @@ export function Rights({ c, world, updateCareer }: SectionProps & { updateCareer
                 name="scale"
                 min="10"
                 max="100"
-                defaultValue={Math.round((edit.d.mounts[edit.r.zone]?.scale ?? edit.r.share / 100) * 100)}
+                defaultValue={Math.round(
+                  (edit.d.mounts[edit.r.zone]?.scale ?? edit.r.share / 100) * 100,
+                )}
               />
             </label>
             {order.error && <p role="alert">{order.error}</p>}

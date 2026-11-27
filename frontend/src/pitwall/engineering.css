@@ -895,3 +895,541 @@
     }
   }
 }
+/* A programme reads as a car project, with its people and physical readiness. */
+.pitwall .engineering-module .eng-program-hero {
+  position: relative;
+  min-height: 320px;
+  border: 1px solid #434343;
+  border-radius: 8px;
+  background:
+    radial-gradient(ellipse at 78% 40%, #5e5e5e36, transparent 56%),
+    linear-gradient(140deg, #292929, #1a1a1a);
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 0.8fr 1.2fr;
+}
+.pitwall .engineering-module .eng-blueprint-lines {
+  position: absolute;
+  inset: 0;
+  opacity: 0.12;
+  pointer-events: none;
+  background-image:
+    linear-gradient(#82909a 1px, transparent 1px), linear-gradient(90deg, #82909a 1px, transparent 1px);
+  background-size: 52px 52px;
+  mask-image: linear-gradient(90deg, transparent, #000);
+}
+.pitwall .engineering-module .eng-program-copy {
+  position: relative;
+  z-index: 1;
+  padding: 28px 0 28px 30px;
+  align-self: center;
+}
+.pitwall .engineering-module .eng-program-copy > small {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: var(--org-accent);
+}
+.pitwall .engineering-module .eng-program-copy h2 {
+  font-size: 58px;
+  letter-spacing: -0.07em;
+  margin: 8px 0;
+}
+.pitwall .engineering-module .eng-program-copy p {
+  font-size: 13px;
+  max-width: 400px;
+}
+.pitwall .engineering-module .eng-car-stage {
+  align-self: center;
+  position: relative;
+  min-width: 0;
+  padding: 8px 20px 4px 0;
+  min-height: 210px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.pitwall .engineering-module .eng-car-stage > *:first-child {
+  width: 100%;
+  min-width: 0;
+}
+.pitwall .engineering-module .eng-car-stage > span {
+  font-size: 10px;
+  text-align: right;
+  padding-right: 15px;
+  color: #8a9da9;
+}
+.pitwall .engineering-module .eng-program-hero-footer {
+  position: relative;
+  z-index: 1;
+  grid-column: 1/-1;
+  padding: 17px 27px;
+  border-top: 1px solid #4f4f4f70;
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  align-items: center;
+  background: #19191955;
+}
+/* Council: agenda on the left, people and competing options in the decision room. */
+/* A work file remains connected across research, release, manufacture and custody. */
+/* Manufacturer views: product passport, client selection and evidence-led support. */
+/* Dialogs keep the quote, consequences and confirmation on the same surface. */
+@media (min-width: 1600px) {
+  .pitwall .engineering-module .eng-program-hero {
+    min-height: 350px;
+  }
+  .pitwall .engineering-module .eng-program-copy {
+    padding-left: 38px;
+  }
+  .pitwall .engineering-module .eng-program-copy h2 {
+    font-size: 75px;
+  }
+  .pitwall .engineering-module .eng-car-stage {
+    min-height: 250px;
+  }
+}
+@media (max-width: 1000px) {
+  .pitwall .engineering-module .eng-program-hero {
+    grid-template-columns: 1fr 1.1fr;
+  }
+  .pitwall .engineering-module .eng-program-copy h2 {
+    font-size: 50px;
+  }
+}
+@media (max-width: 760px) {
+  .pitwall .engineering-module .eng-program-hero {
+    grid-template-columns: 1fr;
+    min-height: 0;
+  }
+  .pitwall .engineering-module .eng-program-copy {
+    padding: 23px 22px 0;
+  }
+  .pitwall .engineering-module .eng-program-copy h2 {
+    font-size: 48px;
+    margin: 7px 0;
+  }
+  .pitwall .engineering-module .eng-program-copy p {
+    font-size: 12px;
+    margin: 8px 0 15px;
+    max-width: none;
+  }
+  .pitwall .engineering-module .eng-program-copy > small {
+    font-size: 9px;
+  }
+  .pitwall .engineering-module .eng-car-stage {
+    min-height: 145px;
+    padding: 0 8px;
+    margin: -5px 0 0;
+  }
+  .pitwall .engineering-module .eng-car-stage > span {
+    font-size: 8px;
+    padding: 0 10px 12px;
+  }
+  .pitwall .engineering-module .eng-program-hero-footer {
+    padding: 15px;
+    gap: 10px;
+    align-items: center;
+  }
+  .pitwall .engineering-module .eng-program-hero-footer .eng-person {
+    gap: 9px;
+  }
+  .pitwall .engineering-module .eng-program-hero-footer .eng-person strong {
+    font-size: 11px;
+  }
+  .pitwall .engineering-module .eng-program-hero-footer .eng-person small {
+    font-size: 9px;
+  }
+  .pitwall .engineering-module .eng-program-hero-footer .eng-button {
+    min-height: 42px;
+    padding: 9px;
+    font-size: 10px;
+  }
+  .pitwall .engineering-module .eng-program-hero-footer .eng-button svg {
+    display: none;
+  }
+}
+@media (max-width: 400px) {
+  .pitwall .engineering-module .eng-program-copy {
+    padding: 22px 18px 0;
+  }
+  .pitwall .engineering-module .eng-program-copy h2 {
+    font-size: 44px;
+  }
+}
+@media (max-height: 500px) and (orientation: landscape) {
+  .pitwall .engineering-module .eng-program-hero {
+    grid-template-columns: 1fr 1fr;
+    min-height: 210px;
+  }
+  .pitwall .engineering-module .eng-program-copy {
+    padding: 16px 20px;
+  }
+  .pitwall .engineering-module .eng-program-copy h2 {
+    font-size: 38px;
+  }
+  .pitwall .engineering-module .eng-program-copy p {
+    font-size: 11px;
+    margin: 7px 0;
+  }
+  .pitwall .engineering-module .eng-program-hero-footer {
+    padding: 10px 18px;
+  }
+  .pitwall .engineering-module .eng-car-stage {
+    min-height: 140px;
+  }
+}
+
+/* First-review correction: keep action access ahead of the vehicle showcase. */
+.pitwall .engineering-module .eng-car-stage .studio-stage {
+  height: 230px;
+}
+.pitwall .engineering-module .eng-program-hero {
+  min-height: 285px;
+}
+.pitwall .engineering-module .eng-program-copy h2 {
+  font-size: 55px;
+}
+@media (min-width: 1600px) {
+  .pitwall .engineering-module .eng-car-stage .studio-stage {
+    height: 250px;
+  }
+  .pitwall .engineering-module .eng-program-hero {
+    min-height: 310px;
+  }
+}
+@media (max-width: 760px) {
+  .pitwall .engineering-module .eng-program-hero {
+    min-height: 0;
+  }
+  .pitwall .engineering-module .eng-program-copy {
+    padding: 18px 18px 0;
+  }
+  .pitwall .engineering-module .eng-program-copy h2 {
+    font-size: 38px;
+  }
+  .pitwall .engineering-module .eng-program-copy > p {
+    font-size: 11px;
+    line-height: 1.6;
+    margin: 5px 0 13px;
+  }
+  .pitwall .engineering-module .eng-car-stage {
+    min-height: 135px;
+    padding: 7px 8px 0;
+    margin: 0;
+  }
+  .pitwall .engineering-module .eng-car-stage .studio-stage {
+    height: 160px;
+  }
+}
+@media (max-height: 500px) and (orientation: landscape) {
+  .pitwall .engineering-module .eng-car-stage .studio-stage {
+    height: 165px;
+  }
+  .pitwall .engineering-module .eng-program-hero {
+    min-height: 220px;
+  }
+}
+
+/* Explicit search layout: keep global form label direction out of toolbars. */
+
+/* Mobile screen names make room for the actual working area. */
+/* A programme reads as a car project, with its people and physical readiness. */
+/* Council: agenda on the left, people and competing options in the decision room. */
+/* A work file remains connected across research, release, manufacture and custody. */
+/* Manufacturer views: product passport, client selection and evidence-led support. */
+.pitwall .engineering-module .eng-client-car {
+  min-height: 145px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 5px;
+  overflow: hidden;
+}
+.pitwall .engineering-module .eng-client-car > * {
+  max-width: 100%;
+  width: 100%;
+}
+.pitwall .engineering-module .eng-client-rights {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  border-top: 1px solid #4f4f4f;
+  border-bottom: 1px solid #4f4f4f;
+  margin-bottom: 22px;
+  padding: 21px 0;
+}
+.pitwall .engineering-module .eng-client-rights > div {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  min-width: 0;
+}
+.pitwall .engineering-module .eng-client-rights svg {
+  color: var(--org-accent);
+}
+.pitwall .engineering-module .eng-client-rights strong {
+  font-size: 12px;
+  line-height: 1.5;
+}
+.pitwall .engineering-module .eng-client-rights span {
+  font-size: 10px;
+  color: #8da4b1;
+  line-height: 1.6;
+}
+/* Dialogs keep the quote, consequences and confirmation on the same surface. */
+@media (max-width: 1000px) {
+  .pitwall .engineering-module .eng-client-rights {
+    gap: 10px;
+  }
+  .pitwall .engineering-module .eng-client-rights strong {
+    font-size: 11px;
+  }
+  .pitwall .engineering-module .eng-client-rights span {
+    font-size: 9px;
+  }
+}
+@media (max-width: 760px) {
+  .pitwall .engineering-module .eng-client-car {
+    min-height: 135px;
+    padding: 4px 0;
+  }
+  .pitwall .engineering-module .eng-client-rights {
+    grid-template-columns: 1fr;
+    gap: 17px;
+    padding: 20px 0;
+    margin-bottom: 18px;
+  }
+  .pitwall .engineering-module .eng-client-rights > div {
+    display: grid;
+    grid-template-columns: 28px 1fr;
+    gap: 3px 12px;
+    align-items: center;
+  }
+  .pitwall .engineering-module .eng-client-rights > div > svg {
+    grid-row: 1/3;
+  }
+  .pitwall .engineering-module .eng-client-rights strong {
+    font-size: 12px;
+  }
+  .pitwall .engineering-module .eng-client-rights span {
+    font-size: 10px;
+    grid-column: 2;
+  }
+}
+@media (max-height: 500px) and (orientation: landscape) {
+  .pitwall .engineering-module .eng-client-rights {
+    gap: 13px;
+  }
+}
+
+/* First-review correction: keep action access ahead of the vehicle showcase. */
+.pitwall .engineering-module .eng-client-car .studio-stage {
+  height: 180px;
+}
+@media (max-width: 760px) {
+  .pitwall .engineering-module .eng-client-car .studio-stage {
+    height: 155px;
+  }
+}
+
+/* Explicit search layout: keep global form label direction out of toolbars. */
+
+/* Mobile screen names make room for the actual working area. */
+.pitwall .engineering-module .eng-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border: 1px solid var(--eng-line);
+  border-radius: 6px;
+  overflow: hidden;
+  background: #1c1c1c;
+  margin: 20px 0 25px;
+}
+.pitwall .engineering-module .eng-stat {
+  padding: 18px 22px;
+  min-width: 0;
+  border-left: 1px solid var(--eng-line);
+}
+.pitwall .engineering-module .eng-stat:first-child {
+  border-left: 0;
+}
+.pitwall .engineering-module .eng-stat > span {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: #93a5af;
+  font-weight: 750;
+  display: block;
+}
+.pitwall .engineering-module .eng-stat > strong {
+  display: block;
+  font-size: 24px;
+  font-weight: 750;
+  line-height: 1.3;
+  margin: 7px 0;
+  letter-spacing: -0.04em;
+  color: #eef0e8;
+  overflow-wrap: anywhere;
+}
+.pitwall .engineering-module .eng-stat small {
+  display: block;
+  font-size: 10px;
+}
+.pitwall .engineering-module .eng-section-lead {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  align-items: center;
+  margin: 24px 0 20px;
+  min-width: 0;
+}
+.pitwall .engineering-module .eng-section-lead h2 {
+  font-size: 24px;
+}
+.pitwall .engineering-module .eng-section-lead p {
+  font-size: 13px;
+  margin: 7px 0 0;
+}
+.pitwall .engineering-module .eng-section-lead > .eng-inline-actions {
+  flex-shrink: 0;
+  margin: 0;
+}
+.pitwall .engineering-module .eng-inline-actions {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex-wrap: wrap;
+  margin-top: 17px;
+}
+/* A programme reads as a car project, with its people and physical readiness. */
+/* Council: agenda on the left, people and competing options in the decision room. */
+.pitwall .engineering-module .eng-council-strip .eng-stat strong {
+  font-size: 20px;
+}
+/* A work file remains connected across research, release, manufacture and custody. */
+/* Manufacturer views: product passport, client selection and evidence-led support. */
+/* Dialogs keep the quote, consequences and confirmation on the same surface. */
+@media (max-width: 1200px) {
+  .pitwall .engineering-module .eng-stat {
+    padding: 17px;
+  }
+  .pitwall .engineering-module .eng-stat > strong {
+    font-size: 22px;
+  }
+}
+@media (max-width: 760px) {
+  .pitwall .engineering-module .eng-stat {
+    padding: 15px;
+  }
+  .pitwall .engineering-module .eng-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin: 17px 0 20px;
+  }
+  .pitwall .engineering-module .eng-stats .eng-stat:nth-child(3) {
+    border-left: 0;
+    border-top: 1px solid var(--eng-line);
+  }
+  .pitwall .engineering-module .eng-stats .eng-stat:nth-child(4) {
+    border-top: 1px solid var(--eng-line);
+  }
+  .pitwall .engineering-module .eng-stat > span {
+    font-size: 9px;
+    letter-spacing: 0.07em;
+  }
+  .pitwall .engineering-module .eng-stat > strong {
+    font-size: 23px;
+    margin: 7px 0 5px;
+  }
+  .pitwall .engineering-module .eng-stat small {
+    font-size: 9px;
+    line-height: 1.5;
+  }
+  .pitwall .engineering-module .eng-section-lead {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 15px;
+    margin: 22px 0 17px;
+  }
+  .pitwall .engineering-module .eng-section-lead h2 {
+    font-size: 23px;
+  }
+  .pitwall .engineering-module .eng-section-lead p {
+    font-size: 12px;
+  }
+  .pitwall .engineering-module .eng-section-lead > .eng-inline-actions {
+    width: 100%;
+    gap: 9px;
+  }
+  .pitwall .engineering-module .eng-section-lead > .eng-inline-actions .eng-button {
+    flex: 1;
+  }
+  .pitwall .engineering-module .eng-council-strip .eng-stat:last-child {
+    grid-column: 1/-1;
+    border-left: 0;
+    border-top: 1px solid #3f3f3f;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 15px;
+    align-items: center;
+  }
+  .pitwall .engineering-module .eng-council-strip .eng-stat:last-child > strong {
+    grid-column: 2;
+    grid-row: 1/3;
+    text-align: right;
+  }
+  .pitwall .engineering-module .eng-council-strip .eng-stat > strong {
+    font-size: 19px;
+  }
+}
+@media (max-width: 400px) {
+  .pitwall .engineering-module .eng-stat {
+    padding: 13px;
+  }
+  .pitwall .engineering-module .eng-stat > strong {
+    font-size: 21px;
+  }
+  .pitwall .engineering-module .eng-inline-actions .eng-button {
+    font-size: 11px;
+  }
+}
+@media (max-height: 500px) and (orientation: landscape) {
+  .pitwall .engineering-module .eng-stats {
+    margin: 12px 0;
+  }
+  .pitwall .engineering-module .eng-stat {
+    padding: 10px 15px;
+  }
+  .pitwall .engineering-module .eng-stat > strong {
+    font-size: 20px;
+    margin: 4px 0;
+  }
+  .pitwall .engineering-module .eng-stats .eng-stat small {
+    display: none;
+  }
+  .pitwall .engineering-module .eng-council-strip .eng-stat strong {
+    font-size: 18px;
+  }
+}
+
+/* First-review correction: keep action access ahead of the vehicle showcase. */
+
+/* Explicit search layout: keep global form label direction out of toolbars. */
+
+/* Mobile screen names make room for the actual working area. */
+
+@media (max-width: 760px) {
+  .pitwall .engineering-module .eng-text-stat > strong {
+    font-size: 17px;
+    line-height: 1.35;
+    overflow-wrap: normal;
+    word-break: normal;
+  }
+}
+
+@media (max-width: 760px) {
+  .pitwall .engineering-module .eng-money-stat > strong {
+    font-size: 17px;
+    white-space: nowrap;
+    letter-spacing: -0.35px;
+  }
+}

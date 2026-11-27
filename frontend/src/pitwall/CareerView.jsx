@@ -19,9 +19,25 @@ import { usePersonnel } from '../career/staff/model'
 export function CareerView({ world, c, media, route, tab, entity, onAdvance, onSave, busy, children }) {
   const desk = useDesk(c, route, tab)
   const directory = usePersonnel('careers/' + c.id + '/personnel', c.revision)
-  const [preferences, setPreferences] = useState({}),
+  const preferenceKey = 'autosport.pitwall.preferences.' + c.id
+  const [preferences, setPreferences] = useState(() => {
+      try {
+        const stored = JSON.parse(globalThis.localStorage.getItem(preferenceKey) || '{}')
+        return stored && typeof stored === 'object' && !Array.isArray(stored) ? stored : {}
+      } catch {
+        return {}
+      }
+    }),
     [selectedEntry, setSelectedEntry] = useState(''),
     [dialog, openDialog] = useState(null)
+  useEffect(() => {
+    // Only view settings and shortlists are local. Career writes use the command bus.
+    try {
+      globalThis.localStorage.setItem(preferenceKey, JSON.stringify(preferences))
+    } catch {
+      /* Storage may be unavailable in private browsing. */
+    }
+  }, [preferenceKey, preferences])
   const images = useMemo(
     () =>
       media.map((m) => (m.kind === 'logo' ? { ...m, local_url: assetUrl(media, m.kind, m.entity) } : m)),
@@ -87,13 +103,13 @@ export function CareerView({ world, c, media, route, tab, entity, onAdvance, onS
   const projection =
     route === 'overview' ||
     route === 'briefings' ||
-    ['organization', 'world', 'inbox', 'market', 'staff','funding'].includes(route) ||
+    ['organization', 'world', 'inbox', 'market', 'staff', 'funding', 'contracts'].includes(route) ||
     route === 'statistics' ||
     route === 'agreements' ||
     analytics
   const status = desk.error || directory.error
   const waiting = projection && (!desk.game || !directory.data)
-  const directoryPage = ['staff', 'market','funding'].includes(route)
+  const directoryPage = ['staff', 'market', 'funding', 'contracts'].includes(route)
   if (analytics && waiting && !directoryPage)
     content = (
       <>
@@ -143,7 +159,10 @@ export function CareerView({ world, c, media, route, tab, entity, onAdvance, onS
   else if (directoryPage)
     content = (
       <>
-        <PersonnelDirectory />
+        {analytics && <OperationalAnalytics route={route} compactBrief />}
+        <PersonnelDirectory>
+          <div className="native-screen">{children}</div>
+        </PersonnelDirectory>
       </>
     )
   else if (route === 'inbox') content = <Messages />

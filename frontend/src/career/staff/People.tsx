@@ -1,5 +1,5 @@
-import {publishCareerMoment} from '../../pitwall/core/moments'
-import {readRoute,initialTab} from '../../pitwall/core/route'
+import { publishCareerMoment } from '../../pitwall/core/moments'
+import { readRoute, initialTab } from '../../pitwall/core/route'
 import { useRef, useState, type CSSProperties } from 'react'
 import { ArrowUpRight, ChevronLeft, ChevronRight, Search, Users } from 'lucide-react'
 import { Button, Choices, Dialog, Header, Panel, Table } from '../../ui/components'
@@ -8,7 +8,15 @@ import { CountryFlag, CountryOptions } from '../Country'
 import { Portrait } from '../Portrait'
 import type { SectionProps } from '../Sections'
 import { StaffFile } from './StaffFile'
-import { priorities, seatName, shortDate, statuses, usePersonnel, type Candidate, type Order } from './model'
+import {
+  priorities,
+  seatName,
+  shortDate,
+  statuses,
+  usePersonnel,
+  type Candidate,
+  type Order,
+} from './model'
 import { PreparationDesk } from './Development'
 import { GroupWork } from './Teamwork'
 import { Programs } from './Programs'
@@ -32,16 +40,28 @@ export function People({
   media,
   updateCareer,
 }: SectionProps & { updateCareer: (career: Career) => void }) {
-  const route=readRoute()
-  const byPage:Record<string,string>={drivers:'lineup',staff:'roster',market:'market',person:'roster',contracts:'offers',academy:'academy',leadership:'programs',funding:'funding',preparation:'preparation'}
-  const [tab, setTab] = useState<(typeof views)[number][0]>(()=>initialTab(views,'roster',byPage[route.page]||route.tab))
+  const route = readRoute()
+  const byPage: Record<string, string> = {
+    drivers: 'lineup',
+    staff: 'roster',
+    market: 'market',
+    person: 'roster',
+    contracts: 'offers',
+    academy: 'academy',
+    leadership: 'programs',
+    funding: 'funding',
+    preparation: 'preparation',
+  }
+  const [tab, setTab] = useState<(typeof views)[number][0]>(() =>
+    initialTab(views, 'roster', byPage[route.page] || route.tab),
+  )
   const [query, search] = useState(''),
     [position, profession] = useState(''),
     [series, program] = useState(''),
     [country, setCountry] = useState('')
   const [free, availability] = useState(false),
     [page, paginate] = useState(0)
-  const [selected, select] = useState(route.page==='person'?route.entity:''),
+  const [selected, select] = useState(route.page === 'person' ? route.entity : ''),
     [busy, setBusy] = useState(false),
     [error, setError] = useState('')
   const [filterOpen, showFilters] = useState(false)
@@ -94,9 +114,9 @@ export function People({
     if (retry.current.key !== key) retry.current = { key, id: crypto.randomUUID() }
     try {
       const next = await api<Career>(
-          base + '/commands',
-          post({ action, revision: c.revision, command_id: retry.current.id, staff: args }),
-        )
+        base + '/commands',
+        post({ action, revision: c.revision, command_id: retry.current.id, staff: args }),
+      )
       updateCareer(next)
       publishCareerMoment(c, next, action, args)
       retry.current.key = ''
@@ -128,42 +148,66 @@ export function People({
     setError('')
   }
   return (
-    <section className="screen staff-desk" data-dossier={employee ? "open" : undefined}>
-      <Header
-        section={world.organizations[c.org].name}
-        title="Пилоты и персонал"
-        sub="Состав организации, развитие сотрудников и контрактные решения."
-      />
-      <div className="staff-summary">
-        <div>
-          <Users />
-          <span>
-            Места в штате
-            <strong>
-              {c.assignments.filter((a) => a.occupant).length} / {c.assignments.length}
-            </strong>
-          </span>
-        </div>
-        <div>
-          <span>
-            Фонд оплаты в месяц<strong>{money(c.account.payroll_cents)}</strong>
-          </span>
-        </div>
-        <div>
-          <span>
-            Открытые переговоры
-            <strong>{c.offers.filter((o) => ['sent', 'countered'].includes(o.status)).length}</strong>
-          </span>
-        </div>
-      </div>
+    <section className="screen staff-desk" data-dossier={employee ? 'open' : undefined}>
       <Choices
         items={views.filter(
-          ([id]) => (!['programs','funding','academy'].includes(id) || c.mandate) && (id !== 'lineup' || c.role !== 'manufacturer'),
+          ([id]) =>
+            (!['programs', 'funding', 'academy'].includes(id) || c.mandate) &&
+            (id !== 'lineup' || c.role !== 'manufacturer'),
         )}
         active={tab}
         onChange={changeTab}
         label="Кадровый центр"
       />
+      <Header
+        section={world.organizations[c.org].name}
+        title={
+          {
+            lineup: 'Состав на сезон',
+            academy: 'Талант требует системы',
+            preparation: 'Готовность создаётся заранее',
+            offers: 'Переговоры и соглашения',
+            programs: c.role === 'owner' ? 'Направление задаёте вы' : 'Цели, ответственность и доверие',
+            groups: 'Коллективы и подразделения',
+            market: 'Найдите своё преимущество',
+            funding: 'Возможность выйти на старт',
+            roster: 'Пилоты и персонал',
+          }[tab]
+        }
+        sub={
+          tab === 'lineup'
+            ? 'Экипажи, спортивный статус и доступность. Будущие договоры вступают в указанный день.'
+            : tab === 'preparation'
+              ? 'Состав участников, стоимость и доступные программы подготовки.'
+              : tab === 'programs'
+                ? 'Мандат связывает решения команды с ожиданиями владельца.'
+                : 'Состав организации, развитие сотрудников и контрактные решения.'
+        }
+      />
+      {tab === 'roster' && (
+        <div className="staff-summary">
+          <div>
+            <Users />
+            <span>
+              Места в штате
+              <strong>
+                {c.assignments.filter((a) => a.occupant).length} / {c.assignments.length}
+              </strong>
+            </span>
+          </div>
+          <div>
+            <span>
+              Фонд оплаты в месяц<strong>{money(c.account.payroll_cents)}</strong>
+            </span>
+          </div>
+          <div>
+            <span>
+              Открытые переговоры
+              <strong>{c.offers.filter((o) => ['sent', 'countered'].includes(o.status)).length}</strong>
+            </span>
+          </div>
+        </div>
+      )}
       {error && !selected && !confirm && (
         <p className="career-error" role="alert">
           {error}
@@ -179,12 +223,13 @@ export function People({
         />
       )}
       {tab === 'preparation' && <PreparationDesk {...{ c, order, busy }} />}
-      {['programs','academy','funding'].includes(tab) && c.mandate && (
+      {['programs', 'academy', 'funding'].includes(tab) && c.mandate && (
         <Programs
           section={tab}
           {...{ c, world, busy, order }}
           openPerson={(id) => {
-            if (document.activeElement instanceof HTMLButtonElement) opener.current = document.activeElement
+            if (document.activeElement instanceof HTMLButtonElement)
+              opener.current = document.activeElement
             select(id)
             setError('')
           }}
@@ -211,8 +256,15 @@ export function People({
                 }}
               />
             </label>
-            <Button className="staff-filter-trigger" aria-expanded={filterOpen} onClick={() => showFilters(!filterOpen)}>
-              Фильтры{[position, series, country, free].filter(Boolean).length ? ' · ' + [position,series,country,free].filter(Boolean).length : ''}
+            <Button
+              className="staff-filter-trigger"
+              aria-expanded={filterOpen}
+              onClick={() => showFilters(!filterOpen)}
+            >
+              Фильтры
+              {[position, series, country, free].filter(Boolean).length
+                ? ' · ' + [position, series, country, free].filter(Boolean).length
+                : ''}
             </Button>
             <select
               aria-label="Профессия"
@@ -322,7 +374,17 @@ export function People({
                   <b>{p.rating}</b>
                   <small>рейтинг</small>
                 </div>
-                {tab === 'roster' && <div className="staff-money"><span>Оклад / месяц <b>{p.financial ? money(p.financial.wage_cents) : 'Закрытые условия'}</b></span><span>Договор до <b>{p.end ? shortDate(p.end) : 'Без срока'}</b></span></div>}
+                {tab === 'roster' && (
+                  <div className="staff-money">
+                    <span>
+                      Оклад / месяц{' '}
+                      <b>{p.financial ? money(p.financial.wage_cents) : 'Закрытые условия'}</b>
+                    </span>
+                    <span>
+                      Договор до <b>{p.end ? shortDate(p.end) : 'Без срока'}</b>
+                    </span>
+                  </div>
+                )}
                 {tab === 'market' && p.financial && (
                   <div className="staff-money">
                     <span>
@@ -389,41 +451,44 @@ export function People({
       {tab === 'groups' && (
         <Panel title="Инженерные подразделения и бригады">
           <div className="collective-register">
-          <Table
-            label="Коллективы организации"
-            columns={[
-              'Подразделение',
-              'Человек',
-              'Квалификация',
-              'Нагрузка',
-              'Усталость',
-              'Резерв, чел.-дн./день',
-              'ФОТ / месяц',
-            ]}
-            rows={c.collectives.map((g) => ({
-              id: g.id,
-              cells: [
-                g.name,
-                g.size,
-                g.qualification,
-                g.workload + '%',
-                g.fatigue + '%',
-                (g.capacity / 100).toLocaleString('ru-RU'),
-                money(g.payroll_cents),
-              ],
-            }))}
-          />
+            <Table
+              label="Коллективы организации"
+              columns={[
+                'Подразделение',
+                'Человек',
+                'Квалификация',
+                'Нагрузка',
+                'Усталость',
+                'Резерв, чел.-дн./день',
+                'ФОТ / месяц',
+              ]}
+              rows={c.collectives.map((g) => ({
+                id: g.id,
+                cells: [
+                  g.name,
+                  g.size,
+                  g.qualification,
+                  g.workload + '%',
+                  g.fatigue + '%',
+                  (g.capacity / 100).toLocaleString('ru-RU'),
+                  money(g.payroll_cents),
+                ],
+              }))}
+            />
           </div>
         </Panel>
       )}
-      {tab === 'groups' && <GroupWork groups={c.collectives} people={new Set(people.map(p => p.id))} />}
+      {tab === 'groups' && (
+        <GroupWork groups={c.collectives} people={new Set(people.map((p) => p.id))} />
+      )}
       {tab === 'offers' && (
         <div className="section-grid">
           <Panel title="Предложения">
             {!c.offers.length && (
               <p className="panel-body muted">
                 Переговоров пока нет. Выберите сотрудника на кадровом рынке и предложите условия.
-               <Button onClick={()=>changeTab('market')}>Открыть кадровый рынок</Button></p>
+                <Button onClick={() => changeTab('market')}>Открыть кадровый рынок</Button>
+              </p>
             )}
             {c.offers
               .slice()
@@ -485,8 +550,9 @@ export function People({
       {offer && (
         <Dialog title="Подтвердить договор" onClose={() => setConfirm('')}>
           <p>
-            {world.names[offer.person]} · {money(offer.salary_cents)} / мес. Бонус {money(offer.bonus_cents)}.
-            Выкуп действующих договоров {money(offer.buyout_cents)} при подписании.
+            {world.names[offer.person]} · {money(offer.salary_cents)} / мес. Бонус{' '}
+            {money(offer.bonus_cents)}. Выкуп действующих договоров {money(offer.buyout_cents)} при
+            подписании.
           </p>
           {error && <p role="alert">{error}</p>}
           <div className="form-actions">
@@ -503,19 +569,31 @@ export function People({
           </div>
         </Dialog>
       )}
-      {route.page==='person' && directory.data && !employee && <Panel title="Досье недоступно"><p>В кадровом справочнике нет сотрудника с этим идентификатором.</p><a href="#market">Перейти на рынок</a></Panel>}
+      {route.page === 'person' && directory.data && !employee && (
+        <Panel title="Досье недоступно">
+          <p>В кадровом справочнике нет сотрудника с этим идентификатором.</p>
+          <a href="#market">Перейти на рынок</a>
+        </Panel>
+      )}
       {employee && (
         <StaffFile
           key={employee.id}
           {...{ employee, people, c, world, media, order, busy, error }}
           onClose={() => {
-            if(route.page==='person'){if(history.state?.careerPrevious) history.back(); else location.hash='staff'; return}
+            if (route.page === 'person') {
+              if (history.state?.careerPrevious) history.back()
+              else location.hash = 'staff'
+              return
+            }
             select('')
             setError('')
             requestAnimationFrame(() => opener.current?.focus({ preventScroll: true }))
           }}
           onSent={() => {
-            if(route.page==='person'){location.hash='contracts';return}
+            if (route.page === 'person') {
+              location.hash = 'contracts'
+              return
+            }
             select('')
             changeTab('offers')
           }}

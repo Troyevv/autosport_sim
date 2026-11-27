@@ -1,4 +1,5 @@
-import React, { useMemo, useState } from 'react'
+import { seatName } from '../career/staff/model'
+import React, { useEffect, useRef, useMemo, useState } from 'react'
 import { useGame, useStored, money, dateLabel as date } from './core'
 import { Icon, Button, PageHeader, Tabs, Badge, ContextMenu } from './ui'
 import { PersonPortrait } from './visuals'
@@ -693,7 +694,166 @@ function FundingCard({ fund: f, dossier }) {
   )
 }
 
-export function PersonnelDirectory() {
+const peopleTabs = [
+  { id: 'people', label: 'Команда' },
+  { id: 'drivers', label: 'Пилоты' },
+  { id: 'staff', label: 'Персонал' },
+  { id: 'market', label: 'Рынок' },
+  { id: 'contracts', label: 'Контракты' },
+  { id: 'academy', label: 'Академия' },
+  { id: 'funding', label: 'Поддержка' },
+  { id: 'preparation', label: 'Подготовка' },
+  { id: 'leadership', label: 'Руководство' },
+]
+function PeopleNavigation() {
+  const g = useGame(),
+    route = g.route,
+    navigationRef = useRef(null)
+  useEffect(() => {
+    const nav = navigationRef.current,
+      active = nav?.querySelector('[aria-current=page]')
+    if (nav && active)
+      nav.scrollLeft = Math.max(
+        0,
+        active.offsetLeft - nav.offsetLeft - (nav.clientWidth - active.clientWidth) / 2,
+      )
+  }, [route])
+  return (
+    <nav ref={navigationRef} className="p-subnav" aria-label="Люди и карьера">
+      {peopleTabs
+        .filter((t) => g.role !== 'manufacturer' || !['drivers', 'academy'].includes(t.id))
+        .map((t) => (
+          <button
+            key={t.id}
+            type="button"
+            className={route === t.id ? 'active' : ''}
+            aria-current={route === t.id ? 'page' : undefined}
+            onClick={() => g.navigate(t.id)}
+          >
+            {t.label}
+          </button>
+        ))}
+    </nav>
+  )
+}
+function StaffContracts({ children }) {
+  const p = usePeople(),
+    { g, c, own, seats } = p
+  const tab = g.tab || 'active'
+  const offers = c.offers,
+    future = offers.filter((o) => o.status === 'signed' && o.start > c.date),
+    active = seats.filter((s) => s.occupant)
+  return (
+    <>
+      <PageHeader
+        eyebrow="Договоры / Люди"
+        title="Состав сегодня. Решения на завтра."
+        description="Оклад, полномочия, дата перехода и обязательства. Подписание и начало работы — разные события."
+        actions={<Button onClick={() => g.navigate('market')}>Новое предложение</Button>}
+      />
+      <div className="contract-contracts-intro">
+        <Icon name="MessagesSquare" size={30} />
+        <div>
+          <h3>Разговор начинается с человека</h3>
+          <p>
+            Сравните ожидания кандидата с условиями организации. После ответа проверьте выкуп, бонус и
+            дату вступления, затем принимайте решение.
+          </p>
+        </div>
+        <Button variant="secondary" onClick={() => g.navigate('agreements')}>
+          Все соглашения
+          <Icon name="ArrowUpRight" size={16} />
+        </Button>
+      </div>
+      <Tabs
+        items={[
+          { id: 'active', label: 'Действующие договоры', count: active.length },
+          {
+            id: 'negotiations',
+            label: 'Переговоры',
+            count: offers.filter((x) => ['sent', 'countered', 'agreed'].includes(x.status)).length,
+          },
+          {
+            id: 'future',
+            label: 'Будущие назначения',
+            count: future.length,
+          },
+        ]}
+        value={tab}
+        onChange={(v) => g.navigate('contracts', v)}
+      />
+      {tab === 'negotiations' ? (
+        offers.length ? (
+          children
+        ) : (
+          <Empty
+            title="Переговорная комната свободна"
+            text="Предложите конкретное место, оклад и даты из досье кандидата. Ответ появится отдельным этапом."
+            icon="MessagesSquare"
+            action={<Button onClick={() => g.navigate('market')}>Открыть рынок</Button>}
+          />
+        )
+      ) : tab === 'future' ? (
+        future.length > 0 ? (
+          future.map((o) => (
+            <article className="p-future-contract" key={o.id}>
+              <Icon name="CalendarCheck" size={28} />
+              <div>
+                <span className="p-kicker">Вступает {date(o.start)}</span>
+                <h3>{p.name(o.person)}</h3>
+                <p>
+                  {p.seatName(o.seat)} · до {date(o.end)}
+                </p>
+                <p>{money(o.salary_cents)} / месяц</p>
+              </div>
+              <Button variant="secondary" onClick={() => g.openPerson(o.person, 'contract')}>
+                Досье
+              </Button>
+            </article>
+          ))
+        ) : (
+          <Empty
+            title="Будущие переходы не подписаны"
+            text="Текущее место останется за сотрудником до даты перехода. После подписания договор будет показан здесь."
+            icon="CalendarClock"
+          />
+        )
+      ) : (
+        <div className="p-contract-ledger">
+          {active.map((s) => {
+            const d = g.game.dossiers?.[s.occupant.id],
+              contract = d?.current,
+              candidate = own.find((x) => x.id === s.occupant.id) || s.occupant
+            return (
+              <article key={s.id}>
+                <PersonRow p={candidate} secondary={p.seatName(s.id)} />
+                <div className="p-contract-details">
+                  <span>
+                    <small>Месячный оклад</small>
+                    <b>{money(contract?.salary_cents ?? candidate.financial?.wage_cents)}</b>
+                  </span>
+                  <span>
+                    <small>До</small>
+                    <b>{date(contract?.end || candidate.end)}</b>
+                  </span>
+                  <span>
+                    <small>Компенсация</small>
+                    <b>{money(contract?.buyout_cents)}</b>
+                  </span>
+                  <Button variant="secondary" onClick={() => g.openPerson(s.occupant.id, 'contract')}>
+                    Условия и продление
+                  </Button>
+                </div>
+              </article>
+            )
+          })}
+        </div>
+      )}
+    </>
+  )
+}
+
+export function PersonnelDirectory({ children }) {
   const g = useGame(),
     c = g.game.career,
     people = g.game.personnel,
@@ -704,6 +864,8 @@ export function PersonnelDirectory() {
     c,
     world: g.world,
     own,
+    seats: c.assignments.filter((a) => a.org === c.org),
+    seatName: (id) => seatName(id, c, g.world),
     funds: g.game.funding || [],
     people,
     state: { shortlist },
@@ -717,7 +879,16 @@ export function PersonnelDirectory() {
   return (
     <peopleContext.Provider value={context}>
       <section className="people-module">
-        {g.route === 'funding' ? <Funding /> : g.route === 'market' ? <Market /> : <Staff />}
+        <PeopleNavigation />
+        {g.route === 'contracts' ? (
+          <StaffContracts>{children}</StaffContracts>
+        ) : g.route === 'funding' ? (
+          <Funding />
+        ) : g.route === 'market' ? (
+          <Market />
+        ) : (
+          <Staff />
+        )}
       </section>
     </peopleContext.Provider>
   )

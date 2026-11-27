@@ -42,7 +42,7 @@ test('Корпоративная доля определяет полномоч�
   expect(response.status()).toBe(201)
   const career = await response.json()
   await page.goto('/?career=' + career.id + '#capital')
-  const shareholders = page.locator('.panel').filter({ has: page.getByRole('heading', { name: 'Собственники' }) })
+  const shareholders = page.locator('.ownership-panel').filter({ has: page.getByRole('heading', { name: 'Структура капитала' }) })
   await expect(shareholders).toContainText('Ferrari')
   await expect(shareholders).toContainText('100%')
   await expect(shareholders.getByRole('button', { name: 'Внести капитал' })).toBeVisible()

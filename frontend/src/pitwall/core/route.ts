@@ -25,3 +25,8 @@ export function initialTab<T extends string>(
 ): T {
   return items.find(([id]) => id === preferred)?.[0] ?? fallback
 }
+
+export function sectionTab(allowed: readonly string[], fallback: string) {
+  const { tab } = readRoute()
+  return allowed.includes(tab) ? tab : fallback
+}

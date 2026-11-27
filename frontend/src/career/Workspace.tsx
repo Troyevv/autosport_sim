@@ -97,7 +97,7 @@ export function Workspace({ world:catalog, c: initial, media }: SectionProps) {
   return (
     <>
       {error && <p className="career-error" role="alert">{error}</p>}
-      <CareerView c={c} world={world} media={media} route={route.page} tab={route.tab} entity={route.entity} busy={busy} onSave={()=>open('save')} onAdvance={()=>c.pending.length?open('briefing'):command('advance')}>
+      <CareerView key={c.id} c={c} world={world} media={media} route={route.page} tab={route.tab} entity={route.entity} busy={busy} onSave={()=>open('save')} onAdvance={()=>c.pending.length?open('briefing'):command('advance')}>
         {Screen ? <Screen key={[route.page,route.tab,route.entity].join('/')} world={world} c={c} media={media} updateCareer={update} /> : <p>Раздел недоступен для этой карьеры.</p>}
       </CareerView>
       {dialog && (

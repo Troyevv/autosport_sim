@@ -1,8 +1,8 @@
-import {EngineeringHeading} from '../../pitwall/EngineeringHeading'
-import {readRoute} from '../../pitwall/core/route'
+import { EngineeringHeading, EngineeringMetrics } from '../../pitwall/EngineeringHeading'
+import { readRoute } from '../../pitwall/core/route'
 import { useState } from 'react'
 import { Factory, Package, ClipboardCheck, Plus } from 'lucide-react'
-import { Button, Choices, Dialog, Facts,  Panel, Progress, Stats } from '../../ui/components'
+import { Button, Choices, Dialog, Facts, Panel, Progress } from '../../ui/components'
 import { dateLabel } from '../../game'
 import { type Career, money } from '../api'
 import type { SectionProps } from '../Sections'
@@ -21,13 +21,23 @@ type Action =
   | { kind: 'rent'; site: Facility }
   | { kind: 'cancel' | 'priority'; batch: Batch }
 
-export function Production({ c, world, updateCareer }: SectionProps & { updateCareer: (c: Career) => void }) {
+export function Production({
+  c,
+  world,
+  updateCareer,
+}: SectionProps & { updateCareer: (c: Career) => void }) {
   const req = usePersonnel<Desk>('careers/' + c.id + '/production', c.revision),
     data = req.error ? undefined : req.data
   const factory = useOrder(c, updateCareer, 'production'),
     rental = useOrder(c, updateCareer),
     install = useOrder(c, updateCareer, 'engineering')
-  const [tab, setTab] = useState(()=>readRoute().page==='inventory'?'stock':['needs','stock','quality','archive'].includes(readRoute().tab)?readRoute().tab:'queue'),
+  const [tab, setTab] = useState(() =>
+      readRoute().page === 'inventory'
+        ? 'stock'
+        : ['needs', 'stock', 'quality', 'archive'].includes(readRoute().tab)
+          ? readRoute().tab
+          : 'queue',
+    ),
     [action, setAction] = useState<Action | null>(null),
     [priority, setPriority] = useState('normal')
   const manage = c.role === 'manager',
@@ -55,7 +65,11 @@ export function Production({ c, world, updateCareer }: SectionProps & { updateCa
   const selected = action?.kind === 'item' ? data?.items.find((i) => i.id === action.id) : undefined
   return (
     <section className="screen engineering-module research-desk workshop">
-      <EngineeringHeading route={readRoute().page === 'inventory' ? 'inventory' : 'production'} organization={world.organizations[c.org].name} maker={c.role === "manufacturer"}>
+      <EngineeringHeading
+        route={readRoute().page === 'inventory' ? 'inventory' : 'production'}
+        organization={world.organizations[c.org].name}
+        maker={c.role === 'manufacturer'}
+      >
         {manage && !!data?.entries.length && (
           <Button primary onClick={() => open({ kind: 'order' })}>
             <Plus size={16} />
@@ -83,7 +97,7 @@ export function Production({ c, world, updateCareer }: SectionProps & { updateCa
               ['archive', 'Журнал'],
             ]}
           />
-          <Stats
+          <EngineeringMetrics
             items={[
               ['Заказы в работе', queues.length, 'В очереди и в цехе', <Factory size={16} />],
               [
@@ -164,7 +178,9 @@ export function Production({ c, world, updateCareer }: SectionProps & { updateCa
                           <Button onClick={() => open({ kind: 'priority', batch: b })}>
                             Изменить приоритет
                           </Button>
-                          <Button onClick={() => open({ kind: 'cancel', batch: b })}>Отменить заказ</Button>
+                          <Button onClick={() => open({ kind: 'cancel', batch: b })}>
+                            Отменить заказ
+                          </Button>
                         </div>
                       )}
                     </article>
@@ -196,11 +212,13 @@ export function Production({ c, world, updateCareer }: SectionProps & { updateCa
                         {data.people[n.mechanic]} · {data.people[n.engineer]}
                       </p>
                       <p>
-                        Машин {n.cars} · требуют замены или обновления {n.replace} · на складе {n.stock} ·
-                        ожидается {n.pending}.
+                        Машин {n.cars} · требуют замены или обновления {n.replace} · на складе {n.stock}{' '}
+                        · ожидается {n.pending}.
                       </p>
                       {manage && n.quantity > 0 && (
-                        <Button onClick={() => open({ kind: 'order', need: n })}>Оформить по заявке</Button>
+                        <Button onClick={() => open({ kind: 'order', need: n })}>
+                          Оформить по заявке
+                        </Button>
                       )}
                     </article>
                   ))}
@@ -244,12 +262,14 @@ export function Production({ c, world, updateCareer }: SectionProps & { updateCa
                   <article key={site.kind} className="research-card">
                     <div className="research-heading">
                       <h3>{site.label}</h3>
-                      <span className="chip">{site.sites.reduce((sum, s) => sum + s.slots, 0)} своб.</span>
+                      <span className="chip">
+                        {site.sites.reduce((sum, s) => sum + s.slots, 0)} своб.
+                      </span>
                     </div>
                     {site.sites.map((s) => (
                       <p key={s.id}>
-                        {s.owned ? 'Собственная площадка' : 'Внешняя площадка'} · состояние {s.condition}% ·
-                        занято {s.used}
+                        {s.owned ? 'Собственная площадка' : 'Внешняя площадка'} · состояние {s.condition}
+                        % · занято {s.used}
                       </p>
                     ))}
                     {site.kind === 'warehouse' ? (
@@ -333,7 +353,10 @@ export function Production({ c, world, updateCareer }: SectionProps & { updateCa
             </Dialog>
           )}
           {(action?.kind === 'cancel' || action?.kind === 'priority') && (
-            <Dialog title={action.kind === 'cancel' ? 'Отмена партии' : 'Приоритет партии'} onClose={close}>
+            <Dialog
+              title={action.kind === 'cancel' ? 'Отмена партии' : 'Приоритет партии'}
+              onClose={close}
+            >
               <div className="research-form">
                 <strong>
                   {action.batch.id} · {title(action.batch.entry, action.batch.specification)}

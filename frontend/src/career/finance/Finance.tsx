@@ -46,11 +46,11 @@ export function Finance({
   const name = (id: string) => {
     if (id === 'person:player') return 'Личный капитал · ' + c.name
     if (id === 'consolidated') return 'Группа · консолидация'
-    if (id.startsWith('academy:')) return c.academies.find((a) => a.id === id.slice(8))?.name ?? id
+    if (id.startsWith('academy:')) return c.academies.find((a) => a.id === id.slice(8))?.name ?? 'Счёт академии'
     if (id.startsWith('group:')) return 'Счёт группы'
     if (id.startsWith('owner:')) return 'Капитал собственника'
     if (id === c.org) return world.organizations[c.org].name
-    return world.championships[id.slice(c.org.length + 1)]?.name ?? id
+    return world.organizations[id]?.name || world.championships[id.slice(c.org.length + 1)]?.name || 'Программный счёт'
   }
   async function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()

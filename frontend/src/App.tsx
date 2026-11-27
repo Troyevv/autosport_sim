@@ -26,17 +26,7 @@ function Navigation({ route }: { route: Route }) {
     { go, open } = useUI()
   return (
     <>
-      <div className="brand">
-        <div className="brand-stripes">
-          <i />
-          <i />
-          <i />
-        </div>
-        <div>
-          <div className="brand-word">APEX</div>
-          <small>MOTORSPORT MANAGER</small>
-        </div>
-      </div>
+      <div className="brand demo-brand"><strong>AUTOSPORT<span>SIM</span></strong><small>PIT WALL / 02</small></div>
       <button
         className="team-switch"
         aria-label="Сменить игровую роль"
@@ -182,7 +172,7 @@ export function App() {
       >
         К содержимому
       </a>
-      <div className="app-shell">
+      <div className="app-shell" data-workspace={state.role}>
         <aside className="sidebar">
           <Navigation route={route} />
         </aside>

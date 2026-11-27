@@ -92,14 +92,23 @@ export function Economy({
       {v && (
         <>
           {tab === 'Сбыт и лицензии' && (
-            <Panel
-              title="Лицензионная коллекция"
-              action={
-                <Button onClick={() => set(true)}>
+            <div className="merch-stage">
+              <div>
+                <span className="eyebrow">COLLECTION / {c.date.slice(0, 4)}</span>
+                <h2>Команда за пределами трассы</h2>
+                <p>Региональный спрос, лицензия на коллекцию и экономика каждой продажи.</p>
+                <Button primary onClick={() => set(true)}>
                   {v.license ? 'Изменить условия' : 'Открыть продажи'}
                 </Button>
-              }
-            >
+              </div>
+              <div className="merch-wordmark" style={{ borderColor: c.team_color }}>
+                <span>{world.organizations[c.org].name}</span>
+                <small>{c.date.slice(0, 4)} / COLLECTION</small>
+              </div>
+            </div>
+          )}
+          {tab === 'Сбыт и лицензии' && (
+            <Panel title="Лицензионная коллекция">
               {v.license ? (
                 <Facts
                   items={[

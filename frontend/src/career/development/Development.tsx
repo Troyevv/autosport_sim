@@ -1,7 +1,8 @@
-import {EngineeringHeading} from '../../pitwall/EngineeringHeading'
+import { sectionTab } from '../../pitwall/core/route'
+import { EngineeringHeading } from '../../pitwall/EngineeringHeading'
 import { useState } from 'react'
 import { Activity, DraftingCompass, FlaskConical, Plus } from 'lucide-react'
-import { Button, Choices, Dialog, Facts,  Panel, Progress, Stats } from '../../ui/components'
+import { Button, Choices, Dialog, Facts, Panel, Progress, Stats } from '../../ui/components'
 import { dateLabel } from '../../game'
 import { fmt, units } from '../../garage/quantities'
 import { type Career, money } from '../api'
@@ -43,12 +44,17 @@ function Measurements({ r }: { r: Report }) {
         <b>Разница Б − А</b> {fmt(r.difference)} ± {fmt(r.uncertainty)} {unit}
       </p>
       <p>
-        <b>Заключение инженера</b> · {r.interpretation} {r.finding && 'Конструктивный дефект · ' + r.finding}
+        <b>Заключение инженера</b> · {r.interpretation}{' '}
+        {r.finding && 'Конструктивный дефект · ' + r.finding}
       </p>
     </section>
   )
 }
-type Action = { kind: 'design' | 'test' | 'priority' | 'review' | 'rent'; id?: string; decision?: string }
+type Action = {
+  kind: 'design' | 'test' | 'priority' | 'review' | 'rent'
+  id?: string
+  decision?: string
+}
 function FileCard({
   p,
   data,
@@ -114,7 +120,9 @@ function FileCard({
         </p>
       )}
       {p.findings.length > 0 && (
-        <strong className="negative">Выявлен конструктивный дефект · протоколов {p.findings.length}</strong>
+        <strong className="negative">
+          Выявлен конструктивный дефект · протоколов {p.findings.length}
+        </strong>
       )}
       {p.report && <Measurements r={p.report} />}
       {p.forecast && (
@@ -215,7 +223,7 @@ export function Development({
     data = req.error ? undefined : req.data
   const order = useOrder(c, updateCareer, 'development'),
     rental = useOrder(c, updateCareer)
-  const [tab, setTab] = useState('design'),
+  const [tab, setTab] = useState(() => sectionTab(['design', 'test', 'archive'], 'design')),
     [dialog, setDialog] = useState<Action | null>(null),
     [priority, setPriority] = useState('normal')
   const selected = data?.projects.find((p) => p.id === dialog?.id),
@@ -227,24 +235,23 @@ export function Development({
     setDialog(a)
   }
   const close = () => setDialog(null)
+  const [query, setQuery] = useState('')
   const files =
-    data?.projects.filter((p) => (tab === 'archive' ? p.finished : !p.finished && p.kind === tab)) || []
+    data?.projects
+      .filter((p) => (tab === 'archive' ? p.finished : !p.finished && p.kind === tab))
+      .filter((p) =>
+        [p.id, data.entries.find((e) => e.id === p.entry)?.title, p.axis, p.kind]
+          .join(' ')
+          .toLocaleLowerCase()
+          .includes(query.toLocaleLowerCase().trim()),
+      ) || []
   return (
     <section className="screen engineering-module research-desk development-desk">
-      <EngineeringHeading route="development" organization={world.organizations[c.org].name} maker={c.role === "manufacturer"}>
-        {manage && !!data?.entries.length && (
-          <>
-            <Button onClick={() => open({ kind: 'test' })}>
-              <FlaskConical size={16} />
-              Назначить испытание
-            </Button>
-            <Button primary onClick={() => open({ kind: 'design' })}>
-              <Plus size={16} />
-              Поручить разработку
-            </Button>
-          </>
-        )}
-      </EngineeringHeading>
+      <EngineeringHeading
+        route="development"
+        organization={world.organizations[c.org].name}
+        maker={c.role === 'manufacturer'}
+      />
       {req.error && (
         <p role="alert">
           {req.error} <Button onClick={req.retry}>Повторить загрузку</Button>
@@ -263,29 +270,72 @@ export function Development({
             active={tab}
             onChange={setTab}
           />
-<details className="eng-summary-details"><summary>Показатели отдела</summary>          <Stats
-            items={[
-              [
-                'Проекты КБ',
-                data.projects.filter((p) => p.kind === 'design' && !p.finished).length,
-                'В очереди и в работе',
-                <DraftingCompass size={16} />,
-              ],
-              [
-                'Сеансы испытаний',
-                data.projects.filter((p) => p.kind === 'test' && !p.finished).length,
-                'Ожидают измерений',
-                <Activity size={16} />,
-              ],
-              [
-                'Расходы отдела',
-                money(data.spent_cents),
-                'Аренда объектов отдельно · ' + money(data.rent_cents),
-              ],
-              ['Архив', data.projects.filter((p) => p.finished).length, 'Завершённые дела'],
-            ]}
-          /></details>
+          <div className="eng-section-lead">
+            <div>
+              <h2>
+                {tab === 'archive'
+                  ? 'Редакции и результаты проверок'
+                  : tab === 'test'
+                    ? 'Сначала сопоставимые условия'
+                    : 'Конструкторское бюро'}
+              </h2>
+              <p>
+                {tab === 'test'
+                  ? 'Проверяйте конкретные редакции. Метод, погрешность и условия остаются рядом с результатом.'
+                  : 'Свяжите исходный чертёж, задачу инженера и границы применимости.'}
+              </p>
+            </div>
+            <div className="eng-inline-actions">
+              {manage && !!data?.entries.length && (
+                <>
+                  <Button onClick={() => open({ kind: 'test' })}>
+                    <FlaskConical size={16} />
+                    Назначить испытание
+                  </Button>
+                  <Button primary onClick={() => open({ kind: 'design' })}>
+                    <Plus size={16} />
+                    Поручить разработку
+                  </Button>
+                </>
+              )}
+            </div>
+          </div>
 
+          <details className="eng-summary-details">
+            <summary>Показатели отдела</summary>{' '}
+            <Stats
+              items={[
+                [
+                  'Проекты КБ',
+                  data.projects.filter((p) => p.kind === 'design' && !p.finished).length,
+                  'В очереди и в работе',
+                  <DraftingCompass size={16} />,
+                ],
+                [
+                  'Сеансы испытаний',
+                  data.projects.filter((p) => p.kind === 'test' && !p.finished).length,
+                  'Ожидают измерений',
+                  <Activity size={16} />,
+                ],
+                [
+                  'Расходы отдела',
+                  money(data.spent_cents),
+                  'Аренда объектов отдельно · ' + money(data.rent_cents),
+                ],
+                ['Архив', data.projects.filter((p) => p.finished).length, 'Завершённые дела'],
+              ]}
+            />
+          </details>
+
+          <label className="eng-filter">
+            <input
+              type="search"
+              aria-label="Поиск инженерного дела"
+              placeholder="Найти работу или редакцию"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+            />
+          </label>
           <div className="research-layout">
             <Panel
               title={
@@ -323,8 +373,8 @@ export function Development({
                       <span className="chip">{v.slots} своб.</span>
                     </div>
                     <p>
-                      Своих слотов {v.owned} · занято сегодня {v.used}. Общий центр · {v.condition}% состояния
-                      · {money(v.rent)}/день
+                      Своих слотов {v.owned} · занято сегодня {v.used}. Общий центр · {v.condition}%
+                      состояния · {money(v.rent)}/день
                     </p>
                     {manage && (
                       <Button disabled={v.free < 1} onClick={() => open({ kind: 'rent', id: k })}>
@@ -372,7 +422,8 @@ export function Development({
                 className="research-form"
                 onSubmit={async (e) => {
                   e.preventDefault()
-                  if (await order.send('development-priority', { project: selected.id, priority })) close()
+                  if (await order.send('development-priority', { project: selected.id, priority }))
+                    close()
                 }}
               >
                 <label>
@@ -395,8 +446,8 @@ export function Development({
           {selected && dialog?.kind === 'review' && (
             <Dialog title="Решение по редакции" onClose={close}>
               <p>
-                {version(selected.specification!)} · {decisions[dialog.decision!]}. Решение будет внесено в
-                дело.
+                {version(selected.specification!)} · {decisions[dialog.decision!]}. Решение будет внесено
+                в дело.
               </p>
               {order.error && <p role="alert">{order.error}</p>}
               <Button

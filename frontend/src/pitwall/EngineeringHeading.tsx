@@ -66,3 +66,26 @@ export function EngineeringHeading({ route, organization: org, maker, children }
     </header>
   )
 }
+
+export function EngineeringMetrics({
+  items,
+}: {
+  items: [string, React.ReactNode, React.ReactNode, React.ReactNode?][]
+}) {
+  return (
+    <div className="eng-stats">
+      {items.map(([label, value, sub]) => (
+        <div
+          key={label}
+          className={
+            'eng-stat ' + (typeof value === 'string' && value.includes('€') ? 'eng-money-stat' : '')
+          }
+        >
+          <span>{label}</span>
+          <strong>{value}</strong>
+          <small>{sub}</small>
+        </div>
+      ))}
+    </div>
+  )
+}

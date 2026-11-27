@@ -1,6 +1,6 @@
 import { RaceCar } from '../../pitwall/visuals'
 import { EngineeringHeading } from '../../pitwall/EngineeringHeading'
-import { initialTab, readRoute } from '../../pitwall/core/route'
+import { initialTab, navigate, readRoute } from '../../pitwall/core/route'
 import { useState, type FormEvent, type ReactNode } from 'react'
 import { Button, Choices, Panel, Stats } from '../../ui/components'
 import { type Career, money } from '../api'
@@ -66,6 +66,7 @@ export function Manufacturer({
   const version = product?.editions.find((v) => v.id === edition) ?? product?.editions[0]
   const client =
     d?.clients.find((r) => r.entry + r.axis === clientKey) ??
+    d?.clients.find((r) => r.org === readRoute().entity || r.entry === readRoute().entity) ??
     d?.clients.find((r) => r.series === c.series) ??
     d?.clients[0]
   const busy = orders.busy || staff.busy,
@@ -85,7 +86,7 @@ export function Manufacturer({
       <select value={client.entry + client.axis} onChange={(e) => setClient(e.target.value)}>
         {d.clients.map((r) => (
           <option key={r.entry + r.axis} value={r.entry + r.axis}>
-            {r.name} · {r.entry} · {label(r.axis)}
+            {r.name} · № {world.entries[r.entry]?.number} · {label(r.axis)}
           </option>
         ))}
       </select>
@@ -536,18 +537,44 @@ export function Manufacturer({
                 {clientSelect}
                 {client && (
                   <>
-                    <h3>
-                      {client.car} · {org(client.terms.maker)}
-                    </h3>
-                    <p>
-                      {label(client.terms.partnership)} · {client.terms.id}
-                    </p>
-                    <p>
-                      {client.equal
-                        ? 'Единая спецификация для клиентов'
-                        : 'Разрешены совместимые омологированные поколения'}
-                    </p>
-                    <a href="#commercial">Договоры поставки и спонсорства</a>
+                    <div className="eng-client-feature">
+                      <div className="eng-client-heading">
+                        <div>
+                          <small>{client.series.toUpperCase()} · КЛИЕНТСКАЯ ПРОГРАММА</small>
+                          <h2>{maker ? org(client.org) : org(client.terms.maker)}</h2>
+                          <p>
+                            {client.car} · {label(client.axis)}
+                          </p>
+                        </div>
+                        <Button
+                          onClick={() =>
+                            navigate('organization', 'overview', maker ? client.org : client.terms.maker)
+                          }
+                        >
+                          Организация
+                        </Button>
+                      </div>
+                      <div className="eng-client-car">
+                        <RaceCar entryId={client.entry} />
+                      </div>
+                      <div className="eng-client-rights">
+                        <div>
+                          <strong>
+                            {client.terms.support ? 'Поддержка включена' : 'Поддержка не включена'}
+                          </strong>
+                          <span>По действующему договору</span>
+                        </div>
+                        <div>
+                          <strong>{label(client.terms.partnership)}</strong>
+                          <span>
+                            {client.equal
+                              ? 'Единая спецификация для клиентов'
+                              : 'Разрешены совместимые омологированные поколения'}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    <a href="#commercial?tab=supplies">Договоры поставки и спонсорства</a>
                     {maker && (
                       <>
                         <h3>Передача со склада</h3>

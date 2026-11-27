@@ -1,4 +1,4 @@
-import {initialTab,readRoute} from '../../pitwall/core/route'
+import { initialTab, readRoute } from '../../pitwall/core/route'
 import { useState, type FormEvent } from 'react'
 import { Button, Choices, Dialog, Facts, Header, Panel } from '../../ui/components'
 import type { SectionProps } from '../Sections'
@@ -20,7 +20,7 @@ const tabs = [
   ['brands', 'Рынок спонсоров'],
   ['offers', 'Переговоры'],
   ['contracts', 'Договоры'],
-  ['supplies','Поставки'],
+  ['supplies', 'Поставки'],
 ] as const
 function Conditions({ t }: { t: Terms }) {
   return (
@@ -34,7 +34,8 @@ function Conditions({ t }: { t: Terms }) {
         ['Бонус за результат', money(t.bonus_cents) + ' · топ-' + t.podium],
         [
           'Реклама',
-          t.rights.map((r) => zones[r.zone] + ' ' + r.share + '%').join(', ') || 'По стартовому соглашению',
+          t.rights.map((r) => zones[r.zone] + ' ' + r.share + '%').join(', ') ||
+            'По стартовому соглашению',
         ],
         ['Эксклюзивность', t.exclusive ? 'Да' : 'Нет'],
         ['Мероприятия', t.appearances],
@@ -45,8 +46,14 @@ function Conditions({ t }: { t: Terms }) {
     />
   )
 }
-export function Commercial({ world, c, updateCareer }: SectionProps & { updateCareer: (c: Career) => void }) {
-  const [tab, setTab] = useState<(typeof tabs)[number][0]>(()=>initialTab(tabs,c.role === 'manufacturer' ? 'supplies' : 'brands',readRoute().tab)),
+export function Commercial({
+  world,
+  c,
+  updateCareer,
+}: SectionProps & { updateCareer: (c: Career) => void }) {
+  const [tab, setTab] = useState<(typeof tabs)[number][0]>(() =>
+      initialTab(tabs, c.role === 'manufacturer' ? 'supplies' : 'brands', readRoute().tab),
+    ),
     [query, setQuery] = useState(''),
     [series, setSeries] = useState(''),
     [page, setPage] = useState(0)
@@ -61,7 +68,8 @@ export function Commercial({ world, c, updateCareer }: SectionProps & { updateCa
     data?.brands.find((b) => b.id === id)?.name ?? world.organizations[id]?.name ?? id
   const brands = (data?.brands ?? []).filter(
     (b) =>
-      (!series || b.series.includes(series)) && b.name.toLowerCase().includes(query.trim().toLowerCase()),
+      (!series || b.series.includes(series)) &&
+      b.name.toLowerCase().includes(query.trim().toLowerCase()),
   )
   const pages = Math.max(1, Math.ceil(brands.length / 12)),
     current = Math.min(page, pages - 1)
@@ -112,7 +120,7 @@ export function Commercial({ world, c, updateCareer }: SectionProps & { updateCa
     <section className="screen finance-desk">
       <Header
         section={world.organizations[c.org].name}
-        title="Коммерческий отдел"
+        title="Коммерческий центр"
         sub="Партнёры, переговоры и действующие соглашения программы."
       />
       <Choices label="Коммерческие разделы" items={tabs} active={tab} onChange={setTab} />
@@ -122,6 +130,31 @@ export function Commercial({ world, c, updateCareer }: SectionProps & { updateCa
         </p>
       )}
       {!data && !req.error && <p role="status">Загрузка рынка…</p>}
+      {data && (tab === 'brands' || (tab === 'supplies' && c.role === 'manufacturer')) && (
+        <div className="commercial-banner">
+          <div>
+            <span className="eyebrow">
+              {c.role === 'manufacturer' ? 'Партнёрство на трассе' : 'Коммерческий портфель'}
+            </span>
+            <h2>
+              {c.role === 'manufacturer'
+                ? 'Технологии находят свою команду.'
+                : 'Сильная команда привлекает партнёров.'}
+            </h2>
+            <p>
+              {c.role === 'manufacturer'
+                ? 'Соберите пакет поставок, поддержки и встречных рекламных прав.'
+                : 'Согласуйте деньги, размещение, мероприятия и коммерческие права в одном пакете.'}
+            </p>
+          </div>
+          <div>
+            <strong>{data.contracts.filter((d) => d.status === 'signed').length}</strong>
+            <span>действующих контрактов</span>
+            <strong>{data.supplies.filter((d) => d.status === 'signed').length}</strong>
+            <span>{c.role === 'manufacturer' ? 'клиентских договоров' : 'договоров поставки'}</span>
+          </div>
+        </div>
+      )}
       {data && tab === 'brands' && (
         <Panel title="Рынок спонсоров" action={<span>{brands.length} компаний</span>}>
           <div className="finance-tools">
@@ -156,13 +189,19 @@ export function Commercial({ world, c, updateCareer }: SectionProps & { updateCa
           </div>
           <div className="brand-grid">
             {brands.slice(current * 12, current * 12 + 12).map((b) => (
-              <button className="brand-card" key={b.id} onClick={() => setProfile(b.id)}>
-                <small>{world.countries[b.country]}</small>
-                <strong>{b.name}</strong>
-                <span>{priorities[b.priority]}</span>
-                <small>
-                  {b.series.map((s) => world.championships[s]?.short_name ?? s.toUpperCase()).join(' · ')}
-                </small>
+              <button className="brand-card brand-tile" key={b.id} onClick={() => setProfile(b.id)}>
+                <div className="brand-wordmark">
+                  <h3>{b.name}</h3>
+                  <small>{priorities[b.priority]}</small>
+                </div>
+                <p>{world.countries[b.country]}</p>
+                <div className="series-chips">
+                  {b.series.map((id) => (
+                    <span key={id}>{world.championships[id]?.short_name || id.toUpperCase()}</span>
+                  ))}
+                </div>
+                <span>Оценка свободного бюджета</span>
+                <strong>{money(b.remaining_estimate_cents)}</strong>
               </button>
             ))}
           </div>
@@ -206,67 +245,74 @@ export function Commercial({ world, c, updateCareer }: SectionProps & { updateCa
           )}
         </Panel>
       )}
-      {data && (tab === 'contracts' || tab==='supplies') && (
+      {data && (tab === 'contracts' || tab === 'supplies') && (
         <>
-          {tab==='contracts' && <Panel title="Спонсорские соглашения">
-            {data.contracts.map((d) => (
-              <button key={d.id} className="result commercial-row" onClick={() => setView(d.id)}>
-                <span>
-                  <strong>
-                    {name(d.sponsor)} · {roles[d.role]}
-                  </strong>
-                  <small>
-                    {(d.program_series ?? [d.series]).map((s) => world.championships[s]?.name ?? s).join(' · ')} · {statuses[d.status]} · {d.end}
-                  </small>
-                </span>
-                <b>{money(d.fixed_cents)}</b>
-              </button>
-            ))}
-            {!data.contracts.length && (
-              <p className="panel-body muted">Спонсорские соглашения отсутствуют.</p>
-            )}
-          </Panel>}
-          {tab==='supplies' && <Panel title="Связанные поставки">
-            {data.supplies.map((d) => (
-              <div className="panel-body" key={d.id}>
-                <h3>
-                  {name(d.sponsor)} · {world.products[d.product].name}
-                </h3>
-                <Facts
-                  items={[
-                    ['Клиент', name(d.org)],
-                    [
-                      'Статус партнёрства',
-                      {
-                        client: 'Клиент',
-                        technical: 'Технический партнёр',
-                        commercial: 'Коммерческий партнёр',
-                        priority: 'Приоритетный партнёр',
-                        works: 'Заводская программа',
-                      }[d.partnership ?? 'client'],
-                    ],
-                    ['Цена после скидки', money(d.sale_cents)],
-                    ['Скидка', money(d.discount_cents)],
-                    ...(c.org === d.sponsor ? [['Себестоимость', money(d.cost_cents)] as const] : []),
-                    ['Поддержка', d.support ? 'Включена' : 'Отдельно'],
-                    ['Совместные испытания', d.testing ? 'По регламенту' : 'Нет'],
-                    ['Совместная разработка', d.development ? 'По регламенту' : 'Нет'],
-                  ]}
-                />
-                {d.status === 'signed' && (
-                  <Button
-                    disabled={order.busy}
-                    onClick={() => void order.send('finance-end-supply', { contract: d.id })}
-                  >
-                    Расторгнуть поставку
-                  </Button>
-                )}
-              </div>
-            ))}
-            {!data.supplies.length && (
-              <p className="panel-body muted">Дополнительных пакетов поставки нет.</p>
-            )}
-          </Panel>}
+          {tab === 'contracts' && (
+            <Panel title="Спонсорские соглашения">
+              {data.contracts.map((d) => (
+                <button key={d.id} className="result commercial-row" onClick={() => setView(d.id)}>
+                  <span>
+                    <strong>
+                      {name(d.sponsor)} · {roles[d.role]}
+                    </strong>
+                    <small>
+                      {(d.program_series ?? [d.series])
+                        .map((s) => world.championships[s]?.name ?? s)
+                        .join(' · ')}{' '}
+                      · {statuses[d.status]} · {d.end}
+                    </small>
+                  </span>
+                  <b>{money(d.fixed_cents)}</b>
+                </button>
+              ))}
+              {!data.contracts.length && (
+                <p className="panel-body muted">Спонсорские соглашения отсутствуют.</p>
+              )}
+            </Panel>
+          )}
+          {tab === 'supplies' && (
+            <Panel title="Связанные поставки">
+              {data.supplies.map((d) => (
+                <div className="panel-body" key={d.id}>
+                  <h3>
+                    {name(d.sponsor)} · {world.products[d.product].name}
+                  </h3>
+                  <Facts
+                    items={[
+                      ['Клиент', name(d.org)],
+                      [
+                        'Статус партнёрства',
+                        {
+                          client: 'Клиент',
+                          technical: 'Технический партнёр',
+                          commercial: 'Коммерческий партнёр',
+                          priority: 'Приоритетный партнёр',
+                          works: 'Заводская программа',
+                        }[d.partnership ?? 'client'],
+                      ],
+                      ['Цена после скидки', money(d.sale_cents)],
+                      ['Скидка', money(d.discount_cents)],
+                      ...(c.org === d.sponsor ? [['Себестоимость', money(d.cost_cents)] as const] : []),
+                      ['Поддержка', d.support ? 'Включена' : 'Отдельно'],
+                      ['Совместные испытания', d.testing ? 'По регламенту' : 'Нет'],
+                      ['Совместная разработка', d.development ? 'По регламенту' : 'Нет'],
+                    ]}
+                  />
+                  {d.status === 'signed' && (
+                    <Button
+                      disabled={order.busy}
+                      onClick={() => void order.send('finance-end-supply', { contract: d.id })}
+                    >
+                      Расторгнуть поставку
+                    </Button>
+                  )}
+                </div>
+              ))}
+              {!data.supplies.length && (
+                <p className="panel-body muted">Дополнительных пакетов поставки нет.</p>
+              )}
+            </Panel>
+          )}
         </>
       )}
       {detail && !brand && (
@@ -278,7 +324,10 @@ export function Commercial({ world, c, updateCareer }: SectionProps & { updateCa
                 ['Целевые рынки', detail.markets.map((k) => world.countries[k]).join(', ')],
                 ['Стратегия', priorities[detail.priority]],
                 ['Свободный бюджет · оценка', money(detail.remaining_estimate_cents)],
-                ['Минимум популярности / репутации', detail.min_popularity + ' / ' + detail.min_reputation],
+                [
+                  'Минимум популярности / репутации',
+                  detail.min_popularity + ' / ' + detail.min_reputation,
+                ],
                 ['Интерес к организациям', detail.organizations.map(name).join(', ')],
                 ['Интерес к пилотам', detail.drivers.map((p) => world.names[p]).join(', ')],
               ]}
@@ -394,7 +443,11 @@ export function Commercial({ world, c, updateCareer }: SectionProps & { updateCa
       {deal && (
         <Dialog title={'Договор · ' + name(deal.sponsor)} onClose={close}>
           <div className="panel-body">
-            <p>{(deal.program_series ?? [deal.series]).map((s) => world.championships[s]?.name ?? s).join(' · ')}</p>
+            <p>
+              {(deal.program_series ?? [deal.series])
+                .map((s) => world.championships[s]?.name ?? s)
+                .join(' · ')}
+            </p>
             <Conditions t={deal} />
             {deal.evidence && <p>{deal.evidence}</p>}
             {deal.source && (
@@ -402,7 +455,15 @@ export function Commercial({ world, c, updateCareer }: SectionProps & { updateCa
                 <a href={deal.source} target="_blank" rel="noreferrer">
                   Источник партнёрства сезона 2025
                 </a>
-                {deal.additional_source && <> · <a href={deal.additional_source} target="_blank" rel="noreferrer">Дополнительный источник</a></>}
+                {deal.additional_source && (
+                  <>
+                    {' '}
+                    ·{' '}
+                    <a href={deal.additional_source} target="_blank" rel="noreferrer">
+                      Дополнительный источник
+                    </a>
+                  </>
+                )}
               </p>
             )}
             <p className="muted">Суммы и сроки расчётов заданы экономикой карьеры.</p>

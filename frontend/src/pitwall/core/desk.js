@@ -15,6 +15,7 @@ function sources(c, route, tab) {
         : ['manufacturer', 'finance', 'production', 'development']
   if (route === 'world') return ['garage']
   if (route === 'inbox') return ['council']
+  if (route === 'contracts') return ['dossiers']
   if (route === 'funding') return ['funding']
   if (route === 'agreements') return ['commercial', 'capital', 'facilities', 'dossiers', 'funding']
   if (['statistics', 'organization'].includes(route))

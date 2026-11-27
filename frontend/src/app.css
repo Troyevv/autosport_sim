@@ -595,3 +595,28 @@ button.result:hover {
     font-size: 12px;
   }
 }
+
+.app-shell {
+  --bg:#111;
+  --sidebar:#191919;
+  --surface:#222;
+  --surface-2:#2b2b2b;
+  --border:#393939;
+  --text:#f1efec;
+  --muted:#b3afaa;
+  --dim:#95928d;
+  --accent:#d87282;
+  --accent-hover:#e497a3;
+  background:var(--bg);
+  color:var(--text);
+}
+.app-shell .demo-brand { display:flex; flex-direction:column; align-items:flex-start; gap:4px; }
+.app-shell .demo-brand strong { font-family:Race,'Arial Narrow',sans-serif;font-size:28px;font-style:italic;letter-spacing:-1.4px;line-height:1 }
+.app-shell .demo-brand strong span {font-family:Manrope,sans-serif;font-size:14px;color:var(--muted);margin-left:2px}
+.app-shell .demo-brand small {letter-spacing:2px;color:var(--muted);padding:0}
+.app-shell .team-switch,.app-shell .kpi,.app-shell .panel {background:var(--surface);border-color:var(--border)}
+.app-shell .team-switch {border-bottom:2px solid var(--accent)}
+.app-shell .nav-link.active {color:var(--text);background:#333;border-left-color:var(--accent)}
+.app-shell .topbar,.app-shell .mobile-bottom {background:#191919;border-color:var(--border)}
+.app-shell .screen h1,.app-shell .kpi-value {font-family:Race,'Arial Narrow',Manrope,sans-serif}
+.app-shell .btn-primary {background:var(--accent);color:#141414;border-color:var(--accent)}

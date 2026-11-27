@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { Button, Panel } from '../../ui/components'
 import { money, type Career, type World } from '../api'
-import { Portrait } from '../Portrait'
+import { PersonPortrait } from '../../pitwall/visuals'
+import { navigate } from '../../pitwall/core/route'
 import type { SectionProps } from '../Sections'
 import { shortDate, usePersonnel, type Order } from './model'
 import './lineup.css'
@@ -88,7 +89,8 @@ function Replacement({
       </p>
       {w.cover ? (
         <strong>
-          {world.names[w.cover.person]} · {shortDate(w.cover.start)} — {shortDate(w.cover.end)} (исключая)
+          {world.names[w.cover.person]} · {shortDate(w.cover.start)} — {shortDate(w.cover.end)}{' '}
+          (исключая)
         </strong>
       ) : (
         <form
@@ -183,7 +185,11 @@ function Review({
             onChange={(e) => setAmount(e.target.value)}
           />
         </label>
-        <Button primary type="submit" disabled={busy || c.role !== 'manager' || status === driver.promised}>
+        <Button
+          primary
+          type="submit"
+          disabled={busy || c.role !== 'manager' || status === driver.promised}
+        >
           Обсудить условия
         </Button>
       </form>
@@ -194,11 +200,14 @@ function Review({
 export function Lineup({
   c,
   world,
-  media,
   order,
   busy,
   openMarket,
-}: Pick<SectionProps, 'c' | 'world' | 'media'> & { order: Order; busy: boolean; openMarket: () => void }) {
+}: Pick<SectionProps, 'c' | 'world' | 'media'> & {
+  order: Order
+  busy: boolean
+  openMarket: () => void
+}) {
   const result = usePersonnel<Desk>('careers/' + c.id + '/lineup', c.revision)
   if (result.error)
     return (
@@ -209,33 +218,47 @@ export function Lineup({
   if (!result.data) return <p role="status">Загрузка состава…</p>
   const { drivers, windows, history } = result.data
   return (
-    <div className="lineup-desk">
+    <div className="lineup-desk people-module">
       <Panel title="Гоночный состав">
-        <div className="lineup-grid">
+        <div className="lineup-grid p-race-grid">
           {drivers
             .filter((d) => d.entry)
             .map((d) => {
               const entry = world.entries[d.entry!],
                 person = c.assignments.find((a) => a.id === d.seat)?.occupant
               return (
-                <article key={d.seat} className="lineup-driver">
-                  <div className="lineup-heading">
-                    <div>
-                      <small>
-                        {world.championships[d.series].name} · № {entry.number}
-                      </small>
-                      <h3>{world.names[d.person]}</h3>
-                      <b>{sportingStatus[d.promised!]}</b>
-                    </div>
-                    {person && (
-                      <Portrait person={person} org={c.org} color={c.team_color} driver media={media} />
-                    )}
+                <article key={d.seat} className="p-race-seat lineup-driver">
+                  <header>
+                    <span className="p-kicker">{world.championships[d.series].name}</span>
+                    <strong>№ {entry.number}</strong>
+                  </header>
+                  <div className="p-person-card featured">
+                    <button
+                      type="button"
+                      className="p-person-main"
+                      onClick={() => navigate('person', 'profile', d.person)}
+                    >
+                      <div className="p-photo">
+                        <span className="p-photo-pattern" />
+                        <span className="p-entry-number">{entry.number}</span>
+                        {person && <PersonPortrait person={person} id={d.person} size={undefined} role="driver" />}
+                      </div>
+                      <div className="p-card-identity lineup-heading">
+                        <div>
+                          <span className="p-kicker">{d.duties.map((r) => duties[r]).join(' · ')}</span>
+                          <h3>{world.names[d.person]}</h3>
+                          <b>{sportingStatus[d.promised!]}</b>
+                        </div>
+                      </div>
+                    </button>
                   </div>
                   <dl>
                     <dt>Доступность</dt>
                     <dd>
                       {d.absence
-                        ? reasons[d.absence.reason] + ' · прогноз ' + shortDate(d.absence.expected_return)
+                        ? reasons[d.absence.reason] +
+                          ' · прогноз ' +
+                          shortDate(d.absence.expected_return)
                         : 'Допущен'}
                     </dd>
                     <dt>Роли</dt>
@@ -295,7 +318,9 @@ export function Lineup({
                     c.role === 'manager' && (
                       <Button
                         disabled={busy || !!d.absence}
-                        onClick={() => order('prepare-program', { kind: 'simulator', participant: d.person })}
+                        onClick={() =>
+                          order('prepare-program', { kind: 'simulator', participant: d.person })
+                        }
                       >
                         Назначить симулятор
                       </Button>

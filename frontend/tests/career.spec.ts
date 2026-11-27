@@ -19,7 +19,13 @@ test('Штаб, брифинг, загрузка и перенос сохран�
   await page.getByRole('button', { name: 'Подтвердить брифинг' }).click()
   await page.reload()
   await expect(page.locator('.topbar-date')).toContainText('13 февраля')
-  await page.getByRole('button', { name: 'Календарь', exact: true }).filter({visible:true}).first().click()
+  const calendarDock = page.locator('.mobile-dock').getByRole('button', {name:'Календарь',exact:true})
+  if (await calendarDock.isVisible()) await calendarDock.click()
+  else {
+    await page.getByRole('button',{name:'Поиск в паддоке'}).click()
+    await page.locator('.search-dialog input, .search-overlay input').first().fill('Календарь команды')
+    await page.getByRole('button',{name:/Календарь команды/}).last().click()
+  }
   await expect(page.getByRole('heading', { name: 'Календарь', exact: true })).toBeVisible()
   await expect(page.getByRole('combobox', {name:'Чемпионат',exact:true})).toHaveValue('f1')
   await page.getByRole('combobox', {name:'Чемпионат',exact:true}).selectOption('wec')
@@ -27,7 +33,7 @@ test('Штаб, брифинг, загрузка и перенос сохран�
   await page.locator('.calendar-list button').filter({hasText:/пролог/i}).first().click()
   await expect(page.getByRole('dialog')).toContainText('Lusail')
   await page.keyboard.press('Escape')
-  await page.locator('.topbar').getByRole('button', { name: 'Сохранение карьеры' }).click()
+  await page.getByRole('button', { name: 'Сохранение карьеры', exact: true }).filter({visible:true}).first().click()
   const downloading = page.waitForEvent('download')
   await page.getByRole('link', { name: 'Экспорт сохранения' }).click()
   const download = await downloading
