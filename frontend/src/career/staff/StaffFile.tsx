@@ -1,7 +1,8 @@
 import { sportingStatus } from './Lineup'
 import { Development } from './Development'
-import { useState } from 'react'
-import { Button, Choices, Dialog, Facts, Progress } from '../../ui/components'
+import {initialTab,readRoute} from '../../pitwall/core/route'
+import { useEffect, useState } from 'react'
+import { Button, Choices, Facts, Progress } from '../../ui/components'
 import type { SectionProps } from '../Sections'
 import { Connections, Handling, CompareWork } from './Teamwork'
 import { CountryFlag } from '../Country'
@@ -41,12 +42,19 @@ const tabs = [
 export function StaffFile(props: Props) {
   const { employee, c, world, onClose } = props
   const [wet, rain] = useState(false),
-    [tab, view] = useState<(typeof tabs)[number][0]>('profile')
+    [tab, view] = useState<(typeof tabs)[number][0]>(()=>initialTab(tabs,'profile',readRoute().tab==='contract'?'terms':readRoute().tab))
   const path = 'careers/' + c.id + '/personnel/' + employee.id
   const result = usePersonnel<Dossier>(path + '?wet=' + wet, c.revision)
+  useEffect(() => {
+    const escape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && !document.querySelector('dialog[open], [role="dialog"]')) onClose()
+    }
+    window.addEventListener('keydown', escape)
+    return () => window.removeEventListener('keydown', escape)
+  }, [onClose])
   const data = result.data
   return (
-    <Dialog title={employee.name} onClose={onClose}>
+    <article className="staff-dossier"><button className="btn" onClick={onClose}>← К списку</button><h1>{employee.name}</h1>
       <div className="staff-file">
         <div className="staff-identity">
           <Portrait
@@ -147,7 +155,7 @@ export function StaffFile(props: Props) {
         {data && tab === 'teamwork' && (
           <>
             <Handling data={data} />
-            <Connections rows={data.relationships} />
+            <Connections rows={data.relationships} people={new Set(props.people.map(p => p.id))} />
           </>
         )}
         {data && tab === 'profile' && data.person.management && <ManagerProfile p={data.person} />}
@@ -158,7 +166,7 @@ export function StaffFile(props: Props) {
         {data && tab === 'compare' && <Comparison {...props} data={data} wet={wet} />}
         {data && tab === 'terms' && <Terms {...props} data={data} />}
       </div>
-    </Dialog>
+    </article>
   )
 }
 type FileProps = Props & { data: Dossier }
@@ -490,31 +498,6 @@ function Terms({ data, c, world, busy, order, onSent }: FileProps) {
           ]}
         />
       )}
-      {managed && (
-        <div className="staff-release">
-          {release ? (
-            <>
-              <p>
-                Освободить место сегодня и выплатить{' '}
-                {current.buyout_cents == null ? 'Закрытые условия' : money(current.buyout_cents)}?
-              </p>
-              <Button disabled={busy} onClick={() => confirm(false)}>
-                Отмена
-              </Button>{' '}
-              <Button
-                disabled={busy}
-                onClick={async () => {
-                  if (await order('staff-release', { seat: current.seat })) onSent()
-                }}
-              >
-                Подтвердить расторжение
-              </Button>
-            </>
-          ) : (
-            <Button onClick={() => confirm(true)}>Расторгнуть контракт</Button>
-          )}
-        </div>
-      )}
       {!first ? (
         <p className="muted">В вашей зоне полномочий нет мест этой профессии.</p>
       ) : (
@@ -680,6 +663,32 @@ function Terms({ data, c, world, busy, order, onSent }: FileProps) {
           </Button>
         </form>
       )}
+      {managed && (
+        <details className="staff-release"><summary>Досрочное прекращение договора</summary>
+          {release ? (
+            <>
+              <p>
+                Освободить место сегодня и выплатить{' '}
+                {current.buyout_cents == null ? 'Закрытые условия' : money(current.buyout_cents)}?
+              </p>
+              <Button disabled={busy} onClick={() => confirm(false)}>
+                Отмена
+              </Button>{' '}
+              <Button
+                disabled={busy}
+                onClick={async () => {
+                  if (await order('staff-release', { seat: current.seat })) onSent()
+                }}
+              >
+                Подтвердить расторжение
+              </Button>
+            </>
+          ) : (
+            <Button onClick={() => confirm(true)}>Расторгнуть контракт</Button>
+          )}
+        </details>
+      )}
+
     </>
   )
 }

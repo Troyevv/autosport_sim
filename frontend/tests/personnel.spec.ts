@@ -1,4 +1,4 @@
-import { submitCareer } from './createCareer'
+import { configureCareer, submitCareer } from './createCareer'
 import { expect, test } from '@playwright/test'
 import { join } from 'node:path'
 
@@ -16,7 +16,7 @@ test('Рынок, сравнение и переход пилота GT на св
   const pid = world.entries['dtm-1'].crew[0],
     name = world.names[pid]
   const incumbent = world.names[world.entries['f1-4'].crew[0]]
-  const dialog = page.getByRole('dialog')
+  const dialog = page.locator('.staff-dossier')
   const artist = dialog.locator('image[data-layer="appearance"]').first()
   async function advance() {
     const response = page.waitForResponse(r => r.url().endsWith('/commands') && r.request().method() === 'POST')
@@ -36,6 +36,7 @@ test('Рынок, сравнение и переход пилота GT на св
   await page.goto('/?career=' + c.id + '#people')
   await page.getByRole('button', { name: new RegExp(incumbent) }).click()
   await dialog.getByRole('button', { name: 'Договор', exact: true }).click()
+  await dialog.getByText('Досрочное прекращение договора', {exact:true}).click()
   await dialog.getByRole('button', { name: 'Расторгнуть контракт' }).click()
   await dialog.getByRole('button', { name: 'Подтвердить расторжение' }).click()
   await expect(dialog).toHaveCount(0)
@@ -76,7 +77,7 @@ test('Рынок, сравнение и переход пилота GT на св
   await advance()
   await expect(page.locator('.staff-offer')).toContainText('Встречные условия')
   await page.getByRole('button', { name: 'Рассмотреть условия' }).click()
-  await dialog.getByRole('button', { name: 'Подписать договор' }).click()
+  await page.getByRole('dialog').getByRole('button', { name: 'Подписать договор' }).click()
   await expect(page.locator('.staff-offer')).toContainText('Подписан')
   await evidence('negotiation')
   await page.getByRole('button', { name: 'Кадровый рынок', exact: true }).click()
@@ -122,7 +123,7 @@ test('Производитель шин, поддержка клиента и н
   ).json()
   const url = '/?career=' + c.id + '#people'
   await page.goto(url)
-  const dialog = page.getByRole('dialog')
+  const dialog = page.locator('.staff-dossier')
   await expect(page.locator('.staff-card').filter({ hasText: 'Руководитель конструкции шин' })).toHaveCount(1)
   await page.locator('.staff-card').filter({ hasText: 'Технический консультант' }).click()
   await dialog.getByRole('button', { name: 'Карьера', exact: true }).click()
@@ -187,6 +188,7 @@ test('Мандат владельца, наблюдение скаута и до
   await expect(page.getByText('Просит пересмотреть приоритет', { exact: true })).toBeVisible()
   await page.getByRole('heading', { name: 'Мандат менеджера' }).scrollIntoViewIfNeeded()
   await evidence('mandate')
+  await page.locator('.staff-desk').getByRole('button', {name:'Академия',exact:true}).click()
   await page.getByRole('heading', { name: 'Штат академии' }).scrollIntoViewIfNeeded()
   await expect(page.getByText('Тренер академии', { exact: true })).toBeVisible()
   await evidence('academy')
@@ -199,7 +201,7 @@ test('Мандат владельца, наблюдение скаута и до
   await evidence('market-funded')
   await page.getByLabel('Найти человека').fill(name)
   await page.getByRole('button', { name: new RegExp(name) }).click()
-  const dialog = page.getByRole('dialog')
+  const dialog = page.locator('.staff-dossier')
   await dialog.getByRole('button', { name: 'Карьера', exact: true }).click()
   await dialog.getByRole('button', { name: 'Запросить наблюдение' }).click()
   await expect(dialog.getByRole('button', { name: /Следующее наблюдение/ })).toBeDisabled()
@@ -234,6 +236,7 @@ test('Мандат владельца, наблюдение скаута и до
   await evidence('development')
   await page.keyboard.press('Escape')
   await page.getByRole('button', { name: 'Руководство', exact: true }).click()
+  await page.locator('.staff-desk').getByRole('button', {name:'Академия',exact:true}).click()
   await expect(page.getByRole('button', { name: new RegExp(name) })).toBeVisible()
   await page.getByRole('button', { name: 'Коллективы', exact: true }).click()
   await page
@@ -259,17 +262,10 @@ test('Национальность, флаги и публичный профи�
   }
   const world = await (await page.request.get('/api/world')).json()
   await page.goto('/')
-  await page.getByLabel('Имя игрока').fill('Николь')
-  await page.getByRole('combobox', { name: 'Национальность игрока' }).selectOption('AR')
-  await page
-    .getByRole('combobox', { name: 'Организация', exact: true })
-    .selectOption('team-mclaren-formula-1-team')
-  await page
-    .getByRole('combobox', { name: 'Национальность игрока' })
-    .evaluate((el) => el.scrollIntoView({ block: 'center' }))
+  await configureCareer(page, { country: 'AR', name: 'Николь' })
   await shot('country')
   await submitCareer(page)
-  await expect(page.getByRole('heading', { name: 'Штаб команды' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Команда ждёт вашего решения.' })).toBeVisible()
   const id = new URL(page.url()).searchParams.get('career')!
   const rows = await (await page.request.get('/api/careers/' + id + '/personnel')).json()
   type Candidate = { id: string; country: string; position: string; programs: string[]; name: string }
@@ -296,7 +292,7 @@ test('Национальность, флаги и публичный профи�
   ).toHaveCount(await cards.count())
   await page.getByLabel('Найти человека').fill(pilot.name)
   await cards.first().click()
-  const dialog = page.getByRole('dialog')
+  const dialog = page.locator('.staff-dossier')
   await expect(dialog.getByRole('img', { name: world.countries[pilot.country], exact: true })).toBeVisible()
   await dialog.getByRole('button', { name: 'Публичный профиль' }).click()
   await expect(dialog.getByText('Профессиональная репутация', { exact: true })).toBeVisible()

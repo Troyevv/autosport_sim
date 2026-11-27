@@ -128,8 +128,9 @@ export function PreparationDesk({ c, order, busy }: { c: Career; order: Order; b
                 <span>Нагрузка +{p.load}</span>
                 <strong>{money(p.cost)}</strong>
               </div>
+              <p>{p.unavailable || p.participants?.join(' · ')}</p>
               <Button
-                disabled={busy || occupied}
+                disabled={busy || occupied || Boolean(p.unavailable)}
                 onClick={() => order('prepare-program', { kind: p.id })}
                 aria-label={'Утвердить программу · ' + p.name}
               >

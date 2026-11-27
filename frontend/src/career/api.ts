@@ -103,7 +103,7 @@ export type Career = Save & {
   mandate: import('./staff/pathModel').Mandate | null
   academies: import('./staff/pathModel').Academy[]
   scholarships: import('./staff/pathModel').Scholarship[]
-  preparation_options: {id:string;name:string;facility:string;days:number;cost:number;load:number}[]
+  preparation_options: {id:string;name:string;facility:string;days:number;cost:number;load:number;participants?:string[];unavailable?:string}[]
   preparations:{id:string;kind:string;names:string[];start:string;end:string;status:string}[]
   crews: Record<string, string[]>
   offers: import("./staff/model").Offer[]

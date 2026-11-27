@@ -153,6 +153,7 @@ export function Calendar({ world, c }: SectionProps) {
       schedule={world.events.map((e) => ({
         id: e.id,
         day: e.start,
+        end: e.end,
         series: e.series,
         title: world.championships[e.series].name + ' · ' + e.name,
         type: e.kind === 'round' || e.kind === 'invitational' ? 'race' : 'development',
@@ -198,6 +199,7 @@ export function Championships({ world, c, media }: SectionProps) {
         </div>
         {logo && <img className="career-logo" alt={r.name} src={logo} />}
       </div>
+      <details className="source-details"><summary>Регламент и архив чемпионата</summary>
       <Panel title="Регламент">
         <Facts
           items={[
@@ -257,6 +259,7 @@ export function Championships({ world, c, media }: SectionProps) {
           </div>
         </Panel>
       )}
+      </details>
       <Panel title={'Заявки · ' + es.length}>
         <Table
           label="Заявки чемпионата"

@@ -1,3 +1,4 @@
+import {initialTab,readRoute} from '../pitwall/core/route'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Check, Eye, Images, RotateCcw, Save, Undo2 } from 'lucide-react'
 import { api, ApiError, explain, post, type Career, type World } from '../career/api'
@@ -56,7 +57,7 @@ function Studio({ c, world, catalog, updateCareer }: Props & { catalog: Catalog 
   const entries = Object.values(world.entries)
   const [series, setSeries] = useState(c.series)
   const filtered = entries.filter((e) => e.championship === series)
-  const [entryId, pick] = useState(() => filtered.find((e) => e.org === c.org)?.id || filtered[0].id)
+  const [entryId, pick] = useState(() => filtered.find(e=>e.id===readRoute().entity)?.id || filtered.find((e) => e.org === c.org)?.id || filtered[0].id)
   const entry = world.entries[entryId],
     car = world.cars[entry.car],
     org = world.organizations[entry.org]
@@ -64,7 +65,7 @@ function Studio({ c, world, catalog, updateCareer }: Props & { catalog: Catalog 
   const configuration = c.garage_configurations[entry.car]
   const model =
     configuration.geometry && geometry[configuration.geometry] ? configuration.geometry : baseModel
-  const [tab, setTab] = useState<(typeof tabs)[number][0]>('overview'),
+  const [tab, setTab] = useState<(typeof tabs)[number][0]>(()=>initialTab(tabs,'overview',readRoute().page==='livery'?'livery':readRoute().tab)),
     [dialog, open] = useState(''),
     [index, select] = useState(0)
   const [drafts, setDrafts] = useState<Record<string, Draft>>({}),

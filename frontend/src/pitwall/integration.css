@@ -1,0 +1,191 @@
+.pitwall {
+  height: 100dvh;
+  min-width: 0;
+  --red: var(--org-accent);
+  --red-bright: var(--org-accent);
+  --bg: #111112;
+  --panel: #1d1d1e;
+  --line: #454344;
+  --text: #f0ede8;
+  --muted: #aaa5a0;
+  color: var(--text);
+  background: var(--bg);
+  font:
+    14px/1.55 Manrope,
+    Arial,
+    sans-serif;
+}
+.pitwall .workspace {
+  margin-left: 0;
+  min-width: 0;
+  width: auto;
+}
+.pitwall .sidebar {
+  position: relative;
+  inset: auto;
+  height: 100%;
+  min-width: 0;
+}
+.pitwall .topbar {
+  position: static;
+  width: 100%;
+}
+.pitwall .main-inner {
+  min-width: 0;
+}
+.pitwall .native-screen {
+  color: var(--text);
+  min-width: 0;
+}
+.native-screen .screen {
+  padding: 0;
+  margin: 0;
+  max-width: none;
+}
+.native-screen .panel,
+.native-screen .stat-card,
+.native-screen .stats-row > div {
+  background: #1d1d1e;
+  border-color: #454344;
+  border-radius: 3px;
+}
+.native-screen :is(h1, h2, h3) {
+  font-family: Race, 'Arial Narrow', sans-serif;
+  color: var(--text);
+}
+.native-screen h1 {
+  font-size: clamp(34px, 4vw, 52px);
+}
+.native-screen .btn-primary,
+.pitwall + .native-dialog .btn-primary {
+  background: var(--org-accent, #e5c792);
+  color: #191715;
+  border-color: transparent;
+}
+.native-screen :is(.choices, .segmented) .active {
+  color: var(--org-accent);
+  border-color: var(--org-accent);
+}
+.native-screen .workspace-section-label {
+  margin: 20px 0;
+}
+.native-screen .panel-body {
+  min-width: 0;
+}
+.pitwall .save-card input[type='file'] {
+  max-width: 100%;
+}
+.pitwall .role-home .studio-stage canvas {
+  max-width: 100%;
+}
+@media (max-width: 900px) {
+  .pitwall .sidebar {
+    position: fixed;
+    inset: 0 auto 0 0;
+  }
+  .pitwall .native-screen .staff-summary {
+    display: none;
+  }
+  .native-screen .modal-body {
+    padding: 14px;
+  }
+  .native-screen .form-actions {
+    flex-wrap: wrap;
+  }
+  .native-screen .screen > header {
+    margin-bottom: 12px;
+  }
+}
+@media (max-width: 600px) {
+  .native-screen .section-grid,
+  .native-screen .three-col {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .management-calendar-day .calendar-event {
+    font-size: 0;
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    margin: 1px;
+    padding: 0;
+    background: var(--org-accent, #ddd);
+  }
+  .management-calendar-day {
+    min-height: 44px;
+  }
+  .pitwall .native-screen .native-dialog {
+    width: 100%;
+    max-width: 100%;
+    max-height: 100dvh;
+    margin: auto;
+    padding: 0;
+  }
+}
+.pitwall .sidebar {
+  padding: 0;
+  gap: 0;
+  border-radius: 0;
+}
+.pitwall .sidebar .brand {
+  display: block;
+  margin: 0;
+  gap: 0;
+  width: auto;
+}
+.pitwall .studio-stage:not(.native-screen *) {
+  aspect-ratio: auto;
+}
+.pitwall .person-portrait {
+  display: inline-block;
+  overflow: hidden;
+  flex: none;
+  vertical-align: middle;
+}
+.pitwall .person-portrait svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.pitwall .role-home .studio-stage:before {
+  display: none;
+}
+.pitwall .native-screen :is(.panel, .engineering-summary, .staff-file, .staff-card) {
+  --surface: #1d1d1e;
+  --accent: var(--org-accent);
+}
+.staff-desk[data-dossier='open'] > :not(.staff-dossier) {
+  display: none;
+}
+.staff-dossier {
+  min-width: 0;
+}
+.staff-dossier > h1 {
+  margin: 18px 0 22px;
+}
+.native-screen .source-details {
+  border-block: 1px solid var(--line);
+  margin: 12px 0 16px;
+  padding: 12px;
+}
+.native-screen .source-details summary {
+  cursor: pointer;
+  color: var(--org-accent);
+}
+.native-screen .staff-filter-trigger {display:none}
+.pitwall .main-inner:has(.staff-dossier) > .pw-operational {display:none}
+.staff-release summary {cursor:pointer}
+.staff-release[open] summary {margin-bottom:12px}
+@media(max-width:700px){
+  .native-screen .staff-filter-trigger {display:inline-flex}
+  .staff-filters[data-expanded=false] > :not(.staff-search,.staff-filter-trigger) {display:none}
+  .staff-filters .staff-search {min-width:0}
+  .collective-register .data-table,.collective-register tbody {display:block;min-width:0}
+  .collective-register thead {position:absolute;clip-path:inset(100%)}
+  .collective-register .data-table tr {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;padding:12px;border-bottom:1px solid var(--line)}
+  .collective-register .data-table td {border:0; padding:2px;white-space:normal}
+  .collective-register .data-table td:first-child {grid-column:1/-1;font-weight:700}
+  .collective-register .data-table td:not(:first-child)::before {content:attr(data-label);display:block;color:var(--muted);font-size:12px}
+  .native-screen .research-stats strong {font-size:clamp(16px,4.4vw,22px);overflow-wrap:normal}
+  .pitwall .sidebar-footer {display:grid}
+}

@@ -1,3 +1,4 @@
+import {initialTab,readRoute} from '../../pitwall/core/route'
 import { useState, type FormEvent, type ReactNode } from 'react'
 import { Button, Choices, Header, Panel, Stats } from '../../ui/components'
 import { type Career, money } from '../api'
@@ -47,16 +48,16 @@ export function Manufacturer({
   const request = usePersonnel<Desk>('careers/' + c.id + '/manufacturer', c.revision)
   const orders = useOrder(c, updateCareer, 'manufacturer'),
     staff = useOrder(c, updateCareer, 'staff')
-  const [tab, setTab] = useState(maker ? 'catalog' : 'clients'),
+  const [tab, setTab] = useState<string>(()=>initialTab(tabs,maker ? 'catalog' : 'clients')),
     [selected, setSelected] = useState(''),
-    [edition, setEdition] = useState(''),
+    [edition, setEdition] = useState(readRoute().entity),
     [year, setYear] = useState(c.date.slice(0, 4)),
     [target, setTarget] = useState('output'),
     [clientKey, setClient] = useState(''),
     [receipt, setReceipt] = useState('')
   const d = request.data
   const product =
-    d?.catalog.find((p) => p.entry + p.axis === selected) ??
+    d?.catalog.find((p) => p.entry + p.axis === selected) ?? d?.catalog.find(p=>p.editions.some(v=>v.id===edition)) ??
     d?.catalog.find((p) => p.series === c.series) ??
     d?.catalog[0]
   const version = product?.editions.find((v) => v.id === edition) ?? product?.editions[0]

@@ -37,7 +37,7 @@ test('Менеджер согласует иерархию с обоими пи�
   await page.getByRole('button', { name: 'Подобрать пилота' }).click()
   await page.getByLabel('Свободные агенты').check()
   await page.locator('.staff-card').first().click()
-  const dialog = page.getByRole('dialog')
+  const dialog = page.locator('.staff-dossier')
   await dialog.getByRole('button', { name: 'Договор', exact: true }).click()
   await dialog.getByLabel('Должность и место').selectOption(c.org + ':f1:reserve')
   const start = await dialog.getByLabel('Начало', { exact: true }).inputValue()

@@ -1,3 +1,4 @@
+import {initialTab,readRoute} from '../../pitwall/core/route'
 import { useState, type FormEvent } from 'react'
 import { Button, Choices, Dialog, Facts, Header, Panel } from '../../ui/components'
 import type { SectionProps } from '../Sections'
@@ -44,7 +45,7 @@ function Conditions({ t }: { t: Terms }) {
   )
 }
 export function Commercial({ world, c, updateCareer }: SectionProps & { updateCareer: (c: Career) => void }) {
-  const [tab, setTab] = useState<(typeof tabs)[number][0]>('brands'),
+  const [tab, setTab] = useState<(typeof tabs)[number][0]>(()=>initialTab(tabs,c.role === 'manufacturer' ? 'contracts' : 'brands',readRoute().tab==='supplies'?'contracts':readRoute().tab)),
     [query, setQuery] = useState(''),
     [series, setSeries] = useState(''),
     [page, setPage] = useState(0)

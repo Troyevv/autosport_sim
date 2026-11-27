@@ -9,10 +9,14 @@ import './people.css'
 import './race.css'
 import './app.css'
 
-import { Library } from './career/Library'
+import { PublicMenu as Library } from './pitwall/publicMenu'
 import { Workspace } from './career/Workspace'
 import { api, explain, type World, type Save, type Career, type Asset } from './career/api'
 import './career/career.css'
+import './pitwall/styles.css'
+import './pitwall/menu.css'
+import './pitwall/v2/theme.css'
+import './pitwall/integration.css'
 
 function Bootstrap() {
   const [boot, setBoot] = useState<{
@@ -67,7 +71,7 @@ function Bootstrap() {
   if (status !== 'ready')
     return (
       <main className="boot panel" aria-live="polite">
-        <div className="eyebrow">APEX / ЦЕНТР УПРАВЛЕНИЯ</div>
+        <div className="eyebrow">AUTOSPORT SIM / PIT WALL</div>
         <h1>{status === 'error' ? 'Нет связи с приложением' : 'Загрузка интерфейса…'}</h1>
         {status === 'error' && (
           <>

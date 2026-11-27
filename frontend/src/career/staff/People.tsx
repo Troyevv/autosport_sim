@@ -1,3 +1,4 @@
+import {readRoute,initialTab} from '../../pitwall/core/route'
 import { useRef, useState, type CSSProperties } from 'react'
 import { ArrowUpRight, ChevronLeft, ChevronRight, Search, Users } from 'lucide-react'
 import { Button, Choices, Dialog, Header, Panel, Table } from '../../ui/components'
@@ -21,6 +22,8 @@ const views = [
   ['groups', 'Коллективы'],
   ['preparation', 'Подготовка'],
   ['programs', 'Руководство'],
+  ['academy', 'Академия'],
+  ['funding', 'Финансирование пилотов'],
 ] as const
 export function People({
   c,
@@ -28,16 +31,19 @@ export function People({
   media,
   updateCareer,
 }: SectionProps & { updateCareer: (career: Career) => void }) {
-  const [tab, setTab] = useState<(typeof views)[number][0]>('roster')
+  const route=readRoute()
+  const byPage:Record<string,string>={drivers:'lineup',staff:'roster',market:'market',person:'roster',contracts:'offers',academy:'academy',leadership:'programs',funding:'funding',preparation:'preparation'}
+  const [tab, setTab] = useState<(typeof views)[number][0]>(()=>initialTab(views,'roster',byPage[route.page]||route.tab))
   const [query, search] = useState(''),
     [position, profession] = useState(''),
     [series, program] = useState(''),
     [country, setCountry] = useState('')
   const [free, availability] = useState(false),
     [page, paginate] = useState(0)
-  const [selected, select] = useState(''),
+  const [selected, select] = useState(route.page==='person'?route.entity:''),
     [busy, setBusy] = useState(false),
     [error, setError] = useState('')
+  const [filterOpen, showFilters] = useState(false)
   const [ranking, rank] = useState('rating')
   const [confirm, setConfirm] = useState('')
   const opener = useRef<HTMLButtonElement>(null)
@@ -121,7 +127,7 @@ export function People({
     setError('')
   }
   return (
-    <section className="screen staff-desk">
+    <section className="screen staff-desk" data-dossier={employee ? "open" : undefined}>
       <Header
         section={world.organizations[c.org].name}
         title="Пилоты и персонал"
@@ -151,7 +157,7 @@ export function People({
       </div>
       <Choices
         items={views.filter(
-          ([id]) => (id !== 'programs' || c.mandate) && (id !== 'lineup' || c.role !== 'manufacturer'),
+          ([id]) => (!['programs','funding','academy'].includes(id) || c.mandate) && (id !== 'lineup' || c.role !== 'manufacturer'),
         )}
         active={tab}
         onChange={changeTab}
@@ -172,8 +178,9 @@ export function People({
         />
       )}
       {tab === 'preparation' && <PreparationDesk {...{ c, order, busy }} />}
-      {tab === 'programs' && (
+      {['programs','academy','funding'].includes(tab) && c.mandate && (
         <Programs
+          section={tab}
           {...{ c, world, busy, order }}
           openPerson={(id) => {
             if (document.activeElement instanceof HTMLButtonElement) opener.current = document.activeElement
@@ -189,7 +196,7 @@ export function People({
       )}
       {(tab === 'roster' || tab === 'market') && (
         <>
-          <div className="staff-filters">
+          <div className="staff-filters" data-expanded={filterOpen}>
             <label className="staff-search">
               <Search size={17} />
               <input
@@ -203,6 +210,9 @@ export function People({
                 }}
               />
             </label>
+            <Button className="staff-filter-trigger" aria-expanded={filterOpen} onClick={() => showFilters(!filterOpen)}>
+              Фильтры{[position, series, country, free].filter(Boolean).length ? ' · ' + [position,series,country,free].filter(Boolean).length : ''}
+            </Button>
             <select
               aria-label="Профессия"
               value={position}
@@ -311,6 +321,7 @@ export function People({
                   <b>{p.rating}</b>
                   <small>рейтинг</small>
                 </div>
+                {tab === 'roster' && <div className="staff-money"><span>Оклад / месяц <b>{p.financial ? money(p.financial.wage_cents) : 'Закрытые условия'}</b></span><span>Договор до <b>{p.end ? shortDate(p.end) : 'Без срока'}</b></span></div>}
                 {tab === 'market' && p.financial && (
                   <div className="staff-money">
                     <span>
@@ -376,6 +387,7 @@ export function People({
       )}
       {tab === 'groups' && (
         <Panel title="Инженерные подразделения и бригады">
+          <div className="collective-register">
           <Table
             label="Коллективы организации"
             columns={[
@@ -400,16 +412,17 @@ export function People({
               ],
             }))}
           />
+          </div>
         </Panel>
       )}
-      {tab === 'groups' && <GroupWork groups={c.collectives} />}
+      {tab === 'groups' && <GroupWork groups={c.collectives} people={new Set(people.map(p => p.id))} />}
       {tab === 'offers' && (
         <div className="section-grid">
           <Panel title="Предложения">
             {!c.offers.length && (
               <p className="panel-body muted">
                 Переговоров пока нет. Выберите сотрудника на кадровом рынке и предложите условия.
-              </p>
+               <Button onClick={()=>changeTab('market')}>Открыть кадровый рынок</Button></p>
             )}
             {c.offers
               .slice()
@@ -494,6 +507,7 @@ export function People({
           key={employee.id}
           {...{ employee, people, c, world, media, order, busy, error }}
           onClose={() => {
+            if(route.page==='person'){location.hash='staff';return}
             select('')
             setError('')
             requestAnimationFrame(() => opener.current?.focus({ preventScroll: true }))

@@ -1,4 +1,4 @@
-import { submitCareer } from './createCareer'
+import { configureCareer, submitCareer } from './createCareer'
 import { expect, test } from '@playwright/test'
 import { join } from 'node:path'
 
@@ -19,13 +19,9 @@ for (const [series, org] of [
         })
     }
     await page.goto('/')
-    await page.getByLabel('Имя игрока').fill('Алекс')
-    const picker = page.getByRole('combobox', { name: 'Чемпионат', exact: true })
-    expect(await picker.locator('option[value^="kart-"]').count()).toBe(0)
-    await picker.selectOption(series)
-    await page.getByRole('combobox', { name: 'Организация', exact: true }).selectOption(org)
+    await configureCareer(page, { series, org })
     await submitCareer(page)
-    await expect(page.getByRole('heading', { name: 'Штаб команды' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Команда ждёт вашего решения.' })).toBeVisible()
     const url = page.url().split('#')[0]
     await evidence('hq')
     await page.goto(url + '#garage')
@@ -61,7 +57,7 @@ for (const [series, org] of [
       await page.getByLabel('Профессия').selectOption('driver')
       await page.getByLabel('Чемпионат', { exact: true }).selectOption('kart-okj')
       await page.locator('.staff-card').first().click()
-      const dossier = page.getByRole('dialog')
+      const dossier = page.locator('.staff-dossier')
       await dossier.getByRole('button', { name: 'Карьера', exact: true }).click()
       await dossier.getByRole('button', { name: 'Запросить наблюдение' }).click()
       await expect(dossier.getByRole('button', { name: /Следующее наблюдение/ })).toBeDisabled()

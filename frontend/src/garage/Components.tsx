@@ -1,3 +1,4 @@
+import { label as productParameter } from '../career/manufacturer/model'
 import { units, fmt } from './quantities'
 import { useEffect, useState } from 'react'
 import { api, explain, type Career } from '../career/api'
@@ -49,7 +50,7 @@ type Desk = {
   }[]
 }
 function quantities(values: Record<string, number>) {
-  return Object.entries(values).map(([k, v]): [string, string] => [units[k][0], fmt(v) + ' ' + units[k][1]])
+  return Object.entries(values).map(([k, v]): [string, string] => units[k] ? [units[k][0], [fmt(v), units[k][1]].filter(Boolean).join(' ')] : [productParameter(k), fmt(v)])
 }
 const policy = {
   constructor: 'Конструкторская программа',
@@ -102,6 +103,7 @@ export function Components({ entry, c, update }: Props) {
       </Panel>
     )
   const current = data.parts[slot] || Object.values(data.parts)[0]
+  if (!current) return <Panel title="Технический паспорт"><p>Для этой заявки ещё нет зарегистрированных узлов.</p></Panel>
   const spares = data.spares.filter((p) => p.slot === current.slot)
   const spare = spares.find((p) => p.instance === spareId) || spares[0]
   const km = (m: number) => fmt(m / 1000) + ' км'

@@ -1,3 +1,4 @@
+import {readRoute} from '../../pitwall/core/route'
 import { useState } from 'react'
 import { ClipboardList, SlidersHorizontal, UsersRound } from 'lucide-react'
 import { Button, Choices, Dialog, Facts, Header, Panel } from '../../ui/components'
@@ -203,7 +204,7 @@ export function Council({ c, world, updateCareer }: SectionProps & { updateCaree
   const data = req.data
   const { send, busy, error, clear } = useOrder(c, updateCareer, 'council')
   const [tab, setTab] = useState('agenda'),
-    [selected, setSelected] = useState(''),
+    [selected, setSelected] = useState(readRoute().entity),
     [settings, setSettings] = useState(false)
   const [decision, setDecision] = useState<keyof typeof decisions>('approve'),
     [alternative, setAlternative] = useState(0)
@@ -274,7 +275,10 @@ export function Council({ c, world, updateCareer }: SectionProps & { updateCaree
                     className="council-topic"
                     aria-pressed={r.id === row?.id}
                     key={r.id}
-                    onClick={() => setSelected(r.id)}
+                    onClick={() => {
+                      setSelected(r.id)
+                      if (window.matchMedia('(max-width: 900px)').matches) requestAnimationFrame(() => document.querySelector('.council-dossier')?.closest('section')?.scrollIntoView({block:'start'}))
+                    }}
                   >
                     <small>
                       {r.occasion} · {statuses[r.status]}

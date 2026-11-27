@@ -37,7 +37,7 @@ const outcomes: Record<string, string> = {
   'accepted-handover': 'Отдел принял работу',
   'incomplete-handover': 'Отдел запросил уточнение',
 }
-export function Connections({ rows }: { rows: Relationship[] }) {
+export function Connections({ rows, people }: { rows: Relationship[]; people: Set<string> }) {
   return (
     <section className="staff-connections">
       <h3>Совместная работа</h3>
@@ -50,7 +50,7 @@ export function Connections({ rows }: { rows: Relationship[] }) {
               <small>{activities[r.kind]}</small>
               <small>{r.active ? 'В составе' : 'Архив'}</small>
             </div>
-            <strong>{r.name}</strong>
+            {people.has(r.peer) ? <a className="org-link" href={'#person?entity=' + encodeURIComponent(r.peer)}>{r.name}</a> : <strong>{r.name}</strong>}
             <div className="staff-subhead">
               <span>{r.days} дн. вместе</span>
               <span>{r.trust === null ? 'Внешний коллектив' : 'Доверие · ' + r.trust + ' / 100'}</span>
@@ -169,7 +169,7 @@ const groupMetrics = {
   team_days: 'Совместная работа, дней',
 } as const
 
-export function GroupWork({ groups }: { groups: Career['collectives'] }) {
+export function GroupWork({ groups, people }: { groups: Career['collectives']; people: Set<string> }) {
   const [id, setId] = useState(groups[0]?.id)
   const [compare, setCompare] = useState('')
   const g = groups.find((v) => v.id === id)
@@ -216,7 +216,7 @@ export function GroupWork({ groups }: { groups: Career['collectives'] }) {
           ))}
         </div>
         <Development data={g.development} />
-        <Connections rows={g.relationships} />
+        <Connections rows={g.relationships} people={people} />
       </div>
     </Panel>
   )

@@ -9,8 +9,9 @@ export function Programs({
   world,
   busy,
   order,
+  section,
   openPerson,
-}: Pick<SectionProps, 'c' | 'world'> & { busy: boolean; order: Order; openPerson: (v: string) => void }) {
+}: Pick<SectionProps, 'c' | 'world'> & { section: string; busy: boolean; order: Order; openPerson: (v: string) => void }) {
   const m = c.mandate!
   const [goal, setGoal] = useState(m.goal),
     [priority, setPriority] = useState(m.priority),
@@ -19,7 +20,7 @@ export function Programs({
     [autonomy, setAutonomy] = useState(m.autonomy)
   return (
     <div className="section-grid">
-      <Panel title="Мандат менеджера">
+      {section === 'programs' && <Panel title="Мандат менеджера">
         <div className="path-panel">
           {m.manager ? (
             <Button onClick={() => openPerson(m.manager!)}>
@@ -120,8 +121,10 @@ export function Programs({
               </p>
             ))}
         </div>
-      </Panel>
-      <div className="career-stack">
+      </Panel>}
+      {section !== 'programs' && <div className="career-stack">
+        {!c.academies.length && <p>У организации нет академии. Поддержку пилота можно проверить в его досье на кадровом рынке.</p>}
+        {section === 'funding' && <a className="btn" href="#market">Выбрать пилота на кадровом рынке</a>}
         {c.academies.map((a) => (
           <Panel key={a.id} title={a.name}>
             <div className="path-panel">
@@ -160,7 +163,7 @@ export function Programs({
             </div>
           </Panel>
         ))}
-      </div>
+      </div>}
     </div>
   )
 }

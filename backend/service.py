@@ -267,7 +267,7 @@ def project(db, cid, state):
             for o in state["offers"].values()
             if world["assignments"][o["seat"]]["org"] == org
         ],
-        preparation_options=preparation.options(state),
+        preparation_options=preparation.available_programs(state, world),
         preparations=[
             dict(
                 r,

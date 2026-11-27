@@ -1,3 +1,4 @@
+import {readRoute} from '../../pitwall/core/route'
 import { useState } from 'react'
 import { Factory, Package, ClipboardCheck, Plus } from 'lucide-react'
 import { Button, Choices, Dialog, Facts, Header, Panel, Progress, Stats } from '../../ui/components'
@@ -25,7 +26,7 @@ export function Production({ c, world, updateCareer }: SectionProps & { updateCa
   const factory = useOrder(c, updateCareer, 'production'),
     rental = useOrder(c, updateCareer),
     install = useOrder(c, updateCareer, 'engineering')
-  const [tab, setTab] = useState('queue'),
+  const [tab, setTab] = useState(()=>readRoute().page==='inventory'?'stock':['needs','stock','quality','archive'].includes(readRoute().tab)?readRoute().tab:'queue'),
     [action, setAction] = useState<Action | null>(null),
     [priority, setPriority] = useState('normal')
   const manage = c.role === 'manager',

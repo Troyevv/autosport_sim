@@ -14,7 +14,7 @@ test('Гараж · две заявки, детали, декали и сохр�
     catalog: Catalog = await (await page.request.get('/api/garage')).json()
   await page.goto('/?career=' + career.id)
   if (mobile) await page.getByRole('button', { name: 'Ещё' }).click()
-  await page.getByRole('link', { name: 'Гараж', exact: true }).filter({ visible: true }).click()
+  await page.locator('.car-workspace footer button').first().click()
   const view = page.locator('.studio-stage .garage-body')
   const picture = () => view.evaluate((el) => (el as HTMLCanvasElement).toDataURL())
   const evidence = async (name: string) => {
