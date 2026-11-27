@@ -1082,3 +1082,355 @@ export default function ContractWorkspace() {
     </div>
   )
 }
+
+export function openContractForm(g, spec) {
+  g.openDialog({
+    ...spec,
+    fields: undefined,
+    wide: true,
+    content: <ContractCommandForm spec={spec} />,
+  });
+}
+export function ContractCommandForm({ spec }) {
+  const g = useGame(),
+    type = classifyContractSpec(spec) || "investment",
+    m = spec.contractMeta || {},
+    [values, setValues] = useState(
+      Object.fromEntries(
+        (spec.fields || []).map((f) => [
+          f.name || f.key,
+          f.defaultValue ?? f.value ?? f.initial ?? "",
+        ]),
+      ),
+    ),
+    [review, setReview] = useState(false),
+    [error, setError] = useState(""),
+    [busy, setBusy] = useState(false),
+    [completed, setCompleted] = useState(false);
+  const get = (n) => Number(values[n] || 0),
+    amount = Math.round(get("amount") * 100),
+    days = get("days"),
+    units = get("units"),
+    cost =
+      type === "facilitylease"
+        ? Math.floor(
+            (m.daily_cents || 0) *
+              days *
+              units *
+              (values.mode === "outsource" ? 1.2 : 1),
+          )
+        : amount;
+  const rate = m.valuation_cents
+    ? 450 +
+      Math.min(
+        1600,
+        Math.floor(
+          (((m.debt_cents || 0) + amount) * 450) /
+            Math.max(1, m.valuation_cents),
+        ),
+      )
+    : null;
+  const share = Math.round(get("percent") * 100);
+  const shareAmount =
+    m.valuation_cents && share > 0 && share < 10000
+      ? Math.floor(
+          (m.valuation_cents * share) /
+            (values.mode === "issue" ? 10000 - share : 10000),
+        )
+      : null;
+  const impactRows =
+    type === "facilitylease"
+      ? [
+          ["Начало окна", date(values.start)],
+          ["Окончание, не включая", date(dayAfter(values.start, days))],
+          ["Цена / слот / день", money(m.daily_cents)],
+          ["Слотов × дней", units + " × " + days],
+          ["Формат", label(values.mode)],
+          ["После резервирования", money((m.available_cents || 0) - cost)],
+        ]
+      : type === "loan"
+        ? [
+            ["Основной долг", money(amount)],
+            ["Поступление в кассу", money(amount)],
+            ["Срок", get("months") + " мес."],
+            [
+              "Ставка по правилу",
+              rate == null
+                ? "Проверяется при решении"
+                : (rate / 100).toFixed(2) + "% годовых",
+            ],
+            [
+              "Ограничение суммы",
+              money(
+                m.valuation_cents ? Math.floor(m.valuation_cents * 0.6) : null,
+              ),
+            ],
+            ["Текущий долг", money(m.debt_cents)],
+          ]
+        : values.percent != null
+          ? [
+              [
+                "Сделка",
+                values.mode === "issue"
+                  ? "Выпуск новых акций"
+                  : "Продажа своей доли",
+              ],
+              ["Доля инвестора", get("percent") + "%"],
+              ["Стоимость", money(shareAmount)],
+              [
+                "Получатель",
+                values.mode === "issue" ? "Организация" : "Собственник",
+              ],
+            ]
+          : [
+              [
+                "Источник",
+                values.source === "personal"
+                  ? "Личный счёт"
+                  : "Капитал владельца",
+              ],
+              ["Получатель", "Организация"],
+              ["Сумма", money(amount)],
+            ];
+  const intro =
+    type === "facilitylease"
+      ? [
+          "Забронировать время. Обеспечить работу.",
+          "В этом документе закрепляются окно и мощность. Назначение инженерных работ выполняется отдельно.",
+        ]
+      : type === "loan"
+        ? [
+            "Получить ресурс. Принять обязательство.",
+            "Кредитор проверяет оценку организации, долговую нагрузку и просрочку. Проценты не начисляются календарно в локальном эталоне.",
+          ]
+        : [
+            "Капитал меняет возможности организации.",
+            "Источник денег и получатель зависят от вида решения. Право контроля проверяется существующими правилами.",
+          ];
+  async function submit(e) {
+    e.preventDefault();
+    setError("");
+    const reason = spec.validate?.(values);
+    if (reason) {
+      setError(reason);
+      return;
+    }
+    if (!review) {
+      setReview(true);
+      return;
+    }
+    setBusy(true);
+    try {
+      await spec.onSubmit?.(values);
+      setCompleted(true);
+      setBusy(false);
+
+    } catch (err) {
+      setError(err.message || String(err));
+      setBusy(false);
+    }
+  }
+  if (completed)
+    return (
+      <div className="contract-command-complete">
+        <ContractSeal
+          date={g.game.career.date}
+          label={
+            type === "loan"
+              ? "Финансирование оформлено"
+              : type === "facilitylease"
+                ? "Мощности зарезервированы"
+                : "Решение зафиксировано"
+          }
+        />
+        <ContractFrame
+          type={type}
+          title="Решение стало частью истории организации."
+          eyebrow="Условия подтверждены"
+        >
+          <ContractFacts rows={impactRows} />
+          <p className="contract-note">
+            Локальное решение сохранено в журнале эталона. Исходная игровая
+            карьера не изменена.
+          </p>
+        </ContractFrame>
+        <div className="p-form-actions">
+          <Button variant="secondary" onClick={g.closeDialog}>
+            Вернуться к организации
+          </Button>
+          <Button onClick={() => g.navigate("agreements")}>
+            Открыть договорную комнату
+          </Button>
+        </div>
+      </div>
+    );
+  return (
+    <form
+      className="p-form p-employment-form contract-command-form"
+      onSubmit={submit}
+    >
+      <ContractFrame
+        type={type}
+        title={intro[0]}
+        counterparty={
+          m.counterparty ||
+          (type === "loan"
+            ? "Кредитор организации"
+            : type === "investment"
+              ? "Собственник / инвестор"
+              : undefined)
+        }
+        subtitle={m.facility || undefined}
+        aside={
+          <ContractImpact
+            title={
+              type === "loan"
+                ? "Цена финансирования"
+                : type === "investment"
+                  ? "Денежные потоки"
+                  : "Стоимость окна"
+            }
+            now={
+              type === "facilitylease"
+                ? cost
+                : type === "investment" && !values.percent
+                  ? amount
+                  : null
+            }
+            rows={impactRows}
+            note={spec.description || intro[1]}
+          />
+        }
+      >
+        <ContractClause
+          number={1}
+          title={
+            type === "facilitylease"
+              ? "Период и мощность"
+              : type === "loan"
+                ? "Запрос кредитору"
+                : "Условия решения"
+          }
+        >
+          <p className="contract-note" style={{ margin: "0 0 20px" }}>
+            {intro[1]}
+          </p>
+          <div className="p-form-grid">
+            {(spec.fields || []).map((f) => {
+              const key = f.name || f.key;
+              return (
+                <label
+                  className={"p-field " + (f.wide ? "p-wide" : "")}
+                  key={key}
+                >
+                  <span>{f.label}</span>
+                  {f.type === "select" ? (
+                    <select
+                      name={key}
+                      value={values[key]}
+                      required={f.required}
+                      onChange={(e) => {
+                        setValues((v) => ({ ...v, [key]: e.target.value }));
+                        setReview(false);
+                      }}
+                    >
+                      {(f.options || []).map((o, i) => (
+                        <option
+                          key={i}
+                          value={typeof o === "string" ? o : (o.value ?? o.id)}
+                          disabled={o.disabled}
+                        >
+                          {typeof o === "string" ? o : (o.label ?? o.name)}
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    <input
+                      name={key}
+                      value={values[key]}
+                      type={f.type || "text"}
+                      min={f.min}
+                      max={f.max}
+                      step={f.step}
+                      required={f.required}
+                      onInput={(e) => {
+                        const next = e.currentTarget.value;
+                        setValues((v) => ({ ...v, [key]: next }));
+                        setReview(false);
+                      }}
+                      onChange={(e) => {
+                        setValues((v) => ({ ...v, [key]: e.target.value }));
+                        setReview(false);
+                      }}
+                    />
+                  )}
+                  {f.hint && <small>{f.hint}</small>}
+                </label>
+              );
+            })}
+          </div>
+        </ContractClause>
+        <ContractClause
+          number={2}
+          title={
+            type === "facilitylease"
+              ? "Место в программе"
+              : type === "loan"
+                ? "Долгосрочное обязательство"
+                : "Последствия для контроля"
+          }
+        >
+          <p className="contract-clause-statement">
+            {type === "facilitylease"
+              ? "Без свободных слотов бронь не оформится. Расход попадёт в денежный журнал, а окно — в бронирования."
+              : type === "loan"
+                ? "Заём увеличит кассу и основной долг. Досрочное погашение и реструктуризация доступны отдельными решениями."
+                : values.mode === "issue"
+                  ? "Новые средства поступят организации. Доли существующих собственников будут пропорционально уменьшены."
+                  : values.mode === "sale"
+                    ? "Средства получит собственник. Доля управления изменится, касса организации не увеличится."
+                    : "Средства переходят с выбранного счёта на счёт организации. Обе стороны проводки сохраняются."}
+          </p>
+        </ContractClause>
+      </ContractFrame>
+      {review && (
+        <div className="contract-command-review">
+          <ContractSigningSummary
+            type={type}
+            counterparty={m.counterparty || "Организация"}
+            amount={
+              type === "facilitylease"
+                ? cost
+                : type === "investment" && !values.percent
+                  ? amount
+                  : null
+            }
+            rows={impactRows}
+            note="Проверьте итог. При подтверждении существующие правила повторно проверят полномочия, доступные средства и ограничения."
+          />
+        </div>
+      )}
+      {error && (
+        <p className="p-form-error" role="alert">
+          {error}
+        </p>
+      )}
+      <div className="p-form-actions">
+        <Button variant="secondary" onClick={g.closeDialog}>
+          Отмена
+        </Button>
+        <Button type="submit" disabled={busy}>
+          {busy
+            ? "Оформляем…"
+            : review
+              ? type === "facilitylease"
+                ? "Подтвердить резервирование"
+                : type === "loan"
+                  ? "Заключить соглашение"
+                  : "Подтвердить решение"
+              : "Проверить итог"}
+        </Button>
+      </div>
+    </form>
+  );
+}

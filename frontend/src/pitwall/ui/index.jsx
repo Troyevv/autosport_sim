@@ -416,3 +416,5 @@ export function ContextMenu({ items, label = 'Действия' }) {
     </div>
   )
 }
+
+export function Meter({value=0,max=100,label}){return <div className="meter" aria-label={label}><span style={{width:Math.min(100,value/max*100)+'%'}}/></div>}

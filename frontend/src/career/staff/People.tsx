@@ -151,7 +151,7 @@ export function People({
   const overview = route.page === 'people' && tab === 'roster'
   return (
     <section className="screen staff-desk" data-dossier={employee ? 'open' : undefined}>
-      {overview && <PersonnelDirectory overview>{null}</PersonnelDirectory>}
+      {overview && <PersonnelDirectory/>}
       <Choices
         items={views.filter(
           ([id]) =>

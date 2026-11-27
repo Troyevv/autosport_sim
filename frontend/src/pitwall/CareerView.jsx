@@ -1,6 +1,10 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { Calendar, Championships, Messages } from './World'
 import { PersonnelDirectory } from './Directory'
+import Business from './Business'
+import Garage from './Garage'
+import Engineering from './Engineering'
+import { peopleRoutes,businessRoutes,engineeringRoutes } from './v2/navigation'
 import { Shell } from './Shell'
 import { Context } from './core'
 import { useDesk } from './core/desk'
@@ -12,7 +16,7 @@ import StatisticsCenter from './v2/StatisticsCenter'
 import { OperationalAnalytics } from './v2/Advisory'
 import { SUPPORTED_ROUTES } from './v2/advisory-model'
 import { identityVars } from './v2/identity'
-import { Dialog } from '../ui/components'
+import { Dialog } from './Dialog'
 import { assetUrl } from '../career/api'
 import { usePersonnel } from '../career/staff/model'
 
@@ -89,6 +93,9 @@ export function CareerView({ world, c, media, route, tab, entity, updateCareer, 
     navigate,
     setTab: (t) => navigate(route, t, entity),
     openDialog,
+    onAdvance,
+    openForm: openDialog,
+    confirm: (spec) => openDialog({...spec, confirm:true}),
     closeDialog: () => openDialog(null),
     openPerson: (id, tab = 'profile') => navigate('person', tab, id),
     openOrganization: (id) => navigate('organization', 'overview', id),
@@ -101,7 +108,11 @@ export function CareerView({ world, c, media, route, tab, entity, updateCareer, 
     !tab ||
     ['overview', 'plans', 'agenda', 'catalog', 'queue', 'organization', 'plan', 'forecast'].includes(tab)
   const analytics = SUPPORTED_ROUTES.includes(route) && landing
-  const projection =
+  const directoryPage = peopleRoutes.includes(route)
+  const garagePage = ['garage','livery'].includes(route)
+  const businessPage=businessRoutes.includes(route)
+  const engineeringPage=engineeringRoutes.includes(route)
+  const projection = engineeringPage || businessPage || garagePage || directoryPage ||
     route === 'overview' ||
     route === 'briefings' ||
     ['organization', 'world', 'inbox', 'market', 'staff', 'funding', 'contracts'].includes(route) ||
@@ -110,29 +121,7 @@ export function CareerView({ world, c, media, route, tab, entity, updateCareer, 
     analytics
   const status = desk.error || directory.error
   const waiting = projection && (!desk.game || !directory.data)
-  const directoryPage = ['staff', 'market', 'funding', 'contracts'].includes(route)
-  if (analytics && waiting && !directoryPage)
-    content = (
-      <>
-        {status && (
-          <p role="alert">
-            {status}{' '}
-            <button
-              onClick={() => {
-                desk.retry()
-                directory.retry()
-              }}
-            >
-              Повторить загрузку аналитики
-            </button>
-          </p>
-        )}
-        <div key="native" className="native-screen">
-          {children}
-        </div>
-      </>
-    )
-  else if (waiting && status)
+  if (waiting && status)
     content = (
       <section role="alert">
         <h2>Не удалось загрузить раздел</h2>
@@ -154,18 +143,21 @@ export function CareerView({ world, c, media, route, tab, entity, updateCareer, 
   else if (route === 'organization') content = <OrganizationProfile />
   else if (route === 'statistics') content = <StatisticsCenter />
   else if (route === 'agreements') content = <Contracts />
-  else if (['garage', 'livery'].includes(route)) content = children
+  else if (businessPage || engineeringPage) {
+    const module=engineeringPage ? <Engineering key={c.id}/> : <Business key={route}/>;
+    content=<div className={'department-workspace '+(analytics?'with-report':'')}>
+      {analytics && <OperationalAnalytics route={route} compactBrief defaultExpanded={tab==='forecast'} analyticsOnly={tab==='forecast'}/>}
+      {route==='finance' && tab==='forecast'?<details className="source-details"><summary>Расписание выплат и исходная финансовая проекция</summary>{module}</details>:module}
+    </div>
+  }
+  else if (garagePage) content = <div className='department-workspace season-garage'><Garage/></div>
   else if (route === 'calendar') content = <Calendar />
   else if (route === 'world') content = <Championships />
   else if (directoryPage)
-    content = (
-      <>
-        {analytics && <OperationalAnalytics route={route} compactBrief />}
-        <PersonnelDirectory>
-          <div className="native-screen">{children}</div>
-        </PersonnelDirectory>
-      </>
-    )
+    content = <div className={'department-workspace '+(analytics?'with-report':'')}>
+      {analytics && <OperationalAnalytics route={route} compactBrief defaultExpanded={tab==='forecast'} analyticsOnly={tab==='forecast'}/>}
+      <PersonnelDirectory/>
+    </div>
   else if (route === 'inbox') content = <Messages />
   else
     content = (
@@ -186,11 +178,9 @@ export function CareerView({ world, c, media, route, tab, entity, updateCareer, 
   return (
     <Context.Provider value={ctx}>
       <div className="pitwall" style={identityVars(org)}>
-        <Shell {...{ onAdvance, onSave, busy }}>{content}</Shell>
+        <div inert={dialog ? true : undefined}><Shell {...{ onAdvance, onSave, busy }}>{content}</Shell></div>
         {dialog && (
-          <Dialog title={dialog.title} onClose={() => openDialog(null)}>
-            {dialog.content || dialog.description}
-          </Dialog>
+          <Dialog key={dialog.title} spec={dialog} close={()=>openDialog(current=>current===dialog?null:current)}/>
         )}
       </div>
     </Context.Provider>

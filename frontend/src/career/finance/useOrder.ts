@@ -1,13 +1,16 @@
 import {publishCareerMoment} from '../../pitwall/core/moments'
 import { useState, useRef } from 'react'
 import { api, post, ApiError, explain, type Career } from '../api'
-export function useOrder(c: Career, update: (c: Career) => void, field: 'brand_palette' | 'finance' | 'engineering' | 'research' | 'development' | 'production' | 'council' | 'programme' | 'manufacturer' | 'staff' = 'finance') {
+export function useOrder(c: Career, update: (c: Career) => void, field: 'paint' | 'brand_palette' | 'finance' | 'engineering' | 'research' | 'development' | 'production' | 'council' | 'programme' | 'manufacturer' | 'staff' = 'finance') {
   const [busy, setBusy] = useState(false),
     [error, setError] = useState('')
   const lock = useRef(false),
     retry = useRef({ key: '', id: '' })
-  async function send(action: string, payload: unknown) {
-    if (lock.current) return false
+  async function send(action: string, payload: unknown, throwOnError = false, commandField = field) {
+    if (lock.current) {
+      if (throwOnError) throw Error("Решение уже отправляется.")
+      return false
+    }
     lock.current = true
     setBusy(true)
     setError('')
@@ -16,7 +19,7 @@ export function useOrder(c: Career, update: (c: Career) => void, field: 'brand_p
     try {
       const next = await api<Career>(
           'careers/' + c.id + '/commands',
-          post({ command_id: retry.current.id, revision: c.revision, action, [field]: payload }),
+          post({ command_id: retry.current.id, revision: c.revision, action, [commandField]: payload }),
         )
       update(next)
       publishCareerMoment(c, next, action, payload)
@@ -31,6 +34,7 @@ export function useOrder(c: Career, update: (c: Career) => void, field: 'brand_p
           setError('Не удалось обновить карьеру.')
         }
       }
+      if (throwOnError) throw e
       return false
     } finally {
       lock.current = false

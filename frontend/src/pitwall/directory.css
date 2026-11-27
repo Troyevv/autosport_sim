@@ -1,7 +1,7 @@
 @scope (.people-module) {
   /* PIT WALL / People. Reimplemented from the approved brief after runtime loss.
    Responsive compositions, actual portraits, and legible operational surfaces. */
-  .people-module {
+  :scope {
     --p-bg: #141414;
     --p-panel: #202020;
     --p-panel2: #282828;
@@ -17,101 +17,101 @@
     font-family: Manrope, Arial, sans-serif;
     line-height: 1.55;
   }
-  .people-module * {
+  :scope * {
     box-sizing: border-box;
   }
-  .people-module button,
-  .people-module input,
-  .people-module select,
-  .people-module textarea {
+  :scope button,
+  :scope input,
+  :scope select,
+  :scope textarea {
     font: inherit;
   }
-  .people-module button {
+  :scope button {
     cursor: pointer;
   }
-  .people-module button:disabled {
+  :scope button:disabled {
     cursor: not-allowed;
     opacity: 0.5;
   }
-  .people-module button:focus-visible,
-  .people-module input:focus-visible,
-  .people-module select:focus-visible,
-  .people-module summary:focus-visible {
+  :scope button:focus-visible,
+  :scope input:focus-visible,
+  :scope select:focus-visible,
+  :scope summary:focus-visible {
     outline: 2px solid var(--p-signal);
     outline-offset: 3px;
   }
-  .people-module h1,
-  .people-module h2,
-  .people-module h3,
-  .people-module p {
+  :scope h1,
+  :scope h2,
+  :scope h3,
+  :scope p {
     margin-top: 0;
   }
-  .people-module h1,
-  .people-module h2,
-  .people-module h3 {
+  :scope h1,
+  :scope h2,
+  :scope h3 {
     font-weight: 650;
     letter-spacing: -0.035em;
     line-height: 1.2;
   }
-  .people-module h2 {
+  :scope h2 {
     font-size: 23px;
   }
-  .people-module h3 {
+  :scope h3 {
     font-size: 18px;
   }
-  .people-module p {
+  :scope p {
     font-size: 14px;
     line-height: 1.7;
     color: #c6d0d6;
   }
-  .people-module .page-heading {
+  :scope .page-heading {
     margin-bottom: 28px;
   }
-  .people-module .page-heading h1 {
+  :scope .page-heading h1 {
     font-size: clamp(30px, 3vw, 48px);
     margin: 9px 0 13px;
     max-width: 1000px;
   }
-  .people-module .page-heading p {
+  :scope .page-heading p {
     max-width: 800px;
     color: var(--p-muted);
   }
-  .people-module .button {
+  :scope .button {
     min-height: 43px;
     white-space: normal;
     gap: 8px;
   }
-  .people-module .button svg {
+  :scope .button svg {
     flex-shrink: 0;
   }
-  .people-module .tabs {
+  :scope .tabs {
     margin: 22px 0 28px;
   }
-  .people-module .tabs button {
+  :scope .tabs button {
     flex-shrink: 0;
     min-height: 48px;
   }
-  .people-module .badge {
+  :scope .badge {
     white-space: normal;
   }
-  .people-module .person-portrait {
+  :scope .person-portrait {
     display: block;
     max-width: 100%;
     height: 100%;
     width: 100%;
     overflow: hidden;
   }
-  .people-module .person-portrait .portrait {
+  :scope .person-portrait .portrait {
     width: 100%;
     height: 100%;
   }
-  .people-module .person-portrait svg {
+  :scope .person-portrait svg {
     width: 100%;
     height: 100%;
     display: block;
     overflow: visible;
   }
-  .people-module .person-portrait img {
+  :scope .person-portrait img {
     max-width: none;
   }
   .p-kicker {
@@ -2953,50 +2953,50 @@
   }
   /* Phone layouts are task cards and separate details, not scaled desktop tables. */
   @media (max-width: 700px) {
-    .people-module .page-heading {
+    :scope .page-heading {
       display: block;
       margin-bottom: 23px;
     }
-    .people-module .page-heading h1 {
+    :scope .page-heading h1 {
       font-size: 32px;
       line-height: 1.1;
       margin: 10px 0 14px;
       letter-spacing: -0.045em;
     }
-    .people-module .page-heading p {
+    :scope .page-heading p {
       font-size: 13px;
       line-height: 1.7;
     }
-    .people-module .heading-actions {
+    :scope .heading-actions {
       margin-top: 19px;
       display: flex;
       gap: 10px;
     }
-    .people-module .heading-actions > .button {
+    :scope .heading-actions > .button {
       flex: 1;
     }
-    .people-module .button {
+    :scope .button {
       font-size: 12px;
       min-height: 44px;
       padding: 10px 14px;
     }
-    .people-module h2 {
+    :scope h2 {
       font-size: 23px;
     }
-    .people-module h3 {
+    :scope h3 {
       font-size: 18px;
     }
-    .people-module p {
+    :scope p {
       font-size: 13px;
     }
-    .people-module .tabs {
+    :scope .tabs {
       margin: 21px 0 24px;
       max-width: 100%;
       overflow-x: auto;
       flex-wrap: nowrap;
       padding-bottom: 1px;
     }
-    .people-module .tabs button {
+    :scope .tabs button {
       font-size: 11px;
       padding: 11px 14px;
       min-height: 45px;
@@ -4402,7 +4402,7 @@
     }
   }
   @media (max-width: 950px) and (max-height: 500px) and (orientation: landscape) {
-    .people-module .page-heading h1 {
+    :scope .page-heading h1 {
       font-size: 29px;
     }
     .p-subnav {
@@ -4505,7 +4505,7 @@
     }
   }
   @media (prefers-reduced-motion: reduce) {
-    .people-module * {
+    :scope * {
       scroll-behavior: auto !important;
       transition: none !important;
       animation: none !important;
@@ -4513,20 +4513,20 @@
   }
 
   /* Browser QA: shared label rules must not stack search or toggle controls. */
-  .people-module .p-search,
-  .people-module .p-check {
+  :scope .p-search,
+  :scope .p-check {
     flex-direction: row;
   }
-  .people-module .p-search {
+  :scope .p-search {
     height: 48px;
     min-height: 48px;
   }
-  .people-module .p-search input {
+  :scope .p-search input {
     height: 44px;
     min-height: 44px;
     padding: 10px 0;
   }
-  .people-module .p-check {
+  :scope .p-check {
     justify-content: flex-start;
   }
   /* Comparison keeps its two people visible while bringing the actual metrics closer. */
@@ -4666,18 +4666,18 @@
   }
 
   /* Keep one deliberate clear action; avoid a second browser-native cross. */
-  .people-module .p-search input::-webkit-search-cancel-button {
+  :scope .p-search input::-webkit-search-cancel-button {
     display: none;
   }
   /* At portrait widths the pilot's identity must fit with the portrait. */
   @media (max-width: 520px) {
-    .people-module .p-featured-grid .p-person-card.featured .p-photo,
-    .people-module .p-race-seat .p-person-card.featured .p-photo {
+    :scope .p-featured-grid .p-person-card.featured .p-photo,
+    :scope .p-race-seat .p-person-card.featured .p-photo {
       height: 170px;
     }
   }
   /* Keep the full touch target inside short form viewports. */
-  .people-module .p-form-actions {
+  :scope .p-form-actions {
     bottom: 0;
   }
 }
