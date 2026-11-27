@@ -54,13 +54,13 @@
     line-height: 1.2;
   }
   :scope h2 {
-    font-size: 23px;
+    font-size: var(--type-subhead);
   }
   :scope h3 {
-    font-size: 18px;
+    font-size: var(--type-card);
   }
   :scope p {
-    font-size: 14px;
+    font-size: var(--type-body);
     line-height: 1.7;
     color: #c6d0d6;
   }
@@ -68,7 +68,7 @@
     margin-bottom: 28px;
   }
   :scope .page-heading h1 {
-    font-size: clamp(30px, 3vw, 48px);
+    font-size: var(--type-page-lg);
     margin: 9px 0 13px;
     max-width: 1000px;
   }
@@ -116,7 +116,7 @@
   }
   .p-kicker {
     display: block;
-    font-size: 10px;
+    font-size: var(--type-secondary);
     line-height: 1.5;
     font-weight: 750;
     text-transform: uppercase;
@@ -125,7 +125,7 @@
   }
   .p-muted {
     color: var(--p-muted) !important;
-    font-size: 13px !important;
+    font-size: var(--type-body) !important;
     line-height: 1.7;
   }
   .p-loading {
@@ -148,7 +148,7 @@
     border: 0;
     padding: 10px 16px;
     min-height: 44px;
-    font-size: 12px;
+    font-size: var(--type-label);
     white-space: nowrap;
     border-radius: 3px;
   }
@@ -177,7 +177,7 @@
   }
   .p-section > header p {
     color: var(--p-muted);
-    font-size: 13px;
+    font-size: var(--type-body);
     max-width: 720px;
     margin: 8px 0 0;
   }
@@ -201,7 +201,7 @@
     background: none;
     color: var(--p-text);
     padding: 0;
-    font-size: 18px;
+    font-size: var(--type-card);
     text-align: left;
     font-weight: 650;
     line-height: 1.35;
@@ -252,7 +252,7 @@
   .p-empty p {
     color: var(--p-muted);
     max-width: 650px;
-    font-size: 14px;
+    font-size: var(--type-body);
   }
   .p-facts {
     margin: 18px 0;
@@ -269,11 +269,11 @@
     gap: 5px;
   }
   .p-facts dt {
-    font-size: 11px;
+    font-size: var(--type-secondary);
     color: var(--p-muted);
   }
   .p-facts dd {
-    font-size: 14px;
+    font-size: var(--type-body);
     font-weight: 600;
     margin: 0;
     overflow-wrap: anywhere;
@@ -345,7 +345,7 @@
   .p-bottom-band p {
     margin: 0;
     color: var(--p-muted);
-    font-size: 13px;
+    font-size: var(--type-body);
   }
   .p-bottom-band > .button {
     flex-shrink: 0;
@@ -430,7 +430,7 @@
     position: absolute;
     top: 10px;
     left: 16px;
-    font-size: 90px;
+    font-size: var(--type-display);
     line-height: 1;
     letter-spacing: -0.08em;
     font-weight: 750;
@@ -454,12 +454,12 @@
   }
   .p-rating b {
     color: var(--p-signal);
-    font-size: 29px;
+    font-size: var(--type-section-lg);
     font-weight: 700;
     line-height: 1;
   }
   .p-rating small {
-    font-size: 8px;
+    font-size: var(--type-caption);
     text-transform: uppercase;
     letter-spacing: 0.07em;
     margin-top: 5px;
@@ -469,7 +469,7 @@
     padding: 19px 20px 15px;
   }
   .p-card-identity h3 {
-    font-size: 23px;
+    font-size: var(--type-subhead);
     margin: 6px 0 10px;
     overflow-wrap: anywhere;
   }
@@ -477,7 +477,7 @@
     display: flex;
     flex-wrap: wrap;
     gap: 5px 12px;
-    font-size: 11px;
+    font-size: var(--type-secondary);
     color: var(--p-muted);
     margin: 0;
   }
@@ -495,7 +495,7 @@
     min-height: 59px;
   }
   .p-person-footer > span {
-    font-size: 10px;
+    font-size: var(--type-secondary);
     line-height: 1.4;
     color: var(--p-muted);
     flex: 1;
@@ -513,12 +513,12 @@
     height: 310px;
   }
   .p-person-card.featured .p-entry-number {
-    font-size: 124px;
+    font-size: var(--type-display);
     top: 8px;
     left: 18px;
   }
   .p-person-card.featured .p-card-identity h3 {
-    font-size: 29px;
+    font-size: var(--type-section-lg);
   }
   .p-command-brief {
     background: linear-gradient(150deg, #2e2e2e, #212121);
@@ -528,7 +528,7 @@
     border-top: 2px solid var(--p-signal);
   }
   .p-command-brief h2 {
-    font-size: 25px;
+    font-size: var(--type-section);
     margin: 8px 0 23px;
   }
   .p-brief-score {
@@ -539,17 +539,17 @@
     border-bottom: 1px solid #ffffff15;
   }
   .p-brief-score strong {
-    font-size: 57px;
+    font-size: var(--type-display);
     letter-spacing: -0.06em;
     line-height: 1;
     color: #f0f1e7;
   }
   .p-brief-score strong span {
-    font-size: 29px;
+    font-size: var(--type-section-lg);
     color: #7f909b;
   }
   .p-brief-score small {
-    font-size: 11px;
+    font-size: var(--type-secondary);
     color: #bcc8cf;
     max-width: 115px;
   }
@@ -580,12 +580,12 @@
     gap: 6px;
   }
   .p-brief-task b {
-    font-size: 12px;
+    font-size: var(--type-label);
     font-weight: 600;
     line-height: 1.5;
   }
   .p-brief-task small {
-    font-size: 10px;
+    font-size: var(--type-secondary);
     color: #9aabb7;
     line-height: 1.5;
   }
@@ -599,17 +599,17 @@
     margin-top: 22px;
   }
   .p-payroll small {
-    font-size: 10px;
+    font-size: var(--type-secondary);
     color: var(--p-muted);
     text-transform: uppercase;
     letter-spacing: 0.09em;
   }
   .p-payroll strong {
-    font-size: 26px;
+    font-size: var(--type-section);
     letter-spacing: -0.04em;
   }
   .p-payroll span {
-    font-size: 10px;
+    font-size: var(--type-secondary);
     color: #8399a5;
   }
   .p-leaders-grid {
@@ -644,12 +644,12 @@
     min-width: 0;
   }
   .p-row-person b {
-    font-size: 14px;
+    font-size: var(--type-body);
     font-weight: 650;
     overflow-wrap: anywhere;
   }
   .p-row-person small {
-    font-size: 10px;
+    font-size: var(--type-secondary);
     line-height: 1.55;
     color: var(--p-muted);
     overflow-wrap: anywhere;
@@ -670,7 +670,7 @@
     width: 100%;
   }
   .p-row-rating {
-    font-size: 23px;
+    font-size: var(--type-subhead);
     display: flex;
     flex-direction: column;
     line-height: 1.2;
@@ -679,7 +679,7 @@
     min-width: 36px;
   }
   .p-row-rating small {
-    font-size: 8px;
+    font-size: var(--type-caption);
     color: #7d929e;
     letter-spacing: 0.1em;
     margin-top: 5px;
@@ -716,7 +716,7 @@
     color: var(--p-text);
     outline: none;
     padding: 12px 0;
-    font-size: 13px;
+    font-size: var(--type-body);
     appearance: none;
   }
   .p-search input::placeholder {
@@ -777,12 +777,12 @@
     color: var(--p-text);
   }
   .p-field > span {
-    font-size: 11px;
+    font-size: var(--type-secondary);
     color: #acbcc5;
     line-height: 1.4;
   }
   .p-field > small {
-    font-size: 10px;
+    font-size: var(--type-secondary);
     color: #8198a6;
     line-height: 1.6;
   }
@@ -799,11 +799,11 @@
     max-width: 100%;
     min-width: 0;
     width: 100%;
-    font-size: 13px;
+    font-size: var(--type-body);
     color-scheme: dark;
   }
   .p-field input[type='date'] {
-    font-size: 13px;
+    font-size: var(--type-body);
   }
   .p-field input[type='number'] {
     font-variant-numeric: tabular-nums;
@@ -816,7 +816,7 @@
     display: flex;
     gap: 10px;
     align-items: center;
-    font-size: 12px;
+    font-size: var(--type-label);
     color: #c7d1d8;
     line-height: 1.6;
     min-height: 43px;
@@ -834,13 +834,13 @@
     justify-content: space-between;
     gap: 24px;
     margin: 20px 0 13px;
-    font-size: 11px;
+    font-size: var(--type-secondary);
     color: #8299a8;
   }
   .p-results-caption b {
     font-weight: 700;
     color: #cbd6dd;
-    font-size: 14px;
+    font-size: var(--type-body);
   }
   .p-roster-table {
     border: 1px solid var(--p-line);
@@ -858,7 +858,7 @@
     color: #718a99;
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    font-size: 9px;
+    font-size: var(--type-caption);
     background: #181818;
     border-bottom: 1px solid var(--p-line);
   }
@@ -879,13 +879,13 @@
     max-width: 65px;
   }
   .p-roster-score > b {
-    font-size: 24px;
+    font-size: var(--type-section);
     font-weight: 650;
     line-height: 1.1;
     letter-spacing: -0.03em;
   }
   .p-roster-job {
-    font-size: 12px;
+    font-size: var(--type-label);
     line-height: 1.5;
     color: #cbd5db;
     display: flex;
@@ -893,7 +893,7 @@
     gap: 5px;
   }
   .p-roster-job small {
-    font-size: 10px;
+    font-size: var(--type-secondary);
     color: #7e95a3;
   }
   .p-roster-terms {
@@ -903,13 +903,13 @@
     min-width: 0;
   }
   .p-roster-terms > b {
-    font-size: 12px;
+    font-size: var(--type-label);
     font-weight: 600;
     white-space: nowrap;
     font-variant-numeric: tabular-nums;
   }
   .p-roster-terms small {
-    font-size: 10px;
+    font-size: var(--type-secondary);
     color: #8fa4b0;
   }
   .p-row-actions {
@@ -920,7 +920,7 @@
   }
   .p-row-actions .button {
     min-height: 38px;
-    font-size: 11px;
+    font-size: var(--type-secondary);
     padding: 7px 11px;
   }
   .p-directory-cards {
@@ -936,7 +936,7 @@
     padding: 28px 0 10px;
   }
   .p-pagination > span {
-    font-size: 12px;
+    font-size: var(--type-label);
     color: var(--p-muted);
   }
   .p-scout-layout {
@@ -959,7 +959,7 @@
     margin: 0;
   }
   .p-timeline-row small {
-    font-size: 11px;
+    font-size: var(--type-secondary);
     color: var(--p-muted);
   }
   .p-timeline-dot {
@@ -991,7 +991,7 @@
     margin-bottom: 16px;
   }
   .p-race-seat > header > strong {
-    font-size: 18px;
+    font-size: var(--type-card);
     font-weight: 550;
     color: #b4c6ce;
   }
@@ -1025,13 +1025,13 @@
   .p-vacancy > span {
     flex: 1;
     min-width: 0;
-    font-size: 13px;
+    font-size: var(--type-body);
     display: flex;
     flex-direction: column;
     gap: 4px;
   }
   .p-vacancy small {
-    font-size: 10px;
+    font-size: var(--type-secondary);
     color: #8097a3;
   }
   .p-registration {
@@ -1048,7 +1048,7 @@
     border-bottom: 1px solid var(--p-line);
   }
   .p-history-line time {
-    font-size: 11px;
+    font-size: var(--type-secondary);
     color: #8ea4b1;
     flex-shrink: 0;
     min-width: 105px;
@@ -1059,7 +1059,7 @@
   .p-history-line small {
     display: block;
     color: #8195a3;
-    font-size: 11px;
+    font-size: var(--type-secondary);
     margin-top: 8px;
   }
   /* Collective workbench */
@@ -1100,12 +1100,12 @@
     gap: 6px;
   }
   .p-department-list b {
-    font-size: 12px;
+    font-size: var(--type-label);
     line-height: 1.5;
     font-weight: 600;
   }
   .p-department-list small {
-    font-size: 9px;
+    font-size: var(--type-caption);
     color: #8099a8;
   }
   .p-department-list button.active {
@@ -1122,7 +1122,7 @@
     border: 1px solid #94acb728;
   }
   .p-department-hero h2 {
-    font-size: 32px;
+    font-size: var(--type-page);
     margin: 12px 0 28px;
   }
   .p-department-stats {
@@ -1137,12 +1137,12 @@
     gap: 7px;
   }
   .p-department-stats b {
-    font-size: 25px;
+    font-size: var(--type-section);
     font-weight: 650;
     letter-spacing: -0.04em;
   }
   .p-department-stats small {
-    font-size: 10px;
+    font-size: var(--type-secondary);
     color: #9bb0bc;
   }
   .p-collective-comparison > div {
@@ -1153,14 +1153,14 @@
     padding: 13px 0;
   }
   .p-collective-comparison > div > span {
-    font-size: 12px;
+    font-size: var(--type-label);
     color: #bac9d1;
   }
   .p-collective-comparison .p-meter {
     margin-top: 10px;
   }
   .p-collective-comparison strong {
-    font-size: 25px;
+    font-size: var(--type-section);
     font-weight: 550;
   }
   .p-collective-comparison strong:last-child {
@@ -1190,16 +1190,16 @@
     gap: 7px;
   }
   .p-contract-details small {
-    font-size: 10px;
+    font-size: var(--type-secondary);
     color: #839dab;
   }
   .p-contract-details b {
-    font-size: 13px;
+    font-size: var(--type-body);
     font-variant-numeric: tabular-nums;
   }
   .p-contract-details .button {
     align-self: end;
-    font-size: 11px;
+    font-size: var(--type-secondary);
   }
   .p-offer-list {
     display: grid;
@@ -1231,7 +1231,7 @@
   .p-negotiation-progress > span {
     border-top: 2px solid #748a9627;
     padding-top: 10px;
-    font-size: 10px;
+    font-size: var(--type-secondary);
     color: #7b939f;
     display: flex;
     align-items: center;
@@ -1240,7 +1240,7 @@
   }
   .p-negotiation-progress i {
     font-style: normal;
-    font-size: 9px;
+    font-size: var(--type-caption);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1264,7 +1264,7 @@
     border-left: 2px solid #79929d;
     color: #bacbd4 !important;
     margin: 18px 0;
-    font-size: 13px !important;
+    font-size: var(--type-body) !important;
   }
   .p-future-contract {
     display: flex;
@@ -1290,7 +1290,7 @@
     margin: 7px 0 0;
   }
   .p-future-contract strong {
-    font-size: 14px;
+    font-size: var(--type-body);
   }
   .p-person-contract {
     display: grid;
@@ -1302,7 +1302,7 @@
     margin-bottom: 24px;
   }
   .p-person-contract h2 {
-    font-size: 30px;
+    font-size: var(--type-page);
     margin: 10px 0 22px;
   }
   .p-person-contract aside {
@@ -1322,7 +1322,7 @@
   }
   .p-person-contract aside p {
     color: #93a9b6;
-    font-size: 13px;
+    font-size: var(--type-body);
   }
   .p-person-contract aside .button {
     width: 100%;
@@ -1371,7 +1371,7 @@
     background: #df705718;
     border: 1px solid #d5826855;
     color: #ffd5c6 !important;
-    font-size: 13px !important;
+    font-size: var(--type-body) !important;
     border-radius: 3px;
     scroll-margin: 30px;
   }
@@ -1391,12 +1391,12 @@
     height: 76px;
   }
   .p-form-identity h3 {
-    font-size: 24px;
+    font-size: var(--type-section);
     margin: 5px 0;
   }
   .p-form-identity small {
     color: #96adbb;
-    font-size: 11px;
+    font-size: var(--type-secondary);
   }
   .p-contract-preview {
     background: #1a1a1a;
@@ -1408,7 +1408,7 @@
   }
   .p-contract-preview p {
     margin: 0;
-    font-size: 12px;
+    font-size: var(--type-label);
     color: #8fa8b7;
   }
   .p-form .p-callout {
@@ -1443,18 +1443,18 @@
     flex: 1;
   }
   .p-candidate-picker b {
-    font-size: 12px;
+    font-size: var(--type-label);
     font-weight: 600;
     overflow-wrap: anywhere;
   }
   .p-candidate-picker small {
-    font-size: 9px;
+    font-size: var(--type-caption);
     line-height: 1.5;
     color: #93a9b7;
   }
   .p-candidate-picker > button > strong {
     color: #bdcfb3;
-    font-size: 19px;
+    font-size: var(--type-card);
     font-weight: 550;
   }
   .p-candidate-picker .p-mini-photo {
@@ -1496,7 +1496,7 @@
     min-width: 0;
   }
   .p-client-picker .p-client-number {
-    font-size: 25px;
+    font-size: var(--type-section);
     width: 48px;
     flex-shrink: 0;
     color: #94aebc;
@@ -1509,10 +1509,10 @@
     flex: 1;
   }
   .p-client-picker b {
-    font-size: 13px;
+    font-size: var(--type-body);
   }
   .p-client-picker small {
-    font-size: 10px;
+    font-size: var(--type-secondary);
     color: var(--p-muted);
   }
   .p-client-picker > button.selected {
@@ -1526,7 +1526,7 @@
     padding: 12px 16px;
     background: color-mix(in srgb, var(--org-accent) 5%, transparent);
     color: var(--org-accent) !important;
-    font-size: 12px !important;
+    font-size: var(--type-label) !important;
     border-left: 2px solid var(--p-signal);
   }
   /* Academy and support */
@@ -1553,7 +1553,7 @@
     pointer-events: none;
   }
   .p-academy-hero h2 {
-    font-size: clamp(25px, 2.8vw, 37px);
+    font-size: var(--type-page-lg);
     margin: 12px 0 34px;
     max-width: 850px;
   }
@@ -1569,11 +1569,11 @@
     min-width: 0;
   }
   .p-academy-metrics small {
-    font-size: 10px;
+    font-size: var(--type-secondary);
     color: #99afb8;
   }
   .p-academy-metrics strong {
-    font-size: 27px;
+    font-size: var(--type-section-lg);
     line-height: 1.2;
     letter-spacing: -0.03em;
     font-weight: 650;
@@ -1597,7 +1597,7 @@
     margin-top: 8px;
   }
   .p-scholarship .p-inline-actions > .button {
-    font-size: 12px;
+    font-size: var(--type-label);
   }
   .p-funding-intro {
     display: flex;
@@ -1613,13 +1613,13 @@
   }
   .p-funding-intro strong {
     display: block;
-    font-size: 42px;
+    font-size: var(--type-display);
     font-weight: 550;
     letter-spacing: -0.05em;
     margin-top: 10px;
   }
   .p-funding-intro strong small {
-    font-size: 13px;
+    font-size: var(--type-body);
     margin-left: 10px;
     color: #8da5b1;
     font-weight: 400;
@@ -1627,7 +1627,7 @@
   }
   .p-funding-intro p {
     margin: 0;
-    font-size: 13px;
+    font-size: var(--type-body);
     color: #9eb3bf;
   }
   .p-funding-grid {
@@ -1652,13 +1652,13 @@
     border-bottom: 0;
   }
   .p-funding-amount {
-    font-size: 34px;
+    font-size: var(--type-page);
     font-weight: 550;
     letter-spacing: -0.045em;
     margin: 18px 0;
   }
   .p-funding-amount small {
-    font-size: 12px;
+    font-size: var(--type-label);
     color: #8ca6b5;
     margin-left: 10px;
     font-weight: 400;
@@ -1668,7 +1668,7 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    font-size: 11px;
+    font-size: var(--type-secondary);
     padding: 13px 0;
     border-top: 1px solid #ffffff12;
     border-bottom: 1px solid #ffffff12;
@@ -1685,7 +1685,7 @@
     gap: 0 20px;
   }
   .p-funding-card .p-facts dd {
-    font-size: 12px;
+    font-size: var(--type-label);
   }
   .p-support-intro {
     display: flex;
@@ -1728,7 +1728,7 @@
     margin-bottom: 24px;
   }
   .p-prep-options h2 {
-    font-size: 27px;
+    font-size: var(--type-section-lg);
     margin: 9px 0 25px;
   }
   .p-prep-price {
@@ -1741,12 +1741,12 @@
     margin-top: auto;
   }
   .p-prep-price strong {
-    font-size: 27px;
+    font-size: var(--type-section-lg);
     font-weight: 600;
     letter-spacing: -0.03em;
   }
   .p-prep-price span {
-    font-size: 11px;
+    font-size: var(--type-secondary);
     color: #9db2be;
   }
   .p-prep-options .button {
@@ -1774,10 +1774,10 @@
   }
   .p-prep-schedule p {
     margin: 0 0 6px;
-    font-size: 12px;
+    font-size: var(--type-label);
   }
   .p-prep-schedule small {
-    font-size: 11px;
+    font-size: var(--type-secondary);
     color: #91a8b5;
   }
   .p-date-block {
@@ -1792,13 +1792,13 @@
     flex-shrink: 0;
   }
   .p-date-block b {
-    font-size: 30px;
+    font-size: var(--type-page);
     line-height: 1.2;
     color: var(--org-accent);
     font-weight: 600;
   }
   .p-date-block small {
-    font-size: 10px;
+    font-size: var(--type-secondary);
     color: #a3b7c1;
   }
   /* Leadership */
@@ -1820,7 +1820,7 @@
     flex-direction: column;
   }
   .p-mandate h2 {
-    font-size: 35px;
+    font-size: var(--type-page-lg);
     margin: 14px 0 20px;
     max-width: 570px;
   }
@@ -1829,11 +1829,11 @@
     align-items: center;
     gap: 16px;
     margin-bottom: 25px;
-    font-size: 12px;
+    font-size: var(--type-label);
     color: #a1b6c2;
   }
   .p-manager-response {
-    font-size: 22px !important;
+    font-size: var(--type-subhead) !important;
     line-height: 1.5 !important;
     letter-spacing: -0.025em;
     padding: 22px 0;
@@ -1849,10 +1849,10 @@
     margin-top: auto;
   }
   .p-mandate .p-facts dd {
-    font-size: 19px;
+    font-size: var(--type-card);
   }
   .p-mandate .p-facts dt {
-    font-size: 11px;
+    font-size: var(--type-secondary);
   }
   /* Dossier: full-screen file with its own visual hierarchy. */
   .p-file-breadcrumb {
@@ -1860,7 +1860,7 @@
     align-items: center;
     gap: 25px;
     margin: 0 0 22px;
-    font-size: 11px;
+    font-size: var(--type-secondary);
     color: #7e99a9;
   }
   .p-file-breadcrumb button {
@@ -1871,7 +1871,7 @@
     color: #bdcdd5;
     background: none;
     padding: 8px 0;
-    font-size: 12px;
+    font-size: var(--type-label);
     min-height: 40px;
   }
   .p-dossier-hero {
@@ -1915,14 +1915,14 @@
     box-shadow: 0 4px 15px #0005;
   }
   .p-dossier-rating b {
-    font-size: 35px;
+    font-size: var(--type-page-lg);
     line-height: 1.1;
     color: var(--p-signal);
     font-weight: 600;
     letter-spacing: -0.05em;
   }
   .p-dossier-rating small {
-    font-size: 8px;
+    font-size: var(--type-caption);
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: #d2dec0;
@@ -1933,7 +1933,7 @@
     padding: 26px 0;
   }
   .p-dossier-title h1 {
-    font-size: clamp(31px, 3.8vw, 52px);
+    font-size: var(--type-page-lg);
     margin: 12px 0 14px;
     line-height: 1.06;
     overflow-wrap: anywhere;
@@ -1946,7 +1946,7 @@
     background: none;
     padding: 0;
     color: #cbd9df;
-    font-size: 14px;
+    font-size: var(--type-body);
     font-weight: 500;
     text-align: left;
   }
@@ -1959,7 +1959,7 @@
     flex-wrap: wrap;
     margin: 19px 0;
     color: #93acbb;
-    font-size: 11px;
+    font-size: var(--type-secondary);
   }
   .p-person-facts > span:not(:first-child):before {
     content: '·';
@@ -1973,7 +1973,7 @@
     margin-top: 27px;
   }
   .p-file-actions .button {
-    font-size: 12px;
+    font-size: var(--type-label);
   }
   .p-dossier-condition {
     display: flex;
@@ -1990,11 +1990,11 @@
     align-items: center;
   }
   .p-dossier-condition small {
-    font-size: 10px;
+    font-size: var(--type-secondary);
     color: #93acb9;
   }
   .p-dossier-condition b {
-    font-size: 19px;
+    font-size: var(--type-card);
     font-weight: 600;
   }
   .p-dossier-condition .p-meter {
@@ -2008,7 +2008,7 @@
     gap: 5px;
   }
   .p-dossier-condition > span:last-child b {
-    font-size: 17px;
+    font-size: var(--type-card-sm);
     color: #c7d9b7;
   }
   .p-profile-layout {
@@ -2025,7 +2025,7 @@
     align-items: flex-start;
   }
   .p-profile-layout > .p-section > header > .p-check {
-    font-size: 10px;
+    font-size: var(--type-secondary);
     min-width: 130px;
   }
   .p-skill-list > div {
@@ -2042,11 +2042,11 @@
     gap: 6px;
   }
   .p-skill-list b {
-    font-size: 13px;
+    font-size: var(--type-body);
     font-weight: 600;
   }
   .p-skill-list small {
-    font-size: 9px;
+    font-size: var(--type-caption);
     color: #6f8c9c;
   }
   .p-skill-bar {
@@ -2063,7 +2063,7 @@
     display: flex;
     gap: 7px;
     align-items: center;
-    font-size: 12px;
+    font-size: var(--type-label);
     color: #718f9f;
     white-space: nowrap;
     font-variant-numeric: tabular-nums;
@@ -2071,7 +2071,7 @@
     justify-content: end;
   }
   .p-skill-bar > span strong {
-    font-size: 20px;
+    font-size: var(--type-card-lg);
     color: #d9e6cd;
     font-weight: 600;
   }
@@ -2111,14 +2111,14 @@
     gap: 7px;
   }
   .p-traits strong {
-    font-size: 14px;
+    font-size: var(--type-body);
   }
   .p-traits small {
-    font-size: 10px;
+    font-size: var(--type-secondary);
     color: #8fa7b5;
   }
   .p-traits p {
-    font-size: 11px;
+    font-size: var(--type-secondary);
     color: #b0c2cc;
     margin: 0;
     line-height: 1.6;
@@ -2131,7 +2131,7 @@
   }
   .p-profile-summary p {
     margin: 12px 0 0;
-    font-size: 13px;
+    font-size: var(--type-body);
     color: #b3c9ce;
   }
   .p-career-summary {
@@ -2150,14 +2150,14 @@
     background: #232323;
   }
   .p-career-summary b {
-    font-size: 36px;
+    font-size: var(--type-page-lg);
     line-height: 1.1;
     font-weight: 600;
     color: #e0e8d8;
     letter-spacing: -0.045em;
   }
   .p-career-summary small {
-    font-size: 10px;
+    font-size: var(--type-secondary);
     color: #90a9b8;
   }
   .p-career-timeline {
@@ -2178,16 +2178,16 @@
     gap: 10px;
   }
   .p-career-timeline small {
-    font-size: 11px;
+    font-size: var(--type-secondary);
     color: #8ca5b5;
   }
   .p-career-timeline p {
     margin: 0;
-    font-size: 12px;
+    font-size: var(--type-label);
     color: #b4c4cf;
   }
   .p-career-timeline .p-text-button {
-    font-size: 19px;
+    font-size: var(--type-card);
     line-height: 1.4;
   }
   .p-adaptation {
@@ -2199,15 +2199,15 @@
   .p-adaptation > span {
     display: flex;
     gap: 10px;
-    font-size: 13px;
+    font-size: var(--type-body);
   }
   .p-adaptation small {
-    font-size: 10px;
+    font-size: var(--type-secondary);
     color: #73909f;
     align-self: center;
   }
   .p-adaptation strong {
-    font-size: 14px;
+    font-size: var(--type-body);
     font-weight: 600;
   }
   .p-adaptation > .p-meter {
@@ -2231,11 +2231,11 @@
     gap: 6px;
   }
   .p-scout-estimate small {
-    font-size: 11px;
+    font-size: var(--type-secondary);
     color: #a7b7be;
   }
   .p-scout-estimate strong {
-    font-size: 30px;
+    font-size: var(--type-page);
     line-height: 1.2;
     color: var(--org-accent);
     font-weight: 550;
@@ -2252,7 +2252,7 @@
     border: 1px solid #7599a13b;
     background: #272727;
     padding: 9px 12px;
-    font-size: 11px;
+    font-size: var(--type-secondary);
     color: #bdd0da;
   }
   .p-experience-chips b {
@@ -2266,22 +2266,22 @@
     border-bottom: 1px solid #ffffff13;
   }
   .p-work-events time {
-    font-size: 11px;
+    font-size: var(--type-secondary);
     color: #89a3b3;
     min-width: 105px;
   }
   .p-work-events h3 {
-    font-size: 16px;
+    font-size: var(--type-card-sm);
     margin-bottom: 9px;
   }
   .p-work-events p {
-    font-size: 11px;
+    font-size: var(--type-secondary);
     color: #81a1b2;
     margin: 0 0 10px;
   }
   .p-work-events > article > div > span {
     display: block;
-    font-size: 12px;
+    font-size: var(--type-label);
     margin: 6px 0;
     color: #bed0da;
   }
@@ -2297,10 +2297,10 @@
     align-items: center;
     padding: 16px 0;
     border-bottom: 1px solid #ffffff13;
-    font-size: 13px;
+    font-size: var(--type-body);
   }
   .p-result-line time {
-    font-size: 11px;
+    font-size: var(--type-secondary);
     color: #8aa4b4;
   }
   .p-result-line > span {
@@ -2318,7 +2318,7 @@
     min-width: 0;
   }
   .p-disclosure summary {
-    font-size: 12px;
+    font-size: var(--type-label);
     padding: 15px 0;
     color: #aabfc8;
     cursor: pointer;
@@ -2330,7 +2330,7 @@
     margin-bottom: 15px;
   }
   .p-disclosure p {
-    font-size: 11px;
+    font-size: var(--type-secondary);
     color: #95afbf;
   }
   .p-disclosure > div:last-child {
@@ -2349,13 +2349,13 @@
     border-bottom: 2px solid var(--org-accent);
   }
   .p-public-metrics strong {
-    font-size: 49px;
+    font-size: var(--type-display);
     line-height: 1.1;
     letter-spacing: -0.05em;
     font-weight: 550;
   }
   .p-public-metrics h3 {
-    font-size: 14px;
+    font-size: var(--type-body);
     font-weight: 500;
     color: #9fb8c4;
     margin: 15px 0 20px;
@@ -2370,7 +2370,7 @@
     display: flex;
     justify-content: space-between;
     gap: 10px;
-    font-size: 12px;
+    font-size: var(--type-label);
     color: #afc2ce;
     margin-bottom: 10px;
   }
@@ -2387,19 +2387,19 @@
     border-bottom: 1px solid #ffffff10;
   }
   .p-region-row > span {
-    font-size: 10px;
+    font-size: var(--type-secondary);
     color: #8ba4b2;
     border: 1px solid #8ba4b244;
     padding: 3px 4px;
     text-align: center;
   }
   .p-region-row > b {
-    font-size: 12px;
+    font-size: var(--type-label);
     color: #c2d0d9;
     font-weight: 500;
   }
   .p-region-row > strong {
-    font-size: 15px;
+    font-size: var(--type-body-lg);
     color: #d7e4c4;
     font-weight: 550;
   }
@@ -2417,11 +2417,11 @@
     display: flex;
     justify-content: space-between;
     gap: 20px;
-    font-size: 14px;
+    font-size: var(--type-body);
     margin-bottom: 18px;
   }
   .p-preferences article b {
-    font-size: 17px;
+    font-size: var(--type-card-sm);
     font-weight: 550;
     color: var(--org-accent);
   }
@@ -2432,7 +2432,7 @@
     margin-top: 12px;
   }
   .p-preferences small {
-    font-size: 10px;
+    font-size: var(--type-secondary);
     color: #849fac;
   }
   .p-preferences small:last-child {
@@ -2456,13 +2456,13 @@
     margin-bottom: 20px;
   }
   .p-relations .p-kicker {
-    font-size: 9px;
+    font-size: var(--type-caption);
   }
   .p-relations .p-text-button {
-    font-size: 19px;
+    font-size: var(--type-card);
   }
   .p-relations p {
-    font-size: 12px;
+    font-size: var(--type-label);
     color: #8faab8;
     margin: 15px 0;
   }
@@ -2489,7 +2489,7 @@
     height: 270px;
   }
   .p-compare-head > span {
-    font-size: 28px;
+    font-size: var(--type-section-lg);
     letter-spacing: -0.05em;
     color: #74909e;
     font-weight: 500;
@@ -2506,7 +2506,7 @@
     text-align: center;
   }
   .p-compare-table > div > b {
-    font-size: 23px;
+    font-size: var(--type-subhead);
     font-weight: 550;
     color: var(--org-accent);
   }
@@ -2514,16 +2514,16 @@
     color: #8ed1d7;
   }
   .p-compare-table > div > span {
-    font-size: 12px;
+    font-size: var(--type-label);
     color: #b4cad5;
   }
   .p-compare-table > div > strong {
-    font-size: 13px;
+    font-size: var(--type-body);
     font-weight: 550;
     color: #d5e1e3;
   }
   .p-compare-table small {
-    font-size: 12px;
+    font-size: var(--type-label);
     color: #afc4ce;
   }
   .p-compare-bars {
@@ -2542,16 +2542,16 @@
     padding: 20px 0;
   }
   .p-compare-work h3 {
-    font-size: 18px;
+    font-size: var(--type-card);
     margin-bottom: 12px;
   }
   .p-compare-work p {
-    font-size: 12px;
+    font-size: var(--type-label);
   }
   .p-compare-work > b,
   .p-compare-work > small {
     display: block;
-    font-size: 12px;
+    font-size: var(--type-label);
     margin: 8px 0;
     color: #afc6d0;
   }
@@ -2573,16 +2573,16 @@
     flex: 1;
   }
   .p-advisor-assignment h3 {
-    font-size: 18px;
+    font-size: var(--type-card);
     margin: 0 0 9px;
   }
   .p-advisor-assignment p {
-    font-size: 12px;
+    font-size: var(--type-label);
     margin: 0 0 5px;
     color: #a7bdc8;
   }
   .p-advisor-assignment small {
-    font-size: 10px;
+    font-size: var(--type-secondary);
     color: #84a0b0;
   }
   @media (min-width: 1700px) {
@@ -2638,7 +2638,7 @@
       height: 265px;
     }
     .p-person-card.featured .p-card-identity h3 {
-      font-size: 24px;
+      font-size: var(--type-section);
     }
     .p-card-identity {
       padding: 17px 17px 13px;
@@ -2661,19 +2661,19 @@
       gap: 10px;
     }
     .p-roster-line .p-row-person b {
-      font-size: 12px;
+      font-size: var(--type-label);
     }
     .p-roster-line .p-row-person small {
-      font-size: 9px;
+      font-size: var(--type-caption);
     }
     .p-roster-job {
-      font-size: 11px;
+      font-size: var(--type-secondary);
     }
     .p-roster-terms > b {
-      font-size: 11px;
+      font-size: var(--type-secondary);
     }
     .p-roster-score > b {
-      font-size: 21px;
+      font-size: var(--type-card-lg);
     }
     .p-row-actions .p-icon-button {
       width: 32px;
@@ -2681,7 +2681,7 @@
     }
     .p-row-actions .button {
       padding: 7px 8px;
-      font-size: 10px;
+      font-size: var(--type-secondary);
     }
     .p-dossier-hero {
       grid-template-columns: 220px minmax(0, 1fr) 145px;
@@ -2689,13 +2689,13 @@
       padding-right: 24px;
     }
     .p-dossier-title h1 {
-      font-size: 39px;
+      font-size: var(--type-page-lg);
     }
     .p-dossier-condition {
       padding-left: 18px;
     }
     .p-file-actions .button {
-      font-size: 11px;
+      font-size: var(--type-secondary);
       padding-left: 12px;
       padding-right: 12px;
     }
@@ -2723,7 +2723,7 @@
       gap: 20px;
     }
     .p-academy-metrics strong {
-      font-size: 23px;
+      font-size: var(--type-subhead);
     }
     .p-leadership-layout {
       grid-template-columns: 310px 1fr;
@@ -2733,16 +2733,16 @@
       padding: 28px;
     }
     .p-mandate h2 {
-      font-size: 29px;
+      font-size: var(--type-section-lg);
     }
     .p-manager-response {
-      font-size: 20px !important;
+      font-size: var(--type-card-lg) !important;
     }
     .p-contract-details .button {
-      font-size: 10px;
+      font-size: var(--type-secondary);
     }
     .p-public-metrics strong {
-      font-size: 43px;
+      font-size: var(--type-display);
     }
   }
   @media (max-width: 1020px) {
@@ -2812,7 +2812,7 @@
       min-height: 285px;
     }
     .p-dossier-title h1 {
-      font-size: 35px;
+      font-size: var(--type-page-lg);
     }
     .p-profile-layout {
       grid-template-columns: 1fr;
@@ -2858,7 +2858,7 @@
       padding: 25px;
     }
     .p-mandate h2 {
-      font-size: 26px;
+      font-size: var(--type-section);
     }
     .p-mandate-top {
       flex-wrap: wrap;
@@ -2917,13 +2917,13 @@
       grid-row: 1;
     }
     .p-roster-line .p-row-person b {
-      font-size: 14px;
+      font-size: var(--type-body);
     }
     .p-roster-line .p-row-person small {
-      font-size: 10px;
+      font-size: var(--type-secondary);
     }
     .p-roster-line .p-roster-job {
-      font-size: 11px;
+      font-size: var(--type-secondary);
     }
     .p-filters .p-field {
       min-width: 140px;
@@ -2957,13 +2957,13 @@
       margin-bottom: 23px;
     }
     :scope .page-heading h1 {
-      font-size: 32px;
+      font-size: var(--type-page);
       line-height: 1.1;
       margin: 10px 0 14px;
       letter-spacing: -0.045em;
     }
     :scope .page-heading p {
-      font-size: 13px;
+      font-size: var(--type-body);
       line-height: 1.7;
     }
     :scope .heading-actions {
@@ -2975,18 +2975,18 @@
       flex: 1;
     }
     :scope .button {
-      font-size: 12px;
+      font-size: var(--type-label);
       min-height: 44px;
       padding: 10px 14px;
     }
     :scope h2 {
-      font-size: 23px;
+      font-size: var(--type-subhead);
     }
     :scope h3 {
-      font-size: 18px;
+      font-size: var(--type-card);
     }
     :scope p {
-      font-size: 13px;
+      font-size: var(--type-body);
     }
     :scope .tabs {
       margin: 21px 0 24px;
@@ -2996,7 +2996,7 @@
       padding-bottom: 1px;
     }
     :scope .tabs button {
-      font-size: 11px;
+      font-size: var(--type-secondary);
       padding: 11px 14px;
       min-height: 45px;
     }
@@ -3007,10 +3007,10 @@
     }
     .p-subnav button {
       padding: 10px 13px;
-      font-size: 11px;
+      font-size: var(--type-secondary);
     }
     .p-kicker {
-      font-size: 9px;
+      font-size: var(--type-caption);
       letter-spacing: 0.12em;
     }
     .p-section {
@@ -3022,14 +3022,14 @@
       margin-bottom: 18px;
     }
     .p-section > header h2 {
-      font-size: 22px;
+      font-size: var(--type-subhead);
     }
     .p-section > header p {
-      font-size: 12px;
+      font-size: var(--type-label);
       line-height: 1.6;
     }
     .p-section > header > .button {
-      font-size: 10px;
+      font-size: var(--type-secondary);
       min-height: 40px;
       padding: 9px 10px;
     }
@@ -3052,16 +3052,16 @@
       height: 320px;
     }
     .p-person-card.featured .p-card-identity h3 {
-      font-size: 30px;
+      font-size: var(--type-page);
     }
     .p-person-card.featured .p-entry-number {
-      font-size: 130px;
+      font-size: var(--type-display);
     }
     .p-card-identity {
       padding: 18px 21px 15px;
     }
     .p-card-identity p {
-      font-size: 11px;
+      font-size: var(--type-secondary);
       gap: 5px 8px;
     }
     .p-card-identity p > span:not(:first-child):before {
@@ -3071,7 +3071,7 @@
       padding: 10px 14px 10px 21px;
     }
     .p-person-footer > span {
-      font-size: 10px;
+      font-size: var(--type-secondary);
     }
     .p-person-footer .p-icon-button {
       min-width: 44px;
@@ -3086,7 +3086,7 @@
       padding: 25px;
     }
     .p-command-brief h2 {
-      font-size: 27px;
+      font-size: var(--type-section-lg);
       margin: 7px 0 20px;
     }
     .p-brief-score {
@@ -3099,13 +3099,13 @@
       gap: 24px;
     }
     .p-brief-score strong {
-      font-size: 52px;
+      font-size: var(--type-display);
     }
     .p-brief-score strong > span {
-      font-size: 28px;
+      font-size: var(--type-section-lg);
     }
     .p-brief-score small {
-      font-size: 11px;
+      font-size: var(--type-secondary);
       max-width: 130px;
     }
     .p-brief-task {
@@ -3113,10 +3113,10 @@
       gap: 14px;
     }
     .p-brief-task b {
-      font-size: 12px;
+      font-size: var(--type-label);
     }
     .p-brief-task small {
-      font-size: 10px;
+      font-size: var(--type-secondary);
     }
     .p-command-brief .p-payroll {
       margin-top: 25px;
@@ -3136,16 +3136,16 @@
       gap: 12px;
     }
     .p-row-person b {
-      font-size: 14px;
+      font-size: var(--type-body);
     }
     .p-row-person small {
-      font-size: 10px;
+      font-size: var(--type-secondary);
     }
     .p-row-rating {
-      font-size: 23px;
+      font-size: var(--type-subhead);
     }
     .p-row-rating small {
-      font-size: 8px;
+      font-size: var(--type-caption);
     }
     .p-person-row > .p-icon-button {
       width: 44px;
@@ -3166,10 +3166,10 @@
       min-width: 190px;
     }
     .p-bottom-band h3 {
-      font-size: 19px;
+      font-size: var(--type-card);
     }
     .p-bottom-band p {
-      font-size: 12px;
+      font-size: var(--type-label);
     }
     .p-bottom-band > .button {
       width: 100%;
@@ -3180,23 +3180,23 @@
       min-height: 220px;
     }
     .p-empty p {
-      font-size: 13px;
+      font-size: var(--type-body);
     }
     .p-facts {
       gap: 0 18px;
     }
     .p-facts dt {
-      font-size: 10px;
+      font-size: var(--type-secondary);
     }
     .p-facts dd {
-      font-size: 13px;
+      font-size: var(--type-body);
     }
     .p-callout {
       padding: 18px;
       gap: 13px;
     }
     .p-callout p {
-      font-size: 12px;
+      font-size: var(--type-label);
     }
     .p-callout > svg {
       width: 22px;
@@ -3206,7 +3206,7 @@
     }
     .p-inline-actions > .button {
       flex: 1;
-      font-size: 11px;
+      font-size: var(--type-secondary);
     }
     .p-directory-toolbar {
       gap: 10px;
@@ -3218,7 +3218,7 @@
       gap: 9px;
     }
     .p-search input {
-      font-size: 12px;
+      font-size: var(--type-label);
       padding: 12px 0;
     }
     .p-display-mode {
@@ -3243,17 +3243,17 @@
       min-width: 0;
     }
     .p-filters .p-field > span {
-      font-size: 10px;
+      font-size: var(--type-secondary);
     }
     .p-filters select {
       padding: 10px 9px;
-      font-size: 11px;
+      font-size: var(--type-secondary);
       min-height: 44px;
     }
     .p-filters > .p-check {
       grid-column: 1/-1;
       min-height: 34px;
-      font-size: 11px;
+      font-size: var(--type-secondary);
       margin-top: 2px;
     }
     .p-results-caption {
@@ -3261,10 +3261,10 @@
       flex-direction: column;
       gap: 6px;
       margin: 18px 0 13px;
-      font-size: 10px;
+      font-size: var(--type-secondary);
     }
     .p-results-caption b {
-      font-size: 13px;
+      font-size: var(--type-body);
     }
     .p-roster-table {
       background: transparent;
@@ -3291,10 +3291,10 @@
       height: 54px;
     }
     .p-roster-line .p-row-person b {
-      font-size: 14px;
+      font-size: var(--type-body);
     }
     .p-roster-line .p-row-person small {
-      font-size: 9px;
+      font-size: var(--type-caption);
       line-height: 1.55;
     }
     .p-roster-line .p-roster-score {
@@ -3307,7 +3307,7 @@
       gap: 8px;
     }
     .p-roster-score > b {
-      font-size: 26px;
+      font-size: var(--type-section);
     }
     .p-roster-score > .p-meter {
       width: 100%;
@@ -3316,7 +3316,7 @@
       grid-column: 1/-1 !important;
       grid-row: 2 !important;
       padding: 0 !important;
-      font-size: 12px !important;
+      font-size: var(--type-label) !important;
       display: flex;
       flex-direction: row;
       flex-wrap: wrap;
@@ -3325,7 +3325,7 @@
       padding-top: 12px !important;
     }
     .p-roster-job small {
-      font-size: 10px;
+      font-size: var(--type-secondary);
       align-self: center;
     }
     .p-roster-terms {
@@ -3335,10 +3335,10 @@
       align-self: center;
     }
     .p-roster-terms > b {
-      font-size: 14px;
+      font-size: var(--type-body);
     }
     .p-roster-terms small {
-      font-size: 9px;
+      font-size: var(--type-caption);
     }
     .p-row-actions {
       grid-column: 2;
@@ -3352,7 +3352,7 @@
       border: 0;
     }
     .p-row-actions .button {
-      font-size: 10px;
+      font-size: var(--type-secondary);
       min-height: 42px;
       padding: 9px 11px;
     }
@@ -3364,7 +3364,7 @@
       height: 280px;
     }
     .p-directory-cards .p-card-identity h3 {
-      font-size: 27px;
+      font-size: var(--type-section-lg);
     }
     .p-pagination {
       gap: 15px;
@@ -3372,7 +3372,7 @@
       justify-content: space-between;
     }
     .p-pagination .button {
-      font-size: 10px;
+      font-size: var(--type-secondary);
       min-height: 43px;
       padding: 10px;
     }
@@ -3380,7 +3380,7 @@
       width: 14px;
     }
     .p-pagination > span {
-      font-size: 10px;
+      font-size: var(--type-secondary);
       white-space: nowrap;
     }
     .p-scout-layout {
@@ -3413,10 +3413,10 @@
     .p-race-seat .p-facts dd {
       text-align: right;
       max-width: 55%;
-      font-size: 12px;
+      font-size: var(--type-label);
     }
     .p-vacancy > .button {
-      font-size: 10px;
+      font-size: var(--type-secondary);
     }
     .p-history-line {
       display: block;
@@ -3424,14 +3424,14 @@
     }
     .p-history-line time {
       display: block;
-      font-size: 10px;
+      font-size: var(--type-secondary);
       margin-bottom: 10px;
     }
     .p-history-line p {
-      font-size: 12px;
+      font-size: var(--type-label);
     }
     .p-history-line small {
-      font-size: 10px;
+      font-size: var(--type-secondary);
     }
     .p-collective-layout {
       grid-template-columns: 1fr;
@@ -3454,10 +3454,10 @@
       align-items: flex-start;
     }
     .p-department-list b {
-      font-size: 11px;
+      font-size: var(--type-secondary);
     }
     .p-department-list small {
-      font-size: 9px;
+      font-size: var(--type-caption);
     }
     .p-department-list button > svg:first-child {
       width: 18px;
@@ -3475,14 +3475,14 @@
       margin-bottom: 25px;
     }
     .p-department-hero h2 {
-      font-size: 27px;
+      font-size: var(--type-section-lg);
       margin: 10px 0 24px;
     }
     .p-department-stats {
       gap: 23px 17px;
     }
     .p-department-stats b {
-      font-size: 25px;
+      font-size: var(--type-section);
     }
     .p-collective-layout .p-section > header {
       display: block;
@@ -3496,10 +3496,10 @@
       padding: 13px 0;
     }
     .p-collective-comparison strong {
-      font-size: 22px;
+      font-size: var(--type-subhead);
     }
     .p-collective-comparison > div > span {
-      font-size: 11px;
+      font-size: var(--type-secondary);
     }
     .p-contract-ledger {
       grid-template-columns: 1fr;
@@ -3511,14 +3511,14 @@
       gap: 17px;
     }
     .p-contract-details > .button {
-      font-size: 10px;
+      font-size: var(--type-secondary);
       padding: 10px;
     }
     .p-contract-details small {
-      font-size: 9px;
+      font-size: var(--type-caption);
     }
     .p-contract-details b {
-      font-size: 13px;
+      font-size: var(--type-body);
     }
     .p-offer-card {
       padding: 20px;
@@ -3539,12 +3539,12 @@
       flex-direction: column;
       align-items: flex-start;
       gap: 7px;
-      font-size: 8px;
+      font-size: var(--type-caption);
       line-height: 1.4;
       padding-top: 9px;
     }
     .p-negotiation-progress i {
-      font-size: 8px;
+      font-size: var(--type-caption);
       width: 18px;
       height: 18px;
     }
@@ -3552,10 +3552,10 @@
       gap: 0 16px;
     }
     .p-offer-card .p-facts dd {
-      font-size: 12px;
+      font-size: var(--type-label);
     }
     .p-offer-message {
-      font-size: 12px !important;
+      font-size: var(--type-label) !important;
       padding: 14px;
     }
     .p-offer-card .p-inline-actions {
@@ -3581,7 +3581,7 @@
       gap: 22px;
     }
     .p-person-contract h2 {
-      font-size: 25px;
+      font-size: var(--type-section);
     }
     .p-person-contract aside {
       grid-template-columns: 1fr;
@@ -3600,20 +3600,20 @@
       grid-column: auto;
     }
     .p-field > span {
-      font-size: 11px;
+      font-size: var(--type-secondary);
     }
     .p-field input,
     .p-field select,
     .p-field textarea {
       min-height: 46px;
-      font-size: 13px;
+      font-size: var(--type-body);
       padding: 12px;
     }
     .p-field > small {
-      font-size: 10px;
+      font-size: var(--type-secondary);
     }
     .p-check {
-      font-size: 12px;
+      font-size: var(--type-label);
       min-height: 40px;
     }
     .p-form-actions {
@@ -3636,14 +3636,14 @@
       padding-bottom: 18px;
     }
     .p-form-identity h3 {
-      font-size: 23px;
+      font-size: var(--type-subhead);
     }
     .p-form-identity .p-mini-photo {
       width: 60px;
       height: 72px;
     }
     .p-form-identity small {
-      font-size: 10px;
+      font-size: var(--type-secondary);
     }
     .p-contract-preview {
       padding: 18px;
@@ -3660,18 +3660,18 @@
     }
     .p-contract-preview .p-facts dt {
       max-width: 45%;
-      font-size: 10px;
+      font-size: var(--type-secondary);
     }
     .p-contract-preview .p-facts dd {
       max-width: 55%;
       text-align: right;
-      font-size: 12px;
+      font-size: var(--type-label);
     }
     .p-contract-preview p {
-      font-size: 11px;
+      font-size: var(--type-secondary);
     }
     .p-form-error {
-      font-size: 12px !important;
+      font-size: var(--type-label) !important;
       padding: 14px;
       gap: 10px;
     }
@@ -3684,10 +3684,10 @@
       padding: 10px;
     }
     .p-candidate-picker b {
-      font-size: 13px;
+      font-size: var(--type-body);
     }
     .p-candidate-picker small {
-      font-size: 10px;
+      font-size: var(--type-secondary);
     }
     .p-advisor-filters {
       grid-template-columns: 1fr;
@@ -3703,20 +3703,20 @@
     }
     .p-client-picker .p-client-number {
       width: 34px;
-      font-size: 24px;
+      font-size: var(--type-section);
     }
     .p-client-picker b {
-      font-size: 12px;
+      font-size: var(--type-label);
     }
     .p-client-picker small {
-      font-size: 9px;
+      font-size: var(--type-caption);
     }
     .p-client-picker > button > svg {
       width: 17px;
       flex-shrink: 0;
     }
     .p-selected-client {
-      font-size: 11px !important;
+      font-size: var(--type-secondary) !important;
       padding: 12px 14px;
     }
     .p-academy-hero {
@@ -3724,7 +3724,7 @@
       margin-bottom: 25px;
     }
     .p-academy-hero h2 {
-      font-size: 28px;
+      font-size: var(--type-section-lg);
       line-height: 1.15;
       margin: 12px 0 27px;
     }
@@ -3733,11 +3733,11 @@
       gap: 25px 17px;
     }
     .p-academy-metrics small {
-      font-size: 9px;
+      font-size: var(--type-caption);
       line-height: 1.5;
     }
     .p-academy-metrics strong {
-      font-size: 23px;
+      font-size: var(--type-subhead);
       white-space: normal;
       word-break: normal;
       font-variant-numeric: tabular-nums;
@@ -3754,22 +3754,22 @@
       grid-template-columns: 1fr;
     }
     .p-scholarship .p-facts dd {
-      font-size: 12px;
+      font-size: var(--type-label);
     }
     .p-funding-intro {
       display: block;
       padding: 25px 22px;
     }
     .p-funding-intro strong {
-      font-size: 37px;
+      font-size: var(--type-page-lg);
       margin-top: 12px;
     }
     .p-funding-intro strong small {
-      font-size: 11px;
+      font-size: var(--type-secondary);
     }
     .p-funding-intro p {
       margin-top: 23px;
-      font-size: 12px;
+      font-size: var(--type-label);
     }
     .p-funding-grid {
       grid-template-columns: 1fr;
@@ -3779,11 +3779,11 @@
       padding: 21px;
     }
     .p-funding-amount {
-      font-size: 34px;
+      font-size: var(--type-page);
       margin: 19px 0;
     }
     .p-funding-direction {
-      font-size: 10px;
+      font-size: var(--type-secondary);
       gap: 10px;
       line-height: 1.6;
     }
@@ -3798,12 +3798,12 @@
     }
     .p-funding-card .p-facts dt {
       max-width: 43%;
-      font-size: 10px;
+      font-size: var(--type-secondary);
     }
     .p-funding-card .p-facts dd {
       max-width: 57%;
       text-align: right;
-      font-size: 12px;
+      font-size: var(--type-label);
     }
     .p-funding-card > .button {
       width: 100%;
@@ -3817,10 +3817,10 @@
       margin-top: 5px;
     }
     .p-support-intro h2 {
-      font-size: 22px;
+      font-size: var(--type-subhead);
     }
     .p-support-intro p {
-      font-size: 12px;
+      font-size: var(--type-label);
     }
     .p-prep-options {
       grid-template-columns: 1fr;
@@ -3831,17 +3831,17 @@
       padding: 25px;
     }
     .p-prep-options h2 {
-      font-size: 29px;
+      font-size: var(--type-section-lg);
       margin: 11px 0 23px;
     }
     .p-prep-options > article > svg {
       margin-bottom: 20px;
     }
     .p-prep-price strong {
-      font-size: 29px;
+      font-size: var(--type-section-lg);
     }
     .p-prep-price span {
-      font-size: 10px;
+      font-size: var(--type-secondary);
       line-height: 1.7;
       max-width: 130px;
       text-align: right;
@@ -3862,17 +3862,17 @@
       align-self: start;
     }
     .p-date-block b {
-      font-size: 28px;
+      font-size: var(--type-section-lg);
     }
     .p-prep-schedule h3 {
-      font-size: 17px;
+      font-size: var(--type-card-sm);
       margin: 0 0 8px;
     }
     .p-prep-schedule p {
-      font-size: 11px;
+      font-size: var(--type-secondary);
     }
     .p-prep-schedule small {
-      font-size: 10px;
+      font-size: var(--type-secondary);
     }
     .p-leadership-layout {
       grid-template-columns: 1fr;
@@ -3885,23 +3885,23 @@
       padding: 26px 22px;
     }
     .p-mandate h2 {
-      font-size: 29px;
+      font-size: var(--type-section-lg);
       margin: 14px 0 18px;
     }
     .p-mandate-top {
       margin-bottom: 22px;
-      font-size: 11px;
+      font-size: var(--type-secondary);
       gap: 10px;
     }
     .p-manager-response {
-      font-size: 22px !important;
+      font-size: var(--type-subhead) !important;
       padding: 20px 0;
     }
     .p-mandate .p-facts dd {
-      font-size: 19px;
+      font-size: var(--type-card);
     }
     .p-mandate .p-facts dt {
-      font-size: 10px;
+      font-size: var(--type-secondary);
     }
     .p-file-breadcrumb {
       display: block;
@@ -3911,7 +3911,7 @@
       display: none;
     }
     .p-file-breadcrumb > button {
-      font-size: 11px;
+      font-size: var(--type-secondary);
     }
     .p-dossier-hero {
       grid-template-columns: 120px minmax(0, 1fr);
@@ -3937,10 +3937,10 @@
       padding: 6px 8px;
     }
     .p-dossier-rating b {
-      font-size: 25px;
+      font-size: var(--type-section);
     }
     .p-dossier-rating small {
-      font-size: 6px;
+      font-size: var(--type-caption);
       max-width: 35px;
       line-height: 1.5;
     }
@@ -3950,18 +3950,18 @@
       min-width: 0;
     }
     .p-dossier-title > .p-kicker {
-      font-size: 8px;
+      font-size: var(--type-caption);
       letter-spacing: 0.09em;
       line-height: 1.6;
     }
     .p-dossier-title h1 {
-      font-size: 29px;
+      font-size: var(--type-section-lg);
       line-height: 1.05;
       margin: 10px 0 13px;
       letter-spacing: -0.05em;
     }
     .p-org-link {
-      font-size: 11px;
+      font-size: var(--type-secondary);
       gap: 6px;
       line-height: 1.5;
     }
@@ -3970,7 +3970,7 @@
       width: 12px;
     }
     .p-person-facts {
-      font-size: 9px;
+      font-size: var(--type-caption);
       gap: 4px 8px;
       margin: 12px 0 0;
       line-height: 1.6;
@@ -3987,7 +3987,7 @@
     }
     .p-file-actions > .button {
       flex: 1;
-      font-size: 10px;
+      font-size: var(--type-secondary);
       min-height: 43px;
       padding: 9px;
     }
@@ -4014,14 +4014,14 @@
       gap: 7px;
     }
     .p-dossier-condition small {
-      font-size: 8px;
+      font-size: var(--type-caption);
       line-height: 1.5;
     }
     .p-dossier-condition b {
-      font-size: 18px;
+      font-size: var(--type-card);
     }
     .p-dossier-condition > span:last-child b {
-      font-size: 13px;
+      font-size: var(--type-body);
       overflow-wrap: anywhere;
     }
     .p-dossier-condition .p-meter {
@@ -4040,7 +4040,7 @@
     .p-profile-layout > .p-section > header > .p-check {
       margin-top: 17px;
       min-height: 35px;
-      font-size: 11px;
+      font-size: var(--type-secondary);
     }
     .p-profile-layout > div {
       display: block;
@@ -4057,22 +4057,22 @@
       min-width: 0;
     }
     .p-skill-list b {
-      font-size: 11px;
+      font-size: var(--type-secondary);
       line-height: 1.5;
     }
     .p-skill-list small {
-      font-size: 8px;
+      font-size: var(--type-caption);
     }
     .p-skill-bar {
       gap: 9px;
     }
     .p-skill-bar > span {
       gap: 4px;
-      font-size: 10px;
+      font-size: var(--type-secondary);
       min-width: 54px;
     }
     .p-skill-bar > span strong {
-      font-size: 18px;
+      font-size: var(--type-card);
     }
     .p-skill-bar > span > svg {
       width: 10px;
@@ -4091,17 +4091,17 @@
     }
     .p-profile-layout .p-facts dd {
       text-align: right;
-      font-size: 12px;
+      font-size: var(--type-label);
     }
     .p-traits > article {
       padding: 18px;
       gap: 13px;
     }
     .p-traits strong {
-      font-size: 14px;
+      font-size: var(--type-body);
     }
     .p-traits small {
-      font-size: 10px;
+      font-size: var(--type-secondary);
     }
     .p-profile-summary {
       padding: 22px;
@@ -4115,10 +4115,10 @@
       padding: 22px;
     }
     .p-career-summary b {
-      font-size: 33px;
+      font-size: var(--type-page);
     }
     .p-career-summary small {
-      font-size: 9px;
+      font-size: var(--type-caption);
     }
     .p-career-timeline {
       margin-left: 6px;
@@ -4127,30 +4127,30 @@
       padding-left: 23px;
     }
     .p-career-timeline .p-text-button {
-      font-size: 18px;
+      font-size: var(--type-card);
     }
     .p-career-timeline small {
-      font-size: 10px;
+      font-size: var(--type-secondary);
     }
     .p-career-timeline p {
-      font-size: 12px;
+      font-size: var(--type-label);
     }
     .p-adaptation > span {
-      font-size: 12px;
+      font-size: var(--type-label);
       gap: 8px;
       flex-wrap: wrap;
     }
     .p-adaptation small {
-      font-size: 9px;
+      font-size: var(--type-caption);
     }
     .p-adaptation strong {
-      font-size: 13px;
+      font-size: var(--type-body);
     }
     .p-experience-chips {
       gap: 7px;
     }
     .p-experience-chips > span {
-      font-size: 10px;
+      font-size: var(--type-secondary);
       padding: 8px 10px;
     }
     .p-work-events > article {
@@ -4160,29 +4160,29 @@
     .p-work-events time {
       display: block;
       margin-bottom: 12px;
-      font-size: 10px;
+      font-size: var(--type-secondary);
     }
     .p-work-events h3 {
-      font-size: 16px;
+      font-size: var(--type-card-sm);
     }
     .p-work-events > article > div > span {
-      font-size: 11px;
+      font-size: var(--type-secondary);
     }
     .p-result-line {
       display: grid;
       grid-template-columns: 1fr auto;
       gap: 10px 15px;
-      font-size: 12px;
+      font-size: var(--type-label);
     }
     .p-result-line time {
-      font-size: 10px;
+      font-size: var(--type-secondary);
       grid-column: 1/-1;
     }
     .p-disclosure {
       padding: 0 15px;
     }
     .p-disclosure summary {
-      font-size: 11px;
+      font-size: var(--type-secondary);
       padding: 15px 0;
     }
     .p-public-metrics {
@@ -4200,11 +4200,11 @@
       border-left: 2px solid var(--org-accent);
     }
     .p-public-metrics strong {
-      font-size: 43px;
+      font-size: var(--type-display);
       grid-row: 1/3;
     }
     .p-public-metrics h3 {
-      font-size: 12px;
+      font-size: var(--type-label);
       margin: 0;
       line-height: 1.5;
     }
@@ -4217,7 +4217,7 @@
       gap: 20px 17px;
     }
     .p-trait-bars > div > span {
-      font-size: 10px;
+      font-size: var(--type-secondary);
       gap: 7px;
     }
     .p-region-row {
@@ -4225,13 +4225,13 @@
       gap: 11px;
     }
     .p-region-row > span {
-      font-size: 9px;
+      font-size: var(--type-caption);
     }
     .p-region-row > b {
-      font-size: 12px;
+      font-size: var(--type-label);
     }
     .p-region-row > strong {
-      font-size: 14px;
+      font-size: var(--type-body);
     }
     .p-preferences {
       grid-template-columns: 1fr;
@@ -4241,10 +4241,10 @@
       padding: 22px;
     }
     .p-preferences article > span {
-      font-size: 13px;
+      font-size: var(--type-body);
     }
     .p-preferences small {
-      font-size: 9px;
+      font-size: var(--type-caption);
     }
     .p-relations {
       grid-template-columns: 1fr;
@@ -4257,13 +4257,13 @@
       gap: 13px;
     }
     .p-relations .p-kicker {
-      font-size: 8px;
+      font-size: var(--type-caption);
     }
     .p-relations .p-text-button {
-      font-size: 20px;
+      font-size: var(--type-card-lg);
     }
     .p-relations p {
-      font-size: 12px;
+      font-size: var(--type-label);
     }
     .p-compare-selector {
       grid-template-columns: 1fr;
@@ -4279,7 +4279,7 @@
       top: 75px;
       left: 50%;
       transform: translateX(-50%);
-      font-size: 16px;
+      font-size: var(--type-card-sm);
       background: #191919e8;
       padding: 8px;
       z-index: 4;
@@ -4294,16 +4294,16 @@
       padding: 13px 12px;
     }
     .p-compare-head .p-card-identity > .p-kicker {
-      font-size: 7px;
+      font-size: var(--type-caption);
       line-height: 1.6;
     }
     .p-compare-head .p-card-identity h3 {
-      font-size: 20px;
+      font-size: var(--type-card-lg);
       margin: 8px 0 9px;
       line-height: 1.05;
     }
     .p-compare-head .p-card-identity p {
-      font-size: 8px;
+      font-size: var(--type-caption);
       line-height: 1.6;
       display: block;
     }
@@ -4326,7 +4326,7 @@
       gap: 3px;
     }
     .p-compare-head .p-person-footer > span {
-      font-size: 7px;
+      font-size: var(--type-caption);
     }
     .p-compare-head .p-person-footer .p-icon-button {
       width: 31px;
@@ -4348,10 +4348,10 @@
       padding: 6px;
     }
     .p-compare-head .p-rating b {
-      font-size: 24px;
+      font-size: var(--type-section);
     }
     .p-compare-head .p-rating small {
-      font-size: 6px;
+      font-size: var(--type-caption);
     }
     .p-compare-table > div {
       grid-template-columns: 35px 1fr 35px;
@@ -4359,16 +4359,16 @@
       padding: 15px 0;
     }
     .p-compare-table > div > b {
-      font-size: 21px;
+      font-size: var(--type-card-lg);
     }
     .p-compare-table > div > span {
-      font-size: 11px;
+      font-size: var(--type-secondary);
     }
     .p-compare-table small {
-      font-size: 11px;
+      font-size: var(--type-secondary);
     }
     .p-compare-table > div > strong {
-      font-size: 12px;
+      font-size: var(--type-label);
     }
     .p-compare-bars {
       gap: 4px;
@@ -4386,7 +4386,7 @@
       margin-top: 5px;
     }
     .p-advisor-assignment h3 {
-      font-size: 18px;
+      font-size: var(--type-card);
     }
     .p-advisor-assignment .badge {
       grid-column: 2;
@@ -4397,12 +4397,12 @@
       width: 100%;
     }
     .p-advisor-assignment p {
-      font-size: 11px;
+      font-size: var(--type-secondary);
     }
   }
   @media (max-width: 950px) and (max-height: 500px) and (orientation: landscape) {
     :scope .page-heading h1 {
-      font-size: 29px;
+      font-size: var(--type-section-lg);
     }
     .p-subnav {
       margin-bottom: 18px;
@@ -4425,18 +4425,18 @@
       padding: 18px 0;
     }
     .p-dossier-title h1 {
-      font-size: 33px;
+      font-size: var(--type-page);
       margin: 8px 0 10px;
     }
     .p-person-facts {
-      font-size: 10px;
+      font-size: var(--type-secondary);
       margin: 13px 0;
     }
     .p-file-actions {
       margin-top: 17px;
     }
     .p-file-actions .button {
-      font-size: 10px;
+      font-size: var(--type-secondary);
       min-height: 39px;
       padding: 8px 10px;
     }
@@ -4460,10 +4460,10 @@
       display: flex;
     }
     .p-dossier-condition small {
-      font-size: 8px;
+      font-size: var(--type-caption);
     }
     .p-dossier-condition b {
-      font-size: 16px;
+      font-size: var(--type-card-sm);
     }
     .p-dossier-rating {
       padding: 7px 10px;
@@ -4471,7 +4471,7 @@
       bottom: 10px;
     }
     .p-dossier-rating b {
-      font-size: 27px;
+      font-size: var(--type-section-lg);
     }
     .p-person-card.featured .p-photo {
       height: 240px;
@@ -4542,10 +4542,10 @@
     padding: 15px;
   }
   .p-compare-head .p-card-identity h3 {
-    font-size: 21px;
+    font-size: var(--type-card-lg);
   }
   .p-compare-head .p-card-identity p {
-    font-size: 9px;
+    font-size: var(--type-caption);
     line-height: 1.6;
   }
   .p-compare-head .p-rating {
@@ -4554,7 +4554,7 @@
     bottom: 5px;
   }
   .p-compare-head .p-rating b {
-    font-size: 20px;
+    font-size: var(--type-card-lg);
   }
   .p-compare-head .p-rating small {
     display: none;
@@ -4573,7 +4573,7 @@
       padding: 12px;
     }
     .p-compare-head .p-card-identity h3 {
-      font-size: 19px;
+      font-size: var(--type-card);
     }
     .p-compare-head .p-person-footer {
       padding: 5px 8px;
@@ -4636,7 +4636,7 @@
       flex: 1;
       min-width: 0;
       padding: 10px 6px;
-      font-size: 11px;
+      font-size: var(--type-secondary);
     }
     .p-dossier-hero > .p-dossier-condition {
       grid-column: 1/-1;

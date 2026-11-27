@@ -23,15 +23,15 @@
 }
 .measurement-pair strong {
   font-variant-numeric: tabular-nums;
-  font-size: 1.25rem;
+  font-size: var(--type-card-lg);
 }
 .measurement-pair strong small {
   display: inline;
-  font-size: 0.8rem;
+  font-size: var(--type-body);
 }
 .development-desk .research-layout {
   margin-top: 1rem;
 }
 .development-desk aside h3 {
-  font-size: 1rem;
+  font-size: var(--type-card-sm);
 }

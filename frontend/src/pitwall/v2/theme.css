@@ -17,16 +17,16 @@
     font-family: Race, 'Arial Narrow', Manrope, Arial, sans-serif;
   }
   h1 {
-    font-size: 44px;
+    font-size: var(--type-page-lg);
     font-weight: 750;
     letter-spacing: -0.8px;
   }
   h2 {
-    font-size: 25px;
+    font-size: var(--type-section);
     font-weight: 700;
   }
   h3 {
-    font-size: 20px;
+    font-size: var(--type-card-lg);
   }
   p {
     color: #aaa6a1;
@@ -61,7 +61,7 @@
     background: var(--org-accent);
     color: var(--org-on-accent);
     border-radius: 2px;
-    font-size: 12px;
+    font-size: var(--type-label);
     font-weight: 800;
     min-height: 44px;
   }
@@ -112,7 +112,7 @@
     color: #a5a09b;
   }
   .panel-body {
-    padding: 24px;
+    padding: var(--card-inset);
   }
   .tabs {
     border-color: #4d4744;
@@ -120,7 +120,7 @@
   }
   .tabs button {
     color: #aaa39d;
-    font-size: 12px;
+    font-size: var(--type-label);
     font-weight: 600;
   }
   .tabs button[aria-selected='true'] {
@@ -155,7 +155,7 @@
   }
   .stat strong {
     font-family: Race, Arial, sans-serif;
-    font-size: 34px;
+    font-size: var(--type-page);
   }
   .stat small,
   .stat > span {
@@ -207,7 +207,7 @@
   }
   .modal > header h2 {
     font-family: Race, Arial, sans-serif;
-    font-size: 30px;
+    font-size: var(--type-page);
   }
   .toast {
     background: #303930;
@@ -230,7 +230,7 @@
     background: #111112;
   }
   .sidebar {
-    width: 240px;
+    width: var(--rail-width);
     background: #171718;
     border-color: #3d3938;
   }
@@ -247,20 +247,20 @@
   }
   .brand strong {
     font:
-      800 26px/1 Race,
+      800 var(--type-section)/1 Race,
       Arial,
       sans-serif;
     letter-spacing: -0.9px;
   }
   .brand strong span {
-    font-size: 13px;
+    font-size: var(--type-body);
     color: #b4a697;
     margin-left: 5px;
     letter-spacing: 0.05em;
   }
   .brand small {
     font:
-      600 9px Race,
+      600 var(--type-caption) Race,
       Arial,
       sans-serif;
     letter-spacing: 0.27em;
@@ -286,21 +286,21 @@
   }
   .team-identity strong {
     font:
-      700 21px/1.1 Race,
+      700 var(--type-card-lg)/1.1 Race,
       Arial,
       sans-serif;
     letter-spacing: 0.02em;
   }
   .team-identity small {
     display: block;
-    font-size: 9px;
+    font-size: var(--type-caption);
     color: #c7b9a9;
     margin-top: 8px;
   }
   .team-identity em {
     display: block;
     font-style: normal;
-    font-size: 9px;
+    font-size: var(--type-caption);
     letter-spacing: 0.03em;
     color: #b1a193;
     margin-top: 5px;
@@ -316,7 +316,7 @@
     max-width: 67px;
   }
   .team-identity > .organization-mark > strong {
-    font-size: 17px;
+    font-size: var(--type-card-sm);
   }
   .team-identity > svg {
     color: var(--org-accent);
@@ -327,7 +327,7 @@
   }
   .nav-caption {
     font:
-      500 9px Race,
+      500 var(--type-caption) Race,
       Arial,
       sans-serif;
     letter-spacing: 0.13em;
@@ -342,8 +342,9 @@
   }
   .nav-item {
     padding: 13px 12px;
-    min-height: 48px;
-    font-size: 12px;
+    min-height: 3.25rem;
+    line-height: 1.4;
+    font-size: var(--type-body);
     border-radius: 0;
     color: #c8c2bb;
   }
@@ -375,7 +376,7 @@
   }
   .subnav :is(button, a) {
     color: #a99c91;
-    font-size: 10px;
+    font-size: var(--type-secondary);
     min-height: 38px;
   }
   .subnav :is(button, a).active {
@@ -388,7 +389,7 @@
     padding: 13px 20px;
   }
   .sidebar-footer button {
-    font-size: 10px;
+    font-size: var(--type-secondary);
     color: #9b8e83;
     min-height: 32px;
     width: 100%;
@@ -422,12 +423,12 @@
   }
   .breadcrumb {
     min-width: 0;
-    font-size: 11px;
+    font-size: var(--type-secondary);
     gap: 10px;
   }
   .breadcrumb > span {
     font:
-      600 12px Race,
+      600 var(--type-label) Race,
       Arial,
       sans-serif;
     color: #a09486;
@@ -447,7 +448,7 @@
   }
   .global-search kbd {
     font:
-      9px Manrope,
+      var(--type-caption) Manrope,
       Arial,
       sans-serif;
     border-color: #4f4237;
@@ -457,10 +458,10 @@
   .topbar-date {
     border-color: #4e4136;
     padding-left: 18px;
-    font-size: 11px;
+    font-size: var(--type-secondary);
   }
   .topbar-date span {
-    font-size: 8px;
+    font-size: var(--type-caption);
     color: #9b8c7c;
   }
   .continue-button {
@@ -468,7 +469,7 @@
     color: #201c15;
     border-radius: 2px;
     gap: 27px;
-    font-size: 11px;
+    font-size: var(--type-secondary);
     min-height: 43px;
     padding: 10px 17px;
   }
@@ -480,19 +481,20 @@
     background: #111112;
   }
   .main-inner {
-    padding: 30px;
-    max-width: 1720px;
+    width: 100%;
+    padding: var(--page-gutter);
+    max-width: none;
   }
   .content-footer {
     border-top: 1px solid #302b27;
     color: #9e9081;
-    font-size: 9px;
+    font-size: var(--type-caption);
     align-items: center;
     padding: 23px 30px;
   }
   .content-footer button {
     color: #a29382;
-    font-size: 9px;
+    font-size: var(--type-caption);
   }
   .search-overlay {
     background: #050505e8;
@@ -508,7 +510,7 @@
   .search-results h3 {
     color: #aa9682;
     font:
-      700 12px Race,
+      700 var(--type-label) Race,
       Arial,
       sans-serif;
     letter-spacing: 0.12em;
@@ -516,7 +518,7 @@
   .search-results button {
     color: #e1d7cb;
     min-height: 45px;
-    font-size: 12px;
+    font-size: var(--type-label);
   }
   .search-results button:hover {
     background: #ffffff06;
@@ -531,7 +533,7 @@
   }
   .guide-v2 h1 {
     font:
-      750 60px/1 Race,
+      750 var(--type-page-lg)/1 Race,
       Arial,
       sans-serif;
   }
@@ -551,14 +553,14 @@
   }
   @media (max-width: 1100px) {
     .sidebar {
-      width: 216px;
+      width: 15.5rem;
     }
     .team-identity {
       padding: 22px 16px;
       gap: 12px;
     }
     .team-identity strong {
-      font-size: 18px;
+      font-size: var(--type-card);
     }
     .team-identity > .organization-mark {
       max-width: 60px;
@@ -587,7 +589,7 @@
       padding: 18px 22px;
     }
     .sidebar .brand strong {
-      font-size: 23px;
+      font-size: var(--type-subhead);
     }
     .sidebar .brand small {
       display: none;
@@ -603,7 +605,7 @@
       gap: 20px;
     }
     .team-identity strong {
-      font-size: 24px;
+      font-size: var(--type-section);
     }
     .topbar {
       height: 60px;
@@ -617,10 +619,10 @@
     .topbar-date {
       border: 0;
       padding: 0;
-      font-size: 10px;
+      font-size: var(--type-secondary);
     }
     .topbar-date span {
-      font-size: 8px;
+      font-size: var(--type-caption);
     }
     .navigation-back {
       width: 30px;
@@ -648,7 +650,7 @@
       backdrop-filter: blur(12px);
     }
     .mobile-dock button {
-      font-size: 9px;
+      font-size: var(--type-caption);
       color: #a49588;
       min-width: 55px;
     }
@@ -661,7 +663,7 @@
       padding-bottom: 67px;
     }
     .content-footer {
-      font-size: 9px;
+      font-size: var(--type-caption);
       padding: 20px;
       flex-wrap: wrap;
     }
@@ -670,7 +672,7 @@
       max-height: 94dvh;
     }
     .modal > header h2 {
-      font-size: 27px;
+      font-size: var(--type-section-lg);
     }
     .data-table td:before {
       color: #a29487;
@@ -682,7 +684,7 @@
       color: #e3d8ca;
     }
     .page-heading h1 {
-      font-size: 37px;
+      font-size: var(--type-page-lg);
     }
     .page-heading p {
       line-height: 1.7;
@@ -691,7 +693,7 @@
       bottom: 82px;
     }
     .guide-v2 h1 {
-      font-size: 45px;
+      font-size: var(--type-page-lg);
     }
   }
   @media (max-width: 520px) {
@@ -721,7 +723,7 @@
       padding: 24px 17px;
     }
     .page-heading h1 {
-      font-size: 35px;
+      font-size: var(--type-page-lg);
     }
     .dialog-actions {
       background: #232122;
@@ -734,10 +736,10 @@
       gap: 18px;
     }
     .tabs button {
-      font-size: 11px;
+      font-size: var(--type-secondary);
     }
     .guide-v2 h1 {
-      font-size: 40px;
+      font-size: var(--type-page-lg);
     }
   }
   @media (max-width: 900px) and (max-height: 500px) and (orientation: landscape) {
@@ -775,7 +777,7 @@
       padding: 15px 21px;
     }
     .team-identity strong {
-      font-size: 19px;
+      font-size: var(--type-card);
     }
     .team-identity em {
       display: none;
@@ -788,7 +790,7 @@
       padding-left: 24px;
     }
     .page-heading h1 {
-      font-size: 33px;
+      font-size: var(--type-page);
     }
   }
   @media (prefers-reduced-motion: no-preference) {
@@ -860,7 +862,7 @@
   .source-details > summary {
     cursor: pointer;
     font:
-      650 17px Race,
+      650 var(--type-card-sm) Race,
       Arial,
       sans-serif;
     padding: 18px 0;

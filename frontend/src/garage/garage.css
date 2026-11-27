@@ -5,7 +5,7 @@
   display: grid;
   gap: 6px;
   min-width: 0;
-  font-size: 0.78rem;
+  font-size: var(--type-body);
   font-weight: 650;
   color: #c1c5cd;
 }
@@ -67,7 +67,7 @@
 .studio-stage header small,
 .studio-stage footer {
   letter-spacing: 0.14em;
-  font-size: 0.66rem;
+  font-size: var(--type-secondary);
   font-weight: 750;
   text-transform: uppercase;
 }
@@ -78,7 +78,7 @@
 }
 .studio-stage header span {
   color: #d2d7dd;
-  font-size: 0.78rem;
+  font-size: var(--type-body);
 }
 .studio-expand {
   position: absolute;
@@ -107,7 +107,7 @@
 .studio-stage footer b {
   color: #fff;
   font:
-    italic 800 1.12rem Manrope,
+    italic 800 var(--type-card) Manrope,
     sans-serif;
   letter-spacing: 0.02em;
 }
@@ -163,7 +163,7 @@
   gap: 10px;
   align-items: center;
   padding: 12px 16px;
-  font-size: 0.74rem;
+  font-size: var(--type-label);
   color: #aeb5c0;
 }
 .studio-status span:first-child {
@@ -190,7 +190,7 @@
 .garage-fields > small,
 .garage-hint {
   color: #a6afba;
-  font-size: 0.75rem;
+  font-size: var(--type-label);
   line-height: 1.5;
   margin: 0;
 }
@@ -200,12 +200,12 @@
   gap: 8px;
 }
 .paint-swatches label {
-  font-size: 0.74rem;
+  font-size: var(--type-label);
   gap: 3px;
 }
 .paint-swatches small {
   color: #9ca6b3;
-  font-size: 0.65rem;
+  font-size: var(--type-secondary);
   font-variant-numeric: tabular-nums;
 }
 .paint-swatches input {
@@ -252,11 +252,11 @@
   gap: 6px;
 }
 .garage-feedback {
-  font-size: 0.8rem;
+  font-size: var(--type-body);
   color: #9cd2b2;
 }
 .garage-parts span {
-  font-size: 0.74rem;
+  font-size: var(--type-label);
   border: 1px solid #343943;
   padding: 5px 7px;
   border-radius: 3px;
@@ -295,7 +295,7 @@
 }
 .grid-cars span {
   padding: 7px 9px;
-  font-size: 0.76rem;
+  font-size: var(--type-body);
 }
 .grid-cars b {
   margin-right: 6px;
@@ -325,7 +325,7 @@
     aspect-ratio: 1.55;
   }
   .studio-stage h2 {
-    font-size: 1.4rem;
+    font-size: var(--type-subhead);
   }
   .season-garage select,
   .season-garage input:not([type='color']),
@@ -335,7 +335,7 @@
   }
   .studio-panel .studio-status {
     padding: 10px;
-    font-size: 0.68rem;
+    font-size: var(--type-secondary);
   }
   .grid-cars {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -356,7 +356,7 @@
   bottom: -11%;
   left: 4%;
   right: 4%;
-  font-size: 0.68rem;
+  font-size: var(--type-secondary);
   text-align: center;
   background: #15191ded;
   color: #eee;
@@ -378,10 +378,10 @@
   }
   .studio-layout.editing .studio-stage h2 {
     margin: 2px 40px 0 0;
-    font-size: 1.1rem;
+    font-size: var(--type-card);
   }
   .studio-layout.editing .studio-stage header span {
-    font-size: 0.67rem;
+    font-size: var(--type-secondary);
   }
   .studio-layout.editing :is(input, select, button) {
     scroll-margin-top: 290px;
@@ -393,7 +393,7 @@
   display: inline-block;
   color: #b6bdc6;
   margin-top: 14px;
-  font-size: 0.76rem;
+  font-size: var(--type-body);
 }
 
 .component-desk {
@@ -403,7 +403,7 @@
   min-width: 0;
 }
 .component-desk p { margin: 0; line-height: 1.5; }
-.component-desk code { overflow-wrap: anywhere; font-size: .83rem; }
+.component-desk code { overflow-wrap: anywhere; font-size: var(--type-body); }
 .component-desk summary { cursor: pointer; padding: 7px 0; font-weight: 600; }
 .component-desk details > p { margin: 8px 0; }
 .component-desk .garage-fields .facts { padding-inline: 0; }

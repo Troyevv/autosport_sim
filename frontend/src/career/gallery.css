@@ -35,7 +35,7 @@
 }
 #gallery figcaption {
   padding: 10px;
-  font-size: 0.9rem;
+  font-size: var(--type-body-lg);
 }
 #gallery a {
   color: #bed5ff;

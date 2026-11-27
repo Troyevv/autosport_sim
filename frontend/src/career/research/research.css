@@ -46,7 +46,7 @@
 .research-heading h3,
 .research-empty h3 {
   margin: 6px 0 0;
-  font-size: 1rem;
+  font-size: var(--type-card-sm);
   line-height: 1.45;
 }
 .research-card p,
@@ -66,7 +66,7 @@
   display: inline-flex;
   gap: 6px;
   align-items: center;
-  font-size: 0.85rem;
+  font-size: var(--type-body);
 }
 .research-card summary {
   cursor: pointer;
@@ -84,7 +84,7 @@
 .research-form label {
   display: grid;
   gap: 7px;
-  font-size: 0.85rem;
+  font-size: var(--type-body);
   min-width: 0;
 }
 .research-filters label {

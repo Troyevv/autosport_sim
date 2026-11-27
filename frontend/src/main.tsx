@@ -17,6 +17,7 @@ import './pitwall/styles.css'
 import './pitwall/menu.css'
 import './pitwall/v2/theme.css'
 import './pitwall/integration.css'
+import './pitwall/ergonomics.css'
 
 function Bootstrap() {
   const [boot, setBoot] = useState<{
@@ -35,7 +36,7 @@ function Bootstrap() {
 
   useEffect(() => {
     const controller = new AbortController()
-    const timeout = setTimeout(() => controller.abort(), 8000)
+    const timeout = setTimeout(() => controller.abort(), 60000)
     let active = true
     async function start() {
       try {
@@ -47,7 +48,7 @@ function Bootstrap() {
           const opts = { signal: controller.signal }
           const [world, saves, career, media] = await Promise.all([
             api<World>(cid ? 'world?career=' + encodeURIComponent(cid) : 'world', opts),
-            api<Save[]>('careers', opts),
+            cid ? Promise.resolve([]) : api<Save[]>('careers', opts),
             cid ? api<Career>('careers/' + encodeURIComponent(cid), opts) : null,
             api<Asset[]>('media', opts),
           ])

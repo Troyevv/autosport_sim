@@ -34,12 +34,12 @@
 .staff-file small,
 .staff-offer small {
   color: var(--muted);
-  font-size: 12px;
+  font-size: var(--type-label);
 }
 .staff-summary strong {
   display: block;
   color: var(--text);
-  font-size: 19px;
+  font-size: var(--type-card);
   font-variant-numeric: tabular-nums;
 }
 .staff-summary svg {
@@ -75,7 +75,7 @@
   display: flex;
   align-items: center;
   gap: 7px;
-  font-size: 13px;
+  font-size: var(--type-body);
 }
 .staff-check input {
   width: 16px;
@@ -91,7 +91,7 @@
 }
 .staff-listhead h2,
 .staff-file h3 {
-  font-size: 17px;
+  font-size: var(--type-card-sm);
   margin: 0;
 }
 .staff-grid {
@@ -141,11 +141,11 @@
 .staff-card-copy span,
 .staff-card-foot,
 .staff-file .muted {
-  font-size: 12px;
+  font-size: var(--type-label);
   color: var(--muted);
 }
 .staff-card-copy strong {
-  font-size: 16px;
+  font-size: var(--type-card-sm);
   line-height: 1.22;
 }
 .staff-score {
@@ -155,13 +155,13 @@
   padding-top: 3px;
 }
 .staff-score b {
-  font-size: 24px;
+  font-size: var(--type-section);
   font-weight: 650;
   line-height: 1.2;
   font-variant-numeric: tabular-nums;
 }
 .staff-score small {
-  font-size: 10px;
+  font-size: var(--type-secondary);
   color: var(--muted);
 }
 .staff-card-foot {
@@ -206,7 +206,7 @@
   margin: 0;
 }
 .staff-tag {
-  font-size: 12px;
+  font-size: var(--type-label);
   color: #b8d2c7;
   display: inline-block;
   border: 1px solid #3b544a;
@@ -226,7 +226,7 @@
   display: grid;
   grid-template-columns: 1fr auto;
   align-items: center;
-  font-size: 13px;
+  font-size: var(--type-body);
   gap: 5px;
 }
 .staff-skills .progress-track {
@@ -247,7 +247,7 @@
 .staff-traits span,
 .staff-timeline span,
 .staff-offer p {
-  font-size: 13px;
+  font-size: var(--type-body);
   color: #bcc2cb;
 }
 .staff-disciplines > div {
@@ -255,7 +255,7 @@
   gap: 3px;
 }
 .staff-disciplines span {
-  font-size: 12px;
+  font-size: var(--type-label);
   color: var(--muted);
 }
 .staff-form,
@@ -277,7 +277,7 @@
 .staff-label,
 .staff-controls label {
   color: #bcc2cb;
-  font-size: 13px;
+  font-size: var(--type-body);
 }
 .staff-form > .btn {
   justify-self: end;
@@ -333,11 +333,11 @@
     display: none;
   }
   .staff-summary strong {
-    font-size: 14px;
+    font-size: var(--type-body);
   }
   .staff-summary span,
   .staff-disciplines small {
-    font-size: 11px;
+    font-size: var(--type-secondary);
   }
   .staff-filters {
     display: grid;
@@ -360,7 +360,7 @@
   .staff-desk .tab,
   .staff-file .tab {
     padding: 8px 7px;
-    font-size: 12px;
+    font-size: var(--type-label);
   }
   .staff-identity {
     gap: 9px;
@@ -371,7 +371,7 @@
     height: 82px;
   }
   .staff-identity h3 {
-    font-size: 14px;
+    font-size: var(--type-body);
   }
   .staff-skills,
   .staff-traits {
@@ -383,7 +383,7 @@
   .staff-vs > div {
     flex-direction: column;
     text-align: center;
-    font-size: 12px;
+    font-size: var(--type-label);
   }
 }
 
@@ -403,7 +403,7 @@
 .staff-money {
   grid-column: 1/-1;
   grid-template-columns: 1fr 1fr;
-  font-size: 12px;
+  font-size: var(--type-label);
   color: var(--muted);
   padding: 9px 0;
 }
@@ -441,7 +441,7 @@
   width: 100%;
 }
 .path-panel h3 {
-  font-size: 15px;
+  font-size: var(--type-body-lg);
   margin: 0;
 }
 @media (max-width: 650px) {
@@ -452,7 +452,7 @@
     width: 100%;
   }
   .staff-money {
-    font-size: 12px;
+    font-size: var(--type-label);
   }
 }
 
@@ -478,12 +478,12 @@
 .staff-connection span,
 .staff-handling small,
 .staff-duo span {
-  font-size: 12px;
+  font-size: var(--type-label);
   color: var(--muted);
 }
 .staff-connection summary {
   cursor: pointer;
-  font-size: 12px;
+  font-size: var(--type-label);
 }
 .staff-handling label,
 .path-panel > label {
@@ -523,12 +523,12 @@
 .prep-options {display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,235px),1fr));gap:12px;margin:18px 0 25px}
 .prep-options article {display:flex;flex-direction:column;align-items:flex-start;gap:9px;padding:18px;background:var(--surface);border:1px solid var(--border);border-top:3px solid var(--accent,#b7362b);border-radius:6px}
 .prep-options h3,.work-events p {margin:0}
-.prep-options small,.work-events time,.work-events small {color:var(--muted);font-size:.8rem}
-.prep-metrics {display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:.82rem;margin:auto 0 6px}
+.prep-options small,.work-events time,.work-events small {color:var(--muted);font-size:var(--type-body)}
+.prep-metrics {display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:var(--type-body);margin:auto 0 6px}
 .prep-metrics span {display:inline-flex;align-items:center;gap:3px}
 .work-skills {display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 16px}
 .work-skills div {display:grid;gap:3px;border:1px solid var(--border);padding:8px 12px;border-radius:5px}
-.work-skills span,.work-events p {font-size:.83rem}
+.work-skills span,.work-events p {font-size:var(--type-body)}
 .work-events {padding:0;list-style:none}
 .work-events li {display:grid;grid-template-columns:100px minmax(0,1fr);gap:10px;border-top:1px solid var(--border);padding:12px 0}
 .work-events small {display:block;margin:4px 0;overflow-wrap:anywhere}

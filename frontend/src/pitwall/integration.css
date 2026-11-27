@@ -10,7 +10,7 @@
   color: var(--text);
   background: var(--bg);
   font:
-    14px/1.55 Manrope,
+    var(--type-body)/1.55 Manrope,
     Arial,
     sans-serif;
 }
@@ -53,7 +53,7 @@
   color: var(--text);
 }
 .native-screen h1 {
-  font-size: clamp(34px, 4vw, 52px);
+  font-size: var(--type-page-lg);
 }
 .native-screen .btn-primary,
 .pitwall + .native-dialog .btn-primary {
@@ -222,10 +222,10 @@
     content: attr(data-label);
     display: block;
     color: var(--muted);
-    font-size: 12px;
+    font-size: var(--type-label);
   }
   .native-screen .research-stats strong {
-    font-size: clamp(16px, 4.4vw, 22px);
+    font-size: var(--type-subhead);
     overflow-wrap: normal;
   }
   .pitwall .sidebar-footer {
@@ -268,7 +268,7 @@
 }
 .engineering-module .eng-heading h1 {
   font-family: Race, 'Arial Narrow', sans-serif;
-  font-size: clamp(29px, 3vw, 42px);
+  font-size: var(--type-page-lg);
 }
 .engineering-module .eng-heading-action {
   display: flex;
@@ -303,7 +303,7 @@
   .pitwall .native-dialog form>button[type=submit]:last-child{position:sticky;bottom:0;z-index:1;background:var(--accent);color:var(--accent-ink,#111);box-shadow:0 0 0 3px var(--panel,#fff)}
 }
 .pitwall .rights-coverage{display:flex;gap:16px;align-items:center;flex-wrap:wrap;padding:22px 26px;background:var(--panel,#262626);border:1px solid #444}
-.pitwall .rights-coverage strong{font-size:32px}.pitwall .rights-coverage small,.pitwall .rights-coverage span{font-size:13px}
+.pitwall .rights-coverage strong{font-size:var(--type-page)}.pitwall .rights-coverage small,.pitwall .rights-coverage span{font-size:var(--type-body)}
 .pitwall .rights-coverage progress,.pitwall .limit-hero progress{accent-color:var(--org-accent);min-width:120px}
 .pitwall .finance-desk .brand-tile{height:auto;text-align:start;color:inherit;cursor:pointer}
 .pitwall .people-module.program-workspace{display:grid;gap:18px;--p-team:var(--org-accent)}

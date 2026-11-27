@@ -14,7 +14,7 @@
     display: flex;
     gap: 10px;
     align-items: flex-start;
-    font-size: 12px;
+    font-size: var(--type-label);
     line-height: 1.65;
     margin-top: 16px;
     padding: 14px 16px;
@@ -57,7 +57,7 @@
     position: relative;
   }
   .cash-hero h2 {
-    font-size: clamp(38px, 3.7vw, 65px);
+    font-size: var(--type-page-lg);
     letter-spacing: -2.5px;
     line-height: 1.1;
     color: var(--org-accent);
@@ -66,7 +66,7 @@
   .cash-precise {
     display: block;
     color: #9db4bf;
-    font-size: 12px;
+    font-size: var(--type-label);
     margin-top: 9px;
   }
   .cash-rule {
@@ -76,12 +76,12 @@
     margin: 26px 0 12px;
   }
   .cash-hero p {
-    font-size: 12px;
+    font-size: var(--type-label);
     line-height: 1.7;
     margin-top: 25px;
   }
   .cash-hero .detail-list {
-    font-size: 12px;
+    font-size: var(--type-label);
   }
   .cash-hero .detail-list > div {
     padding: 13px 0;
@@ -100,17 +100,17 @@
     gap: 18px;
   }
   .chart-heading .eyebrow {
-    font-size: 8px;
+    font-size: var(--type-caption);
     color: #94aab7;
     margin-bottom: 8px;
   }
   .chart-heading h3 {
-    font-size: 17px;
+    font-size: var(--type-card-sm);
   }
   .chart-heading select {
     width: 180px;
     min-height: 35px;
-    font-size: 11px;
+    font-size: var(--type-secondary);
     padding: 6px 8px;
     background: #2e2e2e;
     border-color: #585858;
@@ -122,12 +122,12 @@
     margin: 28px 0 8px;
   }
   .chart-focus strong {
-    font-size: 30px;
+    font-size: var(--type-page);
     font-weight: 500;
     letter-spacing: -1px;
   }
   .chart-focus small {
-    font-size: 10px;
+    font-size: var(--type-secondary);
   }
   .cash-chart svg {
     width: 100%;
@@ -150,7 +150,7 @@
     background: none;
     padding: 10px 0;
     color: #8ba3b0;
-    font-size: 11px;
+    font-size: var(--type-secondary);
     border-bottom: 2px solid transparent;
     min-height: 37px;
   }
@@ -185,23 +185,23 @@
     flex: 1;
   }
   .obligation-line strong {
-    font-size: 12px;
+    font-size: var(--type-label);
     display: block;
     line-height: 1.4;
     overflow-wrap: anywhere;
   }
   .obligation-line small {
-    font-size: 10px;
+    font-size: var(--type-secondary);
     display: block;
     margin-top: 6px;
   }
   .obligation-line > b {
     font-weight: 600;
-    font-size: 12px;
+    font-size: var(--type-label);
     white-space: nowrap;
   }
   .day-stamp {
-    font-size: 21px;
+    font-size: var(--type-card-lg);
     line-height: 1;
     color: #d7e3e5;
     width: 36px;
@@ -209,7 +209,7 @@
     text-align: center;
   }
   .day-stamp small {
-    font-size: 8px !important;
+    font-size: var(--type-caption) !important;
     text-transform: uppercase;
   }
   .finance-officer {
@@ -219,20 +219,20 @@
     align-items: center;
   }
   .finance-officer h3 {
-    font-size: 18px;
+    font-size: var(--type-card);
   }
   .finance-officer p {
-    font-size: 12px;
+    font-size: var(--type-label);
     margin-top: 12px;
   }
   .finance-officer .eyebrow {
-    font-size: 8px;
+    font-size: var(--type-caption);
   }
   .local-label {
     display: block;
     color: #93a8b3;
     font-weight: 400;
-    font-size: 10px;
+    font-size: var(--type-secondary);
     margin-top: 5px;
     overflow-wrap: anywhere;
   }
@@ -276,7 +276,7 @@
     width: 100%;
   }
   .report-cover h2 {
-    font-size: 30px;
+    font-size: var(--type-page);
     margin: 16px 0;
   }
   .report-cover > .detail-list {
@@ -289,12 +289,12 @@
     gap: 35px;
   }
   .budget-heading strong {
-    font-size: 46px;
+    font-size: var(--type-page-lg);
     font-weight: 600;
     letter-spacing: -2px;
   }
   .budget-heading p {
-    font-size: 13px;
+    font-size: var(--type-body);
     margin-top: 4px;
   }
   .budget-compare {
@@ -305,14 +305,14 @@
     gap: 7px;
   }
   .budget-compare small {
-    font-size: 11px;
+    font-size: var(--type-secondary);
   }
   .budget-compare b {
-    font-size: 25px;
+    font-size: var(--type-section);
     letter-spacing: -0.5px;
   }
   .budget-compare span {
-    font-size: 11px;
+    font-size: var(--type-secondary);
     color: #8fa5b0;
     max-width: 260px;
   }
@@ -342,14 +342,14 @@
     padding: 16px 23px;
   }
   .allocation-head {
-    font-size: 10px;
+    font-size: var(--type-secondary);
     color: #94aab5;
     background: #242424;
   }
   .allocation-row {
     border-top: 1px solid #4a4a4a;
     min-height: 84px;
-    font-size: 12px;
+    font-size: var(--type-label);
   }
   .allocation-row label {
     display: flex;
@@ -365,11 +365,11 @@
     flex: none;
   }
   .allocation-row input {
-    font-size: 13px;
+    font-size: var(--type-body);
     padding: 9px;
   }
   .allocation-row > strong {
-    font-size: 13px;
+    font-size: var(--type-body);
     font-weight: 650;
   }
   .budget-footer {
@@ -380,7 +380,7 @@
     padding: 15px 0;
   }
   .budget-footer p {
-    font-size: 12px;
+    font-size: var(--type-label);
     margin-right: auto;
     max-width: 450px;
   }
@@ -403,11 +403,11 @@
     margin: 10px 0 5px;
   }
   .request-line p {
-    font-size: 12px;
+    font-size: var(--type-label);
     margin-bottom: 9px;
   }
   .request-line > strong {
-    font-size: 21px;
+    font-size: var(--type-card-lg);
     white-space: nowrap;
   }
   .request-marker {
@@ -426,7 +426,7 @@
     border-radius: 7px;
   }
   .limit-hero > h2 {
-    font-size: 49px;
+    font-size: var(--type-page-lg);
     letter-spacing: -2px;
   }
   .limit-hero > p {
@@ -448,12 +448,12 @@
     border-bottom: 1px solid #4c4c4c;
   }
   .atr-banner > strong {
-    font-size: 55px;
+    font-size: var(--type-display);
     letter-spacing: -3px;
     color: var(--org-accent);
   }
   .atr-banner p {
-    font-size: 13px;
+    font-size: var(--type-body);
   }
   .capacity-list {
     display: flex;
@@ -466,7 +466,7 @@
     grid-template-columns: 1.3fr 1fr 100px;
     gap: 22px;
     align-items: center;
-    font-size: 12px;
+    font-size: var(--type-label);
   }
   .capacity-row strong {
     text-align: right;
@@ -478,10 +478,10 @@
     border-bottom: 1px solid #4c4c4c;
   }
   .capacity-row.wide h3 {
-    font-size: 14px;
+    font-size: var(--type-body);
   }
   .capacity-row.wide small {
-    font-size: 10px;
+    font-size: var(--type-secondary);
     display: block;
     margin-top: 7px;
   }
@@ -499,13 +499,13 @@
     border-radius: 5px;
   }
   .facility-hero h2 {
-    font-size: 33px;
+    font-size: var(--type-page);
     letter-spacing: -1px;
   }
   .facility-hero p {
     margin: 14px 0 25px;
     max-width: 600px;
-    font-size: 13px;
+    font-size: var(--type-body);
   }
   .facility-readout {
     display: grid;
@@ -515,12 +515,12 @@
     flex: none;
   }
   .facility-readout > strong {
-    font-size: 40px;
+    font-size: var(--type-display);
     text-align: right;
     font-weight: 500;
   }
   .facility-readout > span {
-    font-size: 11px;
+    font-size: var(--type-secondary);
     color: #91a8b5;
     max-width: 150px;
   }
@@ -552,7 +552,7 @@
   }
   .facility-type > span {
     position: absolute;
-    font-size: 11px;
+    font-size: var(--type-secondary);
     color: #e9f0e3;
     background: #282828;
     bottom: -8px;
@@ -562,20 +562,20 @@
     gap: 4px;
   }
   .facility-type small {
-    font-size: 7px;
+    font-size: var(--type-caption);
     color: #a6b7bf;
     line-height: 18px;
   }
   .facility-name h3 {
-    font-size: 15px;
+    font-size: var(--type-body-lg);
   }
   .facility-name p {
-    font-size: 10px;
+    font-size: var(--type-secondary);
     margin: 6px 0;
   }
   .facility-name > small {
     display: block;
-    font-size: 10px;
+    font-size: var(--type-secondary);
     margin-top: 7px;
   }
   .facility-capacity,
@@ -587,21 +587,21 @@
   }
   .facility-capacity > span,
   .facility-condition > span {
-    font-size: 9px;
+    font-size: var(--type-caption);
     color: #9bb1bd;
   }
   .facility-capacity > strong {
-    font-size: 20px;
+    font-size: var(--type-card-lg);
     font-weight: 500;
   }
   .facility-condition > strong {
-    font-size: 16px;
+    font-size: var(--type-card-sm);
   }
   .facility-condition > small {
-    font-size: 10px;
+    font-size: var(--type-secondary);
   }
   .facility-actions .button {
-    font-size: 11px;
+    font-size: var(--type-secondary);
   }
   .build-quote {
     display: flex;
@@ -616,10 +616,10 @@
     flex: none;
   }
   .build-quote h2 {
-    font-size: 35px;
+    font-size: var(--type-page-lg);
   }
   .build-quote p {
-    font-size: 12px;
+    font-size: var(--type-label);
     margin-top: 7px;
   }
   .capital-stage {
@@ -639,7 +639,7 @@
     border-right: 1px solid #555555;
   }
   .capital-stage h2 {
-    font-size: 49px;
+    font-size: var(--type-page-lg);
     letter-spacing: -2.5px;
     margin-top: 23px;
     overflow-wrap: anywhere;
@@ -648,7 +648,7 @@
     margin: 12px 0 28px;
   }
   .capital-stage .detail-list {
-    font-size: 12px;
+    font-size: var(--type-label);
   }
   .ownership-band {
     height: 26px;
@@ -664,7 +664,7 @@
     gap: 12px;
     align-items: center;
     margin-bottom: 18px;
-    font-size: 12px;
+    font-size: var(--type-label);
   }
   .share-row i {
     width: 8px;
@@ -677,7 +677,7 @@
     overflow-wrap: anywhere;
   }
   .share-row strong {
-    font-size: 17px;
+    font-size: var(--type-card-sm);
     font-weight: 600;
   }
   .owner-wallet {
@@ -691,14 +691,14 @@
     align-items: center;
   }
   .owner-wallet small {
-    font-size: 11px;
+    font-size: var(--type-secondary);
   }
   .owner-wallet strong {
-    font-size: 21px;
+    font-size: var(--type-card-lg);
     font-weight: 500;
   }
   .ownership-panel .button {
-    font-size: 11px;
+    font-size: var(--type-secondary);
     padding: 10px 13px;
   }
   .loan-list {
@@ -719,7 +719,7 @@
     margin-top: 12px;
   }
   .loan-row p {
-    font-size: 12px;
+    font-size: var(--type-label);
     margin-top: 10px;
   }
   .loan-number {
@@ -733,11 +733,11 @@
     gap: 9px;
   }
   .loan-number strong {
-    font-size: 24px;
+    font-size: var(--type-section);
     color: var(--org-accent);
   }
   .loan-number small {
-    font-size: 9px;
+    font-size: var(--type-caption);
   }
   .loan-row .heading-actions {
     max-width: 180px;
@@ -763,11 +763,11 @@
   }
   .program-list small {
     display: block;
-    font-size: 10px;
+    font-size: var(--type-secondary);
     margin-top: 7px;
   }
   .program-abbr {
-    font-size: 22px;
+    font-size: var(--type-subhead);
     font-weight: 800;
     letter-spacing: -1px;
     color: #b6cc98;
@@ -782,11 +782,11 @@
     border-left: 3px solid var(--org-accent);
   }
   .commercial-banner h2 {
-    font-size: 30px;
+    font-size: var(--type-page);
     max-width: 680px;
   }
   .commercial-banner p {
-    font-size: 12px;
+    font-size: var(--type-label);
     max-width: 680px;
     margin-top: 16px;
   }
@@ -797,12 +797,12 @@
     align-items: center;
   }
   .commercial-banner strong {
-    font-size: 38px;
+    font-size: var(--type-page-lg);
     font-weight: 500;
     text-align: right;
   }
   .commercial-banner span:not(.eyebrow) {
-    font-size: 10px;
+    font-size: var(--type-secondary);
     color: #a0b6c1;
   }
   .brand-grid {
@@ -829,23 +829,23 @@
     justify-content: center;
   }
   .brand-wordmark h3 {
-    font-size: 24px;
+    font-size: var(--type-section);
     line-height: 1.15;
     font-weight: 800;
     letter-spacing: -0.9px;
     overflow-wrap: anywhere;
   }
   .brand-wordmark small {
-    font-size: 9px;
+    font-size: var(--type-caption);
     margin-top: 7px;
     text-transform: uppercase;
     letter-spacing: 0.08em;
   }
   .brand-tile > p {
-    font-size: 11px;
+    font-size: var(--type-secondary);
   }
   .brand-tile > .detail-list {
-    font-size: 11px;
+    font-size: var(--type-secondary);
     margin: 2px 0 10px;
   }
   .brand-tile .detail-list > div {
@@ -855,7 +855,7 @@
     margin-top: auto;
   }
   .brand-tile .button {
-    font-size: 11px;
+    font-size: var(--type-secondary);
     padding: 9px 10px;
     min-height: 37px;
   }
@@ -865,7 +865,7 @@
     gap: 5px;
   }
   .series-chips span {
-    font-size: 9px;
+    font-size: var(--type-caption);
     padding: 3px 6px;
     background: #444444;
     color: #c2d4dd;
@@ -885,17 +885,17 @@
     min-width: 0;
   }
   .offer-row h3 {
-    font-size: 17px;
+    font-size: var(--type-card-sm);
   }
   .offer-row p {
-    font-size: 11px;
+    font-size: var(--type-secondary);
     margin: 7px 0;
   }
   .offer-row small {
-    font-size: 10px;
+    font-size: var(--type-secondary);
   }
   .offer-row > strong {
-    font-size: 20px;
+    font-size: var(--type-card-lg);
     font-weight: 600;
     white-space: nowrap;
   }
@@ -908,7 +908,7 @@
     max-width: 190px;
   }
   .offer-row .button {
-    font-size: 11px;
+    font-size: var(--type-secondary);
   }
   .offer-status {
     display: flex;
@@ -941,14 +941,14 @@
     border-radius: 2px;
   }
   .contract-row h3 {
-    font-size: 21px;
+    font-size: var(--type-card-lg);
     margin: 5px 0;
   }
   .contract-row small {
-    font-size: 10px;
+    font-size: var(--type-secondary);
   }
   .contract-row .eyebrow {
-    font-size: 8px;
+    font-size: var(--type-caption);
     margin-bottom: 0;
     line-height: 1.6;
   }
@@ -958,7 +958,7 @@
     gap: 6px;
   }
   .contract-sum strong {
-    font-size: 20px;
+    font-size: var(--type-card-lg);
     font-weight: 500;
     white-space: nowrap;
   }
@@ -975,17 +975,17 @@
     max-width: 620px;
   }
   .contract-masthead p {
-    font-size: 12px;
+    font-size: var(--type-label);
     margin-top: 8px;
   }
   .contract-masthead > strong {
-    font-size: 27px;
+    font-size: var(--type-section-lg);
     white-space: nowrap;
     text-align: right;
   }
   .contract-masthead > strong > small {
     display: block;
-    font-size: 10px;
+    font-size: var(--type-secondary);
     font-weight: 400;
     margin-top: 7px;
   }
@@ -1002,7 +1002,7 @@
     grid-template-columns: 125px 1fr 45px 145px;
     gap: 20px;
     align-items: center;
-    font-size: 12px;
+    font-size: var(--type-label);
   }
   .rights-mini-track {
     height: 7px;
@@ -1019,7 +1019,7 @@
     background: var(--org-accent);
   }
   .rights-summary small {
-    font-size: 10px;
+    font-size: var(--type-secondary);
   }
   .check-row {
     display: flex;
@@ -1030,7 +1030,7 @@
     flex-direction: row;
     align-items: center;
     gap: 10px;
-    font-size: 12px;
+    font-size: var(--type-label);
   }
   .check-label input {
     flex: none;
@@ -1052,7 +1052,7 @@
     padding-top: 18px;
   }
   .package-total strong {
-    font-size: 25px;
+    font-size: var(--type-section);
   }
   .rights-placement-preview {
     display: grid;
@@ -1080,7 +1080,7 @@
     display: grid;
     place-items: center;
     font-style: normal;
-    font-size: 11px;
+    font-size: var(--type-secondary);
     overflow: hidden;
   }
   .rights-placement-preview small:last-child {
@@ -1103,15 +1103,15 @@
     max-width: 500px;
   }
   .rights-status strong {
-    font-size: 43px;
+    font-size: var(--type-display);
     letter-spacing: -2px;
   }
   .rights-status strong span {
-    font-size: 22px;
+    font-size: var(--type-subhead);
     color: #95aeb8;
   }
   .rights-status p {
-    font-size: 11px;
+    font-size: var(--type-secondary);
     margin-top: 10px;
   }
   .right-row {
@@ -1137,28 +1137,28 @@
     place-items: center;
   }
   .right-party h3 {
-    font-size: 17px;
+    font-size: var(--type-card-sm);
   }
   .right-party p {
-    font-size: 11px;
+    font-size: var(--type-secondary);
     margin: 6px 0;
   }
   .right-party small {
-    font-size: 10px;
+    font-size: var(--type-secondary);
   }
   .right-zone > span {
-    font-size: 11px;
+    font-size: var(--type-secondary);
     color: #c5d4db;
     display: block;
     margin-bottom: 10px;
   }
   .right-zone > small {
-    font-size: 9px;
+    font-size: var(--type-caption);
     display: block;
     margin-top: 10px;
   }
   .right-row .button {
-    font-size: 11px;
+    font-size: var(--type-secondary);
   }
   .signage-preview {
     padding: 24px;
@@ -1191,12 +1191,12 @@
     color: var(--org-accent);
     background: #4a4a4a;
     font-weight: 800;
-    font-size: clamp(9px, 1.2vw, 18px);
+    font-size: var(--type-card);
     overflow: hidden;
     border: 1px solid #92a6aa;
   }
   .signage-preview p {
-    font-size: 11px;
+    font-size: var(--type-secondary);
   }
   .offer-composer > .tabs {
     margin: 0;
@@ -1216,11 +1216,11 @@
     min-width: 0;
   }
   .merch-stage h2 {
-    font-size: 31px;
+    font-size: var(--type-page);
     max-width: 450px;
   }
   .merch-stage p {
-    font-size: 12px;
+    font-size: var(--type-label);
     max-width: 450px;
     margin: 17px 0 25px;
   }
@@ -1237,7 +1237,7 @@
     box-shadow: inset 0 0 90px #0005;
   }
   .merch-wordmark > span {
-    font-size: 35px;
+    font-size: var(--type-page-lg);
     font-weight: 800;
     letter-spacing: -1.2px;
     line-height: 1.18;
@@ -1245,7 +1245,7 @@
     overflow-wrap: anywhere;
   }
   .merch-wordmark > small {
-    font-size: 8px;
+    font-size: var(--type-caption);
     letter-spacing: 0.3em;
     margin-top: 22px;
     color: #b3c3c9;
@@ -1266,14 +1266,14 @@
     padding: 22px;
   }
   .region-row strong {
-    font-size: 23px;
+    font-size: var(--type-subhead);
     font-weight: 500;
   }
   .region-row > .meter {
     grid-column: 1/-1;
   }
   .region-row > small {
-    font-size: 9px;
+    font-size: var(--type-caption);
     grid-column: 1/-1;
   }
   .annual-flow {
@@ -1293,17 +1293,17 @@
     border-right: 0;
   }
   .annual-flow > button > span {
-    font-size: 39px;
+    font-size: var(--type-display);
     font-weight: 300;
     color: #8eabb8;
     letter-spacing: -2px;
   }
   .annual-flow h3 {
     margin: 18px 0 10px;
-    font-size: 17px;
+    font-size: var(--type-card-sm);
   }
   .annual-flow p {
-    font-size: 11px;
+    font-size: var(--type-secondary);
     margin-bottom: 22px;
     line-height: 1.6;
     min-height: 60px;
@@ -1321,7 +1321,7 @@
     gap: 16px;
   }
   .annual-status p {
-    font-size: 12px;
+    font-size: var(--type-label);
     max-width: 750px;
   }
   @media (min-width: 1700px) {
@@ -1341,7 +1341,7 @@
       grid-template-columns: 90px 1.5fr 1fr 1fr auto;
     }
     .commercial-banner h2 {
-      font-size: 36px;
+      font-size: var(--type-page-lg);
     }
   }
   @media (max-width: 1250px) {
@@ -1400,7 +1400,7 @@
       padding: 16px;
     }
     .allocation-row label {
-      font-size: 11px;
+      font-size: var(--type-secondary);
     }
     .annual-flow > button {
       padding: 15px;
@@ -1414,7 +1414,7 @@
       grid-template-columns: 1fr 1.1fr;
     }
     .cash-hero h2 {
-      font-size: 40px;
+      font-size: var(--type-page-lg);
     }
     .finance-toolbar > label {
       min-width: 220px;
@@ -1456,7 +1456,7 @@
     }
     .allocation-row label {
       grid-column: 1/3;
-      font-size: 13px;
+      font-size: var(--type-body);
     }
     .allocation-row input {
       grid-column: 3;
@@ -1467,21 +1467,21 @@
       display: flex;
       flex-direction: column;
       gap: 8px;
-      font-size: 12px;
+      font-size: var(--type-label);
     }
     .allocation-row > span:nth-child(3):before {
       content: 'Израсходовано';
-      font-size: 9px;
+      font-size: var(--type-caption);
       color: #93aab6;
     }
     .allocation-row > span:nth-child(4):before {
       content: 'Зарезервировано';
-      font-size: 9px;
+      font-size: var(--type-caption);
       color: #93aab6;
     }
     .allocation-row > strong:before {
       content: 'Свободно';
-      font-size: 9px;
+      font-size: var(--type-caption);
       color: #93aab6;
       font-weight: 400;
     }
@@ -1500,14 +1500,14 @@
       gap: 17px;
     }
     .request-line > strong {
-      font-size: 19px;
+      font-size: var(--type-card);
     }
     .request-line > .heading-actions {
       width: 100%;
       padding-left: 60px;
     }
     .capital-stage h2 {
-      font-size: 39px;
+      font-size: var(--type-page-lg);
     }
     .capital-stage > section {
       padding: 25px;
@@ -1537,7 +1537,7 @@
       grid-row: 1;
     }
     .contract-sum strong {
-      font-size: 18px;
+      font-size: var(--type-card);
     }
     .rights-status {
       flex-wrap: wrap;
@@ -1581,7 +1581,7 @@
       gap: 25px;
     }
     .merch-wordmark > span {
-      font-size: 26px;
+      font-size: var(--type-section);
     }
   }
   @media (max-width: 600px) {
@@ -1612,10 +1612,10 @@
       border-bottom: 1px solid #4b4b4b;
     }
     .cash-hero h2 {
-      font-size: 46px;
+      font-size: var(--type-page-lg);
     }
     .cash-hero > .detail-list {
-      font-size: 12px;
+      font-size: var(--type-label);
     }
     .cash-hero > p {
       margin-top: 17px;
@@ -1630,23 +1630,23 @@
     }
     .chart-heading select {
       max-width: 155px;
-      font-size: 10px;
+      font-size: var(--type-secondary);
     }
     .chart-heading h3 {
-      font-size: 14px;
+      font-size: var(--type-body);
     }
     .chart-heading .eyebrow {
-      font-size: 7px;
+      font-size: var(--type-caption);
       line-height: 1.5;
     }
     .chart-focus strong {
-      font-size: 27px;
+      font-size: var(--type-section-lg);
     }
     .chart-months button {
-      font-size: 10px;
+      font-size: var(--type-secondary);
     }
     :scope .stat strong {
-      font-size: 22px;
+      font-size: var(--type-subhead);
       overflow-wrap: anywhere;
     }
     .finance-officer {
@@ -1657,23 +1657,23 @@
       height: 88px !important;
     }
     .finance-officer h3 {
-      font-size: 16px;
+      font-size: var(--type-card-sm);
     }
     .obligation-line {
       gap: 11px;
     }
     .obligation-line > b {
-      font-size: 11px;
+      font-size: var(--type-secondary);
     }
     .obligation-line strong {
-      font-size: 11px;
+      font-size: var(--type-secondary);
     }
     .obligation-line small {
-      font-size: 9px;
+      font-size: var(--type-caption);
     }
     .day-stamp {
       width: 27px;
-      font-size: 18px;
+      font-size: var(--type-card);
     }
     .result-bars > div {
       grid-template-columns: 1fr auto;
@@ -1684,13 +1684,13 @@
       grid-row: 2;
     }
     .result-bars > div > strong {
-      font-size: 13px;
+      font-size: var(--type-body);
     }
     .report-cover {
       padding: 23px;
     }
     .report-cover h2 {
-      font-size: 25px;
+      font-size: var(--type-section);
     }
     .budget-heading {
       flex-direction: column;
@@ -1698,7 +1698,7 @@
       gap: 23px;
     }
     .budget-heading strong {
-      font-size: 41px;
+      font-size: var(--type-page-lg);
     }
     .budget-compare {
       align-items: start;
@@ -1716,24 +1716,24 @@
       gap: 16px 8px;
     }
     .allocation-row input {
-      font-size: 12px;
+      font-size: var(--type-label);
       padding: 8px;
       min-width: 0;
     }
     .allocation-row label {
-      font-size: 12px;
+      font-size: var(--type-label);
       gap: 3px;
     }
     .allocation-row > span,
     .allocation-row > strong {
-      font-size: 11px;
+      font-size: var(--type-secondary);
       overflow-wrap: anywhere;
     }
     .allocation-row label i {
       margin-right: 5px;
     }
     .budget-footer .button {
-      font-size: 11px;
+      font-size: var(--type-secondary);
     }
     .request-line {
       align-items: start;
@@ -1754,13 +1754,13 @@
       padding: 24px;
     }
     .limit-hero > h2 {
-      font-size: 39px;
+      font-size: var(--type-page-lg);
     }
     .limit-hero .stat {
       padding: 14px;
     }
     .limit-hero .stat strong {
-      font-size: 20px;
+      font-size: var(--type-card-lg);
     }
     .capacity-row {
       grid-template-columns: 1fr 85px;
@@ -1780,7 +1780,7 @@
     .capacity-row.wide > strong {
       grid-row: auto;
       grid-column: auto;
-      font-size: 13px;
+      font-size: var(--type-body);
     }
     .facility-hero {
       padding: 24px;
@@ -1789,10 +1789,10 @@
       align-items: stretch;
     }
     .facility-hero h2 {
-      font-size: 28px;
+      font-size: var(--type-section-lg);
     }
     .facility-hero p {
-      font-size: 12px;
+      font-size: var(--type-label);
     }
     .facility-readout {
       grid-template-columns: auto 1fr auto 1fr;
@@ -1801,10 +1801,10 @@
       gap: 10px;
     }
     .facility-readout strong {
-      font-size: 28px;
+      font-size: var(--type-section-lg);
     }
     .facility-readout span {
-      font-size: 8px;
+      font-size: var(--type-caption);
     }
     .facility-row {
       padding: 20px 16px;
@@ -1824,7 +1824,7 @@
       grid-column: 2/-1;
     }
     .facility-name h3 {
-      font-size: 15px;
+      font-size: var(--type-body-lg);
     }
     .facility-capacity {
       grid-column: 1/3;
@@ -1850,7 +1850,7 @@
       max-width: 130px;
     }
     .facility-condition small {
-      font-size: 9px;
+      font-size: var(--type-caption);
     }
     .build-quote {
       padding: 22px;
@@ -1860,7 +1860,7 @@
       width: 35px;
     }
     .build-quote h2 {
-      font-size: 29px;
+      font-size: var(--type-section-lg);
     }
     .capital-stage {
       grid-template-columns: 1fr;
@@ -1870,7 +1870,7 @@
       border-bottom: 1px solid #555555;
     }
     .capital-stage h2 {
-      font-size: 42px;
+      font-size: var(--type-page-lg);
     }
     .capital-stage section > p {
       margin-bottom: 20px;
@@ -1879,7 +1879,7 @@
       margin: 23px 0;
     }
     .owner-wallet strong {
-      font-size: 19px;
+      font-size: var(--type-card);
     }
     .loan-row {
       gap: 18px;
@@ -1889,7 +1889,7 @@
       width: 100px;
     }
     .loan-number strong {
-      font-size: 18px;
+      font-size: var(--type-card);
     }
     .loan-number svg {
       width: 25px;
@@ -1898,18 +1898,18 @@
       min-width: 140px;
     }
     .loan-row h3 {
-      font-size: 14px;
+      font-size: var(--type-body);
       line-height: 1.5;
     }
     .loan-row p {
-      font-size: 11px;
+      font-size: var(--type-secondary);
     }
     .loan-row .heading-actions {
       padding-left: 0;
     }
     .loan-row .button {
       flex: 1;
-      font-size: 11px;
+      font-size: var(--type-secondary);
     }
     .program-list > button {
       gap: 13px;
@@ -1917,10 +1917,10 @@
     }
     .program-abbr {
       min-width: 43px;
-      font-size: 18px;
+      font-size: var(--type-card);
     }
     .program-list > button > span:nth-child(2) {
-      font-size: 12px;
+      font-size: var(--type-label);
       min-width: 150px;
     }
     .program-list .badge {
@@ -1932,7 +1932,7 @@
       padding: 26px;
     }
     .commercial-banner h2 {
-      font-size: 27px;
+      font-size: var(--type-section-lg);
     }
     .commercial-banner > div:last-child {
       grid-template-columns: 55px 1fr 55px 1fr;
@@ -1941,10 +1941,10 @@
       gap: 12px;
     }
     .commercial-banner strong {
-      font-size: 30px;
+      font-size: var(--type-page);
     }
     .commercial-banner span:not(.eyebrow) {
-      font-size: 9px;
+      font-size: var(--type-caption);
     }
     .brand-grid {
       grid-template-columns: 1fr;
@@ -1958,7 +1958,7 @@
       min-height: 60px;
     }
     .brand-wordmark h3 {
-      font-size: 25px;
+      font-size: var(--type-section);
     }
     .brand-tile .heading-actions > .button {
       flex: 1;
@@ -1980,7 +1980,7 @@
       min-width: 0;
     }
     .offer-row > strong {
-      font-size: 18px;
+      font-size: var(--type-card);
     }
     .offer-row > .heading-actions {
       grid-column: 1/-1;
@@ -2001,7 +2001,7 @@
       min-height: 40px;
     }
     .contract-row h3 {
-      font-size: 20px;
+      font-size: var(--type-card-lg);
     }
     .contract-row > .badge {
       grid-column: 2;
@@ -2016,7 +2016,7 @@
       grid-row: 2;
     }
     .contract-sum strong {
-      font-size: 20px;
+      font-size: var(--type-card-lg);
     }
     .contract-masthead {
       flex-direction: column;
@@ -2025,10 +2025,10 @@
     }
     .contract-masthead > strong {
       text-align: left;
-      font-size: 28px;
+      font-size: var(--type-section-lg);
     }
     .contract-masthead h2 {
-      font-size: 24px;
+      font-size: var(--type-section);
     }
     .rights-summary > div {
       grid-template-columns: 100px 1fr 35px;
@@ -2048,16 +2048,16 @@
       gap: 15px;
     }
     .package-total span {
-      font-size: 11px;
+      font-size: var(--type-secondary);
     }
     .package-total strong {
-      font-size: 22px;
+      font-size: var(--type-subhead);
     }
     .offer-composer .tabs {
       gap: 15px;
     }
     .offer-composer .tabs button {
-      font-size: 11px;
+      font-size: var(--type-secondary);
     }
     .rights-status {
       padding: 23px;
@@ -2076,7 +2076,7 @@
       padding: 20px 17px;
     }
     .right-party h3 {
-      font-size: 17px;
+      font-size: var(--type-card-sm);
     }
     .right-zone {
       grid-column: 2;
@@ -2091,13 +2091,13 @@
       justify-self: stretch;
     }
     .right-zone > span {
-      font-size: 10px;
+      font-size: var(--type-secondary);
     }
     .signage-preview {
       padding: 18px;
     }
     .signage-preview p {
-      font-size: 10px;
+      font-size: var(--type-secondary);
     }
     .signage-track {
       height: 100px;
@@ -2105,7 +2105,7 @@
     .signage-mark {
       height: 50px;
       top: 25px;
-      font-size: 10px;
+      font-size: var(--type-secondary);
     }
     .merch-stage {
       grid-template-columns: 1fr;
@@ -2113,13 +2113,13 @@
       gap: 25px;
     }
     .merch-stage h2 {
-      font-size: 28px;
+      font-size: var(--type-section-lg);
     }
     .merch-wordmark {
       min-height: 160px;
     }
     .merch-wordmark > span {
-      font-size: 30px;
+      font-size: var(--type-page);
     }
     .region-grid {
       grid-template-columns: 1fr 1fr;
@@ -2128,10 +2128,10 @@
     .region-row {
       padding: 16px;
       gap: 14px;
-      font-size: 12px;
+      font-size: var(--type-label);
     }
     .region-row strong {
-      font-size: 22px;
+      font-size: var(--type-subhead);
     }
     .annual-flow {
       grid-template-columns: 1fr;
@@ -2153,7 +2153,7 @@
       grid-column: 2;
       min-height: 0;
       margin: 0;
-      font-size: 11px;
+      font-size: var(--type-secondary);
     }
     .annual-flow svg {
       grid-row: 1;
@@ -2165,14 +2165,14 @@
       margin-top: 15px;
     }
     :scope .data-table td {
-      font-size: 12px;
+      font-size: var(--type-label);
     }
     :scope .data-table td .link-button {
-      font-size: 12px;
+      font-size: var(--type-label);
       max-width: 240px;
     }
     :scope .data-table .button {
-      font-size: 11px;
+      font-size: var(--type-secondary);
     }
   }
   @media (max-width: 900px) and (max-height: 500px) and (orientation: landscape) {
@@ -2183,7 +2183,7 @@
       padding: 23px;
     }
     .cash-hero h2 {
-      font-size: 38px;
+      font-size: var(--type-page-lg);
     }
     .cash-chart {
       padding: 23px;
@@ -2211,7 +2211,7 @@
       padding: 25px;
     }
     .commercial-banner h2 {
-      font-size: 25px;
+      font-size: var(--type-section);
     }
     .offer-composer > .tabs {
       position: sticky;
@@ -2279,10 +2279,10 @@
     max-width: 580px;
   }
   .finance-toolbar > .heading-actions > .button {
-    font-size: 12px;
+    font-size: var(--type-label);
   }
   .program-trade-actions .button {
-    font-size: 11px;
+    font-size: var(--type-secondary);
   }
   @media (max-width: 600px) {
     :scope .program-record {
@@ -2315,7 +2315,7 @@
       padding: 18px;
     }
     .acceptance-list .check-label {
-      font-size: 11px;
+      font-size: var(--type-secondary);
     }
   }
 
@@ -2339,7 +2339,7 @@
       padding: 12px;
     }
     .right-offer-row > header h3 {
-      font-size: 15px;
+      font-size: var(--type-body-lg);
     }
   }
 
@@ -2350,16 +2350,16 @@
       gap: 12px;
     }
     :scope .page-heading .eyebrow {
-      font-size: 8px;
+      font-size: var(--type-caption);
       margin-bottom: 3px;
       line-height: 1.3;
     }
     :scope .page-heading h1 {
-      font-size: 25px;
+      font-size: var(--type-section-lg);
       line-height: 1.15;
     }
     :scope .page-heading p {
-      font-size: 11px;
+      font-size: var(--type-secondary);
       line-height: 1.4;
       margin-top: 5px;
     }
@@ -2370,7 +2370,7 @@
     :scope > .tabs button {
       padding: 10px 0;
       min-height: 40px;
-      font-size: 12px;
+      font-size: var(--type-label);
     }
     :scope .business-stack {
       gap: 16px;
@@ -2387,7 +2387,7 @@
     :scope .commercial-banner h2,
     :scope .facility-hero h2,
     :scope .merch-stage h2 {
-      font-size: 25px;
+      font-size: var(--type-section);
     }
     :scope .commercial-banner .eyebrow,
     :scope .facility-hero .eyebrow,
@@ -2402,15 +2402,15 @@
       gap: 17px;
     }
     :scope .commercial-banner .eyebrow {
-      font-size: 8px;
+      font-size: var(--type-caption);
       margin-bottom: 9px;
     }
     :scope .commercial-banner h2 {
-      font-size: 23px;
+      font-size: var(--type-subhead);
       line-height: 1.2;
     }
     :scope .commercial-banner p {
-      font-size: 11px;
+      font-size: var(--type-secondary);
       line-height: 1.5;
       margin-top: 10px;
     }
@@ -2419,7 +2419,7 @@
       gap: 9px;
     }
     :scope .commercial-banner strong {
-      font-size: 26px;
+      font-size: var(--type-section);
     }
   }
 

@@ -23,14 +23,14 @@
 }
 .people-screen .screen-head h1,
 .market-screen .screen-head h1 {
-  font-size: clamp(25px, 2.3vw, 36px);
+  font-size: var(--type-page-lg);
   letter-spacing: -1.3px;
   font-weight: 600;
   margin: 9px 0 8px;
 }
 .people-screen .screen-head p,
 .market-screen .screen-head p {
-  font-size: 14px;
+  font-size: var(--type-body);
   color: var(--people-muted);
   margin: 0;
   line-height: 1.6;
@@ -55,13 +55,13 @@
   border: 0;
 }
 .people-summary > div > span:last-child {
-  font-size: 12px;
+  font-size: var(--type-label);
   color: var(--people-muted);
   line-height: 1.7;
 }
 .people-summary strong {
   display: block;
-  font-size: 14px;
+  font-size: var(--type-body);
   color: #dfe3e9;
   font-weight: 500;
 }
@@ -96,7 +96,7 @@
   color: #e5e7eb;
   width: 100%;
   font: inherit;
-  font-size: 14px;
+  font-size: var(--type-body);
   padding: 0 !important;
   min-width: 0;
 }
@@ -118,13 +118,13 @@
   height: 42px;
   padding: 0 36px 0 12px;
   font: inherit;
-  font-size: 13px;
+  font-size: var(--type-body);
   cursor: pointer;
 }
 .people-toolbar .btn {
   height: 42px;
   white-space: nowrap;
-  font-size: 13px;
+  font-size: var(--type-body);
   gap: 8px;
 }
 .people-toolbar .btn:disabled {
@@ -173,7 +173,7 @@
   color: #a5b1bf;
 }
 .people-avatar .people-initials {
-  font-size: 15px;
+  font-size: var(--type-body-lg);
   letter-spacing: 0.5px;
   font-weight: 600;
 }
@@ -197,7 +197,7 @@
   border-radius: 3px;
 }
 .people-avatar-large .people-initials {
-  font-size: 37px;
+  font-size: var(--type-page-lg);
   opacity: 0.7;
   letter-spacing: -2px;
 }
@@ -214,7 +214,7 @@
   bottom: 0;
   left: 9px;
   z-index: 1;
-  font-size: 43px;
+  font-size: var(--type-display);
   font-style: italic;
   font-weight: 800;
   line-height: 1;
@@ -229,7 +229,7 @@
   padding-top: 7px;
 }
 .people-person-info > .eyebrow {
-  font-size: 10px;
+  font-size: var(--type-secondary);
   letter-spacing: 1.5px;
   color: #a5acb6;
 }
@@ -242,7 +242,7 @@
   cursor: pointer;
 }
 .people-name-button h2 {
-  font-size: 22px;
+  font-size: var(--type-subhead);
   letter-spacing: -0.6px;
   line-height: 1.2;
   margin: 9px 0 8px;
@@ -255,7 +255,7 @@
   text-underline-offset: 5px;
 }
 .people-person-info > p {
-  font-size: 12px;
+  font-size: var(--type-label);
   margin: 0;
   color: #9fa7b2;
   white-space: nowrap;
@@ -269,14 +269,14 @@
   margin-top: 21px;
 }
 .people-race-record strong {
-  font-size: 24px;
+  font-size: var(--type-section);
   font-weight: 500;
   line-height: 1.1;
   font-variant-numeric: tabular-nums;
 }
 .people-race-record small {
   display: block;
-  font-size: 9px;
+  font-size: var(--type-caption);
   letter-spacing: 1.1px;
   color: #7e8997;
   margin-top: 6px;
@@ -288,7 +288,7 @@
   align-items: center;
   color: #e8ecef;
   font-weight: 500;
-  font-size: 31px;
+  font-size: var(--type-page);
   font-variant-numeric: tabular-nums;
   background: #1c242c;
   border: 1px solid #344039;
@@ -300,7 +300,7 @@
   flex: none;
 }
 .people-rating small {
-  font-size: 8px;
+  font-size: var(--type-caption);
   letter-spacing: 0.8px;
   color: #90a193;
   font-weight: 500;
@@ -327,7 +327,7 @@
   color: #97baab;
   padding: 5px 8px;
   font: inherit;
-  font-size: 10px !important;
+  font-size: var(--type-secondary) !important;
   font-weight: 500;
   line-height: 1;
   cursor: help;
@@ -360,7 +360,7 @@
   box-shadow: 0 8px 24px #0009;
   padding: 11px 12px;
   border-radius: 4px;
-  font-size: 12px;
+  font-size: var(--type-label);
   line-height: 1.5;
   text-align: left;
   font-weight: 400;
@@ -380,7 +380,7 @@
   display: flex;
   justify-content: space-between;
   gap: 10px;
-  font-size: 12px;
+  font-size: var(--type-label);
   align-items: center;
   margin-bottom: 8px;
 }
@@ -388,7 +388,7 @@
   color: #acb4bf;
 }
 .people-stat b {
-  font-size: 13px;
+  font-size: var(--type-body);
   font-variant-numeric: tabular-nums;
   font-weight: 500;
 }
@@ -398,7 +398,7 @@
   justify-content: space-between;
   border-top: 1px solid #252c35;
   padding: 16px 0;
-  font-size: 12px;
+  font-size: var(--type-label);
   color: #9ba5b2;
 }
 .people-card-contract strong {
@@ -410,7 +410,7 @@
   color: #e0e4e9;
 }
 .people-card-contract small {
-  font-size: 10px;
+  font-size: var(--type-secondary);
   color: #8e98a6;
   padding-left: 3px;
 }
@@ -428,7 +428,7 @@
   align-items: center;
   gap: 7px;
   color: #939da9;
-  font-size: 11px;
+  font-size: var(--type-secondary);
   cursor: pointer;
 }
 .people-card-footer input,
@@ -447,7 +447,7 @@
   background: none;
   color: #d9dfe7;
   cursor: pointer;
-  font-size: 12px !important;
+  font-size: var(--type-label) !important;
 }
 .people-profile-link:hover {
   color: #fff;
@@ -461,7 +461,7 @@
   display: grid;
   grid-template-columns: minmax(260px, 2.4fr) 0.65fr 1.1fr 0.9fr 1.1fr;
   gap: 15px;
-  font-size: 10px;
+  font-size: var(--type-secondary);
   text-transform: uppercase;
   letter-spacing: 0.9px;
   color: #778594;
@@ -500,26 +500,26 @@
   border: 0;
   padding: 0;
   background: none;
-  font-size: 14px;
+  font-size: var(--type-body);
   font-weight: 600;
   color: #dde4ed;
   cursor: pointer;
   text-align: left;
 }
 .market-candidate-identity p {
-  font-size: 11px;
+  font-size: var(--type-secondary);
   color: #8c99a9;
   margin: 6px 0;
 }
 .market-candidate-identity > div > span {
-  font-size: 10px;
+  font-size: var(--type-secondary);
   color: #9eacba;
   display: flex;
   gap: 7px;
   flex-wrap: wrap;
 }
 .market-candidate-identity em {
-  font-size: 9px;
+  font-size: var(--type-caption);
   border: 1px solid #34404d;
   border-radius: 2px;
   font-style: normal;
@@ -527,7 +527,7 @@
   color: #8f9fb0;
 }
 .market-cell-rating > strong {
-  font-size: 23px;
+  font-size: var(--type-subhead);
   font-weight: 500;
   color: #a4bfb0;
   font-variant-numeric: tabular-nums;
@@ -540,13 +540,13 @@
 }
 .market-cell-salary strong,
 .market-cell-contract strong {
-  font-size: 13px;
+  font-size: var(--type-body);
   font-weight: 500;
   color: #ced7e2;
 }
 .market-cell-salary small,
 .market-cell-contract small {
-  font-size: 10px;
+  font-size: var(--type-secondary);
   color: #8593a4;
   line-height: 1.6;
 }
@@ -554,7 +554,7 @@
   justify-self: end;
 }
 .market-cell-action .btn {
-  font-size: 11px;
+  font-size: var(--type-secondary);
   min-height: 36px;
   padding: 9px 12px;
   white-space: nowrap;
@@ -564,7 +564,7 @@
   padding-left: 81px;
 }
 .market-candidate-traits .people-trait {
-  font-size: 9px !important;
+  font-size: var(--type-caption) !important;
 }
 .market-mobile-label {
   display: none;
@@ -581,7 +581,7 @@
     padding-left: 5px;
   }
   .people-name-button h2 {
-    font-size: 25px;
+    font-size: var(--type-section);
   }
 }
 @media (max-width: 1250px) {
@@ -593,14 +593,14 @@
     width: 105px;
   }
   .people-name-button h2 {
-    font-size: 20px;
+    font-size: var(--type-card-lg);
   }
   .people-person-top > .people-rating {
     width: 52px;
-    font-size: 28px;
+    font-size: var(--type-section-lg);
   }
   .people-person-top > .people-rating small {
-    font-size: 7px;
+    font-size: var(--type-caption);
   }
   .people-card-skills {
     gap: 17px;
@@ -644,10 +644,10 @@
     padding: 16px 12px;
   }
   .people-summary strong {
-    font-size: 12px;
+    font-size: var(--type-label);
   }
   .people-summary > div > span:last-child {
-    font-size: 10px;
+    font-size: var(--type-secondary);
   }
   .people-summary-icon svg {
     width: 17px;
@@ -663,21 +663,21 @@
     gap: 12px;
   }
   .people-name-button h2 {
-    font-size: 18px;
+    font-size: var(--type-card);
   }
   .people-person-info > .eyebrow {
-    font-size: 8px;
+    font-size: var(--type-caption);
   }
   .people-person-info > p {
-    font-size: 10px;
+    font-size: var(--type-secondary);
   }
   .people-person-top > .people-rating {
     width: 45px;
-    font-size: 23px;
+    font-size: var(--type-subhead);
     padding: 7px 3px;
   }
   .people-person-top > .people-rating small {
-    font-size: 6px;
+    font-size: var(--type-caption);
     letter-spacing: 0;
   }
   .people-race-record {
@@ -714,7 +714,7 @@
   }
   .market-mobile-label {
     display: block;
-    font-size: 9px;
+    font-size: var(--type-caption);
     color: #6b829b;
     margin-bottom: 7px;
     text-transform: uppercase;
@@ -743,13 +743,13 @@
   }
   .people-screen .screen-head h1,
   .market-screen .screen-head h1 {
-    font-size: 28px;
+    font-size: var(--type-section-lg);
     line-height: 1.15;
     letter-spacing: -1px;
   }
   .people-screen .screen-head p,
   .market-screen .screen-head p {
-    font-size: 12px;
+    font-size: var(--type-label);
     max-width: 320px;
   }
   .people-summary {
@@ -772,7 +772,7 @@
     align-items: center;
   }
   .people-summary > div:last-child strong {
-    font-size: 11px;
+    font-size: var(--type-secondary);
   }
   .people-toolbar {
     gap: 8px;
@@ -782,7 +782,7 @@
     width: calc(50% - 4px);
     flex: 1;
     height: 40px;
-    font-size: 11px;
+    font-size: var(--type-secondary);
   }
   .people-cards {
     grid-template-columns: 1fr;
@@ -797,28 +797,28 @@
     width: 118px;
   }
   .people-name-button h2 {
-    font-size: 23px;
+    font-size: var(--type-subhead);
   }
   .people-person-info > .eyebrow {
-    font-size: 9px;
+    font-size: var(--type-caption);
   }
   .people-person-info > p {
-    font-size: 12px;
+    font-size: var(--type-label);
   }
   .people-person-top > .people-rating {
     width: 55px;
-    font-size: 29px;
+    font-size: var(--type-section-lg);
     padding: 9px 4px;
   }
   .people-person-top > .people-rating small {
-    font-size: 7px;
+    font-size: var(--type-caption);
     letter-spacing: 0.6px;
   }
   .people-card-skills {
     gap: 20px 24px;
   }
   .people-stat > div:first-child {
-    font-size: 12px;
+    font-size: var(--type-label);
   }
   .people-person-content {
     padding: 8px 20px 0;
@@ -850,13 +850,13 @@
     height: 54px;
   }
   .market-candidate-identity button {
-    font-size: 15px;
+    font-size: var(--type-body-lg);
   }
   .market-candidate-identity > div > span {
-    font-size: 11px;
+    font-size: var(--type-secondary);
   }
   .market-candidate-identity p {
-    font-size: 11px;
+    font-size: var(--type-secondary);
   }
   .market-cell-action {
     grid-row: 4;
@@ -865,7 +865,7 @@
   }
   .market-cell-action .btn {
     width: 100%;
-    font-size: 12px;
+    font-size: var(--type-label);
     padding: 11px 13px;
   }
   .market-cell-rating {
@@ -879,11 +879,11 @@
   }
   .market-cell-salary strong,
   .market-cell-contract strong {
-    font-size: 12px;
+    font-size: var(--type-label);
   }
   .market-cell-salary small,
   .market-cell-contract small {
-    font-size: 9px;
+    font-size: var(--type-caption);
   }
   .market-candidate-traits {
     grid-row: 3;
@@ -898,17 +898,17 @@
     width: 93px;
   }
   .people-name-button h2 {
-    font-size: 20px;
+    font-size: var(--type-card-lg);
   }
   .people-person-info > p {
-    font-size: 10px;
+    font-size: var(--type-secondary);
   }
   .people-person-top > .people-rating {
     width: 44px;
-    font-size: 25px;
+    font-size: var(--type-section);
   }
   .people-person-top > .people-rating small {
-    font-size: 6px;
+    font-size: var(--type-caption);
     letter-spacing: 0;
   }
   .people-person-content {
@@ -923,13 +923,13 @@
     gap: 17px;
   }
   .people-race-record strong {
-    font-size: 23px;
+    font-size: var(--type-subhead);
   }
   .people-traits {
     gap: 5px;
   }
   .people-trait {
-    font-size: 9px !important;
+    font-size: var(--type-caption) !important;
     padding: 5px 6px;
   }
   .people-summary > div {
@@ -937,10 +937,10 @@
     gap: 7px;
   }
   .people-summary strong {
-    font-size: 11px;
+    font-size: var(--type-secondary);
   }
   .people-summary > div > span:last-child {
-    font-size: 9px;
+    font-size: var(--type-caption);
   }
   .people-summary > div:last-child > span:last-child {
     gap: 7px;

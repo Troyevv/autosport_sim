@@ -207,7 +207,8 @@ export function Shell({ children, onSave, onAdvance, busy }) {
             Сохранённые карьеры
           </button>
           <button
-            onClick={() =>
+            onClick={() => {
+              closeMenus()
               openDialog({
                 title: 'Параметры интерфейса',
                 content: (
@@ -231,7 +232,7 @@ export function Shell({ children, onSave, onAdvance, busy }) {
                   </div>
                 ),
               })
-            }
+            }}
           >
             <Icon name="Settings2" size={15} />
             Параметры <span>02</span>

@@ -34,7 +34,7 @@
   .st-kicker {
     display: block;
     color: #a0a0a1;
-    font-size: 9px;
+    font-size: var(--type-caption);
     font-weight: 700;
     line-height: 1.5;
     letter-spacing: 0.14em;
@@ -68,7 +68,7 @@
     display: flex;
     align-items: center;
     gap: 7px;
-    font-size: 10px;
+    font-size: var(--type-secondary);
     color: #a2a2a3;
   }
   .st-masthead-title {
@@ -82,7 +82,7 @@
   }
   .st-masthead h1 {
     margin: 0;
-    font-size: 39px;
+    font-size: var(--type-page-lg);
     line-height: 1.1;
     letter-spacing: -0.04em;
     font-weight: 750;
@@ -92,7 +92,7 @@
   }
   .st-masthead-title p {
     margin: 11px 0 0;
-    font-size: 12px;
+    font-size: var(--type-label);
     color: #a9a9aa;
   }
   .st-masthead-numbers {
@@ -107,14 +107,14 @@
     gap: 5px;
   }
   .st-masthead-numbers strong {
-    font-size: 30px;
+    font-size: var(--type-page);
     line-height: 1;
     font-weight: 500;
     font-variant-numeric: tabular-nums;
     letter-spacing: -0.04em;
   }
   .st-masthead-numbers span {
-    font-size: 9px;
+    font-size: var(--type-caption);
     letter-spacing: 0.07em;
     color: #a6a6a7;
     text-transform: uppercase;
@@ -138,7 +138,7 @@
     border-radius: 6px;
     background: transparent;
     color: #ababac;
-    font-size: 11px;
+    font-size: var(--type-secondary);
     padding: 8px 11px;
   }
   .st-source-switch button.active {
@@ -153,14 +153,14 @@
   }
   .st-source-switch button span {
     font-variant-numeric: tabular-nums;
-    font-size: 9px;
+    font-size: var(--type-caption);
     opacity: 0.7;
     padding-left: 3px;
   }
   .st-source-switch p {
     margin: 0 0 0 auto;
     max-width: 31ch;
-    font-size: 9px;
+    font-size: var(--type-caption);
     line-height: 1.5;
     color: #939394;
     text-align: right;
@@ -188,7 +188,7 @@
     padding: 11px 10px;
     text-align: left;
     min-height: 40px;
-    font-size: 11px;
+    font-size: var(--type-secondary);
   }
   .st-rail > button > svg {
     flex-shrink: 0;
@@ -198,7 +198,7 @@
     flex: 1;
   }
   .st-rail > button > small {
-    font-size: 9px;
+    font-size: var(--type-caption);
     font-variant-numeric: tabular-nums;
     opacity: 0.6;
   }
@@ -215,7 +215,7 @@
     color: #f2f2f3;
   }
   .st-rail-label {
-    font-size: 8px;
+    font-size: var(--type-caption);
     letter-spacing: 0.14em;
     color: #7b7b7c;
     margin: 22px 10px 5px;
@@ -235,7 +235,7 @@
   }
   .st-rail-footer p {
     margin: 0;
-    font-size: 9px;
+    font-size: var(--type-caption);
     line-height: 1.7;
   }
   .st-main {
@@ -261,7 +261,7 @@
     min-width: 0;
     flex: 1;
     height: 42px;
-    font-size: 12px;
+    font-size: var(--type-label);
   }
   .st-searchbar input::placeholder {
     color: #909091;
@@ -280,7 +280,7 @@
     color: #787879;
     border-radius: 3px;
     padding: 2px 6px;
-    font-size: 10px;
+    font-size: var(--type-secondary);
   }
   .st-filters {
     display: flex;
@@ -303,7 +303,7 @@
   .st-filters label > span,
   .st-journal-filters label > span,
   .st-analysis-toolbar label > span {
-    font-size: 9px;
+    font-size: var(--type-caption);
     color: #969697;
     letter-spacing: 0.03em;
   }
@@ -319,7 +319,7 @@
     padding: 8px 26px 8px 10px;
     width: 100%;
     min-width: 0;
-    font-size: 10px;
+    font-size: var(--type-secondary);
   }
   .st-filters label:nth-child(2) {
     flex: 0.85;
@@ -337,7 +337,7 @@
     border: 0;
     background: transparent;
     color: #a1a1a2;
-    font-size: 10px;
+    font-size: var(--type-secondary);
     min-height: 37px;
     padding: 0 3px;
   }
@@ -349,7 +349,7 @@
     margin: 0 0 20px;
   }
   .st-section-heading h2 {
-    font-size: 25px;
+    font-size: var(--type-section);
     line-height: 1.2;
     letter-spacing: -0.035em;
     margin: 6px 0 0;
@@ -357,19 +357,19 @@
   }
   .st-section-heading h2 > span {
     color: #868687;
-    font-size: 14px;
+    font-size: var(--type-body);
     vertical-align: middle;
     margin-left: 6px;
     font-weight: 400;
   }
   .st-section-heading h3 {
-    font-size: 18px;
+    font-size: var(--type-card);
     line-height: 1.4;
     margin: 6px 0 0;
     letter-spacing: -0.025em;
   }
   .st-section-heading p {
-    font-size: 11px;
+    font-size: var(--type-secondary);
     color: #a1a1a2;
     line-height: 1.65;
     max-width: 76ch;
@@ -383,7 +383,7 @@
     border: 0 !important;
     background: none !important;
     padding: 2px 0 !important;
-    font-size: 11px !important;
+    font-size: var(--type-secondary) !important;
     line-height: 1.6;
     text-align: left;
     text-decoration: none;
@@ -394,11 +394,11 @@
   }
   .st-muted {
     color: #949495;
-    font-size: 12px;
+    font-size: var(--type-label);
     line-height: 1.6;
   }
   .st-source {
-    font-size: 9px;
+    font-size: var(--type-caption);
     line-height: 1.65;
     color: #8b8b8c;
     display: flex;
@@ -420,7 +420,7 @@
     border: 1px solid #dfa74d35;
     background: #9b652c12;
     color: #baa080;
-    font-size: 11px;
+    font-size: var(--type-secondary);
     line-height: 1.65;
     padding: 13px 17px;
     border-radius: 6px;
@@ -436,7 +436,7 @@
     font-weight: 600;
   }
   .st-demo-notice.small {
-    font-size: 10px;
+    font-size: var(--type-secondary);
     padding: 11px 13px;
     margin: 15px 0;
   }
@@ -451,7 +451,7 @@
     background: #9c9c9d08;
     color: color-mix(in srgb, var(--org-accent, #df7959) 65%, #f0ece5);
     min-height: 39px;
-    font-size: 11px;
+    font-size: var(--type-secondary);
     line-height: 1.5;
   }
   .st-outline-button:hover,
@@ -476,7 +476,7 @@
     object-fit: contain;
   }
   .st-mark b {
-    font-size: 20px;
+    font-size: var(--type-card-lg);
     letter-spacing: -0.05em;
     font-weight: 600;
   }
@@ -507,7 +507,7 @@
   .st-directory-head {
     min-height: 38px;
     color: #868687;
-    font-size: 8px;
+    font-size: var(--type-caption);
     font-weight: 700;
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -544,12 +544,12 @@
     gap: 6px;
   }
   .st-directory-primary strong {
-    font-size: 12px;
+    font-size: var(--type-label);
     font-weight: 600;
     line-height: 1.4;
   }
   .st-directory-primary small {
-    font-size: 9px;
+    font-size: var(--type-caption);
     color: #939394;
     line-height: 1.4;
   }
@@ -564,12 +564,12 @@
     min-width: 0;
   }
   .st-directory-context > span {
-    font-size: 11px;
+    font-size: var(--type-secondary);
     line-height: 1.5;
     color: #c3c3c4;
   }
   .st-directory-context > small {
-    font-size: 9px;
+    font-size: var(--type-caption);
     line-height: 1.5;
     color: #888889;
   }
@@ -578,7 +578,7 @@
     align-items: center;
     gap: 5px;
     color: #89898a;
-    font-size: 8px;
+    font-size: var(--type-caption);
     line-height: 1.4;
   }
   .st-directory-access svg {
@@ -607,7 +607,7 @@
     justify-content: space-between;
     margin: 20px 0 10px;
     color: #8d8d8e;
-    font-size: 10px;
+    font-size: var(--type-secondary);
     gap: 12px;
   }
   .st-pagination > div {
@@ -620,7 +620,7 @@
     align-items: center;
     gap: 5px;
     color: #c0c0c1;
-    font-size: 10px;
+    font-size: var(--type-secondary);
     min-height: 36px;
     border: 1px solid #ffffff16;
     border-radius: 5px;
@@ -656,24 +656,24 @@
     flex-shrink: 0;
   }
   .st-missing h3 {
-    font-size: 20px;
+    font-size: var(--type-card-lg);
     line-height: 1.35;
     letter-spacing: -0.02em;
     margin: 7px 0 9px;
     font-weight: 550;
   }
   .st-missing.compact h3 {
-    font-size: 17px;
+    font-size: var(--type-card-sm);
   }
   .st-missing p {
     max-width: 67ch;
-    font-size: 11px;
+    font-size: var(--type-secondary);
     line-height: 1.8;
     color: #a6a6a7;
     margin: 0 0 10px;
   }
   .st-missing .st-kicker {
-    font-size: 8px;
+    font-size: var(--type-caption);
     color: #7d7d7e;
   }
   .st-overview-editorial {
@@ -690,7 +690,7 @@
     background: linear-gradient(125deg, #2c2c2d, #212122);
   }
   .st-overview-lead h2 {
-    font-size: 31px;
+    font-size: var(--type-page);
     letter-spacing: -0.045em;
     line-height: 1.18;
     font-weight: 550;
@@ -698,13 +698,13 @@
   }
   .st-overview-lead > p {
     color: #adadae;
-    font-size: 11px;
+    font-size: var(--type-secondary);
     line-height: 1.8;
     margin: 0 0 22px;
     max-width: 49ch;
   }
   .st-overview-lead .st-outline-button {
-    font-size: 10px;
+    font-size: var(--type-secondary);
   }
   .st-editorial-rule {
     height: 1px;
@@ -721,13 +721,13 @@
     margin-top: 2px;
   }
   .st-editorial-status strong {
-    font-size: 11px;
+    font-size: var(--type-secondary);
     font-weight: 550;
     line-height: 1.5;
     color: #e2e2e3;
   }
   .st-editorial-status p {
-    font-size: 10px;
+    font-size: var(--type-secondary);
     line-height: 1.7;
     color: #959596;
     margin: 6px 0 0;
@@ -751,7 +751,7 @@
     color: #868687;
   }
   .st-spotlight-title .st-kicker {
-    font-size: 8px;
+    font-size: var(--type-caption);
   }
   .st-spotlight-people {
     display: grid;
@@ -777,13 +777,13 @@
     filter: drop-shadow(0 10px 14px #0005);
   }
   .st-spotlight-people strong {
-    font-size: 15px;
+    font-size: var(--type-body-lg);
     line-height: 1.3;
     letter-spacing: -0.03em;
     font-weight: 550;
   }
   .st-spotlight-people small {
-    font-size: 8px;
+    font-size: var(--type-caption);
     letter-spacing: 0.1em;
     color: #949495;
     text-transform: uppercase;
@@ -792,7 +792,7 @@
     display: flex;
     align-items: center;
     gap: 5px;
-    font-size: 8px;
+    font-size: var(--type-caption);
     color: color-mix(in srgb, var(--org-accent, #df7959) 65%, #f0ece5);
     margin-top: 5px;
   }
@@ -805,12 +805,12 @@
     background: #13131455;
   }
   .st-spotlight-caption > span {
-    font-size: 7px;
+    font-size: var(--type-caption);
     letter-spacing: 0.14em;
     color: #7f7f80;
   }
   .st-spotlight-caption strong {
-    font-size: 10px;
+    font-size: var(--type-secondary);
     font-weight: 400;
     color: #afafb0;
   }
@@ -824,17 +824,17 @@
     color: #f3f3f4;
   }
   .st-maker-spotlight h3 {
-    font-size: 30px;
+    font-size: var(--type-page);
     letter-spacing: -0.04em;
     margin: 18px 0 7px;
   }
   .st-maker-spotlight p {
-    font-size: 12px;
+    font-size: var(--type-label);
     color: #a4a4a5;
     margin: 0 0 15px;
   }
   .st-maker-spotlight > span:last-child {
-    font-size: 10px;
+    font-size: var(--type-secondary);
     line-height: 1.6;
     color: #929293;
     max-width: 28ch;
@@ -850,7 +850,7 @@
     border-left: 1px solid #ffffff12;
   }
   .st-world-next h3 {
-    font-size: 26px;
+    font-size: var(--type-section);
     font-weight: 550;
     line-height: 1.2;
     letter-spacing: -0.035em;
@@ -885,17 +885,17 @@
     flex: 1;
   }
   .st-world-next small {
-    font-size: 8px;
+    font-size: var(--type-caption);
     color: #8a8a8b;
   }
   .st-world-next strong {
-    font-size: 12px;
+    font-size: var(--type-label);
     font-weight: 550;
     line-height: 1.4;
     color: #e1e1e2;
   }
   .st-world-next em {
-    font-size: 9px;
+    font-size: var(--type-caption);
     color: #909091;
     font-style: normal;
     line-height: 1.6;
@@ -927,12 +927,12 @@
     flex: 1;
   }
   .st-explore-links > button strong {
-    font-size: 13px;
+    font-size: var(--type-body);
     font-weight: 550;
     color: #d7d7d8;
   }
   .st-explore-links > button small {
-    font-size: 9px;
+    font-size: var(--type-caption);
     color: #818182;
   }
   .st-explore-links > button > svg:first-child {
@@ -967,12 +967,12 @@
     gap: 6px;
   }
   .st-archive-strip strong {
-    font-size: 13px;
+    font-size: var(--type-body);
     font-weight: 550;
     color: #dbdbdc;
   }
   .st-archive-strip small {
-    font-size: 10px;
+    font-size: var(--type-secondary);
     color: #939394;
     line-height: 1.6;
   }
@@ -984,7 +984,7 @@
     display: flex;
     gap: 7px;
     align-items: center;
-    font-size: 10px;
+    font-size: var(--type-secondary);
     min-width: 144px;
     text-align: left;
     line-height: 1.6;
@@ -997,7 +997,7 @@
     gap: 10px;
     align-items: center;
     color: #858586;
-    font-size: 10px;
+    font-size: var(--type-secondary);
     margin-bottom: 18px;
     min-width: 0;
   }
@@ -1014,7 +1014,7 @@
     gap: 7px;
     align-items: center;
     padding: 5px 0;
-    font-size: 11px;
+    font-size: var(--type-secondary);
     min-height: 31px;
     flex-shrink: 0;
   }
@@ -1054,7 +1054,7 @@
     box-shadow: 0 12px 30px #0002;
   }
   .st-profile-hero h2 {
-    font-size: 29px;
+    font-size: var(--type-section-lg);
     font-weight: 650;
     line-height: 1.1;
     letter-spacing: -0.04em;
@@ -1062,7 +1062,7 @@
     overflow-wrap: anywhere;
   }
   .st-profile-hero p {
-    font-size: 11px;
+    font-size: var(--type-secondary);
     color: #a3a3a4;
     margin: 0;
     line-height: 1.65;
@@ -1074,7 +1074,7 @@
     margin-top: 13px;
   }
   .st-profile-tags button {
-    font-size: 8px;
+    font-size: var(--type-caption);
     color: #b9b9ba;
     background: #ffffff05;
     border: 1px solid #ffffff12;
@@ -1093,10 +1093,10 @@
     flex-shrink: 0;
   }
   .st-profile-actions .st-outline-button {
-    font-size: 10px;
+    font-size: var(--type-secondary);
   }
   .st-profile-actions .st-text-link {
-    font-size: 9px !important;
+    font-size: var(--type-caption) !important;
   }
   .st-profile > .tabs {
     margin: 21px 0 25px;
@@ -1105,7 +1105,7 @@
     background: transparent;
   }
   .st-profile > .tabs > button {
-    font-size: 11px;
+    font-size: var(--type-secondary);
     color: #989899;
     padding: 13px 0;
     border-radius: 0;
@@ -1133,7 +1133,7 @@
     margin-bottom: 10px;
   }
   .st-profile-dossier .st-section-heading h3 {
-    font-size: 17px;
+    font-size: var(--type-card-sm);
   }
   .st-profile-dossier .st-section-heading > svg {
     color: #747475;
@@ -1151,7 +1151,7 @@
     gap: 12px;
     padding: 12px 0;
     border-bottom: 1px solid #ffffff0b;
-    font-size: 11px;
+    font-size: var(--type-secondary);
     line-height: 1.6;
     min-width: 0;
   }
@@ -1159,7 +1159,7 @@
   .st-fact-body dt,
   .st-demo-detail dt {
     color: #8a8a8b;
-    font-size: 10px;
+    font-size: var(--type-secondary);
   }
   .st-profile-dossier dd,
   .st-fact-body dd,
@@ -1169,12 +1169,12 @@
     overflow-wrap: anywhere;
   }
   .st-profile-dossier dd .st-text-link {
-    font-size: 10px !important;
+    font-size: var(--type-secondary) !important;
     padding: 0 !important;
     min-height: 0;
   }
   .st-profile-dossier .st-source {
-    font-size: 8px;
+    font-size: var(--type-caption);
     margin-top: 6px;
     padding-bottom: 0;
   }
@@ -1194,13 +1194,13 @@
     gap: 20px;
   }
   .st-profile-context > .st-missing h3 {
-    font-size: 23px;
+    font-size: var(--type-subhead);
   }
   .st-profile-context > .st-missing p {
-    font-size: 11px;
+    font-size: var(--type-secondary);
   }
   .st-profile-context > h3 {
-    font-size: 19px;
+    font-size: var(--type-card);
     margin: 16px 0 18px;
     font-weight: 550;
     letter-spacing: -0.03em;
@@ -1212,7 +1212,7 @@
     margin: 20px 0;
   }
   .st-context-number strong {
-    font-size: 67px;
+    font-size: var(--type-display);
     line-height: 0.9;
     font-weight: 400;
     letter-spacing: -0.07em;
@@ -1220,18 +1220,18 @@
     font-variant-numeric: tabular-nums;
   }
   .st-context-number span {
-    font-size: 10px;
+    font-size: var(--type-secondary);
     color: #a5a5a6;
     line-height: 1.7;
   }
   .st-context-body {
-    font-size: 11px;
+    font-size: var(--type-secondary);
     color: #a1a1a2;
     line-height: 1.85;
     margin: 18px 0 22px;
   }
   .st-country-code {
-    font-size: 95px;
+    font-size: var(--type-display);
     letter-spacing: -0.08em;
     line-height: 1;
     font-weight: 550;
@@ -1251,26 +1251,26 @@
     border-radius: 5px;
   }
   .st-track-map-missing h3 {
-    font-size: 16px;
+    font-size: var(--type-card-sm);
     color: #c9c9ca;
     margin: 0;
     font-weight: 500;
     line-height: 1.5;
   }
   .st-track-map-missing p {
-    font-size: 10px;
+    font-size: var(--type-secondary);
     color: #888889;
     line-height: 1.8;
     margin: 0;
     max-width: 38ch;
   }
   .st-track-map-missing > span:last-child {
-    font-size: 8px;
+    font-size: var(--type-caption);
     letter-spacing: 0.06em;
     color: #707071;
   }
   .st-track-map-missing .st-kicker {
-    font-size: 7px;
+    font-size: var(--type-caption);
     margin-top: 7px;
   }
   .st-mini-agenda {
@@ -1290,7 +1290,7 @@
     align-items: center;
   }
   .st-mini-agenda time {
-    font-size: 9px;
+    font-size: var(--type-caption);
     color: #909091;
     width: 59px;
     line-height: 1.5;
@@ -1301,11 +1301,11 @@
     flex-direction: column;
     gap: 5px;
     flex: 1;
-    font-size: 10px;
+    font-size: var(--type-secondary);
     line-height: 1.5;
   }
   .st-mini-agenda small {
-    font-size: 8px;
+    font-size: var(--type-caption);
     color: #7a7a7b;
   }
   .st-mini-agenda svg {
@@ -1319,7 +1319,7 @@
     margin-bottom: 20px;
   }
   .st-regulation-card h3 {
-    font-size: 20px;
+    font-size: var(--type-card-lg);
     letter-spacing: -0.02em;
     margin: 11px 0 21px;
   }
@@ -1338,16 +1338,16 @@
     border: 1px solid #ffffff0c;
   }
   .st-points-system small {
-    font-size: 8px;
+    font-size: var(--type-caption);
     color: #767677;
   }
   .st-points-system strong {
-    font-size: 18px;
+    font-size: var(--type-card);
     font-weight: 500;
     color: #cfcfd0;
   }
   .st-regulation-card p {
-    font-size: 10px;
+    font-size: var(--type-secondary);
     line-height: 1.7;
     color: #8a8a8b;
     margin: 17px 0;
@@ -1369,12 +1369,12 @@
     text-align: left;
   }
   .st-supplier-lines > button > span {
-    font-size: 9px;
+    font-size: var(--type-caption);
     flex: 1;
     color: #7c7c7d;
   }
   .st-supplier-lines strong {
-    font-size: 11px;
+    font-size: var(--type-secondary);
     font-weight: 500;
   }
   .st-car-showroom {
@@ -1394,12 +1394,12 @@
   }
   .st-car-showroom h3 {
     margin: 10px 0;
-    font-size: 22px;
+    font-size: var(--type-subhead);
     letter-spacing: -0.03em;
   }
   .st-car-showroom p {
     color: #8a8a8b;
-    font-size: 10px;
+    font-size: var(--type-secondary);
     line-height: 1.8;
     max-width: 83ch;
   }
@@ -1432,12 +1432,12 @@
     flex: 1;
   }
   .st-entity-button strong {
-    font-size: 11px;
+    font-size: var(--type-secondary);
     font-weight: 550;
     line-height: 1.5;
   }
   .st-entity-button small {
-    font-size: 9px;
+    font-size: var(--type-caption);
     color: #878788;
     line-height: 1.5;
   }
@@ -1469,7 +1469,7 @@
   }
   .st-timeline time {
     color: #9a9a9b;
-    font-size: 10px;
+    font-size: var(--type-secondary);
     text-align: right;
     padding-top: 3px;
     line-height: 1.6;
@@ -1492,24 +1492,24 @@
     box-shadow: 0 0 0 5px #a0a0a10d;
   }
   .st-timeline section > span {
-    font-size: 8px;
+    font-size: var(--type-caption);
     color: #7e7e7f;
     letter-spacing: 0.09em;
   }
   .st-timeline h4 {
-    font-size: 14px;
+    font-size: var(--type-body);
     font-weight: 550;
     margin: 9px 0 7px;
     color: #d7d7d8;
   }
   .st-timeline p {
-    font-size: 10px;
+    font-size: var(--type-secondary);
     color: #949495;
     line-height: 1.8;
     margin: 0 0 5px;
   }
   .st-timeline .st-text-link {
-    font-size: 9px !important;
+    font-size: var(--type-caption) !important;
   }
   .st-history-real {
     padding: 22px 24px;
@@ -1527,16 +1527,16 @@
   }
   .st-history-real .st-kicker {
     color: #a58f61;
-    font-size: 8px;
+    font-size: var(--type-caption);
   }
   .st-history-real h4 {
-    font-size: 14px;
+    font-size: var(--type-body);
     margin: 8px 0 11px;
     font-weight: 550;
     color: #d3c8a8;
   }
   .st-history-real p {
-    font-size: 11px;
+    font-size: var(--type-secondary);
     color: #a39b85;
     line-height: 1.75;
     margin: 0 0 9px;
@@ -1545,7 +1545,7 @@
     display: inline-flex;
     gap: 6px;
     align-items: center;
-    font-size: 10px;
+    font-size: var(--type-secondary);
     color: #d1ba85;
     text-decoration: none;
     border-bottom: 1px solid #baa26844;
@@ -1553,7 +1553,7 @@
   }
   .st-history-real small {
     display: block;
-    font-size: 9px;
+    font-size: var(--type-caption);
     line-height: 1.7;
     color: #8b846f;
     margin-top: 15px;
@@ -1567,12 +1567,12 @@
   }
   .st-analysis-toolbar h3 {
     margin: 8px 0 0;
-    font-size: 20px;
+    font-size: var(--type-card-lg);
     font-weight: 550;
     letter-spacing: -0.03em;
   }
   .st-analysis-toolbar p {
-    font-size: 10px;
+    font-size: var(--type-secondary);
     color: #8f8f90;
     line-height: 1.6;
     margin: 8px 0 0;
@@ -1601,12 +1601,12 @@
     padding-left: 0;
   }
   .st-result-summary span {
-    font-size: 9px;
+    font-size: var(--type-caption);
     color: #969697;
     letter-spacing: 0.04em;
   }
   .st-result-summary strong {
-    font-size: 34px;
+    font-size: var(--type-page);
     font-weight: 450;
     line-height: 1.1;
     letter-spacing: -0.06em;
@@ -1614,7 +1614,7 @@
     font-variant-numeric: tabular-nums;
   }
   .st-result-summary small {
-    font-size: 8px;
+    font-size: var(--type-caption);
     color: #767677;
     line-height: 1.6;
   }
@@ -1633,7 +1633,7 @@
   .st-comparison-data table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 11px;
+    font-size: var(--type-secondary);
     text-align: left;
     min-width: 560px;
   }
@@ -1649,7 +1649,7 @@
   }
   .st-result-table thead th,
   .st-comparison-data thead th {
-    font-size: 8px;
+    font-size: var(--type-caption);
     color: #7f7f80;
     background: #1f1f20;
     font-weight: 600;
@@ -1679,10 +1679,10 @@
     min-width: 30px;
   }
   .st-result-table button span {
-    font-size: 8px;
+    font-size: var(--type-caption);
   }
   .st-round-number {
-    font-size: 9px;
+    font-size: var(--type-caption);
     color: #686869;
     margin-right: 12px;
     font-variant-numeric: tabular-nums;
@@ -1697,13 +1697,13 @@
   }
   .st-country-detail strong {
     white-space: nowrap;
-    font-size: 26px;
+    font-size: var(--type-section);
     font-weight: 500;
     color: color-mix(in srgb, var(--org-accent, #df7959) 65%, #f0ece5);
     letter-spacing: -0.04em;
   }
   .st-country-detail p {
-    font-size: 11px;
+    font-size: var(--type-secondary);
     line-height: 1.8;
     margin: 0;
     color: #969697;
@@ -1723,12 +1723,12 @@
   }
   .st-attribution h4 {
     margin: 0 0 10px;
-    font-size: 14px;
+    font-size: var(--type-body);
     line-height: 1.5;
     color: #c6c4a9;
   }
   .st-attribution p {
-    font-size: 11px;
+    font-size: var(--type-secondary);
     line-height: 1.8;
     color: #91927e;
     margin: 0;
@@ -1747,11 +1747,11 @@
     border: 0;
   }
   .st-academy-roster > div > span:not(.badge) {
-    font-size: 9px;
+    font-size: var(--type-caption);
     color: #909091;
   }
   .st-academy-roster .badge {
-    font-size: 8px;
+    font-size: var(--type-caption);
   }
   .st-sponsor-agreements > div {
     display: flex;
@@ -1771,15 +1771,15 @@
     flex: 1;
   }
   .st-sponsor-agreements strong {
-    font-size: 12px;
+    font-size: var(--type-label);
     color: #cececf;
   }
   .st-sponsor-agreements span {
-    font-size: 10px;
+    font-size: var(--type-secondary);
     color: #9b9b9c;
   }
   .st-sponsor-agreements small {
-    font-size: 9px;
+    font-size: var(--type-caption);
     color: #767677;
   }
   .st-compare-tray {
@@ -1817,11 +1817,11 @@
     min-width: 0;
   }
   .st-compare-tray strong {
-    font-size: 11px;
+    font-size: var(--type-secondary);
     color: color-mix(in srgb, var(--org-accent, #df7959) 65%, #f0ece5);
   }
   .st-compare-tray small {
-    font-size: 9px;
+    font-size: var(--type-caption);
     color: #949495;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -1835,7 +1835,7 @@
     min-height: 34px;
   }
   .st-compare-tray > .button {
-    font-size: 10px;
+    font-size: var(--type-secondary);
     gap: 7px;
     padding: 9px 13px;
     min-height: 39px;
@@ -1865,20 +1865,20 @@
     width: 100%;
   }
   .st-compare-profile-link h3 {
-    font-size: 16px;
+    font-size: var(--type-card-sm);
     font-weight: 550;
     letter-spacing: -0.02em;
     line-height: 1.4;
     margin: 16px 0 7px;
   }
   .st-compare-profile-link p {
-    font-size: 10px;
+    font-size: var(--type-secondary);
     color: #8d8d8e;
     line-height: 1.6;
     margin: 0 0 12px;
   }
   .st-compare-profile-link > span:last-child {
-    font-size: 8px;
+    font-size: var(--type-caption);
     color: color-mix(in srgb, var(--org-accent, #df7959) 65%, #f0ece5);
     display: flex;
     align-items: center;
@@ -1900,12 +1900,12 @@
     margin-bottom: 25px;
   }
   .st-comparison-data tbody th {
-    font-size: 9px;
+    font-size: var(--type-caption);
     color: #8c8c8d;
     width: 23%;
   }
   .st-comparison-data td {
-    font-size: 10px;
+    font-size: var(--type-secondary);
     max-width: 220px;
     min-width: 160px;
     color: #bfbfc0;
@@ -1936,7 +1936,7 @@
   .st-journal-list > button > time {
     width: 80px;
     flex-shrink: 0;
-    font-size: 9px;
+    font-size: var(--type-caption);
     color: #858586;
     line-height: 1.6;
   }
@@ -1952,17 +1952,17 @@
     min-width: 0;
   }
   .st-journal-list strong {
-    font-size: 11px;
+    font-size: var(--type-secondary);
     font-weight: 500;
     color: #c7c7c8;
   }
   .st-journal-list small {
-    font-size: 9px;
+    font-size: var(--type-caption);
     line-height: 1.6;
     color: #838384;
   }
   .st-journal-list em {
-    font-size: 8px;
+    font-size: var(--type-caption);
     font-style: normal;
     color: #7c7c7d;
     max-width: 80px;
@@ -1999,7 +1999,7 @@
     z-index: 1;
   }
   .st-fact-drawer h3 {
-    font-size: 23px;
+    font-size: var(--type-subhead);
     font-weight: 600;
     letter-spacing: -0.03em;
     margin: 10px 0 0;
@@ -2018,12 +2018,12 @@
     padding: 25px 26px 40px;
   }
   .st-fact-date {
-    font-size: 11px;
+    font-size: var(--type-secondary);
     color: #a5a5a6;
     margin: 0 0 18px;
   }
   .st-fact-body h4 {
-    font-size: 20px;
+    font-size: var(--type-card-lg);
     font-weight: 550;
     letter-spacing: -0.02em;
     line-height: 1.5;
@@ -2047,7 +2047,7 @@
     padding: 15px;
     border-radius: 5px;
     margin-top: 14px;
-    font-size: 10px;
+    font-size: var(--type-secondary);
     line-height: 1.7;
     color: #868687;
   }
@@ -2055,7 +2055,7 @@
     overflow-wrap: anywhere;
     word-break: break-word;
     display: block;
-    font-size: 9px;
+    font-size: var(--type-caption);
     color: #a3a3a4;
   }
   .st-session-example {
@@ -2065,13 +2065,13 @@
     margin: 22px 0;
   }
   .st-session-heading h3 {
-    font-size: 29px;
+    font-size: var(--type-section-lg);
     letter-spacing: -0.03em;
     margin: 9px 0 12px;
     color: #e7e7e8;
   }
   .st-session-heading p {
-    font-size: 11px;
+    font-size: var(--type-secondary);
     color: #a0a0a1;
     line-height: 1.7;
   }
@@ -2095,12 +2095,12 @@
     margin-top: 5px;
   }
   .st-session-note p {
-    font-size: 11px;
+    font-size: var(--type-secondary);
     line-height: 1.8;
     margin: 0;
   }
   .st-demo-detail > p {
-    font-size: 12px;
+    font-size: var(--type-label);
     line-height: 1.8;
     color: #a8a8a9;
   }
@@ -2119,13 +2119,13 @@
     margin-top: 3px;
   }
   .st-embedded h3 {
-    font-size: 19px;
+    font-size: var(--type-card);
     color: #dbdbdc;
     letter-spacing: -0.03em;
     margin: 10px 0;
   }
   .st-embedded p {
-    font-size: 11px;
+    font-size: var(--type-secondary);
     line-height: 1.8;
     color: #9c9c9d;
     margin: 0 0 10px;
@@ -2136,7 +2136,7 @@
       gap: 33px;
     }
     .st-masthead h1 {
-      font-size: 45px;
+      font-size: var(--type-page-lg);
     }
     .st-masthead-title {
       padding-top: 27px;
@@ -2150,23 +2150,23 @@
       padding: 36px;
     }
     .st-overview-lead h2 {
-      font-size: 36px;
+      font-size: var(--type-page-lg);
     }
     .st-spotlight-people .person-portrait {
       width: 140px !important;
       height: 168px !important;
     }
     .st-spotlight-people strong {
-      font-size: 19px;
+      font-size: var(--type-card);
     }
     .st-overview-second {
       grid-template-columns: 1.2fr 1fr;
     }
     .st-profile-hero h2 {
-      font-size: 36px;
+      font-size: var(--type-page-lg);
     }
     .st-directory-primary strong {
-      font-size: 13px;
+      font-size: var(--type-body);
     }
   }
   @media (max-width: 1180px) {
@@ -2175,12 +2175,12 @@
       gap: 20px;
     }
     .st-rail > button {
-      font-size: 10px;
+      font-size: var(--type-secondary);
       padding: 10px 8px;
       gap: 8px;
     }
     .st-rail > button > small {
-      font-size: 8px;
+      font-size: var(--type-caption);
     }
     .st-masthead-title {
       padding: 22px;
@@ -2189,13 +2189,13 @@
       padding: 18px 22px 0;
     }
     .st-masthead h1 {
-      font-size: 34px;
+      font-size: var(--type-page-lg);
     }
     .st-masthead-numbers {
       gap: 22px;
     }
     .st-masthead-numbers strong {
-      font-size: 25px;
+      font-size: var(--type-section);
     }
     .st-source-switch {
       padding: 11px 22px;
@@ -2216,7 +2216,7 @@
       padding: 24px;
     }
     .st-overview-lead h2 {
-      font-size: 27px;
+      font-size: var(--type-section-lg);
     }
     .st-overview-second {
       grid-template-columns: 1fr;
@@ -2237,7 +2237,7 @@
       display: none;
     }
     .st-world-next h3 {
-      font-size: 24px;
+      font-size: var(--type-section);
       margin: 12px 0 20px;
     }
     .st-world-next > button:last-child {
@@ -2251,7 +2251,7 @@
       gap: 15px;
     }
     .st-profile-hero h2 {
-      font-size: 25px;
+      font-size: var(--type-section);
     }
     .st-profile-actions {
       max-width: 145px;
@@ -2272,13 +2272,13 @@
       gap: 10px;
     }
     .st-profile-dossier dt {
-      font-size: 9px;
+      font-size: var(--type-caption);
     }
     .st-profile-dossier dd {
-      font-size: 10px;
+      font-size: var(--type-secondary);
     }
     .st-context-number strong {
-      font-size: 54px;
+      font-size: var(--type-display);
     }
     .st-archive-strip {
       gap: 14px;
@@ -2295,19 +2295,19 @@
       height: 108px !important;
     }
     .st-spotlight-people strong {
-      font-size: 12px;
+      font-size: var(--type-label);
     }
     .st-filters {
       gap: 8px;
     }
     .st-filters select {
-      font-size: 9px;
+      font-size: var(--type-caption);
     }
     .st-result-summary strong {
-      font-size: 29px;
+      font-size: var(--type-section-lg);
     }
     .st-result-summary small {
-      font-size: 7px;
+      font-size: var(--type-caption);
     }
     .st-result-summary > div {
       padding: 0 12px;
@@ -2330,7 +2330,7 @@
       flex-shrink: 0;
       padding: 9px 11px;
       border: 1px solid #ffffff11;
-      font-size: 10px;
+      font-size: var(--type-secondary);
       min-height: 39px;
     }
     .st-rail > button.active {
@@ -2351,14 +2351,14 @@
       grid-template-columns: 1.1fr 1fr;
     }
     .st-overview-lead h2 {
-      font-size: 29px;
+      font-size: var(--type-section-lg);
     }
     .st-spotlight-people .person-portrait {
       width: 110px !important;
       height: 132px !important;
     }
     .st-spotlight-people strong {
-      font-size: 14px;
+      font-size: var(--type-body);
     }
     .st-compare-tray {
       transform: none;
@@ -2371,7 +2371,7 @@
       margin-bottom: 17px;
     }
     .st-world-date {
-      font-size: 9px;
+      font-size: var(--type-caption);
     }
     .st-directory-head,
     .st-directory-row {
@@ -2391,7 +2391,7 @@
       display: block;
     }
     .st-masthead-top .st-kicker {
-      font-size: 7px;
+      font-size: var(--type-caption);
       letter-spacing: 0.11em;
     }
     .st-world-date {
@@ -2402,11 +2402,11 @@
       display: block;
     }
     .st-masthead h1 {
-      font-size: 33px;
+      font-size: var(--type-page);
       line-height: 1.1;
     }
     .st-masthead-title p {
-      font-size: 10px;
+      font-size: var(--type-secondary);
       line-height: 1.5;
       margin-top: 9px;
     }
@@ -2427,10 +2427,10 @@
       padding-right: 0;
     }
     .st-masthead-numbers strong {
-      font-size: 24px;
+      font-size: var(--type-section);
     }
     .st-masthead-numbers span {
-      font-size: 7px;
+      font-size: var(--type-caption);
     }
     .st-source-switch {
       padding: 9px;
@@ -2443,7 +2443,7 @@
       gap: 6px;
       min-height: 44px;
       justify-content: center;
-      font-size: 9px;
+      font-size: var(--type-caption);
       line-height: 1.45;
       text-align: left;
     }
@@ -2460,7 +2460,7 @@
       padding-bottom: 9px;
     }
     .st-rail > button {
-      font-size: 10px;
+      font-size: var(--type-secondary);
       min-height: 43px;
       padding: 9px 12px;
     }
@@ -2476,7 +2476,7 @@
       gap: 9px;
     }
     .st-searchbar input {
-      font-size: 11px;
+      font-size: var(--type-secondary);
     }
     .st-searchbar kbd {
       display: none;
@@ -2496,19 +2496,19 @@
     .st-journal-filters input,
     .st-analysis-toolbar select {
       min-height: 44px;
-      font-size: 11px;
+      font-size: var(--type-secondary);
       padding-left: 10px;
     }
     .st-filters label > span,
     .st-journal-filters label > span,
     .st-analysis-toolbar label > span {
-      font-size: 9px;
+      font-size: var(--type-caption);
     }
     .st-filters .st-reset {
       grid-column: 1/-1;
       justify-content: flex-start;
       min-height: 35px;
-      font-size: 10px;
+      font-size: var(--type-secondary);
     }
     .st-section-heading {
       gap: 12px;
@@ -2516,18 +2516,18 @@
       align-items: flex-start;
     }
     .st-section-heading h2 {
-      font-size: 23px;
+      font-size: var(--type-subhead);
       line-height: 1.3;
     }
     .st-section-heading h3 {
-      font-size: 17px;
+      font-size: var(--type-card-sm);
     }
     .st-section-heading p {
-      font-size: 11px;
+      font-size: var(--type-secondary);
       line-height: 1.8;
     }
     .st-kicker {
-      font-size: 8px;
+      font-size: var(--type-caption);
       line-height: 1.6;
       letter-spacing: 0.1em;
     }
@@ -2551,10 +2551,10 @@
       height: 47px !important;
     }
     .st-directory-primary strong {
-      font-size: 13px;
+      font-size: var(--type-body);
     }
     .st-directory-primary small {
-      font-size: 9px;
+      font-size: var(--type-caption);
       line-height: 1.5;
     }
     .st-directory-primary > svg {
@@ -2567,11 +2567,11 @@
       gap: 4px;
     }
     .st-directory-context > span {
-      font-size: 10px;
+      font-size: var(--type-secondary);
       line-height: 1.5;
     }
     .st-directory-context > small {
-      font-size: 9px;
+      font-size: var(--type-caption);
       line-height: 1.5;
     }
     .st-compare-check {
@@ -2590,7 +2590,7 @@
     }
     .st-pagination {
       margin-top: 18px;
-      font-size: 9px;
+      font-size: var(--type-caption);
       align-items: center;
       gap: 7px;
     }
@@ -2600,10 +2600,10 @@
     .st-pagination button {
       min-height: 44px;
       padding: 8px;
-      font-size: 9px;
+      font-size: var(--type-caption);
     }
     .st-pagination > div > span {
-      font-size: 9px;
+      font-size: var(--type-caption);
     }
     .st-missing {
       padding: 24px 18px;
@@ -2616,18 +2616,18 @@
       gap: 16px;
     }
     .st-missing h3 {
-      font-size: 22px;
+      font-size: var(--type-subhead);
       line-height: 1.35;
     }
     .st-missing.compact h3 {
-      font-size: 19px;
+      font-size: var(--type-card);
     }
     .st-missing p {
-      font-size: 11px;
+      font-size: var(--type-secondary);
       line-height: 1.85;
     }
     .st-missing .st-text-link {
-      font-size: 10px !important;
+      font-size: var(--type-secondary) !important;
       min-height: 43px;
       line-height: 1.7;
     }
@@ -2639,29 +2639,29 @@
       padding: 26px 22px 24px;
     }
     .st-overview-lead h2 {
-      font-size: 32px;
+      font-size: var(--type-page);
       margin: 18px 0 17px;
       line-height: 1.15;
     }
     .st-overview-lead > p {
-      font-size: 11px;
+      font-size: var(--type-secondary);
       line-height: 1.9;
       margin-bottom: 21px;
     }
     .st-outline-button {
       min-height: 44px;
-      font-size: 11px;
+      font-size: var(--type-secondary);
       padding: 10px 13px;
     }
     .st-editorial-rule {
       margin: 23px 0 19px;
     }
     .st-editorial-status strong {
-      font-size: 11px;
+      font-size: var(--type-secondary);
       line-height: 1.6;
     }
     .st-editorial-status p {
-      font-size: 10px;
+      font-size: var(--type-secondary);
       line-height: 1.85;
     }
     .st-spotlight-title {
@@ -2676,20 +2676,20 @@
       height: 136px !important;
     }
     .st-spotlight-people strong {
-      font-size: 16px;
+      font-size: var(--type-card-sm);
     }
     .st-spotlight-people small {
-      font-size: 8px;
+      font-size: var(--type-caption);
     }
     .st-spotlight-people > button > span:last-child {
-      font-size: 9px;
+      font-size: var(--type-caption);
       min-height: 34px;
     }
     .st-spotlight-caption {
       padding: 16px 21px;
     }
     .st-spotlight-caption strong {
-      font-size: 10px;
+      font-size: var(--type-secondary);
     }
     .st-overview-second {
       display: block;
@@ -2702,7 +2702,7 @@
       padding: 24px 4px 0;
     }
     .st-world-next h3 {
-      font-size: 26px;
+      font-size: var(--type-section);
       line-height: 1.15;
       margin: 14px 0 21px;
     }
@@ -2711,13 +2711,13 @@
       gap: 15px;
     }
     .st-world-next strong {
-      font-size: 13px;
+      font-size: var(--type-body);
     }
     .st-world-next em {
-      font-size: 10px;
+      font-size: var(--type-secondary);
     }
     .st-world-next small {
-      font-size: 9px;
+      font-size: var(--type-caption);
     }
     .st-explore {
       margin: 27px 0;
@@ -2731,52 +2731,52 @@
       width: 100%;
     }
     .st-explore-links > button strong {
-      font-size: 13px;
+      font-size: var(--type-body);
     }
     .st-explore-links > button small {
-      font-size: 9px;
+      font-size: var(--type-caption);
     }
     .st-archive-strip {
       display: block;
       padding: 20px;
     }
     .st-archive-strip strong {
-      font-size: 13px;
+      font-size: var(--type-body);
     }
     .st-archive-strip small {
-      font-size: 10px;
+      font-size: var(--type-secondary);
       line-height: 1.8;
     }
     .st-archive-strip > button {
       padding: 14px 0 0;
       min-height: 44px;
       margin-left: 40px;
-      font-size: 10px;
+      font-size: var(--type-secondary);
     }
     .st-source {
-      font-size: 9px;
+      font-size: var(--type-caption);
       line-height: 1.8;
       gap: 8px;
       padding: 15px 0;
       margin-top: 12px;
     }
     .st-demo-notice {
-      font-size: 10px;
+      font-size: var(--type-secondary);
       line-height: 1.8;
       padding: 13px;
       margin-bottom: 17px;
     }
     .st-demo-notice.small {
-      font-size: 10px;
+      font-size: var(--type-secondary);
       line-height: 1.7;
     }
     .st-breadcrumb {
-      font-size: 9px;
+      font-size: var(--type-caption);
       margin-bottom: 13px;
       gap: 9px;
     }
     .st-breadcrumb button {
-      font-size: 11px;
+      font-size: var(--type-secondary);
       min-height: 44px;
     }
     .st-profile-hero {
@@ -2792,16 +2792,16 @@
       height: 88px !important;
     }
     .st-profile-hero h2 {
-      font-size: 27px;
+      font-size: var(--type-section-lg);
       line-height: 1.1;
       margin: 9px 0 10px;
       letter-spacing: -0.04em;
     }
     .st-profile-identity .st-kicker {
-      font-size: 7px;
+      font-size: var(--type-caption);
     }
     .st-profile-hero p {
-      font-size: 10px;
+      font-size: var(--type-secondary);
       line-height: 1.7;
     }
     .st-profile-tags {
@@ -2809,7 +2809,7 @@
       gap: 5px;
     }
     .st-profile-tags button {
-      font-size: 8px;
+      font-size: var(--type-caption);
       min-height: 28px;
       padding: 6px;
     }
@@ -2824,11 +2824,11 @@
       border-top: 1px solid #ffffff0e;
     }
     .st-profile-actions .st-outline-button {
-      font-size: 10px;
+      font-size: var(--type-secondary);
       min-height: 44px;
     }
     .st-profile-actions .st-text-link {
-      font-size: 9px !important;
+      font-size: var(--type-caption) !important;
       min-height: 44px;
       flex: 1;
       justify-content: flex-end;
@@ -2840,7 +2840,7 @@
       overflow-x: auto;
     }
     .st-profile > .tabs > button {
-      font-size: 10px;
+      font-size: var(--type-secondary);
       white-space: nowrap;
       min-height: 47px;
       padding: 14px 0;
@@ -2858,7 +2858,7 @@
       margin-bottom: 13px;
     }
     .st-profile-dossier .st-section-heading h3 {
-      font-size: 18px;
+      font-size: var(--type-card);
     }
     .st-profile-dossier dl > div {
       grid-template-columns: 1fr 1.15fr;
@@ -2866,18 +2866,18 @@
       gap: 15px;
     }
     .st-profile-dossier dt {
-      font-size: 10px;
+      font-size: var(--type-secondary);
     }
     .st-profile-dossier dd {
-      font-size: 11px;
+      font-size: var(--type-secondary);
       line-height: 1.7;
     }
     .st-profile-dossier dd .st-text-link {
-      font-size: 10px !important;
+      font-size: var(--type-secondary) !important;
       line-height: 1.7;
     }
     .st-profile-dossier .st-source {
-      font-size: 9px;
+      font-size: var(--type-caption);
       line-height: 1.7;
     }
     .st-profile-context > .st-missing {
@@ -2890,11 +2890,11 @@
       flex-shrink: 0;
     }
     .st-profile-context > .st-missing h3 {
-      font-size: 21px;
+      font-size: var(--type-card-lg);
       line-height: 1.35;
     }
     .st-profile-context > .st-missing p {
-      font-size: 11px;
+      font-size: var(--type-secondary);
       line-height: 1.85;
     }
     .st-context-number {
@@ -2902,13 +2902,13 @@
       gap: 20px;
     }
     .st-context-number strong {
-      font-size: 67px;
+      font-size: var(--type-display);
     }
     .st-context-number span {
-      font-size: 11px;
+      font-size: var(--type-secondary);
     }
     .st-context-body {
-      font-size: 11px;
+      font-size: var(--type-secondary);
       line-height: 1.85;
     }
     .st-profile-context .st-outline-button {
@@ -2918,23 +2918,23 @@
       padding: 25px 18px;
     }
     .st-track-map-missing p {
-      font-size: 11px;
+      font-size: var(--type-secondary);
     }
     .st-track-map-missing h3 {
-      font-size: 18px;
+      font-size: var(--type-card);
     }
     .st-mini-agenda button {
       min-height: 69px;
       padding: 15px 0;
     }
     .st-mini-agenda time {
-      font-size: 10px;
+      font-size: var(--type-secondary);
     }
     .st-mini-agenda span {
-      font-size: 11px;
+      font-size: var(--type-secondary);
     }
     .st-mini-agenda small {
-      font-size: 9px;
+      font-size: var(--type-caption);
     }
     .st-car-showroom > .studio-stage {
       height: 215px;
@@ -2944,11 +2944,11 @@
       padding: 19px 18px;
     }
     .st-car-showroom h3 {
-      font-size: 22px;
+      font-size: var(--type-subhead);
       line-height: 1.4;
     }
     .st-car-showroom p {
-      font-size: 11px;
+      font-size: var(--type-secondary);
     }
     .st-car-showroom .st-text-link {
       min-height: 44px;
@@ -2962,7 +2962,7 @@
     .st-related-preview .st-section-heading .st-text-link {
       margin-top: 6px;
       min-height: 44px;
-      font-size: 10px !important;
+      font-size: var(--type-secondary) !important;
     }
     .st-related-grid,
     .st-connections {
@@ -2974,17 +2974,17 @@
       min-height: 76px;
     }
     .st-entity-button strong {
-      font-size: 12px;
+      font-size: var(--type-label);
     }
     .st-entity-button small {
-      font-size: 10px;
+      font-size: var(--type-secondary);
     }
     .st-timeline > div {
       grid-template-columns: 65px 1fr;
       gap: 17px;
     }
     .st-timeline time {
-      font-size: 9px;
+      font-size: var(--type-caption);
       line-height: 1.8;
     }
     .st-timeline section {
@@ -2992,34 +2992,34 @@
       padding-bottom: 28px;
     }
     .st-timeline h4 {
-      font-size: 14px;
+      font-size: var(--type-body);
       line-height: 1.5;
     }
     .st-timeline p {
-      font-size: 10px;
+      font-size: var(--type-secondary);
       line-height: 1.85;
     }
     .st-timeline .st-text-link {
       min-height: 40px;
-      font-size: 10px !important;
+      font-size: var(--type-secondary) !important;
     }
     .st-history-real {
       padding: 20px 18px;
       gap: 14px;
     }
     .st-history-real h4 {
-      font-size: 14px;
+      font-size: var(--type-body);
       line-height: 1.6;
     }
     .st-history-real p {
-      font-size: 11px;
+      font-size: var(--type-secondary);
     }
     .st-history-real a {
-      font-size: 11px;
+      font-size: var(--type-secondary);
       min-height: 35px;
     }
     .st-history-real small {
-      font-size: 9px;
+      font-size: var(--type-caption);
     }
     .st-analysis-toolbar {
       align-items: flex-start;
@@ -3028,7 +3028,7 @@
       margin: 22px 0 19px;
     }
     .st-analysis-toolbar h3 {
-      font-size: 23px;
+      font-size: var(--type-subhead);
       line-height: 1.3;
     }
     .st-analysis-toolbar label {
@@ -3049,13 +3049,13 @@
       border: 0;
     }
     .st-result-summary strong {
-      font-size: 38px;
+      font-size: var(--type-page-lg);
     }
     .st-result-summary span {
-      font-size: 10px;
+      font-size: var(--type-secondary);
     }
     .st-result-summary small {
-      font-size: 9px;
+      font-size: var(--type-caption);
       max-width: 16ch;
       line-height: 1.5;
     }
@@ -3089,12 +3089,12 @@
       padding: 0;
       border: 0;
       display: block;
-      font-size: 11px;
+      font-size: var(--type-secondary);
       white-space: normal;
     }
     .st-result-table tbody th {
       grid-column: 1/3;
-      font-size: 13px;
+      font-size: var(--type-body);
       line-height: 1.6;
       min-height: 30px;
       padding-top: 2px;
@@ -3102,7 +3102,7 @@
     .st-result-table tbody td:nth-child(2) {
       grid-column: 1/-1;
       grid-row: 2;
-      font-size: 9px;
+      font-size: var(--type-caption);
       color: #848485;
       margin-top: -9px;
     }
@@ -3128,7 +3128,7 @@
       content: 'Очки';
     }
     .st-result-table tbody td:nth-child(n + 3):not(:last-child) {
-      font-size: 21px;
+      font-size: var(--type-card-lg);
       color: #d2d2d3;
       font-weight: 450;
       letter-spacing: -0.03em;
@@ -3136,7 +3136,7 @@
     }
     .st-result-table tbody td:nth-child(n + 3):before {
       display: block;
-      font-size: 8px;
+      font-size: var(--type-caption);
       letter-spacing: 0;
       color: #818182;
       padding-bottom: 6px;
@@ -3161,11 +3161,11 @@
       padding: 8px 19px;
     }
     .st-country-detail strong {
-      font-size: 31px;
+      font-size: var(--type-page);
     }
     .st-country-detail p {
       margin-top: 14px;
-      font-size: 11px;
+      font-size: var(--type-secondary);
       line-height: 1.9;
     }
     .st-attribution {
@@ -3173,11 +3173,11 @@
       gap: 13px;
     }
     .st-attribution h4 {
-      font-size: 14px;
+      font-size: var(--type-body);
       line-height: 1.6;
     }
     .st-attribution p {
-      font-size: 11px;
+      font-size: var(--type-secondary);
     }
     .st-academy-roster > div {
       display: grid;
@@ -3193,7 +3193,7 @@
     }
     .st-academy-roster > div > span:not(.badge) {
       padding-left: 52px;
-      font-size: 9px;
+      font-size: var(--type-caption);
       white-space: nowrap;
     }
     .st-sponsor-agreements > div {
@@ -3218,10 +3218,10 @@
     }
     .st-compare-tray small {
       max-width: 130px;
-      font-size: 9px;
+      font-size: var(--type-caption);
     }
     .st-compare-tray > .button {
-      font-size: 10px;
+      font-size: var(--type-secondary);
       min-height: 45px;
       padding: 8px 12px;
     }
@@ -3248,15 +3248,15 @@
       height: 65px !important;
     }
     .st-compare-profile-link h3 {
-      font-size: 16px;
+      font-size: var(--type-card-sm);
       line-height: 1.4;
     }
     .st-compare-profile-link p {
-      font-size: 10px;
+      font-size: var(--type-secondary);
       line-height: 1.6;
     }
     .st-compare-profile-link > span:last-child {
-      font-size: 9px;
+      font-size: var(--type-caption);
       line-height: 1.6;
       min-height: 35px;
     }
@@ -3276,7 +3276,7 @@
     }
     .st-comparison-data td {
       min-width: 170px;
-      font-size: 11px;
+      font-size: var(--type-secondary);
     }
     .st-comparison-data th {
       min-width: 145px;
@@ -3286,10 +3286,10 @@
       z-index: 1;
       background: #1f1f20;
       box-shadow: 2px 0 5px #0002;
-      font-size: 10px !important;
+      font-size: var(--type-secondary) !important;
     }
     .st-comparison-data thead th {
-      font-size: 10px !important;
+      font-size: var(--type-secondary) !important;
       color: #a0a0a1;
       position: static;
     }
@@ -3316,7 +3316,7 @@
     .st-journal-list > button > time {
       grid-column: 2;
       width: auto;
-      font-size: 9px;
+      font-size: var(--type-caption);
       grid-row: 1;
     }
     .st-journal-list > button > svg:first-of-type {
@@ -3328,17 +3328,17 @@
       grid-row: 2;
     }
     .st-journal-list strong {
-      font-size: 12px;
+      font-size: var(--type-label);
     }
     .st-journal-list small {
-      font-size: 10px;
+      font-size: var(--type-secondary);
       line-height: 1.8;
     }
     .st-journal-list em {
       grid-column: 2;
       grid-row: 3;
       max-width: none;
-      font-size: 8px;
+      font-size: var(--type-caption);
     }
     .st-journal-list > button > svg:last-child {
       grid-column: 3;
@@ -3352,7 +3352,7 @@
       padding: 22px 20px;
     }
     .st-fact-drawer h3 {
-      font-size: 23px;
+      font-size: var(--type-subhead);
       line-height: 1.4;
     }
     .st-fact-body {
@@ -3363,18 +3363,18 @@
       min-width: 44px;
     }
     .st-fact-body h4 {
-      font-size: 20px;
+      font-size: var(--type-card-lg);
     }
     .st-fact-body dl > div {
-      font-size: 12px;
+      font-size: var(--type-label);
       padding: 15px 0;
     }
     .st-fact-body dt {
-      font-size: 11px;
+      font-size: var(--type-secondary);
     }
     .st-fact-body .st-text-link {
       min-height: 44px;
-      font-size: 11px !important;
+      font-size: var(--type-secondary) !important;
     }
     .st-session-example .st-result-summary {
       grid-template-columns: repeat(3, 1fr);
@@ -3389,20 +3389,20 @@
       padding-left: 0;
     }
     .st-session-example .st-result-summary strong {
-      font-size: 31px;
+      font-size: var(--type-page);
     }
     .st-session-example .st-result-summary span {
-      font-size: 9px;
+      font-size: var(--type-caption);
     }
     .st-session-example .tabs > button {
-      font-size: 10px;
+      font-size: var(--type-secondary);
       min-height: 43px;
     }
     .st-session-heading h3 {
-      font-size: 28px;
+      font-size: var(--type-section-lg);
     }
     .st-session-note p {
-      font-size: 11px;
+      font-size: var(--type-secondary);
       line-height: 1.8;
     }
     .st-embedded {
@@ -3410,14 +3410,14 @@
       gap: 15px;
     }
     .st-embedded h3 {
-      font-size: 19px;
+      font-size: var(--type-card);
     }
     .st-embedded p {
-      font-size: 11px;
+      font-size: var(--type-secondary);
       line-height: 1.85;
     }
     .st-embedded .st-text-link {
-      font-size: 10px !important;
+      font-size: var(--type-secondary) !important;
       min-height: 43px;
     }
   }
@@ -3429,10 +3429,10 @@
       padding: 17px 21px;
     }
     .st-masthead h1 {
-      font-size: 31px;
+      font-size: var(--type-page);
     }
     .st-masthead-numbers strong {
-      font-size: 23px;
+      font-size: var(--type-subhead);
     }
     .st-source-switch {
       padding: 7px 17px;
@@ -3448,7 +3448,7 @@
       height: 75px !important;
     }
     .st-profile-hero h2 {
-      font-size: 25px;
+      font-size: var(--type-section);
     }
     .st-profile-grid {
       grid-template-columns: 1fr 1fr;
@@ -3535,13 +3535,13 @@
   }
   .st-analysis-choice label > span,
   .st-archive-controls label > span {
-    font-size: 9px;
+    font-size: var(--type-caption);
     color: #969699;
   }
   .st-analysis-choice select,
   .st-archive-controls select {
     font: inherit;
-    font-size: 11px;
+    font-size: var(--type-secondary);
     min-height: 42px;
     padding: 9px 28px 9px 12px;
     border: 1px solid #ffffff1b;
@@ -3553,7 +3553,7 @@
   }
   .st-analysis-choice p {
     margin: 0;
-    font-size: 9px;
+    font-size: var(--type-caption);
     line-height: 1.8;
     color: #8a8b8d;
     max-width: 54ch;
@@ -3565,7 +3565,7 @@
     border-radius: 7px;
   }
   .st-track-records h3 {
-    font-size: 21px;
+    font-size: var(--type-card-lg);
     font-weight: 550;
     line-height: 1.4;
     margin: 12px 0 23px;
@@ -3579,21 +3579,21 @@
   }
   .st-track-records > div > span {
     flex: 1;
-    font-size: 12px;
+    font-size: var(--type-label);
     color: #b4b3af;
   }
   .st-track-records strong {
-    font-size: 25px;
+    font-size: var(--type-section);
     font-variant-numeric: tabular-nums;
     font-weight: 500;
     letter-spacing: -0.035em;
   }
   .st-track-records small {
-    font-size: 9px;
+    font-size: var(--type-caption);
     color: #97958f;
   }
   .st-track-records p {
-    font-size: 11px;
+    font-size: var(--type-secondary);
     line-height: 1.8;
     color: #92928f;
     margin: 20px 0 0;
@@ -3623,13 +3623,13 @@
     min-width: 0;
   }
   .st-archive-series h3 {
-    font-size: 23px;
+    font-size: var(--type-subhead);
     letter-spacing: -0.03em;
     margin: 8px 0 9px;
     line-height: 1.2;
   }
   .st-archive-series p {
-    font-size: 10px;
+    font-size: var(--type-secondary);
     color: #969793;
     line-height: 1.8;
     margin: 0;
@@ -3640,7 +3640,7 @@
     justify-content: space-between;
     padding: 18px 0;
     border-bottom: 1px solid #ffffff1b;
-    font-size: 10px;
+    font-size: var(--type-secondary);
     color: #98999a;
     gap: 17px;
   }
@@ -3667,7 +3667,7 @@
     color: #b3b2ae;
   }
   .st-rankings > button > b {
-    font-size: 28px;
+    font-size: var(--type-section-lg);
     font-weight: 350;
     letter-spacing: -0.04em;
     color: #66686b;
@@ -3680,17 +3680,17 @@
     flex: 1;
   }
   .st-rankings > button strong {
-    font-size: 13px;
+    font-size: var(--type-body);
     font-weight: 550;
     color: #d9d6cf;
   }
   .st-rankings > button small {
-    font-size: 10px;
+    font-size: var(--type-secondary);
     color: #8a8d90;
     line-height: 1.6;
   }
   .st-rankings em {
-    font-size: 29px;
+    font-size: var(--type-section-lg);
     font-weight: 500;
     font-style: normal;
     font-variant-numeric: tabular-nums;
@@ -3701,7 +3701,7 @@
     color: #d8c1a6;
   }
   .st-rankings em small {
-    font-size: 8px;
+    font-size: var(--type-caption);
     color: #998f81;
     min-width: 60px;
   }
@@ -3712,7 +3712,7 @@
     padding: 27px 0;
   }
   .st-archive-season-title > strong {
-    font-size: 62px;
+    font-size: var(--type-display);
     line-height: 1;
     font-weight: 350;
     letter-spacing: -0.06em;
@@ -3724,11 +3724,11 @@
     gap: 9px;
   }
   .st-archive-season-title b {
-    font-size: 15px;
+    font-size: var(--type-body-lg);
     font-weight: 500;
   }
   .st-archive-season-title small {
-    font-size: 10px;
+    font-size: var(--type-secondary);
     line-height: 1.8;
     color: #8c8d8f;
     max-width: 49ch;
@@ -3739,7 +3739,7 @@
     }
     .st-analysis-choice p {
       margin: 12px 0 0;
-      font-size: 10px;
+      font-size: var(--type-secondary);
       line-height: 1.8;
     }
     .st-analysis-choice label {
@@ -3748,7 +3748,7 @@
     .st-analysis-choice select,
     .st-archive-controls select {
       min-height: 45px;
-      font-size: 11px;
+      font-size: var(--type-secondary);
     }
     .st-track-records {
       padding: 22px 18px;
@@ -3760,17 +3760,17 @@
     }
     .st-track-records > div small {
       grid-column: 1/-1;
-      font-size: 9px;
+      font-size: var(--type-caption);
     }
     .st-track-records > div > span {
-      font-size: 11px;
+      font-size: var(--type-secondary);
     }
     .st-track-records strong {
-      font-size: 24px;
+      font-size: var(--type-section);
       text-align: right;
     }
     .st-track-records p {
-      font-size: 11px;
+      font-size: var(--type-secondary);
       line-height: 1.85;
     }
     .st-archive-controls {
@@ -3791,18 +3791,18 @@
       width: 52px !important;
     }
     .st-archive-series h3 {
-      font-size: 21px;
+      font-size: var(--type-card-lg);
     }
     .st-archive-series p {
-      font-size: 10px;
+      font-size: var(--type-secondary);
     }
     .st-archive-series > .st-text-link {
       margin-left: 68px;
       min-height: 43px;
-      font-size: 10px !important;
+      font-size: var(--type-secondary) !important;
     }
     .st-rankings-header {
-      font-size: 9px;
+      font-size: var(--type-caption);
       align-items: flex-start;
       line-height: 1.7;
       gap: 17px;
@@ -3821,7 +3821,7 @@
       padding: 20px 0;
     }
     .st-rankings > button > b {
-      font-size: 20px;
+      font-size: var(--type-card-lg);
       width: 25px;
     }
     .st-rankings > button > .st-mark {
@@ -3829,18 +3829,18 @@
       width: 35px !important;
     }
     .st-rankings strong {
-      font-size: 12px !important;
+      font-size: var(--type-label) !important;
       line-height: 1.5;
     }
     .st-rankings small {
-      font-size: 9px !important;
+      font-size: var(--type-caption) !important;
     }
     .st-rankings em {
-      font-size: 24px;
+      font-size: var(--type-section);
       flex-shrink: 0;
     }
     .st-rankings em small {
-      font-size: 8px !important;
+      font-size: var(--type-caption) !important;
       min-width: 36px;
     }
     .st-rankings > button > svg {
@@ -3851,13 +3851,13 @@
       padding: 21px 0;
     }
     .st-archive-season-title > strong {
-      font-size: 62px;
+      font-size: var(--type-display);
     }
     .st-archive-season-title > span {
       margin-top: 17px;
     }
     .st-archive-season-title small {
-      font-size: 11px;
+      font-size: var(--type-secondary);
       line-height: 1.8;
     }
   }
@@ -3866,7 +3866,7 @@
     padding: 18px 24px;
   }
   .st-center.has-context .st-masthead-title h1 {
-    font-size: 25px;
+    font-size: var(--type-section-lg);
   }
   .st-center.has-context .st-masthead-title p,
   .st-center.has-context .st-masthead-numbers {
@@ -3890,14 +3890,14 @@
     margin-bottom: 23px;
   }
   .st-center.has-context .st-masthead-top .st-world-date {
-    font-size: 9px;
+    font-size: var(--type-caption);
   }
   @media (max-width: 650px) {
     .st-center.has-context .st-masthead-title {
       padding: 16px 17px;
     }
     .st-center.has-context .st-masthead-title h1 {
-      font-size: 25px;
+      font-size: var(--type-section-lg);
     }
     .st-center.has-context .st-masthead {
       margin-bottom: 14px;
@@ -3929,18 +3929,18 @@
     color: #cac9c5;
   }
   .st-filters select {
-    font-size: 11px;
+    font-size: var(--type-secondary);
   }
   .st-profile-context p,
   .st-overview-lead > p,
   .st-section-heading p {
-    font-size: 12px;
+    font-size: var(--type-label);
   }
   .st-directory-primary strong {
-    font-size: 13px;
+    font-size: var(--type-body);
   }
   .st-directory-context > span {
-    font-size: 12px;
+    font-size: var(--type-label);
   }
   .st-center .pw-chart-provenance {
     color: #98999c;
@@ -3953,7 +3953,7 @@
       margin: 0 0 20px;
     }
     .st-mobile-category > span {
-      font-size: 9px;
+      font-size: var(--type-caption);
       color: #a2a29f;
     }
     .st-mobile-category select {
@@ -3964,7 +3964,7 @@
       width: 100%;
       border-radius: 5px;
       font: inherit;
-      font-size: 12px;
+      font-size: var(--type-label);
       padding: 10px 32px 10px 13px;
     }
     .st-rail {
@@ -3976,13 +3976,13 @@
     .st-profile-context p,
     .st-overview-lead > p,
     .st-section-heading p {
-      font-size: 11px;
+      font-size: var(--type-secondary);
     }
     .st-directory-context > span {
-      font-size: 11px;
+      font-size: var(--type-secondary);
     }
     .st-directory-primary strong {
-      font-size: 13px;
+      font-size: var(--type-body);
     }
     .st-profile > .tabs {
       gap: 23px;
@@ -4006,7 +4006,7 @@
     margin-top: 3px;
   }
   .st-embedded-full h3 {
-    font-size: 24px;
+    font-size: var(--type-section);
     color: #e0ddd5;
   }
   .st-embedded-full > header p {
@@ -4029,14 +4029,14 @@
     margin-bottom: 10px;
   }
   .st-embedded-subhead h4 {
-    font-size: 13px;
+    font-size: var(--type-body);
     font-weight: 550;
     color: #c8c5be;
     line-height: 1.5;
     margin: 0;
   }
   .st-embedded-subhead > span {
-    font-size: 9px;
+    font-size: var(--type-caption);
     color: #85878b;
     flex-shrink: 0;
   }
@@ -4053,7 +4053,7 @@
     min-width: 0;
   }
   .st-embedded-events time {
-    font-size: 9px;
+    font-size: var(--type-caption);
     color: #96918a;
     line-height: 1.7;
     width: 82px;
@@ -4067,12 +4067,12 @@
     min-width: 0;
   }
   .st-embedded-events strong {
-    font-size: 11px;
+    font-size: var(--type-secondary);
     font-weight: 550;
     color: #d0cdc4;
   }
   .st-embedded-events small {
-    font-size: 9px;
+    font-size: var(--type-caption);
     color: #8f9193;
     line-height: 1.7;
   }
@@ -4095,7 +4095,7 @@
   }
   .st-embedded-empty {
     color: #939499 !important;
-    font-size: 11px;
+    font-size: var(--type-secondary);
     line-height: 1.8;
   }
   .st-embedded-no-results {
@@ -4114,14 +4114,14 @@
   }
   .st-embedded-no-results h4 {
     color: #c3c0b6;
-    font-size: 14px;
+    font-size: var(--type-body);
     margin: 0 0 9px;
     font-weight: 550;
     line-height: 1.5;
   }
   .st-embedded-no-results p {
     color: #919498;
-    font-size: 11px;
+    font-size: var(--type-secondary);
     line-height: 1.8;
     margin: 0;
   }
@@ -4133,7 +4133,7 @@
       gap: 13px;
     }
     .st-embedded-full h3 {
-      font-size: 22px;
+      font-size: var(--type-subhead);
     }
     .st-embedded-columns {
       display: block;
@@ -4143,7 +4143,7 @@
       margin-top: 27px;
     }
     .st-embedded-subhead h4 {
-      font-size: 13px;
+      font-size: var(--type-body);
     }
     .st-embedded-events > button {
       gap: 11px;
@@ -4152,23 +4152,23 @@
     }
     .st-embedded-events time {
       width: 62px;
-      font-size: 9px;
+      font-size: var(--type-caption);
     }
     .st-embedded-events strong {
-      font-size: 12px;
+      font-size: var(--type-label);
     }
     .st-embedded-events small {
-      font-size: 10px;
+      font-size: var(--type-secondary);
     }
     .st-embedded-no-results {
       padding: 18px 15px;
       gap: 13px;
     }
     .st-embedded-no-results h4 {
-      font-size: 14px;
+      font-size: var(--type-body);
     }
     .st-embedded-no-results p {
-      font-size: 11px;
+      font-size: var(--type-secondary);
       line-height: 1.9;
     }
   }

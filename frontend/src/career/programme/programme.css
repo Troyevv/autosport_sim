@@ -46,7 +46,7 @@
   background: #24262b;
 }
 .programme-cars strong {
-  font-size: 1.65rem;
+  font-size: var(--type-section-lg);
 }
 .programme-cars small,
 .programme-cars span,
@@ -55,7 +55,7 @@
   color: var(--muted, #adb0b6);
 }
 .programme-cars small {
-  font-size: 0.85rem;
+  font-size: var(--type-body);
 }
 .programme-body,
 .programme-form {
@@ -65,7 +65,7 @@
 .programme-body h3,
 .programme-form h3 {
   margin: 0;
-  font-size: 1rem;
+  font-size: var(--type-card-sm);
 }
 .programme-body p,
 .programme-form p {
@@ -123,9 +123,9 @@
     padding: 0.7rem;
   }
   .programme-ribbon {
-    font-size: 0.85rem;
+    font-size: var(--type-body);
   }
   .programme-cars span {
-    font-size: 0.85rem;
+    font-size: var(--type-body);
   }
 }

@@ -6,7 +6,7 @@
   }
   .garage-selectors select {
     min-width: 170px;
-    font-size: 12px;
+    font-size: var(--type-label);
   }
   .garage-hero {
     position: relative;
@@ -24,12 +24,12 @@
     pointer-events: none;
   }
   .garage-hero h2 {
-    font-size: 49px;
+    font-size: var(--type-page-lg);
     letter-spacing: -2px;
     margin: 10px 0;
   }
   .garage-hero p {
-    font-size: 12px;
+    font-size: var(--type-label);
   }
   .garage-hero > footer {
     position: absolute;
@@ -65,7 +65,7 @@
     flex: 1;
   }
   .garage-crew small {
-    font-size: 10px;
+    font-size: var(--type-secondary);
   }
   .components-car {
     position: relative;
@@ -110,7 +110,7 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    font-size: 11px;
+    font-size: var(--type-secondary);
   }
   .livery-stage > header > span > svg {
     color: var(--org-accent);
@@ -125,7 +125,7 @@
     display: flex;
     gap: 12px;
     padding: 20px;
-    font-size: 11px;
+    font-size: var(--type-secondary);
     border-top: 1px solid #555555;
   }
   .livery-stage > p svg {
@@ -145,7 +145,7 @@
     gap: 18px;
   }
   .livery-controls legend {
-    font-size: 9px;
+    font-size: var(--type-caption);
     text-transform: uppercase;
     letter-spacing: 0.15em;
     color: var(--org-accent);
@@ -163,16 +163,16 @@
     width: 50px;
   }
   .color-setting code {
-    font-size: 10px;
+    font-size: var(--type-secondary);
   }
   .livery-controls p {
-    font-size: 11px;
+    font-size: var(--type-secondary);
   }
   .livery-controls .tabs {
     gap: 20px;
   }
   .livery-controls .tabs button {
-    font-size: 12px;
+    font-size: var(--type-label);
   }
   .decal-layers {
     display: flex;
@@ -189,7 +189,7 @@
     background: #2c2c2c;
     padding: 12px;
     text-align: left;
-    font-size: 12px;
+    font-size: var(--type-label);
   }
   .decal-layers > button.active {
     background: color-mix(in srgb, var(--org-accent) 8%, transparent);
@@ -197,7 +197,7 @@
   }
   .decal-layers small {
     margin-left: auto;
-    font-size: 10px;
+    font-size: var(--type-secondary);
   }
   .livery-savebar {
     position: sticky;
@@ -241,7 +241,7 @@
     .garage-selectors select {
       min-width: 0;
       width: 50%;
-      font-size: 10px;
+      font-size: var(--type-secondary);
     }
     .garage-hero > .studio-stage {
       height: 300px;
@@ -251,14 +251,14 @@
       left: 22px;
     }
     .garage-hero h2 {
-      font-size: 32px;
+      font-size: var(--type-page);
       margin: 8px 0;
     }
     .garage-hero p {
-      font-size: 10px;
+      font-size: var(--type-secondary);
     }
     .garage-hero .eyebrow {
-      font-size: 8px;
+      font-size: var(--type-caption);
     }
     .garage-hero > footer {
       left: 18px;
@@ -267,20 +267,20 @@
       gap: 10px;
     }
     .garage-hero > footer .button {
-      font-size: 10px;
+      font-size: var(--type-secondary);
       padding: 9px;
     }
     .garage-hero > footer .badge {
-      font-size: 9px;
+      font-size: var(--type-caption);
     }
     .livery-stage > header {
       padding: 11px 16px;
     }
     .livery-stage > header > span {
-      font-size: 10px;
+      font-size: var(--type-secondary);
     }
     .livery-stage .badge {
-      font-size: 7px;
+      font-size: var(--type-caption);
       padding: 2px 4px;
     }
     .livery-stage > .studio-stage {
@@ -288,7 +288,7 @@
     }
     .livery-stage > p {
       padding: 14px;
-      font-size: 10px;
+      font-size: var(--type-secondary);
     }
     .livery-workspace {
       gap: 0;
@@ -312,7 +312,7 @@
     }
     .livery-savebar > .button {
       flex: 1;
-      font-size: 12px;
+      font-size: var(--type-label);
     }
     .livery-workspace.dirty {
       padding-bottom: 80px;
@@ -324,7 +324,7 @@
       height: 185px;
     }
     .components-car > .badge {
-      font-size: 8px;
+      font-size: var(--type-caption);
       top: 14px;
       left: 14px;
     }
@@ -363,7 +363,7 @@
       height: 225px;
     }
     .garage-hero h2 {
-      font-size: 25px;
+      font-size: var(--type-section);
     }
     .garage-hero > div:not(.studio-stage) {
       top: 16px;
@@ -457,7 +457,7 @@
       display: none;
     }
     .main-inner:has(.livery-workspace) > .page-heading h1 {
-      font-size: 22px;
+      font-size: var(--type-section-lg);
       margin: 0;
     }
     .main-inner:has(.livery-workspace) > .page-heading select {
@@ -479,7 +479,7 @@
       height: 210px;
     }
     .livery-stage > p {
-      font-size: 10px;
+      font-size: var(--type-secondary);
       padding: 10px 14px;
     }
     .livery-controls {
@@ -515,7 +515,7 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    font-size: 11px;
+    font-size: var(--type-secondary);
   }
   .livery-stage > header > span > svg {
     color: var(--org-accent);
@@ -530,7 +530,7 @@
     display: flex;
     gap: 12px;
     padding: 20px;
-    font-size: 11px;
+    font-size: var(--type-secondary);
     border-top: 1px solid #555555;
   }
   .livery-stage > p svg {
@@ -550,7 +550,7 @@
     gap: 18px;
   }
   .livery-controls legend {
-    font-size: 9px;
+    font-size: var(--type-caption);
     text-transform: uppercase;
     letter-spacing: 0.15em;
     color: var(--org-accent);
@@ -568,16 +568,16 @@
     width: 50px;
   }
   .color-setting code {
-    font-size: 10px;
+    font-size: var(--type-secondary);
   }
   .livery-controls p {
-    font-size: 11px;
+    font-size: var(--type-secondary);
   }
   .livery-controls .tabs {
     gap: 20px;
   }
   .livery-controls .tabs button {
-    font-size: 12px;
+    font-size: var(--type-label);
   }
   @media (max-width: 1100px) {
     .livery-workspace {
@@ -598,10 +598,10 @@
       padding: 11px 16px;
     }
     .livery-stage > header > span {
-      font-size: 10px;
+      font-size: var(--type-secondary);
     }
     .livery-stage .badge {
-      font-size: 7px;
+      font-size: var(--type-caption);
       padding: 2px 4px;
     }
     .livery-stage > .studio-stage {
@@ -609,7 +609,7 @@
     }
     .livery-stage > p {
       padding: 14px;
-      font-size: 10px;
+      font-size: var(--type-secondary);
     }
     .livery-workspace {
       gap: 0;
@@ -651,7 +651,7 @@
       height: 210px;
     }
     .livery-stage > p {
-      font-size: 10px;
+      font-size: var(--type-secondary);
       padding: 10px 14px;
     }
     .livery-controls {

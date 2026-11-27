@@ -295,6 +295,8 @@ export function Tabs({ items, value, onChange }) {
           key={t.id}
           type="button"
           role="tab"
+          aria-label={t.label}
+          aria-description={t.count != null ? String(t.count) : undefined}
           aria-selected={value === t.id}
           tabIndex={value === t.id ? 0 : -1}
           onClick={() => onChange(t.id)}

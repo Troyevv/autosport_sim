@@ -18,14 +18,14 @@
   }
   .pw-chart-heading h3 {
     margin: 0;
-    font-size: 15px;
+    font-size: var(--type-body-lg);
     line-height: 1.4;
     font-weight: 650;
   }
   .pw-chart-heading p {
     margin: 5px 0 0;
     color: var(--chart-muted);
-    font-size: 12px;
+    font-size: var(--type-label);
     line-height: 1.55;
     max-width: 65ch;
   }
@@ -40,7 +40,7 @@
     border-radius: 5px;
     background: #ffffff04;
     font: inherit;
-    font-size: 11px;
+    font-size: var(--type-secondary);
     cursor: pointer;
     min-height: 36px;
   }
@@ -63,7 +63,7 @@
     border: 0;
     color: #b6c4cc;
     min-height: 32px;
-    font-size: 11px;
+    font-size: var(--type-secondary);
     cursor: pointer;
     padding: 3px 0;
   }
@@ -92,7 +92,7 @@
   .pw-chart-canvas svg text {
     font-family: inherit;
     fill: var(--chart-muted);
-    font-size: 11px;
+    font-size: var(--type-secondary);
   }
   .pw-chart-grid {
     stroke: var(--chart-line);
@@ -106,14 +106,14 @@
   }
   .pw-chart-unit {
     margin: 3px 0 1px 15px;
-    font-size: 10px;
+    font-size: var(--type-secondary);
     color: var(--chart-muted);
     letter-spacing: 0.04em;
   }
   .pw-chart-xlabel {
     display: block;
     text-align: center;
-    font-size: 10px;
+    font-size: var(--type-secondary);
     color: var(--chart-muted);
     margin-top: -4px;
     padding-bottom: 6px;
@@ -139,7 +139,7 @@
     padding: 9px 21px;
     background: #ffffff05;
     color: #8d9fa9;
-    font-size: 11px;
+    font-size: var(--type-secondary);
     border-top: 1px solid #ffffff0c;
   }
   .pw-chart-readout.has-pick {
@@ -148,7 +148,7 @@
   }
   .pw-chart-readout strong {
     color: #f0f5f7;
-    font-size: 12px;
+    font-size: var(--type-label);
   }
   .pw-chart-readout span {
     display: inline-flex;
@@ -180,7 +180,7 @@
     padding: 11px 21px 13px;
     border-top: 1px solid #ffffff0a;
     color: #8295a1;
-    font-size: 10px;
+    font-size: var(--type-secondary);
     line-height: 1.6;
   }
   .pw-chart-provenance > span {
@@ -214,14 +214,14 @@
   .pw-chart-table table {
     border-collapse: collapse;
     width: 100%;
-    font-size: 12px;
+    font-size: var(--type-label);
     white-space: nowrap;
   }
   .pw-chart-table caption {
     text-align: left;
     padding: 8px 0 10px;
     color: #98afba;
-    font-size: 11px;
+    font-size: var(--type-secondary);
   }
   .pw-chart-table th,
   .pw-chart-table td {
@@ -266,13 +266,13 @@
   }
   .pw-chart-empty strong {
     color: #c5d1d8;
-    font-size: 14px;
+    font-size: var(--type-body);
   }
   .pw-chart-empty p {
     max-width: 43ch;
     margin: 0;
     color: #8499a5;
-    font-size: 12px;
+    font-size: var(--type-label);
     line-height: 1.6;
   }
   .pw-sr-only {
@@ -292,10 +292,10 @@
       gap: 8px;
     }
     .pw-chart-heading h3 {
-      font-size: 14px;
+      font-size: var(--type-body);
     }
     .pw-chart-heading p {
-      font-size: 11px;
+      font-size: var(--type-secondary);
     }
     .pw-chart-view {
       padding: 7px 9px;
@@ -307,7 +307,7 @@
     }
     .pw-chart-legend button {
       min-height: 40px;
-      font-size: 11px;
+      font-size: var(--type-secondary);
     }
     .pw-chart-canvas {
       padding: 0 2px;
@@ -316,7 +316,7 @@
       min-height: 190px;
     }
     .pw-chart-canvas svg text {
-      font-size: 15px;
+      font-size: var(--type-body-lg);
     }
     .pw-chart-wide {
       overflow-x: auto;
@@ -362,10 +362,10 @@
   }
   @media (max-width: 650px) {
     .pw-chart-canvas svg text {
-      font-size: 14px;
+      font-size: var(--type-body);
     }
     .pw-chart-wide svg text {
-      font-size: 14px;
+      font-size: var(--type-body);
     }
     .pw-chart-stepper {
       display: flex;
@@ -374,7 +374,7 @@
       align-items: center;
       padding: 4px 14px 9px;
       color: #aaa8a3;
-      font-size: 10px;
+      font-size: var(--type-secondary);
     }
     .pw-chart-stepper button {
       display: grid;
@@ -397,10 +397,10 @@
       min-width: 540px;
     }
     .pw-chart-unit {
-      font-size: 10px;
+      font-size: var(--type-secondary);
     }
     .pw-chart-readout {
-      font-size: 11px;
+      font-size: var(--type-secondary);
     }
   }
   .pw-chart .pw-chart-mark:focus-visible {
