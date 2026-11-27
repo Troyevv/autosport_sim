@@ -228,6 +228,7 @@ test('Мандат владельца, наблюдение скаута и до
   await page.keyboard.press('Escape')
   await page.getByRole('button', { name: 'Подготовка', exact: true }).click()
   await page.getByRole('button', { name: /Утвердить программу · Практика воспитанников/ }).click()
+  await page.getByRole('dialog').getByRole('button', { name: 'Подтвердить программу' }).click()
   await expect(page.locator('.prep-desk .staff-timeline')).toContainText('Запланировано')
   await evidence('preparation')
   const prepared = page.waitForResponse(r => r.url().endsWith('/commands') && r.request().method() === 'POST')

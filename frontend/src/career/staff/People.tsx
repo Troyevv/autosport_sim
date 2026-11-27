@@ -228,7 +228,7 @@ export function People({
           }}
         />
       )}
-      {tab === 'preparation' && <PreparationDesk {...{ c, order, busy }} />}
+      {tab === 'preparation' && <PreparationDesk {...{ c, order, busy, error }} />}
       {['programs', 'academy', 'funding'].includes(tab) && c.mandate && (
         <Programs
           section={tab}

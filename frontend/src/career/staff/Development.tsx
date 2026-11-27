@@ -1,6 +1,7 @@
 import { useState } from 'react'
-import { Activity, CalendarDays, ClipboardList, Timer } from 'lucide-react'
-import { Button } from '../../ui/components'
+import { Activity, CalendarDays } from 'lucide-react'
+import { Icon, Button as PaperButton } from '../../pitwall/ui'
+import { Button, Dialog } from '../../ui/components'
 import { money, type Career } from '../api'
 import { shortDate, type Order } from './model'
 
@@ -45,8 +46,8 @@ export function Development({ data }: { data: DevelopmentRecord }) {
       </div>
       {data.migration && (
         <p className="muted">
-          Перенос сохранения · {shortDate(data.migration.date)}. Завершённых программ по прежним правилам:{' '}
-          {data.migration.completed}.{' '}
+          Перенос сохранения · {shortDate(data.migration.date)}. Завершённых программ по прежним
+          правилам: {data.migration.completed}.{' '}
           {data.migration.cancelled &&
             'Закрыт незавершённый индивидуальный план «' + data.migration.cancelled.skill + '».'}
         </p>
@@ -101,45 +102,104 @@ export function Development({ data }: { data: DevelopmentRecord }) {
     </section>
   )
 }
-export function PreparationDesk({ c, order, busy }: { c: Career; order: Order; busy: boolean }) {
+export function PreparationDesk({
+  c,
+  order,
+  busy,
+  error,
+}: {
+  c: Career
+  order: Order
+  busy: boolean
+  error: string
+}) {
+  const [proposal, propose] = useState('')
+  const option = c.preparation_options.find((row) => row.id === proposal)
+  const [declined, setDeclined] = useState(false)
   const labels = Object.fromEntries(c.preparation_options.map((p) => [p.id, p.name]))
   return (
-    <section className="prep-desk">
-      <div className="staff-subhead">
-        <h2>Программы подготовки</h2>
-        <ClipboardList aria-hidden="true" />
-      </div>
-      <p className="muted">
-        Утвердите время и бюджет. Штаб распределит работу с учётом календаря, действующих назначений и
-        усталости.
-      </p>
-      <div className="prep-options">
-        {c.preparation_options.map((p) => {
-          const occupied = c.preparations.some((r) => r.kind === p.id && r.status === 'scheduled')
+    <section className="people-module prep-desk">
+      <div className="p-prep-options">
+        {c.preparation_options.map((row) => {
+          const occupied = c.preparations.some((r) => r.kind === row.id && r.status === 'scheduled')
+          const icon =
+            (
+              {
+                simulator: 'Gamepad2',
+                fitness: 'Activity',
+                'pit-drill': 'Timer',
+                academy: 'GraduationCap',
+                debrief: 'MessagesSquare',
+                'bench-test': 'Gauge',
+              } as Record<string, string>
+            )[row.id] || 'Calendar'
           return (
-            <article key={p.id}>
-              <small>{p.facility}</small>
-              <h3>{p.name}</h3>
-              <div className="prep-metrics">
+            <article key={row.id}>
+              <Icon name={icon} size={28} />
+              <span className="p-kicker">{row.facility}</span>
+              <h2>{row.name}</h2>
+              <div className="p-prep-price">
+                <strong>{money(row.cost)}</strong>
                 <span>
-                  <Timer size={15} />
-                  {p.days} дн.
+                  {row.days} дн. · нагрузка +{row.load}
                 </span>
-                <span>Нагрузка +{p.load}</span>
-                <strong>{money(p.cost)}</strong>
               </div>
-              <p>{p.unavailable || p.participants?.join(' · ')}</p>
-              <Button
-                disabled={busy || occupied || Boolean(p.unavailable)}
-                onClick={() => order('prepare-program', { kind: p.id })}
-                aria-label={'Утвердить программу · ' + p.name}
+              {row.unavailable && <p>{row.unavailable}</p>}
+              <PaperButton
+                variant={occupied || row.unavailable ? 'secondary' : 'primary'}
+                disabled={busy || occupied || Boolean(row.unavailable)}
+                onClick={() => {
+                  propose(row.id)
+                  setDeclined(false)
+                }}
+                aria-label={'Утвердить программу · ' + row.name}
               >
                 {occupied ? 'Слот занят' : 'Утвердить программу'}
-              </Button>
+              </PaperButton>
             </article>
           )
         })}
       </div>
+      {option && (
+        <Dialog
+          title={option.name}
+          onClose={() => {
+            if (!busy) propose('')
+          }}
+        >
+          <div className="p-facts">
+            <dl>
+              <dt>Объект</dt>
+              <dd>{option.facility}</dd>
+              <dt>Продолжительность</dt>
+              <dd>{option.days} дн.</dd>
+              <dt>Нагрузка</dt>
+              <dd>+{option.load}</dd>
+              <dt>Стоимость программы</dt>
+              <dd>{money(option.cost)}</dd>
+              <dt>Участники</dt>
+              <dd>{option.participants?.join(' · ') || 'Состав определяет штаб'}</dd>
+            </dl>
+          </div>
+          {option.unavailable && <p>{option.unavailable}</p>}
+          {declined && <p role="alert">{error}</p>}
+          <div className="form-actions">
+            <Button disabled={busy} onClick={() => propose('')}>
+              Назад
+            </Button>
+            <Button
+              primary
+              disabled={busy || Boolean(option.unavailable)}
+              onClick={async () => {
+                if (await order('prepare-program', { kind: option.id })) propose('')
+                else setDeclined(true)
+              }}
+            >
+              Подтвердить программу
+            </Button>
+          </div>
+        </Dialog>
+      )}
       <div className="staff-subhead">
         <h3>Расписание и результаты</h3>
         <CalendarDays aria-hidden="true" size={18} />
