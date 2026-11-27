@@ -5,20 +5,29 @@ from fastapi.testclient import TestClient
 from . import service
 from .app import app
 from .branding import BrandPalette, can_edit
-from .catalog import LINEUP_WORLD, SEASON_LINEUP
+from .catalog import LINEUP_WORLD, SEASON_LINEUP, WORLD
 from .finance.capital import owner_wallet
+from .livery import GARAGE, garage_catalog
 
 
-def test_every_organization_has_two_independent_brand_colours():
+def test_every_organization_has_a_valid_brand_palette():
     for world in (LINEUP_WORLD, SEASON_LINEUP):
         for organization in world["organizations"].values():
             palette = BrandPalette.model_validate(organization["brand_palette"])
-            assert palette.primary != palette.secondary
             assert palette.primary == organization["color"]
     assert {o["kind"] for o in SEASON_LINEUP["organizations"].values()} == {
         "supplier",
         "team",
     }
+
+
+def test_factory_paint_is_independent_of_catalog_brand_changes(monkeypatch):
+    entry = next(e for e in WORLD["entries"].values() if e["championship"] == "freca")
+    team = WORLD["organizations"][entry["org"]]
+    palette = {"primary": "#123456", "secondary": "#123456"}
+    monkeypatch.setitem(team, "color", palette["primary"])
+    monkeypatch.setitem(team, "brand_palette", palette)
+    assert garage_catalog() == GARAGE
 
 
 def test_palette_is_scoped_persistent_and_independent_of_livery(tmp_path, monkeypatch):
