@@ -1,9 +1,11 @@
+import { businessTab, BusinessTabs } from '../../pitwall/BusinessTabs'
 import { useState, type FormEvent } from 'react'
 import { Button, Dialog, Facts, Header, Panel } from '../../ui/components'
 import type { SectionProps } from '../Sections'
 import { usePersonnel } from '../staff/model'
 import { money, type Career } from '../api'
 import { useOrder } from './useOrder'
+const shareColors = ['#b6aca1', '#9eb2ac', '#a58173', '#847f9b', '#cbc4a0']
 const labels: Record<string, string> = {
   invest: 'Внести капитал',
   dividend: 'Распределить дивиденды',
@@ -49,13 +51,18 @@ type View = {
   assets: { id: string; kind: string; owner: string; book_cents: number }[]
   programs: { id: string; org: string; status: string; series: string }[]
 }
-export function Capital({ c, world, updateCareer }: SectionProps & { updateCareer: (c: Career) => void }) {
+export function Capital({
+  c,
+  world,
+  updateCareer,
+}: SectionProps & { updateCareer: (c: Career) => void }) {
   const req = usePersonnel<View>('careers/' + c.id + '/capital', c.revision),
     v = req.data,
     order = useOrder(c, updateCareer),
     [action, set] = useState(''),
     [target, choose] = useState(''),
     [side, direction] = useState('')
+  const tab = businessTab('capital')
   const owner = c.role !== 'manager',
     open = (a: string, k = '', s = '') => {
       order.clear()
@@ -72,7 +79,10 @@ export function Capital({ c, world, updateCareer }: SectionProps & { updateCaree
       invest: { amount_cents: amt, source: f.get('source') },
       dividend: { amount_cents: amt },
       loan: { principal_cents: amt, months: Number(f.get('months')) },
-      equity: { basis_points: Math.round(Number(f.get('percent')) * 100), issue: f.get('issue') === 'new' },
+      equity: {
+        basis_points: Math.round(Number(f.get('percent')) * 100),
+        issue: f.get('issue') === 'new',
+      },
       repay: { loan: target },
       restructure: { loan: target },
       asset: { asset: target, side },
@@ -85,133 +95,172 @@ export function Capital({ c, world, updateCareer }: SectionProps & { updateCaree
     <section className="screen finance-desk">
       <Header
         section={world.organizations[c.org].name}
-        title="Капитал и кредит"
+        title="Собственность и капитал"
         sub="Оценка организации, собственники и обязательства"
       />
+      <BusinessTabs page="capital" />
       {req.error && <p role="alert">{req.error}</p>}
       {v && (
         <>
-          <Panel title="Стоимость организации">
-            <Facts
-              items={[
-                ['Расчётная стоимость', money(v.valuation.value_cents)],
-                ['Денежные средства', money(v.valuation.cash_cents)],
-                ['Активы', money(v.valuation.assets_cents)],
-                ['Оценка будущих договоров', money(v.valuation.contract_value_cents)],
-                ['Долг', money(v.valuation.debt_cents)],
-                ['Просрочено', money(v.valuation.overdue_cents)],
-                [
-                  'Состояние',
-                  {
-                    solvent: 'Платёжеспособна',
-                    recovered: 'Платежи восстановлены',
-                    insolvent: 'Неплатёжеспособность',
-                    bankrupt: 'Банкротство',
-                  }[v.crisis.status],
-                ],
-              ]}
-            />
-          </Panel>
-          <Panel title="Собственники">
-            <Facts
-              items={[
-                ...(owner
-                  ? ([
-                      ['Средства владельца', money(v.owner_cents)],
-                      ['Личный капитал', money(v.personal_cents)],
-                    ] as [string, string][])
-                  : []),
-                ...Object.entries(v.shares).map(
-                  ([k, n]) =>
-                    [k === 'capital:fund' ? 'Инвестиционный фонд' : world.organizations[k]?.name ?? 'Частный владелец', n / 100 + '%'] as const,
-                ),
-              ]}
-            />
-            {owner && !controls && <p className="panel-body">Контрольный пакет принадлежит другому акционеру. Доступны вклад и погашение долга.</p>}
-            {owner && (
-              <div className="panel-body finance-actions">
-                {(controls ? ['invest', 'dividend', 'equity'] : ['invest']).map((a) => (
-                  <Button key={a} onClick={() => open(a)}>
-                    {labels[a]}
-                  </Button>
-                ))}
+          {tab === 'overview' && (
+            <>
+              <div className="capital-stage">
+                <section>
+                  <span className="eyebrow">Оценка организации / игровая модель</span>
+                  <h2>{money(v.valuation.value_cents)}</h2>
+                  <p>{world.organizations[c.org].name}</p>
+                  <Facts
+                    items={[
+                      ['Денежные средства', money(v.valuation.cash_cents)],
+                      ['Активы', money(v.valuation.assets_cents)],
+                      ['Долг', money(v.valuation.debt_cents)],
+                      ['Стоимость договоров', money(v.valuation.contract_value_cents)],
+                    ]}
+                  />
+                </section>
+                <section className="ownership-panel">
+                  <h3>Структура капитала</h3>
+                  <div className="ownership-band">
+                    {Object.entries(v.shares).map(([key, n], i) => (
+                      <span
+                        key={key}
+                        style={{ flex: n, background: shareColors[i % shareColors.length] }}
+                      />
+                    ))}
+                  </div>
+                  {Object.entries(v.shares).map(([key, n], i) => (
+                    <div className="share-row" key={key}>
+                      <i style={{ background: shareColors[i % shareColors.length] }} />
+                      <span>
+                        {key === 'capital:fund'
+                          ? 'Инвестиционный фонд'
+                          : world.organizations[key]?.name || 'Владелец организации'}
+                      </span>
+                      <strong>{n / 100}%</strong>
+                    </div>
+                  ))}
+                  {owner && (
+                    <>
+                      <div className="owner-wallet">
+                        <small>Капитал владельца</small>
+                        <strong>{money(v.owner_cents)}</strong>
+                      </div>
+                      <div className="finance-actions">
+                        {(controls ? ['invest', 'equity', 'dividend'] : ['invest']).map((a) => (
+                          <Button key={a} onClick={() => open(a)}>
+                            {labels[a]}
+                          </Button>
+                        ))}
+                      </div>
+                    </>
+                  )}
+                </section>
               </div>
-            )}
-          </Panel>
-          <Panel
-            title="Кредитный портфель"
-            action={controls && <Button onClick={() => open('loan')}>Получить кредит</Button>}
-          >
-            {!v.loans.length && <p className="panel-body">Организация ещё не привлекала кредиты.</p>}
-            {v.loans.map((l) => (
-              <div className="result rights-row" key={l.id}>
-                <span>
-                  <strong>
-                    {money(l.remaining_cents)} · {l.rate_bps / 100}% годовых
-                  </strong>
-                  <small>
-                    Выдано {money(l.principal_cents)} на {l.months} мес.
-                  </small>
-                </span>
-                {owner && l.remaining_cents > 0 && (
-                  <>
-                    <Button onClick={() => open('repay', l.id)}>Погасить</Button>
-                    {controls && !l.restructured && (
-                      <Button onClick={() => open('restructure', l.id)}>Реструктурировать</Button>
-                    )}
-                  </>
+              <Panel title="Финансовая устойчивость">
+                <Facts
+                  items={[
+                    [
+                      'Состояние',
+                      {
+                        solvent: 'Платёжеспособна',
+                        recovered: 'Платежи восстановлены',
+                        insolvent: 'Неплатёжеспособность',
+                        bankrupt: 'Банкротство',
+                      }[v.crisis.status],
+                    ],
+                    ['Просрочено', money(v.valuation.overdue_cents)],
+                    ...(owner ? [['Личный капитал', money(v.personal_cents)] as const] : []),
+                  ]}
+                />
+                {owner && !controls && (
+                  <p className="panel-body">
+                    Контрольный пакет принадлежит другому акционеру. Доступны вклад и погашение долга.
+                  </p>
                 )}
-              </div>
-            ))}
-          </Panel>
-          <Panel
-            title="Активы и программы"
-            action={
-              controls &&
-              c.role !== 'manufacturer' && (
-                <Button onClick={() => open('program-launch')}>Учредить программу</Button>
-              )
-            }
-          >
-            {[
-              ...v.assets.map((a) => ({
-                id: a.id,
-                name: a.kind + ' · ' + money(a.book_cents),
-                org: a.owner,
-                action: 'asset',
-              })),
-              ...v.programs.map((p) => ({
-                id: p.id,
-                name:
-                  (world.championships[p.series]?.name ?? p.series) +
-                  ' · ' +
-                  ({ admitted: 'Допущена', withdrawn: 'Ожидает допуска', closed: 'Закрыта' }[p.status] ??
-                    p.status),
-                org: p.org,
-                action: 'program-sale',
-              })),
-            ].map((a) => (
-              <div key={a.id} className="result">
-                <strong>{a.name}</strong>
-                {controls && (
-                  <Button onClick={() => open(a.action, a.id, a.org === c.org ? 'sell' : 'buy')}>
-                    {a.org === c.org ? 'Продать' : 'Приобрести'}
-                  </Button>
-                )}
-              </div>
-            ))}
-          </Panel>
-          <Panel title="История решений">
-            {v.history.length ? (
-              v.history.map((r, i) => (
-                <div className="result" key={i}>
-                  {r.date} · {events[r.kind] ?? r.kind} {r.amount_cents ? money(r.amount_cents) : ''}
+              </Panel>
+            </>
+          )}
+          {tab === 'loans' && (
+            <Panel
+              title="Кредитный портфель"
+              action={controls && <Button onClick={() => open('loan')}>Получить кредит</Button>}
+            >
+              {!v.loans.length && <p className="panel-body">Организация ещё не привлекала кредиты.</p>}
+              {v.loans.map((l) => (
+                <div className="result rights-row" key={l.id}>
+                  <span>
+                    <strong>
+                      {money(l.remaining_cents)} · {l.rate_bps / 100}% годовых
+                    </strong>
+                    <small>
+                      Выдано {money(l.principal_cents)} на {l.months} мес.
+                    </small>
+                  </span>
+                  {owner && l.remaining_cents > 0 && (
+                    <>
+                      <Button onClick={() => open('repay', l.id)}>Погасить</Button>
+                      {controls && !l.restructured && (
+                        <Button onClick={() => open('restructure', l.id)}>Реструктурировать</Button>
+                      )}
+                    </>
+                  )}
                 </div>
-              ))
-            ) : (
-              <p className="panel-body">Зарегистрированных решений нет.</p>
-            )}
-          </Panel>
+              ))}
+            </Panel>
+          )}
+          {tab === 'assets' && (
+            <Panel
+              title="Активы и программы"
+              action={
+                controls &&
+                c.role !== 'manufacturer' && (
+                  <Button onClick={() => open('program-launch')}>Учредить программу</Button>
+                )
+              }
+            >
+              {[
+                ...v.assets.map((a) => ({
+                  id: a.id,
+                  name: a.kind + ' · ' + money(a.book_cents),
+                  org: a.owner,
+                  action: 'asset',
+                })),
+                ...v.programs.map((p) => ({
+                  id: p.id,
+                  name:
+                    (world.championships[p.series]?.name ?? p.series) +
+                    ' · ' +
+                    ({ admitted: 'Допущена', withdrawn: 'Ожидает допуска', closed: 'Закрыта' }[
+                      p.status
+                    ] ?? p.status),
+                  org: p.org,
+                  action: 'program-sale',
+                })),
+              ].map((a) => (
+                <div key={a.id} className="result">
+                  <strong>{a.name}</strong>
+                  {controls && (
+                    <Button onClick={() => open(a.action, a.id, a.org === c.org ? 'sell' : 'buy')}>
+                      {a.org === c.org ? 'Продать' : 'Приобрести'}
+                    </Button>
+                  )}
+                </div>
+              ))}
+            </Panel>
+          )}
+          {tab === 'history' && (
+            <Panel title="История решений">
+              {v.history.length ? (
+                v.history.map((r, i) => (
+                  <div className="result" key={i}>
+                    {r.date} · {events[r.kind] ?? r.kind} {r.amount_cents ? money(r.amount_cents) : ''}
+                  </div>
+                ))
+              ) : (
+                <p className="panel-body">Зарегистрированных решений нет.</p>
+              )}
+            </Panel>
+          )}
         </>
       )}
       {action && (

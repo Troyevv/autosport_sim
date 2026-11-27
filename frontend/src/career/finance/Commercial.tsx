@@ -20,6 +20,7 @@ const tabs = [
   ['brands', 'Рынок спонсоров'],
   ['offers', 'Переговоры'],
   ['contracts', 'Договоры'],
+  ['supplies','Поставки'],
 ] as const
 function Conditions({ t }: { t: Terms }) {
   return (
@@ -45,7 +46,7 @@ function Conditions({ t }: { t: Terms }) {
   )
 }
 export function Commercial({ world, c, updateCareer }: SectionProps & { updateCareer: (c: Career) => void }) {
-  const [tab, setTab] = useState<(typeof tabs)[number][0]>(()=>initialTab(tabs,c.role === 'manufacturer' ? 'contracts' : 'brands',readRoute().tab==='supplies'?'contracts':readRoute().tab)),
+  const [tab, setTab] = useState<(typeof tabs)[number][0]>(()=>initialTab(tabs,c.role === 'manufacturer' ? 'supplies' : 'brands',readRoute().tab)),
     [query, setQuery] = useState(''),
     [series, setSeries] = useState(''),
     [page, setPage] = useState(0)
@@ -205,9 +206,9 @@ export function Commercial({ world, c, updateCareer }: SectionProps & { updateCa
           )}
         </Panel>
       )}
-      {data && tab === 'contracts' && (
+      {data && (tab === 'contracts' || tab==='supplies') && (
         <>
-          <Panel title="Спонсорские соглашения">
+          {tab==='contracts' && <Panel title="Спонсорские соглашения">
             {data.contracts.map((d) => (
               <button key={d.id} className="result commercial-row" onClick={() => setView(d.id)}>
                 <span>
@@ -224,8 +225,8 @@ export function Commercial({ world, c, updateCareer }: SectionProps & { updateCa
             {!data.contracts.length && (
               <p className="panel-body muted">Спонсорские соглашения отсутствуют.</p>
             )}
-          </Panel>
-          <Panel title="Связанные поставки">
+          </Panel>}
+          {tab==='supplies' && <Panel title="Связанные поставки">
             {data.supplies.map((d) => (
               <div className="panel-body" key={d.id}>
                 <h3>
@@ -265,7 +266,7 @@ export function Commercial({ world, c, updateCareer }: SectionProps & { updateCa
             {!data.supplies.length && (
               <p className="panel-body muted">Дополнительных пакетов поставки нет.</p>
             )}
-          </Panel>
+          </Panel>}
         </>
       )}
       {detail && !brand && (

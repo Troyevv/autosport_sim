@@ -1,21 +1,24 @@
-import {initialTab,readRoute} from '../pitwall/core/route'
+import {initialTab,readRoute,navigate} from '../pitwall/core/route'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Check, Eye, Images, RotateCcw, Save, Undo2 } from 'lucide-react'
 import { api, ApiError, explain, post, type Career, type World } from '../career/api'
-import { Button, Choices, Dialog, Facts, Header, Panel } from '../ui/components'
+import { Button, Dialog, Panel } from '../ui/components'
 import { Components } from './Components'
 import { CarView } from './CarView'
 import { DecalPanel } from './DecalPanel'
 import { geometry, partNames, sameLivery, type Catalog, type Livery } from './model'
+import { PageHeading, Badge, Icon, Panel as DeskPanel, Facts as DeskFacts } from '../pitwall/ui'
+import '../pitwall/garage.css'
 import './garage.css'
 
 type Props = { c: Career; world: World; updateCareer: (c: Career) => void }
 type Draft = { current: Livery; past: Livery[] }
 const tabs = [
-  ['overview', 'Обзор'],
+  ['overview', 'Автомобиль'],
   ['livery', 'Ливрея'],
   ['sponsors', 'Спонсоры'],
   ['parts', 'Компоненты'],
+  ['history', 'История сборки'],
 ] as const
 export function SeasonGarage(props: Props) {
   const [catalog, setCatalog] = useState<Catalog>(),
@@ -55,7 +58,7 @@ export function SeasonGarage(props: Props) {
 }
 function Studio({ c, world, catalog, updateCareer }: Props & { catalog: Catalog }) {
   const entries = Object.values(world.entries)
-  const [series, setSeries] = useState(c.series)
+  const [series, setSeries] = useState(world.entries[readRoute().entity]?.championship || c.series)
   const filtered = entries.filter((e) => e.championship === series)
   const [entryId, pick] = useState(() => filtered.find(e=>e.id===readRoute().entity)?.id || filtered.find((e) => e.org === c.org)?.id || filtered[0].id)
   const entry = world.entries[entryId],
@@ -65,7 +68,7 @@ function Studio({ c, world, catalog, updateCareer }: Props & { catalog: Catalog 
   const configuration = c.garage_configurations[entry.car]
   const model =
     configuration.geometry && geometry[configuration.geometry] ? configuration.geometry : baseModel
-  const [tab, setTab] = useState<(typeof tabs)[number][0]>(()=>initialTab(tabs,'overview',readRoute().page==='livery'?'livery':readRoute().tab)),
+  const [tab, setTab] = useState<(typeof tabs)[number][0]>(()=>initialTab(tabs,'overview',readRoute().page==='livery'?'livery':readRoute().tab==='components'?'parts':readRoute().tab)),
     [dialog, open] = useState(''),
     [index, select] = useState(0)
   const [drafts, setDrafts] = useState<Record<string, Draft>>({}),
@@ -156,17 +159,8 @@ function Studio({ c, world, catalog, updateCareer }: Props & { catalog: Catalog 
   }
   return (
     <section className="screen season-garage">
-      <Header
-        section={world.championships[series].name + ' / Технический центр'}
-        title="Гараж"
-        sub={org.name + ' · Сезон ' + world.origin.season}
-      >
-        <Button onClick={() => open('gallery')}>
-          <Images size={16} />
-          Стартовая сетка
-        </Button>
-      </Header>
-      <div className="garage-selectors">
+      <PageHeading eyebrow={world.championships[series].name + ' / Технический центр'} title={(tab === 'livery' ? 'Ливрея ' : '') + car.name + ' · №' + livery.number}
+        description={org.name} actions={<div className="garage-selectors">
         <label>
           Чемпионат
           <select
@@ -196,8 +190,28 @@ function Studio({ c, world, catalog, updateCareer }: Props & { catalog: Catalog 
             ))}
           </select>
         </label>
-      </div>
-      <Choices label="Раздел гаража" items={tabs} active={tab} onChange={setTab} />
+        <button className="button ghost" onClick={() => open('gallery')}><Images size={16}/>Стартовая сетка</button>
+      </div>}/>
+      <nav className="tabs" aria-label="Раздел гаража">{tabs.map(([value,label])=><button key={value} className={value===tab?'active':''} aria-current={value===tab?'page':undefined} onClick={()=>setTab(value)}>{label}</button>)}</nav>
+      {tab === 'overview' && <>
+        <section className="garage-hero">
+          <div className="studio-stage" onDoubleClick={()=>open('preview')}><CarView {...viewProps}/></div>
+          <div><span className="eyebrow">{entry.category} / Сезон {world.origin.season}</span><h2>{car.name}</h2><p>{org.name} · {org.base}</p></div>
+          <footer><span className="studio-status"><Badge tone="good">{dirty ? 'Черновик' : c.liveries[entryId] ? 'Карьерная ливрея' : 'Стартовая ливрея'}</Badge></span>
+          <button className="button ghost" onClick={()=>open('preview')}><Eye size={16}/>Увеличить предпросмотр</button>
+          <button className="button primary" onClick={()=>setTab('livery')}>{own ? 'Редактировать ливрею' : 'Посмотреть ливрею'}<Icon name="ArrowRight"/></button></footer>
+        </section>
+        {dirty && own && <div className="garage-tools"><button className="button primary" disabled={saving} onClick={save}>Сохранить в карьере</button><button className="button ghost" disabled={saving} onClick={undo}>Отменить</button></div>}
+        {message && <p role="status">{message}</p>}{error && <p role="alert">{error}</p>}
+        <div className="two-col garage-overview"><DeskPanel title="Экипаж"><div className="garage-crew">
+          {(c.crews[entry.id] || entry.crew).map(id=><button key={id} onClick={()=>navigate('person','profile',id)}><Icon name="UserRound"/><span><strong>{world.names[id] || c.assignments.find(a=>a.occupant?.id===id)?.occupant?.name}</strong><small>Досье и действующий контракт</small></span><Icon name="ArrowUpRight"/></button>)}
+        </div></DeskPanel><DeskPanel title="Технические партнёры"><DeskFacts rows={Object.entries(car.suppliers || {}).map(([k,id])=>[
+          ({engine:'Силовая установка',gearbox:'Трансмиссия',transmission:'Трансмиссия',tyres:'Шины',tyre:'Шины'} as Record<string,string>)[k] || k,
+          <button className="link-button" onClick={()=>navigate('organization','overview',id)}>{world.organizations[id]?.name || id}</button>])}/>
+          <button className="button ghost" onClick={()=>navigate('manufacturer','clients')}>Договоры и поддержка</button></DeskPanel></div>
+      </>}
+      {tab === 'history' && <div className="native-screen">{own ? <Components entry={entryId} c={c} update={updateCareer} historyOnly/> : <DeskPanel title="История сборки"><p>История экземпляров доступна сотрудникам команды.</p></DeskPanel>}</div>}
+      {tab !== 'overview' && tab !== 'history' && <div className="native-screen" data-garage-tab={tab}>
       <div className={'studio-layout' + (tab === 'parts' && own ? ' with-passport' : '') + (tab === 'livery' || tab === 'sponsors' ? ' editing' : '')}>
         <section className="studio-panel">
           <div className="studio-stage">
@@ -283,23 +297,6 @@ function Studio({ c, world, catalog, updateCareer }: Props & { catalog: Catalog 
           )}
         </section>
         <aside className="studio-controls">
-          {tab === 'overview' && (
-            <Panel title="Паспорт автомобиля">
-              <Facts
-                items={[
-                  ['Заявка', '№ ' + original.number],
-                  ['Класс', entry.category],
-                  ['Команда', org.name],
-                  ['Экипаж', c.crews[entry.id].map((id) => world.names[id]).join(', ') || 'Вакантно'],
-                ]}
-              />
-              <div className="garage-fields">
-                <Button primary onClick={() => setTab('livery')}>
-                  Открыть редактор
-                </Button>
-              </div>
-            </Panel>
-          )}
           {tab === 'livery' && (
             <Panel title="Окраска кузова">
               <div className="garage-fields">
@@ -444,6 +441,7 @@ function Studio({ c, world, catalog, updateCareer }: Props & { catalog: Catalog 
           )}
         </aside>
       </div>
+      </div>}
       <a
         className="garage-credits"
         href="/assets/garage/2025-v1/CREDITS.txt"

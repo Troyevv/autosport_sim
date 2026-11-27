@@ -521,7 +521,7 @@ function Obligations({ g, model, state, update }) {
         source="finance.obligations · суммы сгруппированы по дате"
         height={250}
         onSelect={(row) => update({ obligationDate: row.date })}
-        note="Это договорные обязательства из среза карьеры. Новые локальные договоры не создают автоматически график backend-платежей."
+        note="Суммы сгруппированы по сроку платежа выбранного счёта."
       />
       <div className="adv-subheading">
         <h4>
@@ -580,7 +580,7 @@ function obligationName(g, row) {
   const c = asList(g.game.projections?.commercial?.contracts).find((c) => c.id === row.contract)
   if (c)
     return (
-      g.game.projections.commercial.brands?.find((b) => b.id === c.sponsor)?.name ||
+      g.game.projections.commercial?.brands?.find((b) => b.id === c.sponsor)?.name ||
       orgName(g, c.sponsor)
     )
   return row.contract?.startsWith('base:')
@@ -617,7 +617,7 @@ function Budget({ g, model, state, update }) {
           formatValue={euros}
           onSelect={(row) => update({ budgetCategory: row.key })}
           source="budget.plan / actual / reserved"
-          note="Локальные платежи не классифицируются заново вторым бюджетным движком."
+          note="Бюджет показывает план, резерв и фактические расходы организации."
         />
         <aside className="adv-insight">
           <span className="adv-eyebrow">Выбранная статья</span>
@@ -750,7 +750,7 @@ function FinanceAnalytics({ g, state, update, section }) {
             unit="€"
             formatValue={euros}
             source="finance.breakdown · исходный срез"
-            note="Признанный финансовый результат отличается от поступления денег. Локальные операции показаны в журнале, исходная структура не пересчитана."
+            note="Поступления, расходы и признанный результат относятся к выбранному счёту."
           />
           <LinkButton onClick={() => g.navigate('finance', 'journal')}>
             Открыть бухгалтерский источник
@@ -978,7 +978,7 @@ function EngineeringAnalytics({ g, state, update, section }) {
           ) : (
             <Empty title="Измерительных протоколов пока нет">
               Срез раскрывает спецификацию, но не результаты испытаний этого узла. При запуске испытания
-              сохранится отдельная работа; её завершение в эталоне отмечается вручную.
+              появится отдельная работа со сроком и ответственным исполнителем.
               <LinkButton
                 onClick={() =>
                   g.navigate(
@@ -996,9 +996,7 @@ function EngineeringAnalytics({ g, state, update, section }) {
             <div className="adv-evidence-log">
               {sourceTests.map((test) => (
                 <article key={test.id}>
-                  <span className="adv-eyebrow">
-                    {test.local ? 'Локально внесённый протокол' : 'Протокол источника'}
-                  </span>
+                  <span className="adv-eyebrow">Протокол испытания</span>
                   <h4>{test.title}</h4>
                   <p>
                     {test.result ||
@@ -1036,7 +1034,7 @@ function EngineeringAnalytics({ g, state, update, section }) {
             unit="слоты"
             source="development.capacity"
             height={300}
-            note="Свободная аренда и собственные мощности — разные ресурсы. Текущая локальная очередь показана отдельно."
+            note="Собственные и арендованные мощности учитываются раздельно."
           />
           <div className="adv-capacity-rental">
             {e.capacity.map((c) => (
@@ -1154,7 +1152,7 @@ function ProductionAnalytics({ g, state, update, section }) {
             source={
               showPlan
                 ? 'council.proposals.options.days · локальный сценарий начала'
-                : 'Исходные бронирования + явно созданные локальные работы'
+                : 'Бронирования и действующие работы'
             }
             onSelect={(row) =>
               row.discussion
@@ -1282,10 +1280,10 @@ function ProductionAnalytics({ g, state, update, section }) {
               { key: 'inspection', label: 'Проверка / ремонт', color: SERIES[1] },
             ]}
             unit="шт."
-            source="production.items + manufacturer.inventory + локальные экземпляры"
+            source="Склад организации и предприятия"
             height={270}
             onSelect={(row) => update({ stockAxis: row.key })}
-            note="Номер чертежа не считается физической деталью. Статусы обновляются после явных локальных действий."
+            note="Статус отражает движение конкретного экземпляра от производства до установки."
           />
           <div className="adv-subheading">
             <h4>{state.stockAxis ? AXES[state.stockAxis] : 'Рекомендации исходного плана запаса'}</h4>
@@ -1513,10 +1511,7 @@ function PeopleAnalytics({ g, state, update, section }) {
               </article>
             ))}
           </div>
-          <Info>
-            Смена сотрудника и увольнение читаются из текущего локального состояния. Сводка не выдаёт
-            владельцу инструменты менеджера.
-          </Info>
+          <Info>Состав и действующие назначения приведены на текущую дату карьеры.</Info>
         </>
       )}
     </>
@@ -1572,7 +1567,7 @@ function CapitalAnalytics({ g, state, update }) {
         unit="€"
         formatValue={euros}
         source="capital.assets.book_cents"
-        note="Балансовая стоимость не гарантирует рыночную цену сделки. Локальные операции капитала проверяются в исходном разделе."
+        note="Балансовая стоимость и оценка цены сделки могут различаться."
       />
     </>
   )

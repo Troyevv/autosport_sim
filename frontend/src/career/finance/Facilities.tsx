@@ -1,3 +1,4 @@
+import { readRoute } from '../../pitwall/core/route'
 import { useState, type FormEvent } from 'react'
 import { Button, Dialog, Header, Facts, Panel } from '../../ui/components'
 import { usePersonnel } from '../staff/model'
@@ -60,18 +61,36 @@ const operations: Record<string, string> = {
   engineering: 'Испытания',
   preparation: 'Подготовка персонала',
 }
-const modes: Record<string, string> = { lease: 'Аренда', outsource: 'Аутсорсинг', use: 'Выделение мощности' }
+const modes: Record<string, string> = {
+  lease: 'Аренда',
+  outsource: 'Аутсорсинг',
+  use: 'Выделение мощности',
+}
 const personDays = (value: number) => (value / 100).toLocaleString('ru-RU', { maximumFractionDigits: 2 })
 const states: Record<string, string> = {
   active: 'В эксплуатации',
   construction: 'Строительство',
   upgrade: 'Модернизация',
 }
-export function Facilities({ c, world, updateCareer }: SectionProps & { updateCareer: (c: Career) => void }) {
+export function Facilities({
+  c,
+  world,
+  updateCareer,
+}: SectionProps & { updateCareer: (c: Career) => void }) {
   const req = usePersonnel<Inventory>('careers/' + c.id + '/facilities', c.revision),
     v = req.data,
     order = useOrder(c, updateCareer)
-  const [tab, setTab] = useState('Организация'),
+  const [tab, setTab] = useState(
+      () =>
+        (
+          ({
+            organization: 'Организация',
+            capacity: 'Мощности',
+            rent: 'Аренда и аутсорсинг',
+            bookings: 'Бронирования',
+          }) as Record<string, string>
+        )[readRoute().tab] || 'Организация',
+    ),
     [dialog, open] = useState<Asset | 'build' | null>(null),
     [kind, select] = useState('simulator'),
     [country, locate] = useState('GB'),
@@ -110,13 +129,15 @@ export function Facilities({ c, world, updateCareer }: SectionProps & { updateCa
         ))}
       </div>
       {req.error && <p role="alert">{req.error}</p>}
-      {v && (
-        <Panel
-          title={tab}
-          action={
-            tab === 'Организация' &&
-            c.role !== 'manager' && (
+      {v && tab === 'Организация' && (
+        <div className="facility-hero">
+          <div>
+            <span className="eyebrow">{world.organizations[c.org].name}</span>
+            <h2>{c.role === 'manufacturer' ? 'Производственная база' : 'База организации'}</h2>
+            <p>Мощности, люди и доступ к ресурсам определяют темп развития.</p>
+            {c.role !== 'manager' && (
               <Button
+                primary
                 onClick={() => {
                   order.clear()
                   open('build')
@@ -124,9 +145,18 @@ export function Facilities({ c, world, updateCareer }: SectionProps & { updateCa
               >
                 Начать строительство
               </Button>
-            )
-          }
-        >
+            )}
+          </div>
+          <div className="facility-readout">
+            <strong>{v.assets.filter((a) => a.owner === c.org).length}</strong>
+            <span>объектов</span>
+            <strong>{v.staff}</strong>
+            <span>сотрудников коллективов</span>
+          </div>
+        </div>
+      )}
+      {v && (
+        <Panel title={tab}>
           {tab === 'Мощности' ? (
             <div className="panel-body">
               <p className="muted">
@@ -166,8 +196,8 @@ export function Facilities({ c, world, updateCareer }: SectionProps & { updateCa
                   <span>
                     <strong>{v.types[v.assets.find((a) => a.id === b.facility)?.kind ?? '']}</strong>
                     <small>
-                      {modes[b.mode]} · {b.purpose && operations[b.purpose]} {b.start} — {b.end} · {b.units}{' '}
-                      ед.
+                      {modes[b.mode]} · {b.purpose && operations[b.purpose]} {b.start} — {b.end} ·{' '}
+                      {b.units} ед.
                     </small>
                   </span>
                   {money(b.cost_cents)}
@@ -200,7 +230,9 @@ export function Facilities({ c, world, updateCareer }: SectionProps & { updateCa
                 .filter((a) =>
                   tab === 'Организация'
                     ? a.owner === c.org
-                    : a.owner !== c.org && a.status === 'active' && (!assetFilter || assetFilter === a.kind),
+                    : a.owner !== c.org &&
+                      a.status === 'active' &&
+                      (!assetFilter || assetFilter === a.kind),
                 )
                 .map((a) => (
                   <div className="result rights-row" key={a.id}>
@@ -209,7 +241,8 @@ export function Facilities({ c, world, updateCareer }: SectionProps & { updateCa
                         {v.types[a.kind]} · {a.country}
                       </strong>
                       <small>
-                        {world.organizations[a.owner]?.name ?? 'Независимый оператор'} · {states[a.status]} ·{' '}
+                        {world.organizations[a.owner]?.name ?? 'Независимый оператор'} ·{' '}
+                        {states[a.status]} ·{' '}
                         {a.status === 'active'
                           ? 'Свободно ' + a.free + ' из ' + a.capacity
                           : 'Ввод ' + a.ready}
@@ -240,7 +273,8 @@ export function Facilities({ c, world, updateCareer }: SectionProps & { updateCa
                 ))}
               {tab === 'Организация' && !v.assets.some((a) => a.owner === c.org) && (
                 <p className="panel-body">
-                  Собственных объектов пока нет. Доступные мощности операторов размещены в разделе аренды.
+                  Собственных объектов пока нет. Доступные мощности операторов размещены в разделе
+                  аренды.
                 </p>
               )}
             </>
@@ -248,7 +282,10 @@ export function Facilities({ c, world, updateCareer }: SectionProps & { updateCa
         </Panel>
       )}
       {dialog && v && (
-        <Dialog title={dialog === 'build' ? 'Новый объект' : v.types[dialog.kind]} onClose={() => open(null)}>
+        <Dialog
+          title={dialog === 'build' ? 'Новый объект' : v.types[dialog.kind]}
+          onClose={() => open(null)}
+        >
           <form className="finance-form" onSubmit={submit}>
             {dialog === 'build' ? (
               <>

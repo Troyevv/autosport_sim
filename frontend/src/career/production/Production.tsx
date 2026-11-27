@@ -1,7 +1,8 @@
+import {EngineeringHeading} from '../../pitwall/EngineeringHeading'
 import {readRoute} from '../../pitwall/core/route'
 import { useState } from 'react'
 import { Factory, Package, ClipboardCheck, Plus } from 'lucide-react'
-import { Button, Choices, Dialog, Facts, Header, Panel, Progress, Stats } from '../../ui/components'
+import { Button, Choices, Dialog, Facts,  Panel, Progress, Stats } from '../../ui/components'
 import { dateLabel } from '../../game'
 import { type Career, money } from '../api'
 import type { SectionProps } from '../Sections'
@@ -53,19 +54,15 @@ export function Production({ c, world, updateCareer }: SectionProps & { updateCa
   const queues = data?.batches.filter((b) => !b.finished) || []
   const selected = action?.kind === 'item' ? data?.items.find((i) => i.id === action.id) : undefined
   return (
-    <section className="screen research-desk workshop">
-      <Header
-        section={world.organizations[c.org].name + ' / Инженерная служба'}
-        title="Производственный центр"
-        sub="Изготовление партий, приёмка и распределение компонентов между машинами."
-      >
+    <section className="screen engineering-module research-desk workshop">
+      <EngineeringHeading route={readRoute().page === 'inventory' ? 'inventory' : 'production'} organization={world.organizations[c.org].name} maker={c.role === "manufacturer"}>
         {manage && !!data?.entries.length && (
           <Button primary onClick={() => open({ kind: 'order' })}>
             <Plus size={16} />
             Новый заказ
           </Button>
         )}
-      </Header>
+      </EngineeringHeading>
       {req.error && (
         <p role="alert">
           {req.error} <Button onClick={req.retry}>Повторить загрузку</Button>
@@ -74,6 +71,18 @@ export function Production({ c, world, updateCareer }: SectionProps & { updateCa
       {!data && !req.error && <p role="status">Загрузка производственных нарядов…</p>}
       {data && (
         <>
+          <Choices
+            label="Производственные участки"
+            active={tab}
+            onChange={setTab}
+            items={[
+              ['queue', 'Очередь заказов'],
+              ['stock', 'Склад'],
+              ['quality', 'Контроль качества'],
+              ['needs', 'Потребность'],
+              ['archive', 'Журнал'],
+            ]}
+          />
           <Stats
             items={[
               ['Заказы в работе', queues.length, 'В очереди и в цехе', <Factory size={16} />],
@@ -92,18 +101,7 @@ export function Production({ c, world, updateCareer }: SectionProps & { updateCa
               ['Доступно для заказа', money(data.limit_cents), 'В пределах финансового мандата'],
             ]}
           />
-          <Choices
-            label="Производственные участки"
-            active={tab}
-            onChange={setTab}
-            items={[
-              ['queue', 'Очередь заказов'],
-              ['stock', 'Склад'],
-              ['quality', 'Контроль качества'],
-              ['needs', 'Потребность'],
-              ['archive', 'Журнал'],
-            ]}
-          />
+
           <div className="research-layout">
             <div className="workshop-main">
               {tab === 'queue' && (

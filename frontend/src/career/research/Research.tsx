@@ -1,6 +1,7 @@
+import {EngineeringHeading} from '../../pitwall/EngineeringHeading'
 import { useState } from 'react'
 import { BookOpen, CalendarDays, Fingerprint, FlaskConical, Layers, Plus } from 'lucide-react'
-import { Button, Choices, Dialog, Facts, Header, Panel, Progress, Stats } from '../../ui/components'
+import { Button, Choices, Dialog, Facts,  Panel, Progress, Stats } from '../../ui/components'
 import { dateLabel } from '../../game'
 import { money, type Career } from '../api'
 import type { SectionProps } from '../Sections'
@@ -320,12 +321,8 @@ export function Research({ c, world, updateCareer }: SectionProps & { updateCare
     pending = data?.projects.filter((p) => !p.finished) || []
   const selected = pending.find((p) => p.id === dialog)
   return (
-    <section className="screen research-desk">
-      <Header
-        section={world.organizations[c.org].name + ' / Технический центр'}
-        title="Исследования"
-        sub="Работа специалистов и техническая память организации."
-      >
+    <section className="screen engineering-module research-desk">
+      <EngineeringHeading route="research" organization={world.organizations[c.org].name} maker={c.role === "manufacturer"}>
         {manage && !!data?.entries.length && (
           <Button
             primary
@@ -338,7 +335,7 @@ export function Research({ c, world, updateCareer }: SectionProps & { updateCare
             Поручить исследование
           </Button>
         )}
-      </Header>
+      </EngineeringHeading>
       {req.error && (
         <div role="alert">
           {req.error} <Button onClick={req.retry}>Повторить загрузку</Button>
@@ -347,7 +344,16 @@ export function Research({ c, world, updateCareer }: SectionProps & { updateCare
       {!data && !req.error && <p role="status">Загрузка исследовательского центра…</p>}
       {data && (
         <>
-          <Stats
+          <Choices
+            label="Исследовательский центр"
+            items={[
+              ['queue', 'Очередь исследований'],
+              ['memory', 'Техническая память'],
+            ]}
+            active={tab}
+            onChange={setTab}
+          />
+<details className="eng-summary-details"><summary>Показатели отдела</summary>          <Stats
             items={[
               [
                 'Доступные слоты',
@@ -364,16 +370,8 @@ export function Research({ c, world, updateCareer }: SectionProps & { updateCare
               ],
               ['Заключения', String(data.reports.length), 'В технической памяти', <BookOpen size={16} />],
             ]}
-          />
-          <Choices
-            label="Исследовательский центр"
-            items={[
-              ['queue', 'Очередь исследований'],
-              ['memory', 'Техническая память'],
-            ]}
-            active={tab}
-            onChange={setTab}
-          />
+          /></details>
+
           {tab === 'memory' ? (
             <Memory data={data} order={order} manage={manage} />
           ) : (

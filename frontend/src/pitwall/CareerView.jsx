@@ -1,10 +1,12 @@
 import React, { useEffect, useMemo, useState } from 'react'
-import {Calendar, Championships, Messages} from './World'
+import { Calendar, Championships, Messages } from './World'
+import { PersonnelDirectory } from './Directory'
 import { Shell } from './Shell'
 import { Context } from './core'
 import { useDesk } from './core/desk'
 import { navigate } from './core/route'
 import RoleHome, { BriefingRoom, OrganizationProfile } from './v2/RoleHome'
+import EventMoment from './v2/EventMoment'
 import Contracts from './v2/Contracts'
 import StatisticsCenter from './v2/StatisticsCenter'
 import { OperationalAnalytics } from './v2/Advisory'
@@ -26,7 +28,6 @@ export function CareerView({ world, c, media, route, tab, entity, onAdvance, onS
     [media],
   )
   useEffect(() => {
-    openDialog(null)
     document.querySelector('.main-scroll')?.scrollTo(0, 0)
   }, [route, tab, entity])
   const game = useMemo(
@@ -38,6 +39,22 @@ export function CareerView({ world, c, media, route, tab, entity, onAdvance, onS
     }),
     [c, desk.game, directory.data],
   )
+  useEffect(() => {
+    const dismiss = () => openDialog(null)
+    window.addEventListener('hashchange', dismiss)
+    return () => window.removeEventListener('hashchange', dismiss)
+  }, [])
+  useEffect(() => {
+    const present = ({ detail: event }) => {
+      if (event.id === c.id)
+        openDialog({
+          title: 'Решение организации',
+          content: <EventMoment event={event} kind={event.kind} />,
+        })
+    }
+    window.addEventListener('autosport-career-moment', present)
+    return () => window.removeEventListener('autosport-career-moment', present)
+  }, [c.id])
   const org = world.organizations[c.org]
   const ctx = {
     world,
@@ -56,24 +73,28 @@ export function CareerView({ world, c, media, route, tab, entity, onAdvance, onS
     setTab: (t) => navigate(route, t, entity),
     openDialog,
     closeDialog: () => openDialog(null),
-    openPerson: (id) => navigate('person', 'profile', id),
+    openPerson: (id, tab = 'profile') => navigate('person', tab, id),
     openOrganization: (id) => navigate('organization', 'overview', id),
     canGoBack: history.length > 1,
     goBack: () => history.back(),
     notify: (message) => openDialog({ title: 'Сообщение', description: message }),
   }
   let content
-  const analytics = SUPPORTED_ROUTES.includes(route)
+  const landing =
+    !tab ||
+    ['overview', 'plans', 'agenda', 'catalog', 'queue', 'organization', 'plan', 'forecast'].includes(tab)
+  const analytics = SUPPORTED_ROUTES.includes(route) && landing
   const projection =
     route === 'overview' ||
     route === 'briefings' ||
-    ['organization','world','inbox'].includes(route) ||
+    ['organization', 'world', 'inbox', 'market', 'staff','funding'].includes(route) ||
     route === 'statistics' ||
     route === 'agreements' ||
     analytics
   const status = desk.error || directory.error
   const waiting = projection && (!desk.game || !directory.data)
-  if (analytics && waiting)
+  const directoryPage = ['staff', 'market','funding'].includes(route)
+  if (analytics && waiting && !directoryPage)
     content = (
       <>
         {status && (
@@ -116,14 +137,26 @@ export function CareerView({ world, c, media, route, tab, entity, onAdvance, onS
   else if (route === 'organization') content = <OrganizationProfile />
   else if (route === 'statistics') content = <StatisticsCenter />
   else if (route === 'agreements') content = <Contracts />
-  else if (route === 'calendar') content = <Calendar/>
-  else if (route === 'world') content = <Championships/>
-  else if (route === 'inbox') content = <Messages/>
+  else if (['garage', 'livery'].includes(route)) content = children
+  else if (route === 'calendar') content = <Calendar />
+  else if (route === 'world') content = <Championships />
+  else if (directoryPage)
+    content = (
+      <>
+        <PersonnelDirectory />
+      </>
+    )
+  else if (route === 'inbox') content = <Messages />
   else
     content = (
       <>
         {analytics && (
-          <OperationalAnalytics route={route} compactBrief defaultExpanded={tab === 'forecast'} />
+          <OperationalAnalytics
+            route={route}
+            compactBrief
+            defaultExpanded={tab === 'forecast'}
+            analyticsOnly={tab === 'forecast'}
+          />
         )}
         <div key="native" className="native-screen">
           {children}

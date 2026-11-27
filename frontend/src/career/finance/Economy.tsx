@@ -1,5 +1,6 @@
+import { readRoute } from '../../pitwall/core/route'
 import { useState, type FormEvent } from 'react'
-import { Button, Dialog, Header, Panel, Facts } from '../../ui/components'
+import { Button, Dialog, Header, Panel, Facts, Table } from '../../ui/components'
 import { usePersonnel } from '../staff/model'
 import { money, type Career } from '../api'
 import type { SectionProps } from '../Sections'
@@ -35,12 +36,26 @@ const regions: Record<string, string> = {
   JP: 'Япония',
   ES: 'Испания',
 }
-export function Economy({ c, world, updateCareer }: SectionProps & { updateCareer: (c: Career) => void }) {
+export function Economy({
+  c,
+  world,
+  updateCareer,
+}: SectionProps & { updateCareer: (c: Career) => void }) {
   const req = usePersonnel<Data>('careers/' + c.id + '/economy', c.revision),
     v = req.data,
     order = useOrder(c, updateCareer)
   const [edit, set] = useState(false),
-    [tab, select] = useState('Сбыт и лицензии'),
+    [tab, select] = useState(
+      () =>
+        (
+          ({
+            licenses: 'Сбыт и лицензии',
+            annual: 'Годовые показатели',
+            markets: 'Рынки',
+            supply: 'Экономика поставок',
+          }) as Record<string, string>
+        )[readRoute().tab] || 'Сбыт и лицензии',
+    ),
     [year, setYear] = useState(c.date.slice(0, 4))
   async function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -127,7 +142,9 @@ export function Economy({ c, world, updateCareer }: SectionProps & { updateCaree
               </Panel>
               <Panel title="Денежный поток организации">
                 {Object.keys(v.flows[year] ?? {}).length ? (
-                  <Facts items={Object.entries(v.flows[year]).map(([k, n]) => [category(k), money(n)])} />
+                  <Facts
+                    items={Object.entries(v.flows[year]).map(([k, n]) => [category(k), money(n)])}
+                  />
                 ) : (
                   <p className="panel-body">За период нет проводок.</p>
                 )}
@@ -136,24 +153,35 @@ export function Economy({ c, world, updateCareer }: SectionProps & { updateCaree
           )}
           {tab === 'Экономика поставок' &&
             (v.suppliers.length ? (
-              v.suppliers.map((d) => (
-                <Panel key={d.contract} title={world.organizations[d.client].name}>
-                  <Facts
-                    items={[
-                      ['Маржа договора', money(d.margin_cents)],
-                      ['Себестоимость поставки', money(d.production_cents)],
-                      ['Скидка', money(d.discount_cents)],
-                      ['Спонсорские выплаты', money(d.commercial_cents)],
-                      ['Гарантийные замены', money(d.service_costs.warranty)],
-                      ['Логистика', money(d.service_costs.shipping)],
-                      ['Техническая поддержка', money(d.service_costs.support)],
-                      ['Разработка', money(d.service_costs.research)],
-                      ['Исполненный объём, ед.', d.units],
-                      ['Подтверждённый охват', d.confirmed_reach],
-                    ]}
-                  />
-                </Panel>
-              ))
+              <Panel title="Клиентские договоры">
+                <Table
+                  label="Сравнение поставок"
+                  columns={['Клиент', 'Объём, ед.', 'Маржа', 'Расчёт договора']}
+                  rows={v.suppliers.map((d) => ({
+                    id: d.contract,
+                    cells: [
+                      world.organizations[d.client]?.name ?? 'Клиентская команда',
+                      d.units,
+                      money(d.margin_cents),
+                      <details key="costs">
+                        <summary>Статьи договора</summary>
+                        <Facts
+                          items={[
+                            ['Себестоимость поставки', money(d.production_cents)],
+                            ['Скидка', money(d.discount_cents)],
+                            ['Спонсорские выплаты', money(d.commercial_cents)],
+                            ['Гарантийные замены', money(d.service_costs.warranty)],
+                            ['Логистика', money(d.service_costs.shipping)],
+                            ['Техническая поддержка', money(d.service_costs.support)],
+                            ['Разработка', money(d.service_costs.research)],
+                            ['Подтверждённый охват', d.confirmed_reach],
+                          ]}
+                        />
+                      </details>,
+                    ],
+                  }))}
+                />
+              </Panel>
             ) : (
               <Panel title="Клиентские договоры">
                 <p className="panel-body">Подписанных пакетов поставки пока нет.</p>
@@ -162,7 +190,9 @@ export function Economy({ c, world, updateCareer }: SectionProps & { updateCaree
           {tab === 'Рынки' && (
             <>
               <Panel title="Региональный спрос">
-                <Facts items={Object.entries(v.audience).map(([k, n]) => [regions[k] ?? k, n + ' / 100'])} />
+                <Facts
+                  items={Object.entries(v.audience).map(([k, n]) => [regions[k] ?? k, n + ' / 100'])}
+                />
               </Panel>
               <Panel title="Подтверждённые публикации">
                 {v.receipts.length ? (
@@ -180,7 +210,11 @@ export function Economy({ c, world, updateCareer }: SectionProps & { updateCaree
           {v.can_advance && (
             <Panel title="Финансовый период">
               <div className="panel-body">
-                <Button primary disabled={order.busy} onClick={() => void order.send('finance-month', {})}>
+                <Button
+                  primary
+                  disabled={order.busy}
+                  onClick={() => void order.send('finance-month', {})}
+                >
                   Закрыть месяц
                 </Button>
               </div>

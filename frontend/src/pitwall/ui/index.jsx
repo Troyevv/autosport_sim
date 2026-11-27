@@ -1,5 +1,184 @@
 import React, { useEffect, useRef, useState } from 'react'
-import * as Icons from 'lucide-react'
+import {
+  Archive,
+  ArrowDown,
+  ArrowLeft,
+  ArrowRight,
+  ArrowUp,
+  ArrowUpRight,
+  BadgeCheck,
+  BookOpen,
+  BookOpenCheck,
+  Bookmark,
+  BookmarkCheck,
+  Building2,
+  CalendarClock,
+  CalendarDays,
+  CarFront,
+  ChartNoAxesCombined,
+  Check,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  ChevronUp,
+  Circle,
+  Clock3,
+  Cog,
+  Combine,
+  Command,
+  Compass,
+  Database,
+  ExternalLink,
+  Factory,
+  FileSearch,
+  FileSignature,
+  FileWarning,
+  Files,
+  Fingerprint,
+  Flag,
+  FlaskConical,
+  FolderOpen,
+  Gauge,
+  GitBranch,
+  GitCompareArrows,
+  Globe2,
+  GraduationCap,
+  Handshake,
+  Headset,
+  HeartHandshake,
+  History,
+  Home,
+  Images,
+  Info,
+  Landmark,
+  Layers,
+  Layers2,
+  LayoutGrid,
+  List,
+  LockKeyhole,
+  MapPin,
+  MapPinned,
+  Medal,
+  Menu,
+  MessagesSquare,
+  Microscope,
+  MonitorPlay,
+  MousePointer2,
+  Package,
+  PackageCheck,
+  PenLine,
+  Plus,
+  Radio,
+  RadioTower,
+  RotateCcw,
+  Route,
+  Save,
+  Search,
+  Settings2,
+  ShieldCheck,
+  Table2,
+  TriangleAlert,
+  Trophy,
+  Unplug,
+  UserRound,
+  UserRoundCheck,
+  UserRoundMinus,
+  Users,
+  UsersRound,
+  Wallet,
+  Workflow,
+  Wrench,
+} from 'lucide-react'
+const Icons = {
+  Archive,
+  ArrowDown,
+  ArrowLeft,
+  ArrowRight,
+  ArrowUp,
+  ArrowUpRight,
+  BadgeCheck,
+  BookOpen,
+  BookOpenCheck,
+  Bookmark,
+  BookmarkCheck,
+  Building2,
+  CalendarClock,
+  CalendarDays,
+  CarFront,
+  ChartNoAxesCombined,
+  Check,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  ChevronUp,
+  Circle,
+  Clock3,
+  Cog,
+  Combine,
+  Command,
+  Compass,
+  Database,
+  ExternalLink,
+  Factory,
+  FileSearch,
+  FileSignature,
+  FileWarning,
+  Files,
+  Fingerprint,
+  Flag,
+  FlaskConical,
+  FolderOpen,
+  Gauge,
+  GitBranch,
+  GitCompareArrows,
+  Globe2,
+  GraduationCap,
+  Handshake,
+  Headset,
+  HeartHandshake,
+  History,
+  Home,
+  Images,
+  Info,
+  Landmark,
+  Layers,
+  Layers2,
+  LayoutGrid,
+  List,
+  LockKeyhole,
+  MapPin,
+  MapPinned,
+  Medal,
+  Menu,
+  MessagesSquare,
+  Microscope,
+  MonitorPlay,
+  MousePointer2,
+  Package,
+  PackageCheck,
+  PenLine,
+  Plus,
+  Radio,
+  RadioTower,
+  RotateCcw,
+  Route,
+  Save,
+  Search,
+  Settings2,
+  ShieldCheck,
+  Table2,
+  TriangleAlert,
+  Trophy,
+  Unplug,
+  UserRound,
+  UserRoundCheck,
+  UserRoundMinus,
+  Users,
+  UsersRound,
+  Wallet,
+  Workflow,
+  Wrench,
+}
 export function Icon({ name, size = 18, ...p }) {
   const I = Icons[name] || Icons.Circle
   return <I size={size} {...p} />
@@ -28,7 +207,7 @@ export function PageHeading({ eyebrow, title, description, actions }) {
   )
 }
 export const PageHeader = PageHeading
-export function Panel({ title, subtitle, actions, children, className = '' }) {
+export function Panel({ title, subtitle = null, actions = null, children, className = '' }) {
   return (
     <section className={'panel ' + className}>
       {(title || actions) && (
@@ -95,7 +274,145 @@ export function EmptyState({ title, description, action }) {
   )
 }
 
-export function DataTable({columns,rows,empty='Нет записей',onRowClick}){return rows.length?<table className="data-table"><thead><tr>{columns.map(c=><th key={c.key}>{c.label}</th>)}</tr></thead><tbody>{rows.map((r,i)=><tr key={r.id||r.key||i} onClick={()=>onRowClick?.(r)}>{columns.map(c=><td key={c.key} data-label={c.label}>{c.render?c.render(r):r[c.key]??'—'}</td>)}</tr>)}</tbody></table>:<EmptyState title={empty}/>}
-export function Facts({rows}){return <dl className="detail-list">{rows.map(([k,v])=><div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}</dl>}
-export function Select({label,options=[],...p}){return <label><span>{label}</span><select {...p}>{options.map(o=>typeof o==='string'?<option key={o}>{o}</option>:<option key={o.value??o.id} value={o.value??o.id} disabled={o.disabled}>{o.label??o.name}</option>)}</select></label>}
-export function Input({label,...p}){return <label><span>{label}</span><input {...p}/></label>}
+export function DataTable({ columns, rows, empty = 'Нет записей', onRowClick }) {
+  return rows.length ? (
+    <table className="data-table">
+      <thead>
+        <tr>
+          {columns.map((c) => (
+            <th key={c.key}>{c.label}</th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map((r, i) => (
+          <tr key={r.id || r.key || i} onClick={() => onRowClick?.(r)}>
+            {columns.map((c) => (
+              <td key={c.key} data-label={c.label}>
+                {c.render ? c.render(r) : (r[c.key] ?? '—')}
+              </td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  ) : (
+    <EmptyState title={empty} />
+  )
+}
+export function Facts({ rows }) {
+  return (
+    <dl className="detail-list">
+      {rows.map(([k, v]) => (
+        <div key={k}>
+          <dt>{k}</dt>
+          <dd>{v}</dd>
+        </div>
+      ))}
+    </dl>
+  )
+}
+export function Select({ label, options = [], ...p }) {
+  return (
+    <label>
+      <span>{label}</span>
+      <select {...p}>
+        {options.map((o) =>
+          typeof o === 'string' ? (
+            <option key={o}>{o}</option>
+          ) : (
+            <option key={o.value ?? o.id} value={o.value ?? o.id} disabled={o.disabled}>
+              {o.label ?? o.name}
+            </option>
+          ),
+        )}
+      </select>
+    </label>
+  )
+}
+export function Input({ label, ...p }) {
+  return (
+    <label>
+      <span>{label}</span>
+      <input {...p} />
+    </label>
+  )
+}
+
+export function Stat({ label, value, detail }) {
+  return (
+    <div className="stat">
+      <small>{label}</small>
+      <strong>{value}</strong>
+      <span>{detail}</span>
+    </div>
+  )
+}
+export function ContextMenu({ items, label = 'Действия' }) {
+  const [open, setOpen] = useState(false),
+    ref = useRef(null)
+  useEffect(() => {
+    if (!open) return
+    const close = (e) => {
+      if (!ref.current?.contains(e.target)) setOpen(false)
+    }
+    document.addEventListener('pointerdown', close)
+    ref.current?.querySelector('[role="menuitem"]:not([disabled])')?.focus()
+    return () => document.removeEventListener('pointerdown', close)
+  }, [open])
+  return (
+    <div ref={ref} className="context-menu">
+      <button
+        type="button"
+        className="icon-button"
+        aria-label={label}
+        aria-expanded={open}
+        aria-haspopup="menu"
+        onClick={() => setOpen(!open)}
+      >
+        ⋯
+      </button>
+      {open && (
+        <div
+          role="menu"
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') {
+              e.stopPropagation()
+              setOpen(false)
+              ref.current?.querySelector('button')?.focus()
+            }
+            if (['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(e.key)) {
+              e.preventDefault()
+              const a = Array.from(e.currentTarget.querySelectorAll('button:not([disabled])')),
+                i = a.indexOf(document.activeElement),
+                j =
+                  e.key === 'Home'
+                    ? 0
+                    : e.key === 'End'
+                      ? a.length - 1
+                      : (i + (e.key === 'ArrowDown' ? 1 : -1) + a.length) % a.length
+              a[j]?.focus()
+            }
+          }}
+        >
+          {items.map((it, i) => (
+            <button
+              type="button"
+              role="menuitem"
+              disabled={it.disabled}
+              className={it.danger ? 'danger' : ''}
+              key={i}
+              onClick={() => {
+                it.onClick?.()
+                it.action?.()
+                setOpen(false)
+              }}
+            >
+              {it.label}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}

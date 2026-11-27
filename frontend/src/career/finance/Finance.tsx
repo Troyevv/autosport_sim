@@ -1,3 +1,5 @@
+import { CashChart } from '../../pitwall/BusinessVisuals'
+import { initialTab } from '../../pitwall/core/route'
 import { useRef, useState, type FormEvent } from 'react'
 import { Download, ArrowLeftRight, BadgeEuro, CalendarClock, Wallet } from 'lucide-react'
 import { Button, Choices, Dialog, Facts, Header, Panel, Stats, Table } from '../../ui/components'
@@ -18,8 +20,12 @@ const views = [
 ] as const
 const headlineMoney = (cents: number) => (Math.abs(cents) < 10000000 ? money(cents) : millions(cents))
 const dateText = (day: string) => dateLabel(day, true)
-export function Finance({ c, world, updateCareer }: SectionProps & { updateCareer: (c: Career) => void }) {
-  const [tab, selectTab] = useState<(typeof views)[number][0]>('overview')
+export function Finance({
+  c,
+  world,
+  updateCareer,
+}: SectionProps & { updateCareer: (c: Career) => void }) {
+  const [tab, selectTab] = useState<(typeof views)[number][0]>(() => initialTab(views, 'overview'))
   const [scope, setScope] = useState(c.org)
   const [dialog, open] = useState(''),
     [busy, setBusy] = useState(false),
@@ -91,7 +97,8 @@ export function Finance({ c, world, updateCareer }: SectionProps & { updateCaree
   }
   const journal = (data?.journal ?? [])
     .filter(
-      (p) => (!source || p.source === source) && (!from || p.date >= from) && (!until || p.date <= until),
+      (p) =>
+        (!source || p.source === source) && (!from || p.date >= from) && (!until || p.date <= until),
     )
     .slice()
     .reverse()
@@ -99,7 +106,6 @@ export function Finance({ c, world, updateCareer }: SectionProps & { updateCaree
   const lastPage = Math.max(0, Math.ceil(journal.length / 40) - 1),
     page = Math.min(lastPage, journalPage)
   const forecast = data?.forecast ?? []
-  const max = Math.max(1, ...forecast.map((p) => Math.abs(p.base_cents)))
   const journalTable = (rows: Statement['journal']) => (
     <Table
       label="Проводки"
@@ -129,7 +135,11 @@ export function Finance({ c, world, updateCareer }: SectionProps & { updateCaree
       <div className="finance-tools">
         <label>
           Финансовый контур
-          <select aria-label="Финансовый контур" value={scope} onChange={(e) => setScope(e.target.value)}>
+          <select
+            aria-label="Финансовый контур"
+            value={scope}
+            onChange={(e) => setScope(e.target.value)}
+          >
             {(data?.scopes ?? [scope]).map((id) => (
               <option key={id} value={id}>
                 {name(id)}
@@ -146,36 +156,57 @@ export function Finance({ c, world, updateCareer }: SectionProps & { updateCaree
       {!data && !report.error && <p role="status">Загрузка финансового отчёта…</p>}
       {data && (
         <>
-          <Stats
-            items={[
-              [
-                'Доступные средства',
-                headlineMoney(data.available_cents),
-                money(data.available_cents),
-                <Wallet />,
-              ],
-              ['Фактический остаток', headlineMoney(data.cash_cents), money(data.cash_cents), <BadgeEuro />],
-              ['Резерв', headlineMoney(data.reserve_cents), money(data.reserve_cents), <CalendarClock />],
-              ['Денежный поток', headlineMoney(data.cash_flow_cents), 'С начала учёта', <ArrowLeftRight />],
-            ]}
-          />
           <Choices label="Финансовые разделы" active={tab} items={views} onChange={selectTab} />
           {tab === 'overview' && (
             <>
+              <div className="finance-command">
+                <section className="cash-hero">
+                  <span className="eyebrow">
+                    {scope === 'person:player' ? 'Личные средства' : 'Денежная позиция'}
+                  </span>
+                  <h2>{headlineMoney(data.cash_cents)}</h2>
+                  <span className="cash-precise">{money(data.cash_cents)}</span>
+                  <div className="cash-rule" />
+                  <Facts
+                    items={[
+                      ['Доступно сейчас', money(data.available_cents)],
+                      ['Резерв обязательств', money(data.reserve_cents)],
+                      ['Просрочено', money(data.overdue_cents)],
+                    ]}
+                  />
+                  <p>{data.recommendation}</p>
+                </section>
+                <CashChart forecast={forecast} />
+              </div>
+              <Stats
+                items={[
+                  [
+                    'Доступные средства',
+                    headlineMoney(data.available_cents),
+                    money(data.available_cents),
+                    <Wallet />,
+                  ],
+                  [
+                    'Фактический остаток',
+                    headlineMoney(data.cash_cents),
+                    money(data.cash_cents),
+                    <BadgeEuro />,
+                  ],
+                  [
+                    'Резерв',
+                    headlineMoney(data.reserve_cents),
+                    money(data.reserve_cents),
+                    <CalendarClock />,
+                  ],
+                  [
+                    'Денежный поток',
+                    headlineMoney(data.cash_flow_cents),
+                    'С начала учёта',
+                    <ArrowLeftRight />,
+                  ],
+                ]}
+              />
               <div className="section-grid">
-                <Panel title="Прогноз остатка" action={<small>Базовый · EUR</small>}>
-                  <div className="finance-bars">
-                    {forecast.map((r) => (
-                      <div key={r.date}>
-                        <span>{dateText(r.date)}</span>
-                        <i>
-                          <b style={{ width: (Math.abs(r.base_cents) / max) * 100 + '%' }} />
-                        </i>
-                        <strong>{money(r.base_cents)}</strong>
-                      </div>
-                    ))}
-                  </div>
-                </Panel>
                 <Panel title="Сводка">
                   <Facts
                     items={[
@@ -220,7 +251,11 @@ export function Finance({ c, world, updateCareer }: SectionProps & { updateCaree
               <div className="finance-tools">
                 <label>
                   Основание
-                  <select aria-label="Основание" value={source} onChange={(e) => setSource(e.target.value)}>
+                  <select
+                    aria-label="Основание"
+                    value={source}
+                    onChange={(e) => setSource(e.target.value)}
+                  >
                     <option value="">Все операции</option>
                     {[...new Set(data.journal.map((p) => p.source))].map((id) => (
                       <option value={id} key={id}>
@@ -316,8 +351,8 @@ export function Finance({ c, world, updateCareer }: SectionProps & { updateCaree
                 />
                 <p className="panel-body muted">
                   Базовый сценарий учитывает даты действующих контрактов, зарплаты коллективов и сроки
-                  платежей. Действующая дистрибуция оценивается по полученным роялти, содержание объектов — по
-                  расходам на обслуживание.
+                  платежей. Действующая дистрибуция оценивается по полученным роялти, содержание объектов
+                  — по расходам на обслуживание.
                 </p>
               </Panel>
             </>
@@ -420,7 +455,9 @@ export function Finance({ c, world, updateCareer }: SectionProps & { updateCaree
                         min={dialog === 'transfer' ? '0.01' : '0'}
                         max="100000000000"
                         step="0.01"
-                        defaultValue={dialog === 'reserve' ? (data.reserves[payer] ?? 0) / 100 : undefined}
+                        defaultValue={
+                          dialog === 'reserve' ? (data.reserves[payer] ?? 0) / 100 : undefined
+                        }
                       />
                     </label>
                   </>

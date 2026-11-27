@@ -722,7 +722,7 @@
     margin: 3px 0 10px 29px;
     border-left: 1px solid #4d4d4d;
   }
-  .subnav button {
+  .subnav :is(button, a) {
     display: block;
     border: 0;
     background: none;
@@ -732,7 +732,7 @@
     font-size: 11px;
     color: #a7b8c1;
   }
-  .subnav button.active {
+  .subnav :is(button, a).active {
     color: var(--org-accent);
     border-left: 2px solid var(--org-accent);
   }

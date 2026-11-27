@@ -1,6 +1,7 @@
+import {EngineeringHeading} from '../../pitwall/EngineeringHeading'
 import { useState } from 'react'
 import { CalendarDays, Layers3, SlidersHorizontal } from 'lucide-react'
-import { Button, Choices, Dialog, Facts, Header, Panel, Progress } from '../../ui/components'
+import { Button, Choices, Dialog, Facts,  Panel, Progress } from '../../ui/components'
 import { dateLabel } from '../../game'
 import { fmt, units } from '../../garage/quantities'
 import { type Career, money } from '../api'
@@ -249,19 +250,15 @@ export function Programme({ c, world, updateCareer }: SectionProps & { updateCar
     if (ok) open('')
   }
   return (
-    <section className="screen season-programme">
-      <Header
-        section={world.organizations[c.org].name}
-        title="Техническая программа"
-        sub="Решения инженерного штаба по машинам текущего и следующего сезонов."
-      >
+    <section className="screen engineering-module season-programme">
+      <EngineeringHeading route="engineering" organization={world.organizations[c.org].name} maker={c.role === "manufacturer"}>
         {manage && data && plan && (
           <Button onClick={() => settings('priority', data.priority)}>
             <SlidersHorizontal size={16} />
             Изменить приоритет
           </Button>
         )}
-      </Header>
+      </EngineeringHeading>
       {req.error ? (
         <p role="alert">
           {req.error} <Button onClick={req.retry}>Повторить загрузку</Button>

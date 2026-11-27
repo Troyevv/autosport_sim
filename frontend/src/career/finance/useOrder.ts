@@ -1,3 +1,4 @@
+import {publishCareerMoment} from '../../pitwall/core/moments'
 import { useState, useRef } from 'react'
 import { api, post, ApiError, explain, type Career } from '../api'
 export function useOrder(c: Career, update: (c: Career) => void, field: 'finance' | 'engineering' | 'research' | 'development' | 'production' | 'council' | 'programme' | 'manufacturer' | 'staff' = 'finance') {
@@ -13,12 +14,12 @@ export function useOrder(c: Career, update: (c: Career) => void, field: 'finance
     const key = JSON.stringify([c.revision, action, payload])
     if (retry.current.key !== key) retry.current = { key, id: crypto.randomUUID() }
     try {
-      update(
-        await api<Career>(
+      const next = await api<Career>(
           'careers/' + c.id + '/commands',
           post({ command_id: retry.current.id, revision: c.revision, action, [field]: payload }),
-        ),
-      )
+        )
+      update(next)
+      publishCareerMoment(c, next, action, payload)
       retry.current.key = ''
       return true
     } catch (e) {

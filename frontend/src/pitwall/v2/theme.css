@@ -377,12 +377,12 @@
     border-color: #51453b;
     margin-left: 31px;
   }
-  .subnav button {
+  .subnav :is(button, a) {
     color: #a99c91;
     font-size: 10px;
     min-height: 38px;
   }
-  .subnav button.active {
+  .subnav :is(button, a).active {
     border-color: var(--org-accent);
     color: var(--org-accent);
     background: color-mix(in srgb, var(--org-accent) 5%, transparent);

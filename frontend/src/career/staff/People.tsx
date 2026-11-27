@@ -1,3 +1,4 @@
+import {publishCareerMoment} from '../../pitwall/core/moments'
 import {readRoute,initialTab} from '../../pitwall/core/route'
 import { useRef, useState, type CSSProperties } from 'react'
 import { ArrowUpRight, ChevronLeft, ChevronRight, Search, Users } from 'lucide-react'
@@ -92,12 +93,12 @@ export function People({
     const key = JSON.stringify([c.revision, action, args])
     if (retry.current.key !== key) retry.current = { key, id: crypto.randomUUID() }
     try {
-      updateCareer(
-        await api<Career>(
+      const next = await api<Career>(
           base + '/commands',
           post({ action, revision: c.revision, command_id: retry.current.id, staff: args }),
-        ),
-      )
+        )
+      updateCareer(next)
+      publishCareerMoment(c, next, action, args)
       retry.current.key = ''
       return true
     } catch (e) {
@@ -502,17 +503,19 @@ export function People({
           </div>
         </Dialog>
       )}
+      {route.page==='person' && directory.data && !employee && <Panel title="Досье недоступно"><p>В кадровом справочнике нет сотрудника с этим идентификатором.</p><a href="#market">Перейти на рынок</a></Panel>}
       {employee && (
         <StaffFile
           key={employee.id}
           {...{ employee, people, c, world, media, order, busy, error }}
           onClose={() => {
-            if(route.page==='person'){location.hash='staff';return}
+            if(route.page==='person'){if(history.state?.careerPrevious) history.back(); else location.hash='staff'; return}
             select('')
             setError('')
             requestAnimationFrame(() => opener.current?.focus({ preventScroll: true }))
           }}
           onSent={() => {
+            if(route.page==='person'){location.hash='contracts';return}
             select('')
             changeTab('offers')
           }}

@@ -11,7 +11,11 @@ export function navigate(page: string, tab = '', entity = '') {
   const query = new URLSearchParams()
   if (tab) query.set('tab', tab)
   if (entity) query.set('entity', entity)
-  location.hash = page + (query.size ? '?' + query : '')
+  const target = '#' + page + (query.size ? '?' + query : '')
+  if (location.hash === target) return
+  const previous = location.hash || '#overview'
+  location.hash = target
+  history.replaceState({ ...history.state, careerPrevious: previous }, '')
 }
 
 export function initialTab<T extends string>(

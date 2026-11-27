@@ -1,14 +1,25 @@
 import { useState } from 'react'
-import {
-  Download,
-  Handshake,
-} from 'lucide-react'
+import { Download, Handshake } from 'lucide-react'
 import { useGame, useUI } from '../ui/context'
 import { Header, Choices, Panel, Stats, Button, Table, Facts, Confirm, Progress } from '../ui/components'
 import { millions, eur, dateLabel } from '../game'
 export function Development() {
-  return <section className="screen"><Header section="Технический центр" title="Разработка" sub="Проекты и протоколы испытаний доступны в сохранённой карьере."/>
-    <a className="btn btn-primary" href="/#development">Открыть карьеры</a></section>
+  const { state } = useGame()
+  return (
+    <section className="screen">
+      <Header
+        section="Технический центр"
+        title="Разработка"
+        sub="Проекты и протоколы испытаний доступны в сохранённой карьере."
+      />
+      <a
+        className="btn btn-primary"
+        href={'/?section=development&role=' + encodeURIComponent(state.role) + '#saves'}
+      >
+        Открыть карьеры
+      </a>
+    </section>
+  )
 }
 export function Finance() {
   const { data, state, send } = useGame(),
@@ -88,22 +99,25 @@ export function Finance() {
           </Button>
         )}
       </Header>
-      <Stats
-        items={[
-          ['Доступные средства', millions(state.balanceCents), 'Общий резерв VANTA Group'],
-          [
-            'Бюджет сезона',
-            millions(data.reports.annualBudget),
-            'Освоено ' + data.reports.annualUsed + '% годового плана',
-          ],
-          [
-            'Спонсорские контракты',
-            millions(partners.reduce((sum, p) => sum + Math.round(p.sum * 100000000), 0)),
-            partners.length + ' действующих партнёра',
-          ],
-          ['Прогноз на конец года', millions(data.reports.forecast), 'Исходный демонстрационный план'],
-        ]}
-      />
+      <details className="demo-summary">
+        <summary>Сводные показатели</summary>
+        <Stats
+          items={[
+            ['Доступные средства', millions(state.balanceCents), 'Общий резерв VANTA Group'],
+            [
+              'Бюджет сезона',
+              millions(data.reports.annualBudget),
+              'Освоено ' + data.reports.annualUsed + '% годового плана',
+            ],
+            [
+              'Спонсорские контракты',
+              millions(partners.reduce((sum, p) => sum + Math.round(p.sum * 100000000), 0)),
+              partners.length + ' действующих партнёра',
+            ],
+            ['Прогноз на конец года', millions(data.reports.forecast), 'Исходный демонстрационный план'],
+          ]}
+        />
+      </details>
       <div className="management-tabs">
         <Choices
           label="Финансовые отчёты"

@@ -1,6 +1,7 @@
+import {EngineeringHeading} from '../../pitwall/EngineeringHeading'
 import { useState } from 'react'
 import { Activity, DraftingCompass, FlaskConical, Plus } from 'lucide-react'
-import { Button, Choices, Dialog, Facts, Header, Panel, Progress, Stats } from '../../ui/components'
+import { Button, Choices, Dialog, Facts,  Panel, Progress, Stats } from '../../ui/components'
 import { dateLabel } from '../../game'
 import { fmt, units } from '../../garage/quantities'
 import { type Career, money } from '../api'
@@ -229,12 +230,8 @@ export function Development({
   const files =
     data?.projects.filter((p) => (tab === 'archive' ? p.finished : !p.finished && p.kind === tab)) || []
   return (
-    <section className="screen research-desk development-desk">
-      <Header
-        title="Разработка и испытания"
-        section={world.organizations[c.org].name + ' / Инженерный отдел'}
-        sub="Спецификации, работа конструкторов и протоколы измерений."
-      >
+    <section className="screen engineering-module research-desk development-desk">
+      <EngineeringHeading route="development" organization={world.organizations[c.org].name} maker={c.role === "manufacturer"}>
         {manage && !!data?.entries.length && (
           <>
             <Button onClick={() => open({ kind: 'test' })}>
@@ -247,7 +244,7 @@ export function Development({
             </Button>
           </>
         )}
-      </Header>
+      </EngineeringHeading>
       {req.error && (
         <p role="alert">
           {req.error} <Button onClick={req.retry}>Повторить загрузку</Button>
@@ -256,7 +253,17 @@ export function Development({
       {!data && !req.error && <p role="status">Загрузка инженерных дел…</p>}
       {data && (
         <>
-          <Stats
+          <Choices
+            label="Инженерные дела"
+            items={[
+              ['design', 'Разработка'],
+              ['test', 'Испытания'],
+              ['archive', 'Архив решений'],
+            ]}
+            active={tab}
+            onChange={setTab}
+          />
+<details className="eng-summary-details"><summary>Показатели отдела</summary>          <Stats
             items={[
               [
                 'Проекты КБ',
@@ -277,17 +284,8 @@ export function Development({
               ],
               ['Архив', data.projects.filter((p) => p.finished).length, 'Завершённые дела'],
             ]}
-          />
-          <Choices
-            label="Инженерные дела"
-            items={[
-              ['design', 'Разработка'],
-              ['test', 'Испытания'],
-              ['archive', 'Архив решений'],
-            ]}
-            active={tab}
-            onChange={setTab}
-          />
+          /></details>
+
           <div className="research-layout">
             <Panel
               title={

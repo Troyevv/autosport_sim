@@ -41,7 +41,11 @@ export function PublicMenu({ world, saves, media }) {
     () => Object.entries(world.names).map(([id, name]) => ({ id, name, face: world.faces[id] })),
     [world],
   )
-  const latest = saves[0],
+  const intendedRole = new URLSearchParams(location.search).get('role')
+  const roleSaves = intendedRole
+    ? saves.slice().sort((a, b) => Number(b.role === intendedRole) - Number(a.role === intendedRole))
+    : saves
+  const latest = roleSaves[0],
     org = world.organizations[latest?.org] || world.organizations['team-scuderia-ferrari'],
     entry = Object.values(world.entries).find(
       (e) => e.org === org.id && (!latest || latest.series === e.championship),
@@ -66,6 +70,7 @@ export function PublicMenu({ world, saves, media }) {
     },
     navigate,
     openDialog: setDialog,
+    preferredRole: new URLSearchParams(location.search).get('role'),
     createCareer: async (payload) => load((await api('careers', post(payload))).id),
   }
   async function upload(e) {
@@ -120,7 +125,7 @@ export function PublicMenu({ world, saves, media }) {
               </label>
             </div>
             <div className="save-grid">
-              {saves
+              {roleSaves
                 .filter((s) =>
                   (s.name + ' ' + world.organizations[s.org]?.name)
                     .toLowerCase()

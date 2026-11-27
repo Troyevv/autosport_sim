@@ -1,3 +1,4 @@
+import {businessTab,BusinessTabs} from '../../pitwall/BusinessTabs'
 import { useState, type FormEvent } from 'react'
 import { Button, Dialog, Facts, Header, Panel } from '../../ui/components'
 import { usePersonnel } from '../staff/model'
@@ -49,6 +50,7 @@ type View = {
 }
 type Props = SectionProps & { updateCareer: (c: Career) => void }
 export function Budget({ c, world, updateCareer }: Props) {
+  const tab = businessTab('budget')
   const current = Number(c.date.slice(0, 4)),
     [year, yearTo] = useState(current),
     [edit, setEdit] = useState<Request | 'new' | null>(null)
@@ -79,9 +81,10 @@ export function Budget({ c, world, updateCareer }: Props) {
     <section className="screen finance-desk">
       <Header
         section={world.organizations[c.org].name}
-        title="Бюджетирование"
+        title="Бюджет сезона"
         sub="Сезонная смета и решения владельца"
       />
+      <BusinessTabs page="budget"/>
       <label>
         Сезон{' '}
         <select value={year} onChange={(e) => yearTo(Number(e.target.value))}>
@@ -95,7 +98,7 @@ export function Budget({ c, world, updateCareer }: Props) {
       {(order.error || req.error) && <p role="alert">{order.error || req.error}</p>}
       {v && (
         <>
-          <Panel title="Полномочия и средства">
+          {tab === 'plan' && <Panel title="Полномочия и средства">
             <Facts
               items={[
                 ['На счету', money(v.cash_cents)],
@@ -109,8 +112,8 @@ export function Budget({ c, world, updateCareer }: Props) {
                 ['Последнее утверждение', v.plan?.approved ?? '—'],
               ]}
             />
-          </Panel>
-          <Panel title="Распределение по направлениям">
+          </Panel>}
+          {tab === 'plan' && <Panel title="Распределение по направлениям">
             {Object.entries(names).map(([k, n]) => (
               <div className="result" key={k}>
                 <span>
@@ -122,8 +125,8 @@ export function Budget({ c, world, updateCareer }: Props) {
                 <span>{money(v.plan?.allocations[k] ?? 0)}</span>
               </div>
             ))}
-          </Panel>
-          <Panel title="Заявки и решения">
+          </Panel>}
+          {tab === 'requests' && <Panel title="Заявки и решения">
             {v.requests.map((r) => (
               <div className="result" key={r.id}>
                 <span>
@@ -159,7 +162,7 @@ export function Budget({ c, world, updateCareer }: Props) {
                 )}
               </div>
             )}
-          </Panel>
+          </Panel>}
         </>
       )}
       {edit && (
@@ -206,6 +209,7 @@ export function Budget({ c, world, updateCareer }: Props) {
   )
 }
 export function CostCap({ c, world }: Props) {
+  const tab = businessTab('cap')
   const req = usePersonnel<View>('careers/' + c.id + '/budget', c.revision),
     v = req.data,
     cap = v?.cap,
@@ -214,13 +218,14 @@ export function CostCap({ c, world }: Props) {
     <section className="screen finance-desk">
       <Header
         section={world.organizations[c.org].name}
-        title="Cost Cap и ATR"
+        title="Регламентные лимиты"
         sub="Финансовый период и квоты инженерных ресурсов"
       />
+      <BusinessTabs page="cap"/>
       {req.error && <p role="alert">{req.error}</p>}
       {v && (
         <>
-          <Panel title="Финансовый регламент">
+          {tab === 'financial' && <Panel title="Финансовый регламент">
             {cap ? (
               <>
                 <Facts
@@ -244,8 +249,8 @@ export function CostCap({ c, world }: Props) {
                 Для этой организации и сезона потолок расходов не установлен в базе регламентов.
               </p>
             )}
-          </Panel>
-          <Panel title="Аэродинамические испытания">
+          </Panel>}
+          {tab === 'atr' && <Panel title="Аэродинамические испытания">
             {atr ? (
               <>
                 <p className="panel-body">
@@ -262,8 +267,8 @@ export function CostCap({ c, world }: Props) {
             ) : (
               <p className="panel-body">Для текущего периода нет применимого лимита ATR.</p>
             )}
-          </Panel>
-          <Panel title="Закрытые периоды">
+          </Panel>}
+          {tab === 'audits' && <Panel title="Закрытые периоды">
             {v.audits.length ? (
               v.audits.map((a) => (
                 <div className="result" key={a.id}>
@@ -283,7 +288,7 @@ export function CostCap({ c, world }: Props) {
                 Проверки завершённых периодов появятся после закрытия финансового года.
               </p>
             )}
-          </Panel>
+          </Panel>}
         </>
       )}
     </section>

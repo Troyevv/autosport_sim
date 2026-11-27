@@ -65,8 +65,8 @@ const roles: Record<string, string> = {
   performance: 'Интеграция',
   reliability: 'Надёжность',
 }
-type Props = { entry: string; c: Career; update: (c: Career) => void }
-export function Components({ entry, c, update }: Props) {
+type Props = { historyOnly?: boolean; entry: string; c: Career; update: (c: Career) => void }
+export function Components({ entry, c, update, historyOnly = false }: Props) {
   const [data, setData] = useState<Desk>(),
     [error, setError] = useState(''),
     [attempt, retry] = useState(0)
@@ -109,6 +109,7 @@ export function Components({ entry, c, update }: Props) {
   const km = (m: number) => fmt(m / 1000) + ' км'
   return (
     <div className="component-desk">
+      {!historyOnly && <>
       <Panel title="Технический паспорт">
         <div className="garage-fields">
           <small>{policy[data.policy]}</small>
@@ -231,6 +232,7 @@ export function Components({ entry, c, update }: Props) {
           </details>
         </div>
       </Panel>
+      </>}
       <Panel title="Журнал сборки">
         <div className="garage-fields">
           {!data.history.length && <p>С начала учёта замен не было.</p>}

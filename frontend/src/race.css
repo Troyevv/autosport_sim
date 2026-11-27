@@ -696,3 +696,14 @@
 }
 
 /* The mobile title must yield space to the briefing action without page overflow. */
+
+.race-mobile-sections {display:none}
+@media(max-width:700px){
+  .race-mobile-sections {position:sticky;top:0;z-index:2;display:flex;gap:4px;background:var(--bg,#141618);padding:6px 0}
+  .race-mobile-sections button {flex:1;min-height:42px;font-size:12px}
+  .race-screen :is(.race-map-panel,.race-driver,.race-timing,.race-bottom-grid){scroll-margin-top:60px}
+  .race-screen .screen-subtitle{font-size:13px}
+}
+.demo-summary>summary{cursor:pointer;font-size:13px;font-weight:700;padding:8px 0}
+@media(min-width:761px){.demo-summary:not([open])::details-content{content-visibility:visible}.demo-summary>summary{display:none}}
+@media(max-width:760px){.app-shell .kpi-note,.app-shell .kpi-label,.app-shell .race-map-legend,.app-shell .race-timing td{font-size:12px}}

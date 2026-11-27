@@ -553,3 +553,58 @@ def test_verified_reliability_exception_replaces_registered_defective_drawing():
     development.review(s, WORLD, corrected, "released", s["player_id"])
     rules.certify(s, WORLD, e, 2026, candidate, s["player_id"])
     assert rules.admitted_version(s, WORLD, e, d, 2026)
+
+
+def test_three_seasons_share_finite_test_capacity_without_upgrading_the_car():
+    state = checkpoint(create())
+    entry = WORLD["entries"]["f1-4"]
+    initial_mounts = deepcopy(components.mounting(state, entry["id"]))
+    pools = set()
+    for year in (2025, 2026, 2027):
+        state["date"] = f"{year}-02-01"
+        budget.open_year(state, MCLAREN, str(year))
+        quota = budget.scope_for(state, WORLD, MCLAREN)
+        unit = "cfd_geometries"
+        assert quota["used"][unit] == 0
+        if quota["limits"] is None:
+            with pytest.raises(domain.RuleError, match="подтверждённая квота"):
+                budget.check_allowance(quota, {unit: 1})
+            budget.determination(
+                state,
+                WORLD,
+                budget.Ranking(
+                    org=MCLAREN,
+                    period=quota["period"]["id"],
+                    rank=4,
+                    reference=f"test-only-atr-{year}",
+                ),
+            )
+            quota = budget.scope_for(state, WORLD, MCLAREN)
+        config = rules.config_for(state, WORLD, entry, year)
+        cost = budget.ProjectCost(
+            project=f"capacity-{year}",
+            program=entry["program"],
+            target_season=config["season"],
+            generation=config["generation"],
+            amount_cents=120000,
+            due=state["date"],
+            atr={unit: quota["limits"][unit]},
+        )
+        budget.project(state, WORLD, cost)
+        budget.project(state, WORLD, cost)
+        pools.add(quota["pool_id"])
+        assert (
+            budget.scope_for(state, WORLD, MCLAREN)["used"][unit]
+            == quota["limits"][unit]
+        )
+        with pytest.raises(domain.RuleError):
+            budget.project(
+                state,
+                WORLD,
+                cost.model_copy(
+                    update={"project": f"competing-{year}", "atr": {unit: 1}}
+                ),
+            )
+        assert "project:competing-" + str(year) not in state["finance"]["instalments"]
+        assert components.mounting(state, entry["id"]) == initial_mounts
+    assert len(pools) == 3

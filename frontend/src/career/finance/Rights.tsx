@@ -1,3 +1,4 @@
+import {businessTab,BusinessTabs} from '../../pitwall/BusinessTabs'
 import { useState, type FormEvent } from 'react'
 import { Button, Dialog, Header, Panel } from '../../ui/components'
 import { usePersonnel } from '../staff/model'
@@ -25,6 +26,8 @@ export function Rights({ c, world, updateCareer }: SectionProps & { updateCareer
   const market = usePersonnel<Market>('careers/' + c.id + '/commercial', c.revision)
   const [edit, setEdit] = useState<{ d: Inventory; r: Check } | null>(null),
     order = useOrder(c, updateCareer)
+  const tab = businessTab('rights')
+  const inventory = result.data?.map(d => ({...d,items:d.items.filter(r => tab==='all' || r.fulfilled === (tab==='fulfilled'))})).filter(d => d.items.length || tab==='all')
   const brand = (id: string) => market.data?.brands.find((b) => b.id === id)?.name ?? id
   async function apply(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -48,18 +51,19 @@ export function Rights({ c, world, updateCareer }: SectionProps & { updateCareer
         title="Рекламные права"
         sub="Инвентарь договоров и проверка фактических размещений на игровую дату."
       />
+      <BusinessTabs page="rights"/>
       {result.error && (
         <p role="alert">
           {result.error} <Button onClick={result.retry}>Повторить</Button>
         </p>
       )}
       {!result.data && !result.error && <p role="status">Загрузка инвентаря…</p>}
-      {result.data?.length === 0 && (
+      {inventory?.length === 0 && (
         <Panel title="Инвентарь">
-          <p className="panel-body">Действующих договоров с рекламными правами нет.</p>
+          <p className="panel-body">Для выбранного фильтра нет рекламных прав.</p>
         </Panel>
       )}
-      {result.data?.map((d) => (
+      {inventory?.map((d) => (
         <Panel key={d.contract} title={brand(d.sponsor)} action={<small>До {d.end}</small>}>
           {d.items.length === 0 && <p className="panel-body">Обязательные поверхности не согласованы.</p>}
           {d.items.map((r) => (
@@ -81,12 +85,12 @@ export function Rights({ c, world, updateCareer }: SectionProps & { updateCareer
                   </span>
                 )}
                 <small>
-                  {r.share}% · {r.shared ? 'Допускает совместное размещение' : 'Индивидуальное размещение'} ·{' '}
+                  <meter min={0} max={100} value={r.share} aria-label="Доля поверхности"/> {r.share}% · {r.shared ? 'Допускает совместное размещение' : 'Индивидуальное размещение'} ·{' '}
                   {r.fulfilled ? 'Размещено' : 'Требуется размещение'}
                 </small>
               </span>
               {r.entry ? (
-                <a className="btn" href="#garage">
+                <a className="btn" href={'#livery?entity='+encodeURIComponent(r.entry)}>
                   В гараж
                 </a>
               ) : (

@@ -451,7 +451,8 @@ export function peopleModel(g) {
       crews.push({ key: row.kind, label: row.crew.name, ...row.crew })
   const endedSoon = own
     .map((p) => {
-      const current = g.game.dossiers?.[p.id]?.current
+      const listed = g.game.personnel.find((person) => person.id === p.id)
+      const current = g.game.dossiers?.[p.id]?.current || (listed?.end ? { end: listed.end } : {})
       return { ...p, contract: current?.end ? current : asList(current).find((c) => c?.end) }
     })
     .filter(
@@ -547,7 +548,7 @@ export function buildBrief(g, route, context = {}) {
           ? 'В исходной карьере ответственным назначен игрок. Отдельный финансовый директор не придуман.'
           : 'Назначение и компетенция ответственного взяты из финансовой проекции.',
         f.adjustment
-          ? 'Локальные платежи сдвигают денежный остаток. Будущая экономика и риски после них повторно не рассчитываются.'
+          ? 'Прогноз учитывает денежный остаток на текущую дату.'
           : 'Сценарии — исходная оценка API на шесть месяцев, а не обещание результата.',
         'Диапазон сценариев не является статистическим доверительным интервалом.',
       ],
@@ -661,7 +662,7 @@ export function buildBrief(g, route, context = {}) {
         'Приоритет текущего продукта и следующего поколения делит одни и те же ресурсы. Новая редакция проходит испытания и выпуск до производства.',
       facts: [
         ['Продуктовых программ', products.length],
-        ['Работ в эталоне', e.projects.length],
+        ['Работы программы', e.projects.length],
         ['Обращений в срезе', cases.length],
       ],
       options: [
@@ -779,8 +780,8 @@ export function buildBrief(g, route, context = {}) {
               },
             ],
       limits: [
-        'Исходная потребность не пересимулируется после локальных действий; изменённые экземпляры показаны отдельно.',
-        'Дата на диаграмме — опубликованная или локальная оценка готовности. Завершение не происходит автоматически.',
+        'Потребность рассчитана для текущего склада и установленных экземпляров.',
+        'Дата на диаграмме показывает оценку готовности. Нагрузка и доступность мощностей могут её изменить.',
       ],
       source: 'production.needs / items / capacity; facilities.windows',
     }

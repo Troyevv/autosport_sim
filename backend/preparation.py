@@ -267,7 +267,8 @@ def available_programs(state, world):
             person, mentor, _ = _participants(state, world, row["id"])
             row["participants"] = [
                 (state["people"].get(pid) or state["collectives"][pid])["name"]
-                for pid in (person, mentor) if pid
+                for pid in (person, mentor)
+                if pid
             ]
         except RuleError as error:
             row["unavailable"] = str(error)

@@ -3,6 +3,10 @@ import { useGame } from '../core'
 import { CarView } from '../../garage/CarView'
 import { geometry } from '../../garage/model'
 import { Portrait } from '../../career/Portrait'
+/**
+ * @param {{entryId?:string,entry?:string|{id:string},studio?:boolean,className?:string} &
+ * Partial<Pick<import('react').ComponentProps<typeof CarView>,'livery'|'selected'|'onMove'|'highlight'|'installed'>>} props
+ */
 export function RaceCar({
   entryId,
   entry,

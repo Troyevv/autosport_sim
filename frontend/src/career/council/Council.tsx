@@ -1,7 +1,8 @@
+import {EngineeringHeading} from '../../pitwall/EngineeringHeading'
 import {readRoute} from '../../pitwall/core/route'
 import { useState } from 'react'
 import { ClipboardList, SlidersHorizontal, UsersRound } from 'lucide-react'
-import { Button, Choices, Dialog, Facts, Header, Panel } from '../../ui/components'
+import { Button, Choices, Dialog, Facts,  Panel } from '../../ui/components'
 import { dateLabel } from '../../game'
 import { units } from '../../garage/quantities'
 import { type Career, money } from '../api'
@@ -222,12 +223,8 @@ export function Council({ c, world, updateCareer }: SectionProps & { updateCaree
       ? target.investigation
       : target.options[decision === 'delegate' ? target.recommended : alternative])
   return (
-    <section className="screen research-desk council">
-      <Header
-        section={world.organizations[c.org].name}
-        title="Инженерный штаб"
-        sub="Технические заключения, решения по машине и исполнение поручений."
-      >
+    <section className="screen engineering-module research-desk council">
+      <EngineeringHeading route="council" organization={world.organizations[c.org].name} maker={c.role === "manufacturer"}>
         {data && manage && (
           <Button
             onClick={() => {
@@ -239,7 +236,7 @@ export function Council({ c, world, updateCareer }: SectionProps & { updateCaree
             Полномочия
           </Button>
         )}
-      </Header>
+      </EngineeringHeading>
       {req.error ? (
         <p role="alert">
           {req.error} <Button onClick={req.retry}>Повторить загрузку</Button>

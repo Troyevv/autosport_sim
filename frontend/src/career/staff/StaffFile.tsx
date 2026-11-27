@@ -1,6 +1,6 @@
 import { sportingStatus } from './Lineup'
 import { Development } from './Development'
-import {initialTab,readRoute} from '../../pitwall/core/route'
+import {initialTab,readRoute,navigate} from '../../pitwall/core/route'
 import { useEffect, useState } from 'react'
 import { Button, Choices, Facts, Progress } from '../../ui/components'
 import type { SectionProps } from '../Sections'
@@ -54,30 +54,16 @@ export function StaffFile(props: Props) {
   }, [onClose])
   const data = result.data
   return (
-    <article className="staff-dossier"><button className="btn" onClick={onClose}>← К списку</button><h1>{employee.name}</h1>
+    <article className="staff-dossier people-module">
+      <div className="p-file-breadcrumb"><button onClick={onClose}>← К списку</button><span>{world.positions[employee.position].name} / Досье</span></div>
+      <header className="p-dossier-hero"><div className="p-dossier-photo"><Portrait person={employee} org={employee.org} color={employee.org ? world.organizations[employee.org].color : '#888888'} driver={employee.position==='driver'} media={props.media} showShoulders/>
+        <span className="p-dossier-rating"><b>{data?.profile.rating ?? employee.rating}</b><small>рейтинг</small></span></div>
+        <div className="p-dossier-title"><span className="p-kicker">{world.positions[employee.position].name} · {employee.country}</span><h1>{employee.name}</h1>
+        {employee.org ? <button className="p-org-link" onClick={()=>navigate('organization','overview',employee.org!)}>{world.organizations[employee.org].name} ↗</button> : <span>Свободный агент</span>}
+        <div className="p-person-facts"><span>{employee.age} лет</span><span><CountryFlag id={employee.country} countries={world.countries}/></span><span>{employee.specialty}</span></div></div>
+        <div className="p-file-actions"><Button onClick={()=>view('terms')}>Договор и условия</Button><Button onClick={()=>view('compare')}>Сравнить</Button></div>
+      </header>
       <div className="staff-file">
-        <div className="staff-identity">
-          <Portrait
-            person={employee}
-            org={employee.org}
-            color={employee.org ? world.organizations[employee.org].color : '#888888'}
-            driver={employee.position === 'driver'}
-            media={props.media}
-          />
-          <div>
-            <small>{world.positions[employee.position].name}</small>
-            <h3>{employee.org ? world.organizations[employee.org].name : 'Свободный агент'}</h3>
-            <p>
-              {employee.age} лет · <CountryFlag id={employee.country} countries={world.countries} />{' '}
-              {world.countries[employee.country]}
-            </p>
-            <span className="staff-tag">{employee.tag}</span>
-          </div>
-          <div className="staff-score">
-            <b>{data?.profile.rating ?? employee.rating}</b>
-            <small>рейтинг</small>
-          </div>
-        </div>
         <Choices
           items={tabs.filter(([id]) => id !== 'backing' || employee.position === 'driver')}
           active={tab}

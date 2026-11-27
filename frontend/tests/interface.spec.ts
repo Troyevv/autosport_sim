@@ -167,7 +167,7 @@ test('Досье, сравнение, фильтр и подтверждаемо
 })
 test('Переход к карьерным разработкам, календарь и гараж', async ({ page }) => {
   await navigate(page, 'Разработка')
-  await expect(page.getByRole('link',{name:'Открыть карьеры'})).toHaveAttribute('href','/#development')
+  await expect(page.getByRole('link',{name:'Открыть карьеры'})).toHaveAttribute('href','/?section=development&role=manager#saves')
   await navigate(page, 'Календарь')
   await button(page, 'Список').click()
   await page.getByLabel('Программа', { exact: true }).selectOption('endurance')

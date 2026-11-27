@@ -282,6 +282,10 @@ export function Race() {
           </button>
         </div>
       </div>
+      <nav className="race-mobile-sections" aria-label="Панели демонстрационной гонки">
+        {([['.race-map-panel','Трасса'],['.race-driver','Пилоты'],['.race-timing','Хронометраж'],['.race-bottom-grid','Радио']] as const).map(([target,label])=>
+          <button key={target} onClick={()=>document.querySelector(target)?.scrollIntoView({block:'start'})}>{label}</button>)}
+      </nav>
       <div className="race-layout">
         <div>
           <div className="race-map-panel">

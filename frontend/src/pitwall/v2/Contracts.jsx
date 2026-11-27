@@ -1017,7 +1017,7 @@ export default function ContractWorkspace() {
                 <p>
                   {filters.query
                     ? 'Измените имя или фильтры.'
-                    : 'Здесь появятся реальные договоры карьеры и решения, подписанные в эталоне.'}
+                    : 'Подписанные договоры появятся в этом реестре.'}
                 </p>
                 <Button variant="secondary" onClick={() => g.navigate(meta.route, meta.tab || '')}>
                   {meta.action}
@@ -1058,11 +1058,7 @@ export default function ContractWorkspace() {
                 <ContractTimeline
                   events={selected.data.history || []}
                   initialDate={selected.data.date || selected.data.signed_at}
-                  initialText={
-                    selected.local
-                      ? 'Условия содержат решение интерактивного эталона'
-                      : 'Условия из доступной проекции карьеры'
-                  }
+                  initialText={'Условия действующего договора'}
                 />
                 {!selected.disclosed && ['driver', 'staff'].includes(selected.type) && (
                   <p className="contract-note">

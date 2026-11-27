@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react'
 import { api, explain } from '../../career/api'
 
 const technical = ['council', 'development', 'production', 'research', 'programme']
-const financial = ['finance', 'budget', 'capital', 'facilities']
 function sources(c, route, tab) {
   const topic =
     route === 'briefings'
@@ -16,14 +15,19 @@ function sources(c, route, tab) {
         : ['manufacturer', 'finance', 'production', 'development']
   if (route === 'world') return ['garage']
   if (route === 'inbox') return ['council']
-  if (route === 'agreements') return ['commercial', 'capital', 'facilities', 'dossiers']
+  if (route === 'funding') return ['funding']
+  if (route === 'agreements') return ['commercial', 'capital', 'facilities', 'dossiers', 'funding']
   if (['statistics', 'organization'].includes(route))
     return ['statistics', 'garage', 'commercial', 'manufacturer']
-  if ([...financial, 'commercial', 'cap', 'economy'].includes(topic)) return [...financial, 'accounts']
+  if (topic === 'facilities') return ['facilities', 'production', 'manufacturer']
+  if (topic === 'capital') return ['capital', 'finance']
+  if (['finance', 'budget', 'cap'].includes(topic))
+    return ['finance', 'budget', 'commercial', 'accounts']
+  if (['production', 'inventory'].includes(topic)) return ['production', 'manufacturer', 'facilities']
   if ([...technical, 'engineering', 'inventory', 'manufacturer'].includes(topic))
     return [...technical, 'manufacturer', 'garage', 'components', 'facilities']
   if (['staff', 'drivers', 'people', 'academy', 'leadership', 'preparation'].includes(topic))
-    return ['production', 'dossiers']
+    return ['production']
   return []
 }
 async function parallel(items, fn) {
@@ -43,23 +47,31 @@ export function useDesk(c, route, tab) {
     key = [c.id, c.revision, paths].join('/'),
     [result, set] = useState({}),
     [attempt, retry] = useState(0)
-  const cache = useRef({revision: '', entries:new Map()})
+  const cache = useRef({ revision: '', entries: new Map() })
   useEffect(() => {
     const revision = c.id + '/' + c.revision
-    if(cache.current.revision !== revision) cache.current = {revision, entries:new Map()}
+    if (cache.current.revision !== revision) cache.current = { revision, entries: new Map() }
     const entries = cache.current.entries
     const controller = new globalThis.AbortController(),
       signal = controller.signal,
       req = async (path) => {
-        if(entries.has(path)) return entries.get(path)
+        if (entries.has(path)) return entries.get(path)
         const data = await api('careers/' + encodeURIComponent(c.id) + '/' + path, { signal })
-        if(!signal.aborted) entries.set(path,data)
+        if (!signal.aborted) entries.set(path, data)
         return data
       }
     async function load() {
       const names = paths.split(',').filter(Boolean),
-        base = names.filter((x) => !['dossiers', 'components', 'accounts', 'statistics'].includes(x))
-      const projections = await parallel(base, req)
+        base = names.filter((x) => !['dossiers', 'components', 'statistics'].includes(x))
+      const missing = base.filter((name) => !entries.has(name))
+      if (missing.length) {
+        const query = new globalThis.URLSearchParams(missing.map((name) => ['topics', name]))
+        const snapshot = await req('pit-wall?' + query)
+        if (snapshot.revision !== c.revision)
+          throw Error('Сохранение изменилось. Обновите страницу, чтобы получить актуальные данные.')
+        for (const [name, value] of Object.entries(snapshot.projections)) entries.set(name, value)
+      }
+      const projections = Object.fromEntries(base.map((name) => [name, entries.get(name)]))
       const components = names.includes('components')
         ? await parallel(
             [...new Set(c.assignments.filter((s) => s.org === c.org && s.entry).map((s) => s.entry))],
@@ -76,11 +88,7 @@ export function useDesk(c, route, tab) {
             (id) => req('personnel/' + encodeURIComponent(id)),
           )
         : {}
-      const financeContexts = names.includes('accounts')
-        ? await parallel(projections.finance.scopes || [], (s) =>
-            req('finance?' + new globalThis.URLSearchParams({ scope: s })),
-          )
-        : {}
+      const financeContexts = projections.accounts || {}
       if (names.includes('statistics')) {
         const items = [],
           seen = new Set()
@@ -96,13 +104,7 @@ export function useDesk(c, route, tab) {
         } while (after)
         projections.statistics = { items }
       }
-      const funding = [
-        ...new Map(
-          Object.values(dossiers)
-            .flatMap((d) => d.financing || [])
-            .map((x) => [x.id, x]),
-        ).values(),
-      ]
+      const funding = projections.funding || []
       if (!signal.aborted)
         set({
           key,

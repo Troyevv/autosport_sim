@@ -207,7 +207,7 @@ export function App() {
                 Поиск <kbd>Ctrl K</kbd>
               </button>
               <button
-                className="icon-btn desktop-only"
+                className="icon-btn"
                 aria-label={'Уведомления: ' + unread}
                 onClick={() => open('Входящие сообщения', <Inbox />)}
               >

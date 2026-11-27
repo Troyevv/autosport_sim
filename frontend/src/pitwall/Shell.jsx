@@ -64,6 +64,11 @@ export function Shell({ children, onSave, onAdvance, busy }) {
       a[0]?.focus()
     }
   }
+  const routeHref = (page, tab) => '#' + page + (tab ? '?' + new URLSearchParams({ tab }) : '')
+  const closeMenus = () => {
+    setDrawer(false)
+    setSearch(false)
+  }
   function nav(r, t = '', e = '') {
     navigate(r, t, e)
     setDrawer(false)
@@ -165,30 +170,32 @@ export function Shell({ children, onSave, onAdvance, busy }) {
               : role === 'manufacturer'
                 ? 'ПРОМЫШЛЕННАЯ ПРОГРАММА'
                 : 'ГОНОЧНАЯ ПРОГРАММА'}{' '}
-            <b>2025</b>
+            <b>{game.career.date.slice(0, 4)}</b>
           </div>
           {relevant.map((g, i) => (
             <div key={g.id}>
-              <button
+              <a
                 className={'nav-item ' + (active?.id === g.id ? 'active' : '')}
-                onClick={() => nav(g.destination || g.id, g.defaultTab || '')}
+                href={routeHref(g.destination || g.id, g.defaultTab)}
+                onClick={closeMenus}
               >
                 <Icon name={g.icon} size={18} />
                 <span>{g.label}</span>
                 {g.children.length > 0 && <Icon name="ChevronRight" size={12} />}
-              </button>
+              </a>
               {active?.id === g.id && g.children.length > 0 && (
                 <div className="subnav">
                   {g.children.map(([id, label, t]) => (
-                    <button
+                    <a
                       key={id + (t || '')}
                       className={
                         route === id && (!t || tab === t || (!tab && t === 'catalog')) ? 'active' : ''
                       }
-                      onClick={() => nav(id, t || '')}
+                      href={routeHref(id, t)}
+                      onClick={closeMenus}
                     >
                       {label}
-                    </button>
+                    </a>
                   ))}
                 </div>
               )}
@@ -274,7 +281,6 @@ export function Shell({ children, onSave, onAdvance, busy }) {
                     agreements: 'Договорная комната',
                     funding: 'Финансирование пилотов',
                     academy: 'Академия',
-                    guide: 'Об эталоне',
                   }[route] ||
                   'PIT WALL'}
               </strong>

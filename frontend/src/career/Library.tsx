@@ -1,1 +1,5 @@
-export const careerUrl = (id: string) => '?career=' + encodeURIComponent(id) + (location.hash === '#development' ? location.hash : '')
+export function careerUrl(id:string) {
+  const panel = new URLSearchParams(location.search).get('section')
+  const target = panel==='development' || location.hash==='#development' ? '#development' : ''
+  return '?career='+encodeURIComponent(id)+target
+}

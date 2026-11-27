@@ -176,7 +176,7 @@ export function StatisticsCenter() {
                 kind: found.type,
                 day: found.date || found.at,
                 access: 'internal',
-                local: true,
+
                 body: {
                   context: {
                     org: g.game.career.org,
@@ -1772,9 +1772,7 @@ function Journal({ index, g, s, set, openFact, open }) {
               <strong>{FACT_KINDS[f.kind] || f.kind}</strong>
               <small>{factSummary(f, index)}</small>
             </span>
-            <em>
-              {f.local ? 'Локальный макет' : f.origin === 'initial' ? 'Начало карьеры' : 'Симуляция'}
-            </em>
+            <em>{f.origin === 'initial' ? 'Начало карьеры' : 'Симуляция'}</em>
             <Icon name="ChevronRight" size={15} />
           </button>
         ))}
@@ -1804,7 +1802,7 @@ function Journal({ index, g, s, set, openFact, open }) {
       </div>
       <Source internal={s.journalScope === 'all'}>
         projections.statistics.items · публичные события и разрешённые записи активной организации.
-        Действия макета отдельно отмечены как локальные.
+        Записи относятся к выбранному сохранению.
       </Source>
     </section>
   )
@@ -1900,7 +1898,6 @@ function FactDrawer({ fact, g, index, open, close }) {
           <h4>{factSummary(fact, index)}</h4>
           <Source internal={fact.access !== 'public'}>
             {fact.access === 'public' ? 'Публичный факт мира' : 'Внутренние данные активной организации'}
-            {fact.local ? ' · локальное действие макета' : ''}
           </Source>
           <dl>
             {Object.entries(d)
@@ -1954,9 +1951,9 @@ function FactDrawer({ fact, g, index, open, close }) {
           </button>
           {showTechnical && (
             <div className="st-source-details">
-              <p>Источник: {fact.source || 'локальное состояние интерфейса'}</p>
+              <p>Источник: {fact.source || 'журнал карьеры'}</p>
               <p>Тип: {fact.kind}</p>
-              <p>Версия схемы: {fact.body?.version ?? 'локальная'}</p>
+              <p>Версия схемы: {fact.body?.version ?? 'не указана'}</p>
               <code>{fact.key || fact.id}</code>
             </div>
           )}
@@ -2234,7 +2231,7 @@ function WorldArchive({ view, index, g, mode, open, onDemo }) {
       }
       <Source>
         Концепция задач #37–41. Расчёт реальной статистики, телеметрии и архивов остаётся обязанностью
-        источников симуляции; макет их не реализует.
+        спортивных результатов.
       </Source>
     </section>
   )

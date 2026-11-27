@@ -50,7 +50,9 @@ export function Page({ children, back = 'menu', backText = 'Главное ме�
 export function Wizard() {
   const g = useGame(),
     [step, setStep] = useState(0),
-    [role, setRole] = useState('manager'),
+    [role, setRole] = useState(
+      roles.some((r) => r[0] === g.preferredRole) ? g.preferredRole : 'manager',
+    ),
     [series, setSeries] = useState('f1'),
     [org, setOrg] = useState(''),
     [q, setQ] = useState(''),
@@ -77,7 +79,7 @@ export function Wizard() {
     setBusy(true)
     setError('')
     try {
-      const c = await g.createCareer({
+      await g.createCareer({
         name: name.trim(),
         country,
         role,
@@ -167,6 +169,8 @@ export function Wizard() {
                   return
                 }
                 setSeries(s.id)
+                setOrg('')
+                setQ('')
                 setOrg('')
                 setStep(2)
               }}

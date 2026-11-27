@@ -1,6 +1,8 @@
-import {initialTab,readRoute} from '../../pitwall/core/route'
+import { RaceCar } from '../../pitwall/visuals'
+import { EngineeringHeading } from '../../pitwall/EngineeringHeading'
+import { initialTab, readRoute } from '../../pitwall/core/route'
 import { useState, type FormEvent, type ReactNode } from 'react'
-import { Button, Choices, Header, Panel, Stats } from '../../ui/components'
+import { Button, Choices, Panel, Stats } from '../../ui/components'
 import { type Career, money } from '../api'
 import { type SectionProps } from '../Sections'
 import { useOrder } from '../finance/useOrder'
@@ -48,7 +50,7 @@ export function Manufacturer({
   const request = usePersonnel<Desk>('careers/' + c.id + '/manufacturer', c.revision)
   const orders = useOrder(c, updateCareer, 'manufacturer'),
     staff = useOrder(c, updateCareer, 'staff')
-  const [tab, setTab] = useState<string>(()=>initialTab(tabs,maker ? 'catalog' : 'clients')),
+  const [tab, setTab] = useState<string>(() => initialTab(tabs, maker ? 'catalog' : 'clients')),
     [selected, setSelected] = useState(''),
     [edition, setEdition] = useState(readRoute().entity),
     [year, setYear] = useState(c.date.slice(0, 4)),
@@ -57,7 +59,8 @@ export function Manufacturer({
     [receipt, setReceipt] = useState('')
   const d = request.data
   const product =
-    d?.catalog.find((p) => p.entry + p.axis === selected) ?? d?.catalog.find(p=>p.editions.some(v=>v.id===edition)) ??
+    d?.catalog.find((p) => p.entry + p.axis === selected) ??
+    d?.catalog.find((p) => p.editions.some((v) => v.id === edition)) ??
     d?.catalog.find((p) => p.series === c.series) ??
     d?.catalog[0]
   const version = product?.editions.find((v) => v.id === edition) ?? product?.editions[0]
@@ -190,11 +193,11 @@ export function Manufacturer({
     )
   }
   return (
-    <section className="screen maker-desk">
-      <Header
-        section={org(c.org) + ' / Техническая служба'}
-        title={maker ? 'Инженерный центр производителя' : 'Техническое сотрудничество'}
-        sub="Спецификации, обязательства перед командами и решения инженерного штаба."
+    <section className="screen engineering-module maker-desk">
+      <EngineeringHeading
+        route="manufacturer"
+        organization={world.organizations[c.org].name}
+        maker={c.role === 'manufacturer'}
       />
       {request.error && (
         <p role="alert">
@@ -204,25 +207,43 @@ export function Manufacturer({
       {!request.error && !d && <p role="status">Загрузка инженерных дел…</p>}
       {d && (
         <>
-          <Stats
-            items={[
-              [
-                maker ? 'Клиентские команды' : 'Поставщики',
-                new Set(d.clients.map((r) => (maker ? r.org : r.terms.maker))).size,
-                'Действующие связи',
-              ],
-              ['Поручения', d.projects.filter((p) => p.status !== 'complete').length, 'В очереди и в работе'],
-              ['Обращения', d.cases.filter((r) => r.status === 'open').length, 'Ожидают решения'],
-            ]}
-          />
-          <Choices
-            label="Разделы технической службы"
-            active={tab}
-            onChange={chooseTab}
-            items={tabs.filter(
-              ([v]) => maker || ['clients', 'cases', 'advisors', 'warranty', 'history'].includes(v),
-            )}
-          />
+          {[
+            ['Продукция', ['catalog', 'program', 'research', 'factory']],
+            ['Клиентская служба', ['clients', 'cases', 'advisors']],
+            ['Сервис', ['diagnosis', 'warranty', 'history']],
+          ].map(([group, keys]) => {
+            const items = tabs.filter(
+              ([v]) =>
+                keys.includes(v) &&
+                (maker || ['clients', 'cases', 'advisors', 'warranty', 'history'].includes(v)),
+            )
+            if (!items.length) return null
+            return (
+              <div className="maker-nav-group" key={String(group)}>
+                <span>{group}</span>
+                <Choices label={String(group)} active={tab} onChange={chooseTab} items={items} />
+              </div>
+            )
+          })}
+          <details className="eng-summary-details">
+            <summary>Показатели отдела</summary>{' '}
+            <Stats
+              items={[
+                [
+                  maker ? 'Клиентские команды' : 'Поставщики',
+                  new Set(d.clients.map((r) => (maker ? r.org : r.terms.maker))).size,
+                  'Действующие связи',
+                ],
+                [
+                  'Поручения',
+                  d.projects.filter((p) => p.status !== 'complete').length,
+                  'В очереди и в работе',
+                ],
+                ['Обращения', d.cases.filter((r) => r.status === 'open').length, 'Ожидают решения'],
+              ]}
+            />
+          </details>
+
           {(orders.error || staff.error) && (
             <p role="alert" className="career-error">
               {orders.error || staff.error}
@@ -230,36 +251,59 @@ export function Manufacturer({
           )}
           {receipt && <p role="status">{receipt}</p>}
           {tab === 'catalog' && (
-            <Panel title="Каталог продукции">
-              <div className="maker-body">
+            <>
+              <div className="eng-toolbar">
                 {productSelect}
-                {product && version ? (
-                  <>
-                    <Field name="Спецификация">
-                      <select value={version.id} onChange={(e) => setEdition(e.target.value)}>
-                        {product.editions.map((v) => (
-                          <option key={v.id} value={v.id}>
-                            Ред. {v.version} · {label(v.status)}
-                          </option>
-                        ))}
-                      </select>
-                    </Field>
-                    <h3>
-                      {product.title} · {version.title}
-                    </h3>
-                    <p>
-                      {version.forecast
-                        ? 'Инженерный прогноз с диапазоном неопределённости'
-                        : 'Номинальные параметры исходного чертежа · игровые оценки'}
-                    </p>
-                    <dl>
-                      {Object.entries(version.values).map(([k, v]) => (
-                        <div key={k}>
-                          <dt>{label(k)}</dt>
-                          <dd>{version.forecast?.[k]?.map(num).join(' – ') || num(v)}</dd>
-                        </div>
+                {product && version && (
+                  <Field name="Спецификация">
+                    <select value={version.id} onChange={(e) => setEdition(e.target.value)}>
+                      {product.editions.map((v) => (
+                        <option key={v.id} value={v.id}>
+                          Ред. {v.version} · {label(v.status)}
+                        </option>
                       ))}
-                    </dl>
+                    </select>
+                  </Field>
+                )}
+              </div>
+              {product && version ? (
+                <div className="eng-product-hero">
+                  <div className="eng-product-left">
+                    <small>
+                      {org(c.org).toUpperCase()} / {product.series.toUpperCase()}
+                    </small>
+                    <h2>{label(product.axis)}</h2>
+                    <p className="eng-product-name">{product.title}</p>
+                    <div className="eng-hero-badges">
+                      <span className="chip">{label(version.status)}</span>
+                      <span className="chip">Редакция {version.version}</span>
+                    </div>
+                    <div className="eng-product-graphic">
+                      <RaceCar entryId={product.entry} />
+                      <small>Продуктовый интерфейс · автомобиль клиентской программы</small>
+                    </div>
+                    <Button primary onClick={() => chooseTab('research')}>
+                      Открыть программу разработки
+                    </Button>
+                  </div>
+                  <div className="eng-product-right">
+                    <div className="eng-product-parameters">
+                      <small>Паспорт редакции</small>
+                      <h3>{version.title}</h3>
+                      <p>
+                        {version.forecast
+                          ? 'Инженерный прогноз с диапазоном неопределённости'
+                          : 'Номинальные параметры исходного чертежа · игровые оценки'}
+                      </p>
+                      <dl>
+                        {Object.entries(version.values).map(([k, v]) => (
+                          <div key={k}>
+                            <dt>{label(k)}</dt>
+                            <dd>{version.forecast?.[k]?.map(num).join(' – ') || num(v)}</dd>
+                          </div>
+                        ))}
+                      </dl>
+                    </div>
                     <details>
                       <summary>Расчётные режимы нагрузки</summary>
                       {version.calculations.map((row) => (
@@ -276,12 +320,12 @@ export function Manufacturer({
                         </section>
                       ))}
                     </details>
-                  </>
-                ) : (
-                  <p>В каталоге отсутствуют чертежи для этого направления.</p>
-                )}
-              </div>
-            </Panel>
+                  </div>
+                </div>
+              ) : (
+                <p>В каталоге отсутствуют чертежи для этого направления.</p>
+              )}
+            </>
           )}
           {['program', 'research', 'factory'].includes(tab) && (
             <div className="maker-grid">
@@ -300,7 +344,8 @@ export function Manufacturer({
                       {tab === 'program' ? (
                         <>
                           <p>
-                            {product.years[year] || 'Разработка допускается в рамках сезонного бюллетеня.'}
+                            {product.years[year] ||
+                              'Разработка допускается в рамках сезонного бюллетеня.'}
                           </p>
                           <Field name="Распределение ресурсов">
                             <select
@@ -346,33 +391,35 @@ export function Manufacturer({
                               />
                             </Field>
                           )}
-                          {(tab === 'research' ? ['research', 'design'] : ['lab', 'bench', 'produce']).map(
-                            (a) => (
-                              <Button
-                                key={a}
-                                disabled={
-                                  busy || (a === 'design' && !!product.years[year] && target !== 'durability')
-                                }
-                                onClick={() =>
-                                  void submit(
-                                    'maker-work',
-                                    {
-                                      action: a,
-                                      entry: product.entry,
-                                      axis: product.axis,
-                                      year: Number(year),
-                                      objective: target,
-                                      specification: version.id,
-                                      quantity: a === 'produce' ? quantity : 1,
-                                    },
-                                    'Поручение добавлено в календарь работ.',
-                                  )
-                                }
-                              >
-                                {label(a)}
-                              </Button>
-                            ),
-                          )}
+                          {(tab === 'research'
+                            ? ['research', 'design']
+                            : ['lab', 'bench', 'produce']
+                          ).map((a) => (
+                            <Button
+                              key={a}
+                              disabled={
+                                busy ||
+                                (a === 'design' && !!product.years[year] && target !== 'durability')
+                              }
+                              onClick={() =>
+                                void submit(
+                                  'maker-work',
+                                  {
+                                    action: a,
+                                    entry: product.entry,
+                                    axis: product.axis,
+                                    year: Number(year),
+                                    objective: target,
+                                    specification: version.id,
+                                    quantity: a === 'produce' ? quantity : 1,
+                                  },
+                                  'Поручение добавлено в календарь работ.',
+                                )
+                              }
+                            >
+                              {label(a)}
+                            </Button>
+                          ))}
                           {tab === 'factory' &&
                             version.status === 'released' &&
                             d.clients.some(
@@ -450,7 +497,9 @@ export function Manufacturer({
           {tab === 'factory' && (
             <Panel title="Склад и контроль качества">
               <div className="maker-body">
-                {!d.inventory.length && <p>Изготовленные экземпляры поступят сюда на контроль качества.</p>}
+                {!d.inventory.length && (
+                  <p>Изготовленные экземпляры поступят сюда на контроль качества.</p>
+                )}
                 {d.inventory.map((i) => (
                   <article key={i.id} className="maker-card">
                     <small>
@@ -515,7 +564,7 @@ export function Manufacturer({
                               )
                             }
                           >
-                            Передать {d.inventory.find(item => item.id === i)?.serial ?? i}
+                            Передать {d.inventory.find((item) => item.id === i)?.serial ?? i}
                           </Button>
                         ))}
                       </>

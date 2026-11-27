@@ -1,0 +1,492 @@
+@scope (.season-garage) to (.native-screen) {
+  .garage-selectors {
+    display: flex;
+    gap: 12px;
+    max-width: 560px;
+  }
+  .garage-selectors select {
+    min-width: 170px;
+    font-size: 12px;
+  }
+  .garage-hero {
+    position: relative;
+    border: 1px solid #5d5d5d;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .garage-hero > .studio-stage {
+    height: 520px;
+  }
+  .garage-hero > div:not(.studio-stage) {
+    position: absolute;
+    top: 35px;
+    left: 35px;
+    pointer-events: none;
+  }
+  .garage-hero h2 {
+    font-size: 49px;
+    letter-spacing: -2px;
+    margin: 10px 0;
+  }
+  .garage-hero p {
+    font-size: 12px;
+  }
+  .garage-hero > footer {
+    position: absolute;
+    bottom: 25px;
+    left: 30px;
+    right: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .garage-overview {
+    margin-top: 24px;
+  }
+  .garage-crew {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  .garage-crew > button {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: none;
+    border: 0;
+    border-bottom: 1px solid #505050;
+    padding: 12px 0;
+    text-align: left;
+  }
+  .garage-crew > button span {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    flex: 1;
+  }
+  .garage-crew small {
+    font-size: 10px;
+  }
+  .components-car {
+    position: relative;
+    height: 220px;
+    background: #2d2d2d;
+    border: 1px solid #555555;
+    border-radius: 6px;
+    margin-bottom: 24px;
+    overflow: hidden;
+  }
+  .components-car > .studio-stage {
+    height: 220px;
+    max-width: 650px;
+    margin: auto;
+    background: none;
+  }
+  .components-car > .badge {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+  }
+  .livery-workspace {
+    display: grid;
+    grid-template-columns: minmax(0, 1.7fr) minmax(310px, 1fr);
+    gap: 22px;
+    align-items: start;
+  }
+  .livery-stage {
+    border: 1px solid #5e5e5e;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #323232;
+  }
+  .livery-stage > header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 22px;
+  }
+  .livery-stage > header > span {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 11px;
+  }
+  .livery-stage > header > span > svg {
+    color: var(--org-accent);
+  }
+  .livery-stage > header > div {
+    display: flex;
+  }
+  .livery-stage > .studio-stage {
+    height: 360px;
+  }
+  .livery-stage > p {
+    display: flex;
+    gap: 12px;
+    padding: 20px;
+    font-size: 11px;
+    border-top: 1px solid #555555;
+  }
+  .livery-stage > p svg {
+    flex: none;
+  }
+  .livery-controls {
+    padding: 20px;
+    background: #313131;
+    border: 1px solid #5a5a5a;
+    border-radius: 7px;
+  }
+  .livery-controls fieldset {
+    border: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+  .livery-controls legend {
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--org-accent);
+    margin-bottom: 22px;
+  }
+  .livery-controls .color-setting {
+    display: grid;
+    grid-template-columns: 1fr 50px 70px;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid #535353;
+    padding-bottom: 17px;
+  }
+  .color-setting input {
+    width: 50px;
+  }
+  .color-setting code {
+    font-size: 10px;
+  }
+  .livery-controls p {
+    font-size: 11px;
+  }
+  .livery-controls .tabs {
+    gap: 20px;
+  }
+  .livery-controls .tabs button {
+    font-size: 12px;
+  }
+  .decal-layers {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-height: 300px;
+    overflow: auto;
+  }
+  .decal-layers > button {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: 1px solid #5c5c5c;
+    background: #2c2c2c;
+    padding: 12px;
+    text-align: left;
+    font-size: 12px;
+  }
+  .decal-layers > button.active {
+    background: color-mix(in srgb, var(--org-accent) 8%, transparent);
+    border-color: var(--org-accent);
+  }
+  .decal-layers small {
+    margin-left: auto;
+    font-size: 10px;
+  }
+  .livery-savebar {
+    position: sticky;
+    bottom: 0;
+    background: #2f2f2fef;
+    border: 1px solid #616161;
+    border-radius: 6px;
+    padding: 16px 20px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 22px;
+    backdrop-filter: blur(8px);
+    z-index: 30;
+  }
+  @media (max-width: 1100px) {
+    .garage-selectors {
+      max-width: 450px;
+    }
+    .livery-workspace {
+      grid-template-columns: 1fr;
+    }
+    .livery-controls {
+      padding: 23px;
+    }
+    .livery-controls fieldset {
+      max-width: 700px;
+    }
+    .livery-stage > .studio-stage {
+      height: 330px;
+    }
+    .garage-hero > .studio-stage {
+      height: 410px;
+    }
+  }
+  @media (max-width: 700px) {
+    .garage-selectors {
+      width: 100%;
+      max-width: none;
+    }
+    .garage-selectors select {
+      min-width: 0;
+      width: 50%;
+      font-size: 10px;
+    }
+    .garage-hero > .studio-stage {
+      height: 300px;
+    }
+    .garage-hero > div:not(.studio-stage) {
+      top: 22px;
+      left: 22px;
+    }
+    .garage-hero h2 {
+      font-size: 32px;
+      margin: 8px 0;
+    }
+    .garage-hero p {
+      font-size: 10px;
+    }
+    .garage-hero .eyebrow {
+      font-size: 8px;
+    }
+    .garage-hero > footer {
+      left: 18px;
+      right: 18px;
+      bottom: 16px;
+      gap: 10px;
+    }
+    .garage-hero > footer .button {
+      font-size: 10px;
+      padding: 9px;
+    }
+    .garage-hero > footer .badge {
+      font-size: 9px;
+    }
+    .livery-stage > header {
+      padding: 11px 16px;
+    }
+    .livery-stage > header > span {
+      font-size: 10px;
+    }
+    .livery-stage .badge {
+      font-size: 7px;
+      padding: 2px 4px;
+    }
+    .livery-stage > .studio-stage {
+      height: 205px;
+    }
+    .livery-stage > p {
+      padding: 14px;
+      font-size: 10px;
+    }
+    .livery-workspace {
+      gap: 0;
+    }
+    .livery-stage {
+      border-radius: 8px 8px 0 0;
+    }
+    .livery-controls {
+      padding: 17px;
+      border-top: 0;
+      border-radius: 0 0 8px 8px;
+    }
+    .livery-savebar {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 66px;
+      margin: 0;
+      padding: 12px 16px;
+      border-radius: 0;
+    }
+    .livery-savebar > .button {
+      flex: 1;
+      font-size: 12px;
+    }
+    .livery-workspace.dirty {
+      padding-bottom: 80px;
+    }
+    .components-car {
+      height: 185px;
+    }
+    .components-car > .studio-stage {
+      height: 185px;
+    }
+    .components-car > .badge {
+      font-size: 8px;
+      top: 14px;
+      left: 14px;
+    }
+    .garage-overview {
+      gap: 18px;
+    }
+  }
+  @media (max-width: 900px) and (max-height: 500px) and (orientation: landscape) {
+    .livery-savebar {
+      left: 63px;
+      bottom: 0;
+    }
+    .livery-workspace.dirty {
+      padding-bottom: 80px;
+    }
+    .garage-hero > .studio-stage {
+      height: 360px;
+    }
+    .livery-workspace {
+      grid-template-columns: minmax(0, 1.2fr) minmax(270px, 1fr);
+      gap: 18px;
+    }
+    .livery-stage > .studio-stage {
+      height: 245px;
+    }
+    .livery-controls {
+      padding: 16px;
+    }
+    .garage-selectors {
+      max-width: 430px;
+    }
+  }
+
+  @media (max-width: 700px) {
+    .garage-hero > .studio-stage {
+      height: 225px;
+    }
+    .garage-hero h2 {
+      font-size: 25px;
+    }
+    .garage-hero > div:not(.studio-stage) {
+      top: 16px;
+      left: 17px;
+    }
+    .garage-hero p {
+      display: none;
+    }
+    .garage-hero .car-stand {
+      inset: 15px 0 16%;
+    }
+    .components-car {
+      height: 140px;
+    }
+    .components-car > .studio-stage {
+      height: 140px;
+    }
+    .components-car > .badge {
+      top: 9px;
+      left: 10px;
+    }
+    .livery-savebar > .livery-preview {
+      display: none;
+    }
+    .livery-savebar {
+      padding: 10px 12px;
+      gap: 8px;
+    }
+    .livery-savebar > .button {
+      min-width: 0;
+      padding: 10px 8px;
+    }
+    .garage-components-panel .data-table tr,
+    .garage-sponsors-panel .data-table tr {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 6px 16px;
+      padding: 15px 0;
+    }
+    .garage-components-panel .data-table td,
+    .garage-sponsors-panel .data-table td {
+      display: block;
+      text-align: left;
+      padding: 3px 0;
+    }
+    .garage-components-panel .data-table td:before,
+    .garage-sponsors-panel .data-table td:before {
+      display: block;
+      margin-bottom: 4px;
+    }
+    .garage-components-panel .data-table td:first-child {
+      grid-column: 1/-1;
+      order: 0;
+    }
+    .garage-components-panel .data-table td:first-child:before {
+      display: none;
+    }
+    .garage-components-panel .data-table td:nth-child(3) {
+      grid-column: 1/-1;
+      order: 1;
+      font-family: monospace;
+      color: #c6d5de;
+    }
+    .garage-components-panel .data-table td:nth-child(3):before {
+      display: none;
+    }
+    .garage-components-panel .data-table td:nth-child(2) {
+      order: 2;
+    }
+    .garage-components-panel .data-table td:nth-child(6) {
+      order: 3;
+    }
+    .garage-components-panel .data-table td:nth-child(4) {
+      order: 4;
+    }
+    .garage-components-panel .data-table td:nth-child(5) {
+      order: 5;
+    }
+  }
+
+  @media (max-height: 500px) and (min-width: 701px) and (max-width: 1000px) {
+    .main-inner:has(.livery-workspace) {
+      padding-top: 10px;
+    }
+    .main-inner:has(.livery-workspace) > .page-heading {
+      margin-bottom: 6px;
+      gap: 12px;
+      align-items: center;
+    }
+    .main-inner:has(.livery-workspace) > .page-heading .eyebrow {
+      display: none;
+    }
+    .main-inner:has(.livery-workspace) > .page-heading h1 {
+      font-size: 22px;
+      margin: 0;
+    }
+    .main-inner:has(.livery-workspace) > .page-heading select {
+      min-height: 38px;
+      padding: 8px 10px;
+    }
+    .main-inner:has(.livery-workspace) > .tabs {
+      margin-bottom: 10px;
+    }
+    .main-inner:has(.livery-workspace) > .tabs button {
+      padding: 10px 3px;
+      min-height: 42px;
+    }
+    .livery-stage > header {
+      padding: 8px 14px;
+      min-height: 44px;
+    }
+    .livery-stage > .studio-stage {
+      height: 210px;
+    }
+    .livery-stage > p {
+      font-size: 10px;
+      padding: 10px 14px;
+    }
+    .livery-controls {
+      padding: 12px;
+    }
+    .livery-controls > .tabs {
+      margin-bottom: 12px;
+    }
+  }
+}

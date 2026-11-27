@@ -172,20 +172,142 @@
   cursor: pointer;
   color: var(--org-accent);
 }
-.native-screen .staff-filter-trigger {display:none}
-.pitwall .main-inner:has(.staff-dossier) > .pw-operational {display:none}
-.staff-release summary {cursor:pointer}
-.staff-release[open] summary {margin-bottom:12px}
-@media(max-width:700px){
-  .native-screen .staff-filter-trigger {display:inline-flex}
-  .staff-filters[data-expanded=false] > :not(.staff-search,.staff-filter-trigger) {display:none}
-  .staff-filters .staff-search {min-width:0}
-  .collective-register .data-table,.collective-register tbody {display:block;min-width:0}
-  .collective-register thead {position:absolute;clip-path:inset(100%)}
-  .collective-register .data-table tr {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;padding:12px;border-bottom:1px solid var(--line)}
-  .collective-register .data-table td {border:0; padding:2px;white-space:normal}
-  .collective-register .data-table td:first-child {grid-column:1/-1;font-weight:700}
-  .collective-register .data-table td:not(:first-child)::before {content:attr(data-label);display:block;color:var(--muted);font-size:12px}
-  .native-screen .research-stats strong {font-size:clamp(16px,4.4vw,22px);overflow-wrap:normal}
-  .pitwall .sidebar-footer {display:grid}
+.native-screen .staff-filter-trigger {
+  display: none;
+}
+.pitwall .main-inner:has(.staff-dossier) > .pw-operational {
+  display: none;
+}
+.staff-release summary {
+  cursor: pointer;
+}
+.staff-release[open] summary {
+  margin-bottom: 12px;
+}
+@media (max-width: 700px) {
+  .native-screen .staff-filter-trigger {
+    display: inline-flex;
+  }
+  .staff-filters[data-expanded='false'] > :not(.staff-search, .staff-filter-trigger) {
+    display: none;
+  }
+  .staff-filters .staff-search {
+    min-width: 0;
+  }
+  .collective-register .data-table,
+  .collective-register tbody {
+    display: block;
+    min-width: 0;
+  }
+  .collective-register thead {
+    position: absolute;
+    clip-path: inset(100%);
+  }
+  .collective-register .data-table tr {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+    padding: 12px;
+    border-bottom: 1px solid var(--line);
+  }
+  .collective-register .data-table td {
+    border: 0;
+    padding: 2px;
+    white-space: normal;
+  }
+  .collective-register .data-table td:first-child {
+    grid-column: 1/-1;
+    font-weight: 700;
+  }
+  .collective-register .data-table td:not(:first-child)::before {
+    content: attr(data-label);
+    display: block;
+    color: var(--muted);
+    font-size: 12px;
+  }
+  .native-screen .research-stats strong {
+    font-size: clamp(16px, 4.4vw, 22px);
+    overflow-wrap: normal;
+  }
+  .pitwall .sidebar-footer {
+    display: grid;
+  }
+}
+.pitwall .season-garage {
+  max-width: none;
+  padding: 0;
+}
+.pitwall .season-garage .tabs button[aria-current='page'] {
+  color: var(--org-accent);
+  border-bottom: 2px solid var(--org-accent);
+}
+@media (max-width: 700px) {
+  .season-garage .heading-actions .garage-selectors {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 5px;
+  }
+  .season-garage .heading-actions .garage-selectors label {
+    min-width: 0;
+  }
+  .season-garage .heading-actions .garage-selectors .button {
+    grid-column: 1/-1;
+    justify-self: start;
+  }
+  .season-garage [data-garage-tab='parts'] .studio-layout {
+    display: flex;
+    flex-direction: column;
+  }
+  .season-garage [data-garage-tab='parts'] .studio-controls {
+    order: -1;
+  }
+}
+.pitwall .primary-nav a {
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
+.pitwall .subnav a {
+  display: block;
+}
+.engineering-module .eng-heading h1 {
+  font-family: Race, 'Arial Narrow', sans-serif;
+  font-size: clamp(29px, 3vw, 42px);
+}
+.engineering-module .eng-heading-action {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.engineering-module .eng-summary-details {
+  border-block-end: 1px solid var(--line);
+  padding: 6px 0;
+  margin: 4px 0 12px;
+}
+.engineering-module .eng-summary-details summary {
+  color: var(--muted);
+  cursor: pointer;
+}
+.engineering-module .eng-summary-details[open] .stats-row {
+  margin: 12px 0;
+}
+.pitwall .p-filter-disclosure summary {
+  cursor: pointer;
+  color: var(--muted);
+  padding: 8px 0;
+}
+.pitwall .native-screen .p-dossier-photo .career-portrait {
+  width: 100%;
+  height: 100%;
+}
+.pitwall .native-screen .p-dossier-title h1 {
+  margin: 4px 0;
+}
+.pitwall .maker-nav-group{display:flex;align-items:center;gap:.8rem;flex-wrap:wrap}
+.pitwall .maker-nav-group>span{min-width:9rem;color:var(--muted);font-weight:700;font-size:.78rem}
+.pitwall .maker-nav-group .choices{margin:0}
+@media(max-width:720px){
+  .pitwall .maker-nav-group{gap:.25rem}
+  .pitwall .maker-nav-group>span{min-width:100%}
+  .pitwall .native-dialog form>button[type=submit]:last-child{position:sticky;bottom:0;z-index:1;background:var(--accent);color:var(--accent-ink,#111);box-shadow:0 0 0 3px var(--panel,#fff)}
 }

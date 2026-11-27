@@ -32,7 +32,9 @@ export function Overview() {
     <section className="screen">
       <Header
         section={program.name + ' / Центр управления'}
-        title={formula ? 'Штаб команды' : state.series === 'gt' ? 'Штаб GT-программы' : 'Штаб выносливости'}
+        title={
+          formula ? 'Штаб команды' : state.series === 'gt' ? 'Штаб GT-программы' : 'Штаб выносливости'
+        }
         sub={formula ? 'Каждое решение имеет значение.' : w.title + ' · программа VANTA Group'}
       >
         <SeriesSwitch />
@@ -93,29 +95,37 @@ export function Overview() {
           </div>
         </div>
       </section>
-      <Stats
-        items={[
-          [
-            'Место в чемпионате',
-            program.rank + ' / ' + w.teams.length,
-            'Командный зачёт',
-            <Trophy aria-hidden="true" size={15} />,
-          ],
-          ['Очки команды', program.points, 'После последнего этапа', <Flag aria-hidden="true" size={15} />],
-          [
-            'Доступный бюджет',
-            millions(state.balanceCents),
-            'Резерв VANTA Group',
-            <Wallet aria-hidden="true" size={15} />,
-          ],
-          [
-            formula ? 'Рейтинг команды' : 'Этапов пройдено',
-            formula ? data.reports.teamRating + ' / 100' : w.round.split(' этапов')[0],
-            formula ? 'Конкурентоспособность' : 'Сезон 2028',
-            <Gauge aria-hidden="true" size={15} />,
-          ],
-        ]}
-      />
+      <details className="demo-summary">
+        <summary>Сводные показатели</summary>
+        <Stats
+          items={[
+            [
+              'Место в чемпионате',
+              program.rank + ' / ' + w.teams.length,
+              'Командный зачёт',
+              <Trophy aria-hidden="true" size={15} />,
+            ],
+            [
+              'Очки команды',
+              program.points,
+              'После последнего этапа',
+              <Flag aria-hidden="true" size={15} />,
+            ],
+            [
+              'Доступный бюджет',
+              millions(state.balanceCents),
+              'Резерв VANTA Group',
+              <Wallet aria-hidden="true" size={15} />,
+            ],
+            [
+              formula ? 'Рейтинг команды' : 'Этапов пройдено',
+              formula ? data.reports.teamRating + ' / 100' : w.round.split(' этапов')[0],
+              formula ? 'Конкурентоспособность' : 'Сезон 2028',
+              <Gauge aria-hidden="true" size={15} />,
+            ],
+          ]}
+        />
+      </details>
       <div className="dashboard-main">
         <div className="dashboard-left">
           <Panel

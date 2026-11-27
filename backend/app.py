@@ -85,6 +85,14 @@ def load(cid: str):
     return service.load(cid)
 
 
+@app.get("/api/careers/{cid}/pit-wall")
+def pit_wall(cid: str, topics: list[str] = Query(min_length=1, max_length=16)):
+    from . import pitwall
+
+    with storage.transaction() as db:
+        return pitwall.read(db, cid, storage.checkpoint(db, cid), topics)
+
+
 @app.get("/api/careers/{cid}/personnel")
 def personnel(cid: str):
     with storage.transaction() as db:

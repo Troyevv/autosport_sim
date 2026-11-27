@@ -35,6 +35,7 @@ test('Менеджер согласует иерархию с обоими пи�
     await page.screenshot({ path: join(process.env.LINEUP_EVIDENCE, info.project.name + '-lineup.png') })
   }
   await page.getByRole('button', { name: 'Подобрать пилота' }).click()
+  if (await page.locator('.staff-filter-trigger[aria-expanded=false]').isVisible()) await page.locator('.staff-filter-trigger').click()
   await page.getByLabel('Свободные агенты').check()
   await page.locator('.staff-card').first().click()
   const dialog = page.locator('.staff-dossier')

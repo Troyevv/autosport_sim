@@ -77,6 +77,7 @@ test('КБ · новая редакция, сравнительные испыт
   await capture('comparison')
   await button('Отозвать редакцию').click()
   await button('Подтвердить решение').click()
+  await page.getByRole('button',{name:'Вернуться к работе'}).click()
   await expect(dialog).toHaveCount(0)
   await page.reload()
   await button('Архив решений').click()
