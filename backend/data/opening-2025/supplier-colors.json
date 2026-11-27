@@ -1,0 +1,18 @@
+{
+  "supplier-alpine": ["1469b5", "ed75a2"],
+  "supplier-aston-martin": ["00665e", "c4d600"],
+  "supplier-audi": ["282a2c", "bb0a30"],
+  "supplier-cadillac": ["212121", "c5a76c"],
+  "supplier-chevrolet": ["aa861a", "292929"],
+  "supplier-cosworth": ["134f85", "f0f2f4"],
+  "supplier-dallara": ["184b86", "f1efea"],
+  "supplier-ford": ["003478", "f5f5f4"],
+  "supplier-lamborghini": ["202020", "d5ae53"],
+  "supplier-lexus": ["262727", "b1b3b3"],
+  "supplier-mclaren": ["ff8000", "262626"],
+  "supplier-multimatic": ["26374b", "e12737"],
+  "supplier-oreca": ["193b77", "e44934"],
+  "supplier-peugeot": ["191919", "c0c4c6"],
+  "supplier-pratt-miller": ["212326", "ffc72c"],
+  "supplier-red-bull-technology": ["172444", "e62046"]
+}

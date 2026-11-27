@@ -37,7 +37,10 @@ def world(career: str | None = None):
     catalog = SEASON_LINEUP
     if career:
         with storage.transaction() as db:
-            catalog = lineup_for(storage.checkpoint(db, career))
+            from .branding import world_view
+
+            state = storage.checkpoint(db, career)
+            catalog = world_view(lineup_for(state), state)
     return {
         **{
             k: v

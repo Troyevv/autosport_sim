@@ -6,6 +6,7 @@ from copy import deepcopy
 from hashlib import sha256
 from pathlib import Path
 
+from ..branding import catalog_palette
 from . import VERSION
 
 DATA = Path(__file__).parents[1] / "data/opening-2025"
@@ -32,19 +33,22 @@ def extend(original):
                 if series not in orgs[oid]["programs"]:
                     orgs[oid]["programs"].append(series)
 
+    supplier_colors = json.loads((DATA / "supplier-colors.json").read_text())
+
     def supplier(name, axis, series):
         oid = "supplier-" + slug(name)
-        rec = orgs.setdefault(
-            oid,
-            dict(
+        if oid not in orgs:
+            palette = catalog_palette(supplier_colors[oid])
+            orgs[oid] = dict(
                 id=oid,
                 name=name,
                 kind="supplier",
                 lines=[],
                 programs=[],
-                color="#647786",
-            ),
-        )
+                color=palette["primary"],
+                brand_palette=palette,
+            )
+        rec = orgs[oid]
         if axis not in rec["lines"]:
             rec["lines"].append(axis)
         if series not in rec["programs"]:

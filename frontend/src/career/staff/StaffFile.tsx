@@ -28,7 +28,7 @@ type Props = SectionProps & {
   busy: boolean
   error: string
   onClose: () => void
-  onSent: () => void
+  onSent: (released?: boolean) => void
 }
 const tabs = [
   ['profile', 'Профиль'],
@@ -754,7 +754,7 @@ function Terms({ data, c, world, busy, order, onSent }: FileProps) {
               <Button
                 disabled={busy}
                 onClick={async () => {
-                  if (await order('staff-release', { seat: current.seat })) onSent()
+                  if (await order('staff-release', { seat: current.seat })) onSent(true)
                 }}
               >
                 Подтвердить расторжение

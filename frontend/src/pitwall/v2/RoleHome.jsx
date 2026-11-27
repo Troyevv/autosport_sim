@@ -1,3 +1,4 @@
+import { OrganizationPalette } from '../BrandPalette'
 import React, { useState } from 'react'
 import { useGame, useStored, money, dateLabel } from '../core'
 import { Button, Badge, Icon, Panel, Tabs } from '../ui'
@@ -725,7 +726,7 @@ export function OrganizationProfile() {
       .filter((e) => e.org === id && e.start >= g.game.career.date)
       .sort((a, b) => a.start.localeCompare(b.start))
   return (
-    <div className={'org-profile identity-' + i.key} style={identityVars(org)}>
+    <div className="org-profile" style={identityVars(org)}>
       <header className="org-profile-hero">
         <OrganizationMark orgId={id} size={100} />
         <div>
@@ -739,6 +740,7 @@ export function OrganizationProfile() {
           </small>
         </div>
         <Badge tone={own ? 'accent' : 'neutral'}>{own ? 'Ваша организация' : 'Публичный профиль'}</Badge>
+        {own && <OrganizationPalette org={org}/>}
       </header>
       <Tabs
         value={tab}

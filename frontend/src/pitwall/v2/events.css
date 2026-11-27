@@ -88,6 +88,7 @@
   margin-top: 25px;
 }
 .event-moment.positive .event-mark {
+  color: var(--status-success);
   animation: event-arrive 0.3s ease-out both;
 }
 @keyframes event-arrive {

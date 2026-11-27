@@ -45,8 +45,12 @@ export function PublicMenu({ world, saves, media }) {
   const roleSaves = intendedRole
     ? saves.slice().sort((a, b) => Number(b.role === intendedRole) - Number(a.role === intendedRole))
     : saves
+  const organizationFor = (save) => {
+    const base = world.organizations[save?.org]
+    return save?.brand_palette && base ? {...base,brand_palette:save.brand_palette} : base
+  }
   const latest = roleSaves[0],
-    org = world.organizations[latest?.org] || world.organizations['team-scuderia-ferrari'],
+    org = organizationFor(latest) || Object.values(world.organizations).find(o=>o.kind==='team'),
     entry = Object.values(world.entries).find(
       (e) => e.org === org.id && (!latest || latest.series === e.championship),
     )
@@ -90,7 +94,7 @@ export function PublicMenu({ world, saves, media }) {
   }
   return (
     <Context.Provider value={ctx}>
-      <div className="pitwall" style={identityVars(org)}>
+      <div className="pitwall" style={identityVars(organizationFor(latest))}>
         {error && (
           <div role="alert" className="form-error">
             {error}{' '}
@@ -135,10 +139,10 @@ export function PublicMenu({ world, saves, media }) {
                   <article
                     key={s.id}
                     className="save-card"
-                    style={identityVars(world.organizations[s.org])}
+                    style={identityVars(organizationFor(s))}
                   >
                     <div className="save-details">
-                      <OrganizationMark orgId={s.org} />
+                      <OrganizationMark organization={organizationFor(s)} />
                       <span className="eyebrow">{roleNames[s.role]}</span>
                       <h2>{world.organizations[s.org]?.name || s.org}</h2>
                       <p>

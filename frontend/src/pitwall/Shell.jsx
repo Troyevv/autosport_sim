@@ -112,8 +112,6 @@ export function Shell({ children, onSave, onAdvance, busy }) {
       className={
         'game-shell role-' +
         role +
-        ' identity-' +
-        identity.key +
         ' ' +
         (compact ? 'compact ' : '') +
         (reduceMotion ? 'reduce-motion' : '')

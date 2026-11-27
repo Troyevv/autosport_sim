@@ -177,7 +177,7 @@ export function ContractFrame({
   return (
     <section
       className={'contract-frame contract-kind-' + type + ' ' + className}
-      style={{ '--document-accent': g.game.career.team_color || org?.color || '#d9c9ad' }}
+      style={{ '--document-accent': 'var(--org-accent)' }}
     >
       <header className="contract-frame-mast">
         <div>
@@ -773,7 +773,7 @@ export function ContractDocument({ record, compact = false }) {
   return (
     <article
       className={'contract-paper ' + (compact ? 'compact' : '')}
-      style={{ '--document-accent': own?.color || '#d9c9ad' }}
+      style={{ '--document-accent': 'var(--org-paper-ink)' }}
     >
       <header className="contract-paper-header">
         <ContractMark name={own?.name} color={own?.color} />

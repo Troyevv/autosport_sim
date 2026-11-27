@@ -7,6 +7,7 @@ import re
 import unicodedata
 from pathlib import Path
 
+from .branding import catalog_palette
 from .engineering import technical_catalog
 from .supply import tyre_eligible
 
@@ -54,7 +55,8 @@ def load_catalog(*, legacy=False, previous=False, personnel=False):
             oid, dict(id=oid, name=name, kind=kind, programs=[], lines=[])
         )
         if not legacy:
-            org["color"] = "#" + palette[oid][0]
+            org["brand_palette"] = catalog_palette(palette[oid])
+            org["color"] = org["brand_palette"]["primary"]
         if series not in org["programs"]:
             org["programs"].append(series)
         if line and line not in org["lines"]:

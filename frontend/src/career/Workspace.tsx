@@ -17,6 +17,8 @@ import { Programme } from './programme/Programme'
 import { Council } from './council/Council'
 import { Research } from './research/Research'
 import { Production } from './production/Production'
+import { identityVars } from '../pitwall/v2/brand'
+import type { CSSProperties } from 'react'
 import { CareerView } from '../pitwall/CareerView'
 import { readRoute } from '../pitwall/core/route'
 const sections = {
@@ -47,6 +49,9 @@ export function Workspace({ world:catalog, c: initial, media }: SectionProps) {
     [error, setError] = useState('')
   const world={...catalog,organizations:{...catalog.organizations}}
   for(const [id,name] of Object.entries(c.team_names)) world.organizations[id]={...world.organizations[id],name}
+  if(c.brand_palette) {
+    world.organizations[c.org]={...world.organizations[c.org], brand_palette:c.brand_palette, color:c.brand_palette.primary}
+  }
   const aliases: Record<string,string> = {person:'people',drivers:'people',staff:'people',market:'people',contracts:'people',academy:'people',funding:'people',preparation:'people',leadership:'people',livery:'garage',inventory:'production'}
   const Screen = sections[(aliases[route.page] || route.page) as keyof typeof sections]
   const org = world.organizations[c.org]
@@ -97,11 +102,11 @@ export function Workspace({ world:catalog, c: initial, media }: SectionProps) {
   return (
     <>
       {error && <p className="career-error" role="alert">{error}</p>}
-      <CareerView key={c.id} c={c} world={world} media={media} route={route.page} tab={route.tab} entity={route.entity} busy={busy} onSave={()=>open('save')} onAdvance={()=>c.pending.length?open('briefing'):command('advance')}>
+      <CareerView updateCareer={update} key={c.id} c={c} world={world} media={media} route={route.page} tab={route.tab} entity={route.entity} busy={busy} onSave={()=>open('save')} onAdvance={()=>c.pending.length?open('briefing'):command('advance')}>
         {Screen ? <Screen key={[route.page,route.tab,route.entity].join('/')} world={world} c={c} media={media} updateCareer={update} /> : <p>Раздел недоступен для этой карьеры.</p>}
       </CareerView>
       {dialog && (
-        <Dialog title={dialog==='briefing'?'Обязательный брифинг':'Сохранение карьеры'} onClose={()=>open('')}>
+        <div className="pitwall career-overlay" style={identityVars(org) as CSSProperties}><Dialog title={dialog==='briefing'?'Обязательный брифинг':'Сохранение карьеры'} onClose={()=>open('')}>
           {dialog === 'briefing' ? (
             <Briefing world={world} c={c} busy={busy} onConfirm={() => command(c.briefing_action)} />
           ) : (
@@ -125,7 +130,7 @@ export function Workspace({ world:catalog, c: initial, media }: SectionProps) {
               </div>
             </>
           )}
-        </Dialog>
+        </Dialog></div>
       )}
     </>
   )

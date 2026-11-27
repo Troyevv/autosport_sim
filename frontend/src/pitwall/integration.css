@@ -1,10 +1,9 @@
 .pitwall {
   height: 100dvh;
   min-width: 0;
-  --red: var(--org-accent);
-  --red-bright: var(--org-accent);
+  --accent-ink: var(--org-on-accent);
   --bg: #111112;
-  --panel: #1d1d1e;
+  --panel: var(--org-panel);
   --line: #454344;
   --text: #f0ede8;
   --muted: #aaa5a0;

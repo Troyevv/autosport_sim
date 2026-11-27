@@ -1,7 +1,7 @@
 import {publishCareerMoment} from '../../pitwall/core/moments'
 import { useState, useRef } from 'react'
 import { api, post, ApiError, explain, type Career } from '../api'
-export function useOrder(c: Career, update: (c: Career) => void, field: 'finance' | 'engineering' | 'research' | 'development' | 'production' | 'council' | 'programme' | 'manufacturer' | 'staff' = 'finance') {
+export function useOrder(c: Career, update: (c: Career) => void, field: 'brand_palette' | 'finance' | 'engineering' | 'research' | 'development' | 'production' | 'council' | 'programme' | 'manufacturer' | 'staff' = 'finance') {
   const [busy, setBusy] = useState(false),
     [error, setError] = useState('')
   const lock = useRef(false),

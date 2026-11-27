@@ -1,0 +1,111 @@
+.pitwall {
+  --status-success: #b1d3bb;
+  --status-success-bg: #273a32;
+  --status-warning: #e5c68c;
+  --status-warning-bg: #4a3b29;
+  --status-error: #e4a9b0;
+  --status-error-bg: #4b2e32;
+}
+.pitwall .brand-form,
+.pitwall .brand-fields {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
+.pitwall .brand-fields {
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+.pitwall .brand-fields legend {
+  font-weight: 700;
+  padding: 0 0 12px;
+}
+.pitwall .brand-swatches {
+  display: grid;
+  gap: 8px;
+}
+.pitwall .brand-swatches label {
+  display: grid;
+  align-items: center;
+  grid-template-columns: 1fr 46px 8ch;
+  gap: 10px;
+}
+.pitwall .brand-swatches input[type='color'] {
+  width: 46px;
+  height: 36px;
+  padding: 2px;
+}
+.pitwall .brand-swatches code {
+  font-size: 0.82rem;
+}
+.pitwall .brand-accent-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.pitwall .brand-accent-toggle input {
+  width: auto;
+}
+.pitwall .brand-sample {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 6px;
+  padding: 14px 18px;
+  border-left: 4px solid var(--org-primary);
+  background: var(--org-surface);
+  color: var(--org-ink);
+}
+.pitwall .brand-sample span {
+  font-size: 12px;
+  color: var(--org-accent);
+}
+.pitwall .brand-sample strong {
+  grid-column: 1;
+  font:
+    700 22px Race,
+    Arial,
+    sans-serif;
+}
+.pitwall .brand-sample i {
+  grid-column: 2;
+  grid-row: 1/3;
+  align-self: center;
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(125deg, var(--org-brand-primary) 50%, var(--org-brand-secondary) 50%);
+  border: 1px solid #888;
+}
+.pitwall .org-profile-hero > .button {
+  align-self: center;
+}
+
+.pitwall.career-overlay {
+  display: contents;
+}
+.pitwall .role-page-heading h1,
+.pitwall .org-profile-hero h1 {
+  color: var(--org-ink);
+}
+.pitwall .contract-paper {
+  --document-accent: var(--org-paper-ink);
+  --contract-paper: var(--org-paper);
+}
+.pitwall .contract-paper-header {
+  border-bottom-color: var(--org-paper-rule);
+}
+.pitwall .brand-form button:focus-visible,
+.pitwall .brand-fields input:focus-visible {
+  outline: 2px solid var(--org-accent);
+  outline-offset: 2px;
+}
+.pitwall .wizard-brand {
+  padding: 12px 0;
+}
+.pitwall .wizard-brand summary {
+  cursor: pointer;
+  padding: 6px 0;
+}
+.pitwall .wizard-brand[open] .brand-fields {
+  margin-top: 12px;
+}

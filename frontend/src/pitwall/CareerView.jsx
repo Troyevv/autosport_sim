@@ -11,12 +11,12 @@ import Contracts from './v2/Contracts'
 import StatisticsCenter from './v2/StatisticsCenter'
 import { OperationalAnalytics } from './v2/Advisory'
 import { SUPPORTED_ROUTES } from './v2/advisory-model'
-import { getIdentity, identityVars } from './v2/identity'
+import { identityVars } from './v2/identity'
 import { Dialog } from '../ui/components'
 import { assetUrl } from '../career/api'
 import { usePersonnel } from '../career/staff/model'
 
-export function CareerView({ world, c, media, route, tab, entity, onAdvance, onSave, busy, children }) {
+export function CareerView({ world, c, media, route, tab, entity, updateCareer, onAdvance, onSave, busy, children }) {
   const desk = useDesk(c, route, tab)
   const directory = usePersonnel('careers/' + c.id + '/personnel', c.revision)
   const preferenceKey = 'autosport.pitwall.preferences.' + c.id
@@ -83,6 +83,7 @@ export function CareerView({ world, c, media, route, tab, entity, onAdvance, onS
     scope: c.id,
     preferences,
     setPreferences,
+    updateCareer,
     selectedEntry,
     setSelectedEntry,
     navigate,
@@ -184,7 +185,7 @@ export function CareerView({ world, c, media, route, tab, entity, onAdvance, onS
     )
   return (
     <Context.Provider value={ctx}>
-      <div className={'pitwall identity-' + getIdentity(org).key} style={identityVars(org)}>
+      <div className="pitwall" style={identityVars(org)}>
         <Shell {...{ onAdvance, onSave, busy }}>{content}</Shell>
         {dialog && (
           <Dialog title={dialog.title} onClose={() => openDialog(null)}>

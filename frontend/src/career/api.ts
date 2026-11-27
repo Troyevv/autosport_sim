@@ -1,6 +1,7 @@
 import type { Livery } from '../garage/model'
 import type { Role } from '../game'
-export type Organization = { registration?: {legal_name:string; country:string; headquarters:string; source:string}; affiliations?: {label: string; source: string}[]; country?: string; base_country?: string; base_source?: string; base_estimated?: boolean; domicile?: string; base?: string; playable?: boolean; color: string; id: string; name: string; kind: string; programs: string[]; lines: string[] }
+export type BrandPalette = { primary: string; secondary: string; accent?: string }
+export type Organization = { brand_palette: BrandPalette; registration?: {legal_name:string; country:string; headquarters:string; source:string}; affiliations?: {label: string; source: string}[]; country?: string; base_country?: string; base_source?: string; base_estimated?: boolean; domicile?: string; base?: string; playable?: boolean; color: string; id: string; name: string; kind: string; programs: string[]; lines: string[] }
 export type Championship = {
   id: string
   name: string
@@ -64,6 +65,7 @@ export type World = {
   events: Event[]
 }
 export type Save = {
+  brand_palette?: BrandPalette | null
   id: string
   name: string
   role: Role
@@ -135,6 +137,7 @@ export type Career = Save & {
   ledger: { key: string; date: string; delta_cents: number; source: string }[]
   player_cash_cents: number
   assignments: Seat[]
+  can_edit_palette: boolean
   team_color: string
   pending: string[]
   next_date: string | null

@@ -2,7 +2,7 @@
   /* PIT WALL — document room. Organization tokens inherit; the paper remains legible. */
   .contract-workspace {
     --contract-ink: #242226;
-    --contract-paper: #eceae3;
+    --contract-paper: var(--org-paper);
     --contract-muted: #716b64;
     --contract-rule: #cec8bf;
     color: var(--text, #f0ede8);
@@ -15,7 +15,7 @@
     line-height: 1.5;
   }
   .contract-mark {
-    --document-accent: #d9c9ad;
+    --document-accent: var(--org-paper-ink);
     width: 60px;
     height: 65px;
     display: inline-flex;
@@ -329,7 +329,7 @@
     color: var(--contract-ink, #242226);
     box-shadow: 0 20px 50px #0003;
     position: relative;
-    border-top: 5px solid var(--document-accent, #d9c9ad);
+    border-top: 5px solid var(--org-paper-ink);
     overflow: hidden;
   }
   .contract-paper:after {
@@ -379,11 +379,10 @@
     text-transform: uppercase;
     margin-top: 5px;
   }
-  .contract-paper .badge {
-    background: #163d2910 !important;
-    color: #26472d !important;
-    border-color: #26472d33 !important;
-  }
+  .contract-paper .badge { background: #e0dfdc; color: #353438; }
+  .contract-paper .badge.good, .contract-paper .badge.positive { background:#dce7df; color:#21462e; }
+  .contract-paper .badge.warning { background:#eee2cb; color:#62440e; }
+  .contract-paper .badge.danger { background:#f2dedf; color:#702d33; }
   .contract-paper-title {
     padding: 25px 34px 20px;
   }
@@ -2151,7 +2150,7 @@
   }
   .contract-paper .contract-organization-mark strong,
   .contract-signing-summary .contract-organization-mark strong {
-    color: var(--org-primary, #9e2936) !important;
+    color: var(--org-paper-ink) !important;
     white-space: nowrap !important;
     font-size: 14px !important;
     word-break: normal !important;

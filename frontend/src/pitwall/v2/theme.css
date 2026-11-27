@@ -1,9 +1,5 @@
 @scope (.pitwall) to (.native-screen) {
   :scope {
-    --org-primary: #b52a3a;
-    --org-accent: #e5c792;
-    --org-surface: #231c18;
-    --org-ink: #f5ece0;
     --surface: #181818;
     --surface-raised: #222223;
     --border: #454344;
@@ -63,7 +59,7 @@
   }
   .button {
     background: var(--org-accent);
-    color: #1b1814;
+    color: var(--org-on-accent);
     border-radius: 2px;
     font-size: 12px;
     font-weight: 800;
@@ -92,20 +88,20 @@
     background: color-mix(in srgb, var(--org-accent) 14%, transparent);
     color: var(--org-accent);
   }
-  .badge.good {
-    background: #273a32;
-    color: #b1d3bb;
+  .badge.good, .badge.positive {
+    background: var(--status-success-bg);
+    color: var(--status-success);
   }
   .badge.warning {
-    background: #4a3b29;
-    color: #e5c68c;
+    background: var(--status-warning-bg);
+    color: var(--status-warning);
   }
   .badge.danger {
-    background: #4b2e32;
-    color: #e4a9b0;
+    background: var(--status-error-bg);
+    color: var(--status-error);
   }
   .panel {
-    background: #1d1d1e;
+    background: var(--org-panel);
     border-color: #434041;
     border-radius: 3px;
   }
@@ -552,44 +548,6 @@
   }
   .guide-v2 .panel p + p {
     margin-top: 15px;
-  }
-  .identity-ferrari .car-workspace {
-    border-top-width: 6px;
-  }
-  .identity-ferrari .role-kicker {
-    font-family: Race, Arial, sans-serif;
-    letter-spacing: 0.17em;
-  }
-  .identity-mclaren .owner-capital-banner,
-  .identity-mclaren .car-workspace {
-    border-left: 6px solid var(--org-primary);
-    border-top: 0;
-  }
-  .identity-mclaren .role-page-heading h1 {
-    text-transform: none;
-  }
-  .identity-williams .car-workspace {
-    border-top: 2px solid #8bbcff;
-    border-bottom: 6px solid var(--org-primary);
-  }
-  .identity-williams .role-page-heading h1 {
-    font-weight: 650;
-    letter-spacing: -0.6px;
-  }
-  .identity-prema .car-workspace {
-    border-top: 5px solid var(--org-primary);
-    border-left: 5px solid #c6ddd2;
-  }
-  .identity-prema .driver-feature {
-    border-bottom: 3px solid var(--org-primary);
-  }
-  .identity-sadev .product-ledger {
-    border-top: 3px solid var(--org-accent);
-    border-left: 5px solid var(--org-primary);
-  }
-  .identity-mercedes .product-ledger {
-    border-top: 3px solid #d0d7d5;
-    border-bottom: 5px solid var(--org-primary);
   }
   @media (max-width: 1100px) {
     .sidebar {

@@ -73,16 +73,8 @@
     line-height: 1.05;
     max-width: 130px;
   }
-  .organization-mark.ferrari > strong {
-    font-family: Georgia, serif;
-    font-style: italic;
-    font-weight: 700;
-    color: #f7db81;
-  }
-  .organization-mark.sadev > strong,
-  .organization-mark.prema > strong {
-    font-style: italic;
-    font-weight: 900;
+  .organization-mark.typographic-mark > strong {
+    color: var(--org-accent);
   }
   .organization-mark > b {
     font-size: 30px;

@@ -595,9 +595,9 @@ export function People({
             setError('')
             requestAnimationFrame(() => opener.current?.focus({ preventScroll: true }))
           }}
-          onSent={() => {
+          onSent={(released) => {
             if (route.page === 'person') {
-              location.hash = 'contracts'
+              if (!released) location.hash = 'contracts'
               return
             }
             select('')

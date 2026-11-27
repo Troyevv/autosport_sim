@@ -6,7 +6,7 @@ from uuid import uuid4
 
 from pydantic import BaseModel, ConfigDict, Field, ValidationError, model_validator
 
-from . import domain, storage, finance
+from . import branding, domain, storage, finance
 from .finance.events import PRODUCERS
 from .finance import market, rights, budget, economy, capital, facilities
 from .opening import FIRST_VERSION
@@ -62,6 +62,7 @@ class CareerInput(Strict):
     series: str = Field(max_length=16)
     seed: int = Field(ge=0, lt=2**32)
     country: str | None = None
+    brand_palette: branding.BrandPalette | None = None
 
     @model_validator(mode="after")
     def recognized_country(self):
@@ -82,11 +83,14 @@ class Command(Strict):
     development: dict | None = None
     research: dict | None = None
     paint: PaintOrder | None = None
+    brand_palette: branding.BrandPalette | None = None
     staff: dict | None = None
     finance: dict | None = None
 
     @model_validator(mode="after")
     def check_action_payload(self):
+        if (self.action == "organization-palette") != (self.brand_palette is not None):
+            raise ValueError("Неверные параметры фирменной палитры.")
         if (self.action == "save-livery") != (self.paint is not None):
             raise ValueError("Неверные параметры команды ливреи.")
         if self.action in ("component-install", "component-usage"):
@@ -152,6 +156,8 @@ class Command(Strict):
         return self
 
     def payload(self):
+        if self.brand_palette is not None:
+            return self.brand_palette.model_dump(exclude_none=True)
         if self.manufacturer is not None:
             return self.manufacturer
         if self.programme is not None:
@@ -183,6 +189,7 @@ def summary(cid, state):
         role=setup["role"],
         org=setup["org"],
         series=setup["series"],
+        brand_palette=state.get("organization_palettes", {}).get(setup["org"]),
         date=state["date"],
         revision=state["revision"],
     )
@@ -195,11 +202,13 @@ def list_careers():
                 row["id"],
                 dict(
                     setup=json.loads(row["setup"]),
+                    organization_palettes=json.loads(row["palettes"] or "{}"),
                     date=row["day"],
                     revision=row["revision"],
                 ),
             )
             for row in db.execute("""SELECT id,json_extract(state,'$.setup') AS setup,
+                json_extract(state,'$.organization_palettes') AS palettes,
                 json_extract(state,'$.date') AS day,json_extract(state,'$.revision') AS revision
                 FROM career INDEXED BY career_listing ORDER BY rowid DESC""")
         ]
@@ -299,7 +308,8 @@ def project(db, cid, state):
         player_cash_cents=state["player_cash_cents"],
         account=account,
         available_cents=finance.available(state, org),
-        team_color=world["organizations"][org]["color"],
+        can_edit_palette=branding.can_edit(state),
+        team_color=branding.effective(state, world["organizations"][org])["primary"],
         assignments=people,
         ledger=history,
         collectives=[

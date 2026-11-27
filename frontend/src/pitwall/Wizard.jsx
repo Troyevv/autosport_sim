@@ -3,6 +3,8 @@ import { useGame, dateLabel, money } from './core'
 import { Button, Badge, Icon, Tabs } from './ui'
 import { RaceCar, PersonPortrait } from './visuals'
 
+import { PaletteFields } from './BrandPalette'
+import { organizationPalette } from './v2/brand'
 import { OrganizationMark, identityVars } from './v2/identity'
 const roles = [
   [
@@ -27,10 +29,10 @@ const roles = [
     'freca-5',
   ],
 ]
-export function Page({ children, back = 'menu', backText = 'Главное меню', onBack }) {
+export function Page({ children, back = 'menu', backText = 'Главное меню', onBack, style }) {
   const g = useGame()
   return (
-    <div className="menu-page">
+    <div className="menu-page" style={style}>
       <header>
         <Button variant="ghost" onClick={() => (onBack ? onBack() : g.navigate(back))}>
           <Icon name="ArrowLeft" />
@@ -60,7 +62,8 @@ export function Wizard() {
     [country, setCountry] = useState('RU'),
     [seed, setSeed] = useState(42),
     [busy, setBusy] = useState(false),
-    [error, setError] = useState('')
+    [error, setError] = useState(''),
+    [palettes, setPalettes] = useState({})
   const w = g.world
   const orgs = Object.values(w.organizations).filter(
     (o) =>
@@ -69,6 +72,7 @@ export function Wizard() {
       o.kind === (role === 'manufacturer' ? 'supplier' : 'team'),
   )
   const current = orgs.find((o) => o.id === org) || orgs[0]
+  const palette = current && role !== 'manager' ? palettes[current.id] : null
   const entryFor = (series, org) =>
     Object.values(w.entries).find((e) => e.championship === series && (!org || e.org === org))?.id
   useEffect(() => {
@@ -86,6 +90,7 @@ export function Wizard() {
         series,
         org: current.id,
         seed: Number(seed),
+        ...(palette ? {brand_palette:palette} : {}),
       })
     } catch (e) {
       setError(e.message)
@@ -94,7 +99,7 @@ export function Wizard() {
     }
   }
   return (
-    <Page backText="Назад" onBack={() => (step ? setStep(step - 1) : g.navigate('menu'))}>
+    <Page style={step > 1 && current ? identityVars(palette ? {...current,brand_palette:palette} : current) : undefined} backText="Назад" onBack={() => (step ? setStep(step - 1) : g.navigate('menu'))}>
       <nav className="wizard-steps">
         {['Роль', 'Чемпионат', 'Организация', 'Ваш профиль'].map((s, i) => (
           <button
@@ -208,7 +213,7 @@ export function Wizard() {
               .map((o) => (
                 <button
                   className={'org-card ' + (o.id === current?.id ? 'selected' : '')}
-                  style={{ '--org': o.color }}
+                  style={identityVars(o)}
                   key={o.id}
                   aria-pressed={o.id === current?.id}
                   onClick={() => setOrg(o.id)}
@@ -289,6 +294,9 @@ export function Wizard() {
                 <small>Одинаковое значение воспроизводит стартовые параметры.</small>
               </label>
             </details>
+            {role !== 'manager' && <details className="wizard-brand"><summary>Фирменные цвета организации</summary>
+              <PaletteFields org={current} value={palette || organizationPalette(current)} onChange={next=>setPalettes(prev=>({...prev,[current.id]:next}))}/>
+            </details>}
             <p className="profile-note">
               Единый игровой мир развивается вместе с вашей карьерой. Гражданство влияет на публичный
               профиль персонажа.
@@ -322,14 +330,15 @@ export function Wizard() {
 function RoleChoiceArt({ role, entry }) {
   const g = useGame()
   if (role === 'manager') return <RaceCar entryId={entry} />
-  const manager = Object.values(g.world.assignments).find(
-    (a) => a.position === 'manager' && a.org === 'team-mclaren-formula-1-team',
-  )?.person
+  const team = g.world.entries[entry]?.org
+  const car = g.world.cars[g.world.entries[entry]?.car]
+  const suppliers = [...new Set(Object.values(car?.suppliers || {}))].slice(0,2)
+  const manager = Object.values(g.world.assignments).find(a => a.position === 'manager' && a.org === team)?.person
   return (
     <div className={'role-choice-art role-art-' + role}>
       {role === 'owner' ? (
         <>
-          <OrganizationMark orgId="team-mclaren-formula-1-team" size={45} />
+          {team && <OrganizationMark orgId={team} size={45} />}
           <span>СОВЕТ ОРГАНИЗАЦИИ</span>
           <strong>
             Капитал.
@@ -344,8 +353,7 @@ function RoleChoiceArt({ role, entry }) {
       ) : (
         <>
           <div className="maker-marks">
-            <OrganizationMark orgId="supplier-sadev" size={43} />
-            <OrganizationMark orgId="supplier-mercedes" size={43} />
+            {suppliers.map(id=><OrganizationMark key={id} orgId={id} size={43}/>)}
           </div>
           <span>ПРОМЫШЛЕННАЯ ПРОГРАММА</span>
           <strong>
