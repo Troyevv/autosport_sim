@@ -6,6 +6,7 @@ from uuid import uuid4
 
 from pydantic import BaseModel, ConfigDict, Field, ValidationError, model_validator
 
+from . import uniform as wardrobe
 from . import branding, domain, storage, finance
 from .finance.events import PRODUCERS
 from .finance import market, rights, budget, economy, capital, facilities
@@ -82,6 +83,7 @@ class Command(Strict):
     production: dict | None = None
     development: dict | None = None
     research: dict | None = None
+    uniform: wardrobe.UniformOrder | None = None
     paint: PaintOrder | None = None
     brand_palette: branding.BrandPalette | None = None
     staff: dict | None = None
@@ -89,6 +91,8 @@ class Command(Strict):
 
     @model_validator(mode="after")
     def check_action_payload(self):
+        if (self.action == "organization-uniform") != (self.uniform is not None):
+            raise ValueError("Неверные параметры экипировки.")
         if (self.action == "organization-palette") != (self.brand_palette is not None):
             raise ValueError("Неверные параметры фирменной палитры.")
         if (self.action == "save-livery") != (self.paint is not None):
@@ -156,6 +160,8 @@ class Command(Strict):
         return self
 
     def payload(self):
+        if self.uniform is not None:
+            return self.uniform.model_dump()
         if self.brand_palette is not None:
             return self.brand_palette.model_dump(exclude_none=True)
         if self.manufacturer is not None:
@@ -308,6 +314,9 @@ def project(db, cid, state):
         player_cash_cents=state["player_cash_cents"],
         account=account,
         available_cents=finance.available(state, org),
+        can_edit_uniform=wardrobe.can_edit(state),
+        organization_uniforms=state.get("organization_uniforms", {}),
+        clothing_rights=wardrobe.inventory(state, world),
         can_edit_palette=branding.can_edit(state),
         team_color=branding.effective(state, world["organizations"][org])["primary"],
         assignments=people,

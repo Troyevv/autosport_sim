@@ -1,3 +1,4 @@
+import {UniformEditor} from '../UniformEditor'
 import { OrganizationPalette } from '../BrandPalette'
 import React, { useState } from 'react'
 import { useGame, useStored, money, dateLabel } from '../core'
@@ -750,8 +751,10 @@ export function OrganizationProfile() {
           { id: 'people', label: 'Люди' },
           { id: 'programs', label: 'Программы и техника' },
           { id: 'history', label: 'История' },
+          ...(own && g.game.career.can_edit_uniform?[{id:'uniform',label:'Экипировка'}]:[]),
         ]}
       />
+      {own && g.game.career.can_edit_uniform && tab==='uniform' && <UniformEditor key={org.id} org={org}/>}
       {tab === 'overview' && (
         <div className="org-profile-layout">
           <section>

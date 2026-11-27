@@ -339,6 +339,8 @@ def receipts(db, cid):
             item[
                 "paint"
                 if item["action"] == "save-livery"
+                else "uniform"
+                if item["action"] == "organization-uniform"
                 else "brand_palette"
                 if item["action"] == "organization-palette"
                 else "finance"

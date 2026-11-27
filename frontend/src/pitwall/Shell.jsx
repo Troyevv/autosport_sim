@@ -259,6 +259,7 @@ export function Shell({ children, onSave, onAdvance, busy }) {
             >
               <Icon name="ArrowLeft" size={19} />
             </button>
+            <span className="mobile-organization"><OrganizationMark size={30}/></span>
             <div className="breadcrumb">
               <span>
                 {role === 'owner'

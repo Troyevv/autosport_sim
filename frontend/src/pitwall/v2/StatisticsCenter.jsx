@@ -1,3 +1,4 @@
+import { OrganizationMark } from './identity'
 import { factContext } from './stats-data'
 import React, { useEffect, useMemo, useState } from 'react'
 import { useGame, useStored, dateLabel, money } from '../core'
@@ -41,7 +42,7 @@ function Mark({ item, size = 46 }) {
     >
       {item.type === 'drivers' || item.type === 'staff' ? (
         <PersonPortrait id={item.id} size={size} />
-      ) : item.logo ? (
+      ) : ['teams','manufacturers'].includes(item.type) ? <OrganizationMark orgId={item.id} size={size}/> : item.logo ? (
         <img src={item.logo} alt="" />
       ) : item.type === 'countries' ? (
         <b>{item.id}</b>

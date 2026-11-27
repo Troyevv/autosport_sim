@@ -9,8 +9,18 @@ ASSETS = json.loads((ROOT / "catalog.json").read_text(encoding="utf-8"))
 ASSETS.extend(
     json.loads((ROOT / "junior" / "catalog.json").read_text(encoding="utf-8"))
 )
+ASSETS.extend(json.loads((ROOT / "logos" / "catalog.json").read_text(encoding="utf-8")))
+ASSETS.extend(
+    json.loads((ROOT / "wardrobe" / "catalog.json").read_text(encoding="utf-8"))
+)
+registration = json.loads(
+    (ROOT / "wardrobe" / "registration.json").read_text(encoding="utf-8")
+)
 for asset in ASSETS:
-    if asset["kind"] in {"uniform", "generated-head"}:
+    if asset["kind"] == "generated-head" and asset["entity"] in registration:
+        asset["anatomy"].update(registration[asset["entity"]])
+
+    if asset["kind"] in {"uniform", "generated-head"} and not asset.get("template"):
         asset.update(
             author="Autosport Sim / OpenAI ImageGen",
             license="MIT",

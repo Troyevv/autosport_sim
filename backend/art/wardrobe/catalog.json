@@ -1,0 +1,186 @@
+[
+  {
+    "kind": "uniform",
+    "entity": "paddock-advisor",
+    "path": "wardrobe/paddock-advisor.webp",
+    "sha256": "3e783dd3d81e4e8567ac1e6368faf302d24382b478c1266498cd8b0d0a15966e",
+    "source": "https://github.com/Troyevv/autosport_sim",
+    "author": "Autosport Sim / OpenAI ImageGen",
+    "license": "MIT",
+    "changes": "Студийная фотографическая заготовка, выделенные зоны красителя и измеренный воротник.",
+    "template": {
+      "width": 602,
+      "height": 695,
+      "collar": [
+        236,
+        368,
+        48
+      ]
+    }
+  },
+  {
+    "kind": "uniform-mask",
+    "entity": "paddock-advisor",
+    "path": "wardrobe/paddock-advisor-zones.png",
+    "sha256": "335aefab4840b37d81242f4e4156f15a834e92fa0814519ee074f002ccb5926c",
+    "source": "https://github.com/Troyevv/autosport_sim",
+    "author": "Autosport Sim / OpenAI ImageGen",
+    "license": "MIT",
+    "changes": "Студийная фотографическая заготовка, выделенные зоны красителя и измеренный воротник."
+  },
+  {
+    "kind": "uniform",
+    "entity": "paddock-driver",
+    "path": "wardrobe/paddock-driver.webp",
+    "sha256": "5938f11a6c2e5f02fe3dfe56adc80f14f716ea18a79b9e7b96dc4820c9704e89",
+    "source": "https://github.com/Troyevv/autosport_sim",
+    "author": "Autosport Sim / OpenAI ImageGen",
+    "license": "MIT",
+    "changes": "Студийная фотографическая заготовка, выделенные зоны красителя и измеренный воротник.",
+    "template": {
+      "width": 635,
+      "height": 687,
+      "collar": [
+        263,
+        389,
+        64
+      ]
+    }
+  },
+  {
+    "kind": "uniform-mask",
+    "entity": "paddock-driver",
+    "path": "wardrobe/paddock-driver-zones.png",
+    "sha256": "298a01113ec391bb43c0952266afe3d58d563b74becd248e2b31068e8390514d",
+    "source": "https://github.com/Troyevv/autosport_sim",
+    "author": "Autosport Sim / OpenAI ImageGen",
+    "license": "MIT",
+    "changes": "Студийная фотографическая заготовка, выделенные зоны красителя и измеренный воротник."
+  },
+  {
+    "kind": "uniform",
+    "entity": "paddock-engineering",
+    "path": "wardrobe/paddock-engineering.webp",
+    "sha256": "d20b73a8bf15d43d20c5aab9a281796e4afb3e4a9f2ed007a956584cb707829c",
+    "source": "https://github.com/Troyevv/autosport_sim",
+    "author": "Autosport Sim / OpenAI ImageGen",
+    "license": "MIT",
+    "changes": "Студийная фотографическая заготовка, выделенные зоны красителя и измеренный воротник.",
+    "template": {
+      "width": 623,
+      "height": 683,
+      "collar": [
+        248,
+        377,
+        80
+      ]
+    }
+  },
+  {
+    "kind": "uniform-mask",
+    "entity": "paddock-engineering",
+    "path": "wardrobe/paddock-engineering-zones.png",
+    "sha256": "ae67f96d20b6471f8481609ff1aa7ad3ff6e3ca65a00146a696dc14031901eba",
+    "source": "https://github.com/Troyevv/autosport_sim",
+    "author": "Autosport Sim / OpenAI ImageGen",
+    "license": "MIT",
+    "changes": "Студийная фотографическая заготовка, выделенные зоны красителя и измеренный воротник."
+  },
+  {
+    "kind": "uniform",
+    "entity": "paddock-executive",
+    "path": "wardrobe/paddock-executive.webp",
+    "sha256": "246b770cbf3ca2db1286ac933ec63b1c1b94586bf6f5fb84317b7f52cdba857f",
+    "source": "https://github.com/Troyevv/autosport_sim",
+    "author": "Autosport Sim / OpenAI ImageGen",
+    "license": "MIT",
+    "changes": "Студийная фотографическая заготовка, выделенные зоны красителя и измеренный воротник.",
+    "template": {
+      "width": 569,
+      "height": 689,
+      "collar": [
+        235,
+        344,
+        62
+      ]
+    }
+  },
+  {
+    "kind": "uniform-mask",
+    "entity": "paddock-executive",
+    "path": "wardrobe/paddock-executive-zones.png",
+    "sha256": "bb759059e1608c269df2060b327b4bff01fe908a5dbcd2e1feb570f6827a5f93",
+    "source": "https://github.com/Troyevv/autosport_sim",
+    "author": "Autosport Sim / OpenAI ImageGen",
+    "license": "MIT",
+    "changes": "Студийная фотографическая заготовка, выделенные зоны красителя и измеренный воротник."
+  },
+  {
+    "kind": "uniform",
+    "entity": "paddock-mechanic",
+    "path": "wardrobe/paddock-mechanic.webp",
+    "sha256": "4ad38df1efc66775eb97880669d1de1e7b5e7d346970f000b20896947a77f3a3",
+    "source": "https://github.com/Troyevv/autosport_sim",
+    "author": "Autosport Sim / OpenAI ImageGen",
+    "license": "MIT",
+    "changes": "Студийная фотографическая заготовка, выделенные зоны красителя и измеренный воротник.",
+    "template": {
+      "width": 649,
+      "height": 690,
+      "collar": [
+        273,
+        384,
+        55
+      ]
+    }
+  },
+  {
+    "kind": "uniform-mask",
+    "entity": "paddock-mechanic",
+    "path": "wardrobe/paddock-mechanic-zones.png",
+    "sha256": "752e90439d16d86fed17e999b05b9b722b7572a106f99d4f842719819af380e1",
+    "source": "https://github.com/Troyevv/autosport_sim",
+    "author": "Autosport Sim / OpenAI ImageGen",
+    "license": "MIT",
+    "changes": "Студийная фотографическая заготовка, выделенные зоны красителя и измеренный воротник."
+  },
+  {
+    "kind": "uniform",
+    "entity": "paddock-neutral",
+    "path": "wardrobe/paddock-neutral.webp",
+    "sha256": "ca04871c252256c596008395d87f07f8136cb15342f2996776aa1c61cecc3fd7",
+    "source": "https://github.com/Troyevv/autosport_sim",
+    "author": "Autosport Sim / OpenAI ImageGen",
+    "license": "MIT",
+    "changes": "Студийная фотографическая заготовка, выделенные зоны красителя и измеренный воротник.",
+    "template": {
+      "width": 584,
+      "height": 654,
+      "collar": [
+        224,
+        372,
+        48
+      ]
+    }
+  },
+  {
+    "kind": "uniform-mask",
+    "entity": "paddock-neutral",
+    "path": "wardrobe/paddock-neutral-zones.png",
+    "sha256": "9dd32b5f8f216e6822122c2056bc38863efcb7f0cbc565ac41250fdbe7ec247a",
+    "source": "https://github.com/Troyevv/autosport_sim",
+    "author": "Autosport Sim / OpenAI ImageGen",
+    "license": "MIT",
+    "changes": "Студийная фотографическая заготовка, выделенные зоны красителя и измеренный воротник."
+  },
+  {
+    "kind": "skin-detail",
+    "entity": "paddock-forearms",
+    "path": "wardrobe/paddock-forearms.webp",
+    "sha256": "9fdcdf16ea02343fce0bb47d5fbe72d038b8aa6e2605c1c501714b2e3b4dc790",
+    "source": "https://github.com/Troyevv/autosport_sim",
+    "author": "Autosport Sim / OpenAI ImageGen",
+    "license": "MIT",
+    "changes": "Фотографический слой предплечий, зарегистрированный по краю рукавов поло."
+  }
+]

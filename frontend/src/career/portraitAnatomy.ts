@@ -1,137 +1,132 @@
-// The R3.2 photographic fabric sampler and shared camera from esport_sim (MIT).
-import { useState, useEffect } from 'react'
-import type { Anatomy, Garment } from './api'
+import { useEffect, useState } from 'react'
+import type { Anatomy, Asset } from './api'
+import type { Pattern } from './uniform'
 
-export function shoulderFrame(frame: Anatomy) {
-  const [left, top, width] = frame.camera
-  const shoulders = frame.body[0]
-  const chestWidth = Math.max(
-    width,
-    Math.min(width * 1.34, (shoulders[shoulders.length - 1] - shoulders[0]) * 0.94),
-  )
-  return [left + (width - chestWidth) / 2, top, chestWidth, (chestWidth * 280) / 240]
-}
-
-// Sample the garment at source resolution. Browser displacement filters round
-// coordinates at display resolution, which leaves a stair-step around a 120px
-// profile collar. The same column map fits crew, V and polo necks.
-
-type Fabric = { image: HTMLImageElement; roof: Float32Array }
-const fabrics = new Map<string, Promise<Fabric>>()
-const finished = new Map<string, Promise<string>>()
-function readFabric(url: string) {
-  const cached = fabrics.get(url)
+type Template = NonNullable<Asset['template']>
+const original = new Map<string, Promise<HTMLImageElement>>()
+const painted = new Map<string, Promise<string>>()
+function load(url: string) {
+  const cached = original.get(url)
   if (cached) return cached
   const image = new Image()
   image.src = url
-  const work = image
+  const pending = image
     .decode()
-    .then(() => {
-      const canvas = document.createElement('canvas')
-      canvas.width = image.width
-      canvas.height = image.height
-      const ctx = canvas.getContext('2d')!
-      ctx.drawImage(image, 0, 0)
-      const pixels = ctx.getImageData(0, 0, image.width, image.height).data
-      const roof = new Float32Array(image.width)
-      for (let x = 0; x < image.width; x++) {
-        let y = 0
-        while (y < image.height && pixels[4 * (y * image.width + x) + 3] < 120) y++
-        roof[x] = y
-      }
-      return { image, roof }
-    })
+    .then(() => image)
     .catch((e) => {
-      fabrics.delete(url)
+      original.delete(url)
       throw e
     })
-  if (fabrics.size >= 32) fabrics.delete(fabrics.keys().next().value!)
-  fabrics.set(url, work)
-  return work
+  original.set(url, pending)
+  return pending
 }
-
-function cutFabric(digest: string, garment: Garment, url: string, frame: Anatomy) {
-  const key = JSON.stringify([digest, url, frame, garment])
-  const ready = finished.get(key)
-  if (ready) return ready
-  const rig = garment.rig
-  const [sx] = garment.outline
-  const [tx, ty] = frame.body
-  const last = tx.length - 1
-  const worldPerNative = 246 / rig.span
-  const scale = (worldPerNative * (tx[last] - tx[0])) / (sx[last] - sx[0])
-  const [left, top, width, height] = shoulderFrame(frame)
-  const work = readFabric(url)
-    .then(({ image, roof }) => {
-      const c = document.createElement('canvas')
-      c.width = Math.ceil(width * 2)
-      c.height = Math.ceil(height * 2)
-      const ctx = c.getContext('2d')!
-      const pixel = width / c.width,
-        syRatio = c.height / height
-      let i = 0
-      for (let x = 0; x < c.width; x++) {
-        const pos = left + (x + 0.5) * pixel
-        while (i < last - 1 && pos > tx[i + 1]) i++
-        const u = (pos - tx[i]) / (tx[i + 1] - tx[i])
-        const nx = (sx[i] + u * (sx[i + 1] - sx[i]) - rig.seat[0]) / worldPerNative + rig.collar[0]
-        if (nx < 0 || nx >= image.width - 1) continue
-        const leftPx = Math.floor(nx),
-          fraction = nx - leftPx
-        const edge = roof[leftPx] + fraction * (roof[leftPx + 1] - roof[leftPx])
-        // Ignore isolated transparent columns at the sleeve and extrapolate
-        // its natural edge outside the measured shoulder cross-section.
-        if (edge >= image.height - 1) continue
-        const v = Math.max(0, Math.min(1, u))
-        const dest = ty[i] + v * (ty[i + 1] - ty[i])
-        const measuredEdge = garment.outline[1]
-        const nominal =
-          (measuredEdge[i] + v * (measuredEdge[i + 1] - measuredEdge[i]) - rig.seat[1]) / worldPerNative +
-          rig.collar[1]
-        const baseline = u < 0 || u > 1 ? nominal : edge
-        const sw = (pixel * (sx[i + 1] - sx[i])) / (tx[i + 1] - tx[i]) / worldPerNative
-        ctx.drawImage(
-          image,
-          nx - sw / 2,
-          0,
-          sw,
-          image.height,
-          x,
-          (dest - top - baseline * scale) * syRatio,
-          1,
-          image.height * scale * syRatio,
-        )
-      }
-      return c.toDataURL()
-    })
-    .catch((e) => {
-      finished.delete(key)
-      throw e
-    })
-  if (finished.size >= 72) finished.delete(finished.keys().next().value!)
-  finished.set(key, work)
-  return work
-}
-
-export function useFittedFabric(
-  digest: string | undefined,
-  garment: Garment | undefined,
-  url: string | undefined,
-  frame: Anatomy | undefined,
+function paint(
+  texture: string,
+  mask: string,
+  variant: Pattern['design'],
+  colors: string[],
+  key: string,
 ) {
-  const key = JSON.stringify([digest, url, frame, garment])
-  const [result, setResult] = useState({ key: '', image: '' })
+  const cached = painted.get(key)
+  if (cached) return cached
+  const pending = Promise.all([load(texture), load(mask)])
+    .then(([photo, atlas]) => {
+      const w = photo.naturalWidth,
+        h = photo.naturalHeight
+      const canvas = document.createElement('canvas')
+      canvas.width = w
+      canvas.height = h
+      const ctx = canvas.getContext('2d', { willReadFrequently: true })!
+      const offset = ['panels', 'chevron', 'shoulders'].indexOf(variant) * w
+      ctx.drawImage(atlas, offset, 0, w, h, 0, 0, w, h)
+      const zones = ctx.getImageData(0, 0, w, h).data
+      ctx.clearRect(0, 0, w, h)
+      ctx.drawImage(photo, 0, 0)
+      const shade = ctx.getImageData(0, 0, w, h),
+        pixels = shade.data
+      const dye = colors.map((c) => [1, 3, 5].map((i) => parseInt(c.slice(i, i + 2), 16)))
+      for (let i = 0; i < pixels.length; i += 4) {
+        if (!pixels[i + 3]) continue
+        const grey = pixels[i],
+          light = grey / 173,
+          shine = (Math.max(0, grey - 173) / 82) * 0.43
+        const total = zones[i] + zones[i + 1] + zones[i + 2]
+        if (!total) continue
+        const coverage = Math.min(1, total / 255)
+        for (let channel = 0; channel < 3; channel++) {
+          const pigment =
+            (zones[i] * dye[0][channel] +
+              zones[i + 1] * dye[1][channel] +
+              zones[i + 2] * dye[2][channel]) /
+            total
+          // Even black technical textiles reflect diffuse light off yarn and raised seams.
+          const dyed = Math.min(1, light) * (0.94 * pigment + 6) + (255 - pigment) * shine
+          pixels[i + channel] = grey * (1 - coverage) + dyed * coverage
+        }
+      }
+      ctx.putImageData(shade, 0, 0)
+      return canvas.toDataURL('image/webp', 0.96)
+    })
+    .catch((e) => {
+      painted.delete(key)
+      throw e
+    })
+  if (painted.size >= 64) painted.delete(painted.keys().next().value!)
+  painted.set(key, pending)
+  return pending
+}
+export function useGarmentMaterial(
+  texture: string | undefined,
+  mask: string | undefined,
+  variant: Pattern['design'],
+  base: string,
+  insert: string,
+  piping: string,
+) {
+  const key = JSON.stringify([texture, mask, variant, base, insert, piping])
+  const [result, set] = useState({ key: '', image: '' })
   useEffect(() => {
-    if (!digest || !frame || !garment || !url) return
+    if (!texture || !mask) return
     let active = true
-    cutFabric(digest, garment, url, frame)
+    paint(texture, mask, variant, [base, insert, piping], key)
       .then((image) => {
-        if (active) setResult({ key, image })
+        if (active) set({ key, image })
       })
       .catch(() => {})
     return () => {
       active = false
     }
-  }, [key, digest, garment, url, frame])
-  return result.key === key ? result.image : undefined
+  }, [key, texture, mask, variant, base, insert, piping])
+  return result.key === key ? result.image : texture
+}
+
+// The template stays rigid. Both the photograph and every print use this one
+// similarity transform, anchored just below the jaw on the existing head layer.
+export function fitGarment(anatomy: Anatomy | undefined, template: Template) {
+  const [cx, chin, eye] = anatomy?.anchor || [
+    anatomy?.body[0][13] ?? 120,
+    (anatomy?.body[1][13] ?? 193) - 45,
+    36,
+  ]
+  const [left, right] = template.collar
+  const scale = (eye * 1.54) / (right - left)
+  return { x: cx - ((left + right) * scale) / 2, y: chin + eye * 0.13, scale, cx, chin, eye }
+}
+export function portraitCamera(
+  anatomy: Anatomy | undefined,
+  template: Template,
+  framing: 'face' | 'portrait' | 'outfit',
+) {
+  const fit = fitGarment(anatomy, template)
+  const top = anatomy?.camera[1] ?? 0
+  if (framing === 'outfit')
+    return [
+      fit.x - template.width * fit.scale * 0.055,
+      top - 4,
+      template.width * fit.scale * 1.11,
+      fit.y + template.height * fit.scale * 0.93 - top,
+    ]
+  const bottom = fit.chin + fit.eye * (framing === 'face' ? 1.65 : 2.95)
+  const height = Math.max(bottom - top, anatomy?.camera[3] || 0)
+  return [fit.cx - (height * 3) / 7, top, (height * 6) / 7, height]
 }

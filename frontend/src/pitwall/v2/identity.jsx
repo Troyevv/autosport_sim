@@ -27,7 +27,7 @@ export function OrganizationMark({ orgId, organization, size = 48, wordmark = fa
   const g = useGame(),
     org = organization || g.world.organizations[orgId || g.game.career.org],
     i = getIdentity(org),
-    logo = (g.data.media || []).find((m) => m.kind === 'logo' && m.entity === org?.id)
+    logo = (g.data.media || []).find((m) => m.kind === 'logo' && m.entity === (org?.logo_asset || org?.id))
   return (
     <span
       className={'organization-mark ' + (logo ? 'has-logo ' : 'typographic-mark ') + className}

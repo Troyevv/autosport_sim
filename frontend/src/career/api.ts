@@ -1,7 +1,7 @@
 import type { Livery } from '../garage/model'
 import type { Role } from '../game'
 export type BrandPalette = { primary: string; secondary: string; accent?: string }
-export type Organization = { brand_palette: BrandPalette; registration?: {legal_name:string; country:string; headquarters:string; source:string}; affiliations?: {label: string; source: string}[]; country?: string; base_country?: string; base_source?: string; base_estimated?: boolean; domicile?: string; base?: string; playable?: boolean; color: string; id: string; name: string; kind: string; programs: string[]; lines: string[] }
+export type Organization = { logo_asset?: string; brand_palette: BrandPalette; registration?: {legal_name:string; country:string; headquarters:string; source:string}; affiliations?: {label: string; source: string}[]; country?: string; base_country?: string; base_source?: string; base_estimated?: boolean; domicile?: string; base?: string; playable?: boolean; color: string; id: string; name: string; kind: string; programs: string[]; lines: string[] }
 export type Championship = {
   id: string
   name: string
@@ -52,6 +52,7 @@ export type World = {
       org: string
       championship: string
       number: string
+      entrant_id?:string
       entrant?: string
       crew: string[]
       car: string
@@ -137,6 +138,9 @@ export type Career = Save & {
   ledger: { key: string; date: string; delta_cents: number; source: string }[]
   player_cash_cents: number
   assignments: Seat[]
+  organization_uniforms: Record<string,Partial<Record<import("./uniform").Category,import("./uniform").Pattern>>>
+  clothing_rights: import("./uniform").ClothingRight[]
+  can_edit_uniform: boolean
   can_edit_palette: boolean
   team_color: string
   pending: string[]
@@ -162,9 +166,10 @@ export type Career = Save & {
     payroll_cents: number
   }[]
 }
-export type Anatomy = { camera: number[]; body: number[][]; nativeWidth: number }
+export type Anatomy = { anchor?:number[]; hair?:string; skin?:string; unavailable?:boolean; camera: number[]; body: number[][]; nativeWidth: number }
 export type Garment = { rig: { span: number; collar: number[]; seat: number[] }; outline: number[][] }
 export type Asset = {
+  template?: {width:number;height:number;collar:number[]}
   anatomy?: Anatomy
   garment?: Garment
   kind: string

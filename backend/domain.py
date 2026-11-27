@@ -428,6 +428,10 @@ def apply(state, catalog, action, payload=None):
         from .finance import command
 
         command(state, catalog, action, payload)
+    elif action == "organization-uniform":
+        from .uniform import update
+
+        update(state, catalog, payload)
     elif action == "organization-palette":
         from .branding import update
 

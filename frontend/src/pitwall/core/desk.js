@@ -13,26 +13,26 @@ function sources(c, route, tab) {
       : c.role === 'manager'
         ? ['garage', 'finance', 'council', 'development']
         : ['manufacturer', 'finance', 'production', 'development']
-  if (['garage','livery'].includes(route)) return ['garage']
+  if (['garage', 'livery'].includes(route)) return ['garage']
   if (route === 'world') return ['garage']
   if (route === 'inbox') return ['council']
   if (route === 'contracts') return ['dossiers']
-  if (route === 'drivers') return ['lineup','dossiers','production']
+  if (route === 'drivers') return ['lineup', 'dossiers', 'production']
   if (route === 'market') return ['dossiers']
-  if (route === 'person') return tab === 'statistics' ? ['statistics'] : ['funding','commercial']
-  if (['funding','academy'].includes(route)) return ['funding','commercial','dossiers','production']
+  if (route === 'person') return tab === 'statistics' ? ['statistics'] : ['funding', 'commercial']
+  if (['funding', 'academy'].includes(route)) return ['funding', 'commercial', 'dossiers', 'production']
   if (route === 'agreements') return ['commercial', 'capital', 'facilities', 'dossiers', 'funding']
   if (['statistics', 'organization'].includes(route))
     return ['statistics', 'garage', 'commercial', 'manufacturer']
-  if (route==='commercial') return ['commercial','finance']
-  if (route==='rights') return ['rights','commercial','garage']
-  if (route==='economy') return ['economy']
+  if (route === 'commercial') return ['commercial', 'finance']
+  if (route === 'rights') return ['rights', 'commercial', 'garage']
+  if (route === 'economy') return ['economy']
   if (topic === 'facilities') return ['facilities', 'production', 'manufacturer']
-  if (topic === 'capital') return ['capital', 'finance','facilities','accounts']
+  if (topic === 'capital') return ['capital', 'finance', 'facilities', 'accounts']
   if (['finance', 'budget', 'cap'].includes(topic))
     return ['finance', 'budget', 'commercial', 'accounts']
   if ([...technical, 'engineering', 'inventory', 'manufacturer'].includes(topic))
-    return [...technical, 'manufacturer', 'garage', 'components', 'facilities','commercial']
+    return [...technical, 'manufacturer', 'garage', 'components', 'facilities', 'commercial']
   if (['staff', 'drivers', 'people', 'academy', 'leadership', 'preparation'].includes(topic))
     return ['production']
   return []
@@ -69,7 +69,9 @@ export function useDesk(c, route, tab) {
       }
     async function load() {
       const names = paths.split(',').filter(Boolean),
-        base = names.filter((x) => !['dossiers', 'components', 'statistics','lineup','rights','economy'].includes(x))
+        base = names.filter(
+          (x) => !['dossiers', 'components', 'statistics', 'lineup', 'rights', 'economy'].includes(x),
+        )
       const missing = base.filter((name) => !entries.has(name))
       if (missing.length) {
         const query = new globalThis.URLSearchParams(missing.map((name) => ['topics', name]))
@@ -79,7 +81,8 @@ export function useDesk(c, route, tab) {
         for (const [name, value] of Object.entries(snapshot.projections)) entries.set(name, value)
       }
       const projections = Object.fromEntries(base.map((name) => [name, entries.get(name)]))
-      for(const name of ['lineup','rights','economy'].filter(n=>names.includes(n))) projections[name]=await req(name)
+      for (const name of ['lineup', 'rights', 'economy'].filter((n) => names.includes(n)))
+        projections[name] = await req(name)
       const components = names.includes('components')
         ? await parallel(
             [...new Set(c.assignments.filter((s) => s.org === c.org && s.entry).map((s) => s.entry))],

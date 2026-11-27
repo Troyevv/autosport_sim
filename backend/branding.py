@@ -4,7 +4,9 @@ from typing import Annotated
 
 from pydantic import BaseModel, ConfigDict, StringConstraints
 
-HexColor = Annotated[str, StringConstraints(pattern=r"^#[0-9a-fA-F]{6}$", to_lower=True)]
+HexColor = Annotated[
+    str, StringConstraints(pattern=r"^#[0-9a-fA-F]{6}$", to_lower=True)
+]
 
 
 class BrandPalette(BaseModel):

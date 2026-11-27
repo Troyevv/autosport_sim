@@ -221,7 +221,7 @@ export function Wizard() {
                   <small>
                     {w.countries[o.country] || o.country} · {o.base}
                   </small>
-                  <h2>{o.name}</h2>
+                  <div className="org-option-name"><OrganizationMark organization={o} size={44}/><h2>{o.name}</h2></div>
                   {entryFor(series, o.id) ? (
                     <RaceCar entryId={entryFor(series, o.id)} studio={false} />
                   ) : (

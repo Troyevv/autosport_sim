@@ -1,3 +1,4 @@
+import { OrganizationMark } from './v2/identity'
 import { shortDate as short } from './v2/advisory-model'
 import React, { useState, useSyncExternalStore } from 'react'
 import { useGame, useStored, dateLabel } from './core'
@@ -345,7 +346,7 @@ export function Championships() {
                   <strong className="entry-number">{e.number}</strong>
                   <div>
                     <button className="link-button" onClick={() => g.openOrganization(e.org)}>
-                      {e.entrant || g.world.organizations[e.org]?.name}
+                      <OrganizationMark orgId={e.org} size={30}/> {e.entrant || g.world.organizations[e.org]?.name}
                     </button>
                     <p>
                       {g.world.cars[e.car]?.name || 'Модель не раскрыта'} · {e.category}

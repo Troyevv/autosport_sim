@@ -2,6 +2,7 @@ import React from 'react'
 import { useGame } from '../core'
 import { CarView } from '../../garage/CarView'
 import { geometry } from '../../garage/model'
+import { GarageWall } from '../../garage/GarageWall'
 import { Portrait } from '../../career/Portrait'
 /**
  * @param {{entryId?:string,entry?:string|{id:string},studio?:boolean,className?:string} &
@@ -37,6 +38,9 @@ export function RaceCar({
   const colors = livery || g.game.career.liveries?.[id] || preset.livery
   return (
     <div className={'studio-stage ' + (!studio ? 'transparent-stage ' : '') + className}>
+      {studio && ['garage', 'livery'].includes(g.route) && (
+        <GarageWall org={g.world.organizations[e.org]} media={g.data.media} />
+      )}
       <CarView
         model={model}
         regulation={cfg?.regulation || car.regulation}
@@ -55,9 +59,8 @@ export function PersonPortrait({ person, id, size, role, className = '' }) {
   const g = useGame(),
     p = person || g.game.personnel.find((x) => x.id === id)
   if (!p) return <span className="portrait-missing">?</span>
-  const ass =
-    g.game.career.assignments?.find((a) => a.occupant?.id === p.id) || g.world.assignments?.[p.id]
-  const org = ass?.org || p.org || null
+  const current = g.game.personnelById?.get(p.id) || p
+  const org = current.org ?? null
   const o = g.world.organizations[org]
   return (
     <span
@@ -68,7 +71,8 @@ export function PersonPortrait({ person, id, size, role, className = '' }) {
         person={p}
         org={org}
         color={o?.color || '#6b7981'}
-        driver={p.position === 'driver' || ass?.position === 'driver'}
+        driver={(current.position || role) === 'driver'}
+        organization={o}
         media={g.data.media || []}
         showShoulders
       />
