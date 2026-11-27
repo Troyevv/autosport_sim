@@ -47,6 +47,11 @@ test('Выбранные игроком цвета проходят через �
   const token = (key: string) =>
     shell.evaluate((el, k) => getComputedStyle(el).getPropertyValue(k).trim(), key)
   await expect.poll(() => token('--org-brand-primary')).toBe('#341277')
+  const button = page.locator('.adv-first-action .adv-button.primary').first()
+  const toRgb = (value: string) =>
+    'rgb(' + [1, 3, 5].map((i) => parseInt(value.slice(i, i + 2), 16)).join(', ') + ')'
+  await expect(button).toHaveCSS('background-color', toRgb(await token('--org-accent')))
+  await expect(button).toHaveCSS('color', toRgb(await token('--org-on-accent')))
   const warning = await token('--status-warning'),
     success = await token('--status-success'),
     error = await token('--status-error')

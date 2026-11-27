@@ -1224,7 +1224,7 @@
     color: #a5a5a6;
     line-height: 1.7;
   }
-  .st-context-:scope {
+  .st-context-body {
     font-size: 11px;
     color: #a1a1a2;
     line-height: 1.85;
@@ -2014,7 +2014,7 @@
     display: grid;
     place-items: center;
   }
-  .st-fact-:scope {
+  .st-fact-body {
     padding: 25px 26px 40px;
   }
   .st-fact-date {
@@ -2907,7 +2907,7 @@
     .st-context-number span {
       font-size: 11px;
     }
-    .st-context-:scope {
+    .st-context-body {
       font-size: 11px;
       line-height: 1.85;
     }
@@ -3070,7 +3070,7 @@
     .st-result-table thead {
       display: none;
     }
-    .st-result-table t:scope {
+    .st-result-table tbody {
       display: block;
     }
     .st-result-table tr {
@@ -3355,7 +3355,7 @@
       font-size: 23px;
       line-height: 1.4;
     }
-    .st-fact-:scope {
+    .st-fact-body {
       padding: 22px 20px 35px;
     }
     .st-fact-drawer > header > button {

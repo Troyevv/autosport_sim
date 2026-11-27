@@ -555,7 +555,7 @@
     background: #d9d0c3;
     color: #4c433b;
   }
-  .manager-letter .letter-:scope {
+  .manager-letter .letter-body {
     display: flex;
     padding: 25px 26px 12px;
     gap: 24px;
@@ -602,7 +602,7 @@
     max-width: 300px;
   }
   .manager-letter .staff-signature small {
-    color: #766a60;
+    color: #685c52;
   }
   .manager-letter .staff-signature svg {
     color: #9d5a2c;
@@ -621,7 +621,7 @@
   .document-provenance {
     display: block;
     padding: 0 26px 17px;
-    color: #7a6e62;
+    color: #685c52;
     font-size: 9px;
   }
   .owner-strategy-rail {
@@ -1468,7 +1468,7 @@
     .manager-letter > header > .badge {
       display: none;
     }
-    .manager-letter .letter-:scope {
+    .manager-letter .letter-body {
       padding: 22px 20px 12px;
     }
     .manager-letter h2 {

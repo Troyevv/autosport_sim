@@ -111,7 +111,7 @@
   .panel > header p {
     color: #a5a09b;
   }
-  .panel-:scope {
+  .panel-body {
     padding: 24px;
   }
   .tabs {
@@ -302,7 +302,7 @@
     font-style: normal;
     font-size: 9px;
     letter-spacing: 0.03em;
-    color: #9e8f81;
+    color: #b1a193;
     margin-top: 5px;
   }
   .team-identity > .organization-mark {
@@ -338,7 +338,7 @@
   }
   .nav-caption b {
     font-weight: 500;
-    color: #786f67;
+    color: #988c82;
   }
   .nav-item {
     padding: 13px 12px;
@@ -395,7 +395,7 @@
   }
   .sidebar-footer button span {
     margin-left: auto;
-    color: #76685b;
+    color: #9b8c7c;
     font-family: Race, Arial, sans-serif;
   }
   .topbar {
@@ -451,7 +451,7 @@
       Arial,
       sans-serif;
     border-color: #4f4237;
-    color: #89796b;
+    color: #a08f80;
     margin-left: 8px;
   }
   .topbar-date {
@@ -485,7 +485,7 @@
   }
   .content-footer {
     border-top: 1px solid #302b27;
-    color: #827668;
+    color: #9e9081;
     font-size: 9px;
     align-items: center;
     padding: 23px 30px;

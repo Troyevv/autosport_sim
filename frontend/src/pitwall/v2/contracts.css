@@ -375,7 +375,7 @@
     font-size: 9px;
     display: block;
     letter-spacing: 0.08em;
-    color: #756e65;
+    color: #655e55;
     text-transform: uppercase;
     margin-top: 5px;
   }
@@ -387,7 +387,7 @@
     padding: 25px 34px 20px;
   }
   .contract-paper-title .contract-eyebrow {
-    color: #7d766c;
+    color: #665f55;
   }
   .contract-paper-title h2 {
     font-size: 34px;
@@ -430,7 +430,7 @@
   }
   .contract-paper-person span {
     font-size: 11px;
-    color: #746c62;
+    color: #655e55;
   }
   .contract-paper-person button {
     background: none;
@@ -453,7 +453,7 @@
     gap: 18px;
     border-top: 1px solid #2c251e24;
     background: #e0d9cc;
-    color: #706657;
+    color: #62584a;
     font-size: 9px;
     line-height: 1.6;
   }
@@ -498,7 +498,7 @@
   .contract-facts dt {
     font-size: 10px;
     line-height: 1.5;
-    color: #766b5f;
+    color: #655b50;
     margin-bottom: 5px;
   }
   .contract-facts dd {
@@ -511,7 +511,7 @@
   .contract-note {
     font-size: 11px;
     line-height: 1.7;
-    color: #766b5f;
+    color: #655b50;
     margin: 17px 0 0;
   }
   .contract-clause-statement {
@@ -962,7 +962,7 @@
   .contract-frame-columns.single {
     grid-template-columns: 1fr;
   }
-  .contract-document-:scope {
+  .contract-document-body {
     padding: 26px;
     min-width: 0;
   }
@@ -1748,7 +1748,7 @@
       display: flex;
       flex-direction: column;
     }
-    .contract-document-:scope {
+    .contract-document-body {
       padding: 20px 17px;
     }
     .contract-aside {

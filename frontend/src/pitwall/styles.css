@@ -212,7 +212,7 @@
     font-size: 12px;
     margin-top: 5px;
   }
-  .panel-:scope {
+  .panel-body {
     padding: 24px;
   }
   .tabs {
@@ -568,7 +568,7 @@
     height: 158%;
     pointer-events: none;
   }
-  .car-cutout .garage-:scope {
+  .car-cutout .garage-body {
     display: block;
     position: relative;
     width: 100%;
@@ -909,7 +909,7 @@
   .search-results button svg:last-child {
     margin-left: auto;
   }
-  .compact .panel-:scope {
+  .compact .panel-body {
     padding: 17px;
   }
   .compact .data-table td {
@@ -1100,7 +1100,7 @@
       display: none;
     }
     .data-table,
-    .data-table t:scope {
+    .data-table tbody {
       display: block;
     }
     .data-table tr {
@@ -1130,7 +1130,7 @@
     .data-table td:empty {
       display: none;
     }
-    .panel-:scope {
+    .panel-body {
       padding: 18px;
     }
     .panel > header {
