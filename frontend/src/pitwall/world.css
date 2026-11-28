@@ -1113,4 +1113,35 @@
       outline-offset: -1px;
     }
   }
+  @media (min-width: 701px) {
+    .championship-hero:has(> .studio-stage) {
+      display: grid;
+      grid-template-columns: minmax(17rem, 2fr) minmax(0, 3fr);
+      grid-template-areas: 'title scene' 'facts scene';
+      grid-template-rows: 1fr auto;
+      height: auto;
+      background: var(--panel, #202020);
+    }
+    .championship-hero:has(> .studio-stage) > div:first-child {
+      grid-area: title;
+      position: static;
+      padding: 20px 24px 12px;
+    }
+    .championship-hero:has(> .studio-stage) > .studio-stage {
+      grid-area: scene;
+      height: auto;
+      min-width: 0;
+    }
+    .championship-hero:has(> .studio-stage) .championship-facts {
+      grid-area: facts;
+      position: static;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(6rem, 1fr));
+    }
+    .championship-hero:has(> .studio-stage) .championship-facts .stat {
+      min-width: 0;
+      padding: 8px 12px;
+    }
+  }
+
 }

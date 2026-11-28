@@ -183,4 +183,17 @@ test('Парковка относительно пола, вывески и об
       await expectCarParked(stage)
     })
   }
+  await page.goto('/?career=' + career.id + '#world?tab=entries')
+  const hero = page.locator('.championship-hero')
+  for (const width of [844, 1366, 2560]) {
+    await page.setViewportSize({width, height: 768})
+    const stage = hero.locator('.studio-stage')
+    await expectCarParked(stage)
+    const image = (await stage.boundingBox())!
+    for (const panel of [hero.locator(':scope > div:first-child'), hero.locator('.championship-facts')]) {
+      const box = (await panel.boundingBox())!
+      expect(box.x + box.width).toBeLessThanOrEqual(image.x + 1)
+    }
+  }
+
 })
