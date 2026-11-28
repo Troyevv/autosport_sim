@@ -1,7 +1,9 @@
 #include "space.hpp"
+#include "contact.hpp"
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <memory>
+#include <cmath>
 
 namespace py = pybind11;
 using namespace race;
@@ -15,7 +17,9 @@ std::vector<Station> stations(const std::vector<Row> &rows) {
     return out;
 }
 } // namespace
+void bind_dynamics(py::module_ &m);
 PYBIND11_MODULE(_race_space, m) {
+    bind_dynamics(m);
     m.attr("CONTRACT_VERSION") = 1;
     py::enum_<Road>(m, "Road").value("circuit", Road::circuit).value("pit", Road::pit);
     py::enum_<Surface>(m, "Surface")
@@ -88,6 +92,61 @@ PYBIND11_MODULE(_race_space, m) {
                 for (const auto &[cursor, metres, pit] : batch)
                     result.push_back(track.advance(cursor, metres, pit));
                 return result;
+            },
+            py::call_guard<py::gil_scoped_release>())
+
+        .def(
+            "grid_offsets",
+            [](const Track &track, const std::vector<Body> &requested) {
+                auto grid = requested;
+                const auto &road = track.ribbon(Road::circuit);
+                std::vector<double> offsets;
+                for (auto &b : grid) {
+                    if (!(b.length > 0 && b.length <= 40 && b.width > 0 && b.width <= 10 &&
+                          std::isfinite(b.heading_delta)))
+                        throw std::invalid_argument("invalid grid body dimensions");
+                    if (!road.contains_footprint(b)) {
+                        double outside = b.offset, inside = 0;
+                        b.offset = 0;
+                        if (!road.contains_footprint(b))
+                            throw std::invalid_argument("grid body does not fit on circuit");
+                        for (int i = 0; i < 12; ++i) {
+                            b.offset = (inside + outside) * .5;
+                            if (road.contains_footprint(b))
+                                inside = b.offset;
+                            else
+                                outside = b.offset;
+                        }
+                        b.offset = inside;
+                    }
+                    offsets.push_back(b.offset);
+                }
+                if (!track.overlaps(grid).empty()) {
+                    std::vector<Body> placed;
+                    for (size_t i = 0; i < grid.size(); ++i) {
+                        placed.push_back(grid[i]);
+                        auto &body = placed.back();
+                        if (track.overlaps(placed).empty())
+                            continue;
+                        auto section = road.frame(body.position.s).section;
+                        bool found = false;
+                        for (double shift = .10; shift <= section.left + section.right && !found;
+                             shift += .10) {
+                            for (double sign : {-1., 1.}) {
+                                body.offset = offsets[i] + sign * shift;
+                                if (road.contains_footprint(body) &&
+                                    track.overlaps(placed).empty()) {
+                                    found = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (!found)
+                            throw std::invalid_argument("overlapping grid envelopes");
+                        offsets[i] = body.offset;
+                    }
+                }
+                return offsets;
             },
             py::call_guard<py::gil_scoped_release>())
         .def("overlaps", &Track::overlaps, py::call_guard<py::gil_scoped_release>());

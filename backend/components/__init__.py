@@ -25,11 +25,19 @@ class Usage(Install):
     damaged: bool
 
 
-def initialize(state):
+SEASON_VERSION = "2025-parts-v3"
+
+
+def initialize(state, *, catalog=None):
+    opening = bool(state.get("opening"))
+    if catalog is None:
+        catalog = SEASON_VERSION if opening else VERSION
+    if catalog not in ({"2025-parts-v2", "2025-parts-v3"} if opening else {VERSION}):
+        raise ValueError("Unsupported component catalogue")
     state.setdefault(
         "components",
         dict(
-            catalog="2025-parts-v2" if state.get("opening") else VERSION,
+            catalog=catalog,
             since=state["revision"],
             date=state["date"],
             revisions={},

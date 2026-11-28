@@ -106,7 +106,8 @@ def assembly(parts):
     )
     if "rear-wing" in p:
         wing, floor, spring = p["rear-wing"], p["floor"], p["suspension"]
-        load = 1500 * (wing["lift_area_m2"] + floor["lift_area_m2"])
+        front = chassis.get("front_lift_area_m2", 0)
+        load = 1500 * (front + wing["lift_area_m2"] + floor["lift_area_m2"])
         compression = load * (
             1 / spring["wheel_rate_n_mm"] + 1 / p["tyre"]["vertical_rate_n_mm"]
         )
@@ -119,7 +120,7 @@ def assembly(parts):
         )
         result.update(
             clearance_mm=clearance,
-            lift_area_m2=wing["lift_area_m2"] + floor["lift_area_m2"] * factor,
+            lift_area_m2=front + wing["lift_area_m2"] + floor["lift_area_m2"] * factor,
             drag_area_m2=result["drag_area_m2"] + wing["drag_area_m2"],
         )
     normal_load = result["mass_kg"] * 9.80665 + 1500 * result.get("lift_area_m2", 0)

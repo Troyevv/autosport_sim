@@ -4,6 +4,7 @@ from copy import deepcopy
 import pytest
 
 from . import (
+    components,
     domain,
     employment,
     personal_engineering as engineering,
@@ -451,6 +452,7 @@ def test_reviewed_checkpoint_replays_before_and_after_rules_upgrade(
 
     with monkeypatch.context() as old:
         old.setattr(engineering, "activate", reviewed_activation)
+        old.setattr(components, "SEASON_VERSION", "2025-parts-v2")
         c = service.create(
             service.CareerInput(
                 name="Предварительная версия",

@@ -42,6 +42,7 @@ class Ribbon {
     double length() const { return distances_.back(); }
     Frame frame(double s, double offset = 0) const;
     Surface surface(double s, double offset) const;
+    bool contains_footprint(const Body &body) const;
     // Closest point on the 3D centreline, then signed distance in its local frame.
     std::array<double, 3> project(Vec point) const;
 
