@@ -115,9 +115,14 @@ def support_on(state, advisor, day):
     """Rehydrate the dated staff assignment for visible_channels."""
     for row in state.get("support", []):
         if row["advisor"] == advisor and row["start"] <= day < row["end"]:
-            data = dict(row)
-            data.pop("end")
-            data.pop("entry", None)
+            if "agreement" not in row:
+                continue
+            data = {
+                k: v
+                for k, v in row.items()
+                if k in SupportAssignment.__dataclass_fields__
+            }
+            data["end_exclusive"] = row["end"]
             return SupportAssignment(
                 **{**data, "channels": frozenset(data["channels"])}
             )

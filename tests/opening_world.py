@@ -21,6 +21,9 @@ CASES = {
 
 
 def audit(s):
+    from backend.catalog import lineup_for
+
+    world = lineup_for(s)
     parts = parts_for(s)
     teams = world["organizations"]
     assert set(teams) == set(s["accounts"])

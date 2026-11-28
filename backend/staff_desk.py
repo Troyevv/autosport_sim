@@ -99,7 +99,14 @@ def dossier(state, world, pid, wet=False):
             licences=sorted(licences_on(credentials, state["date"])),
             points=points_on(credentials, state["date"]),
         )
+    from .personal_engineering import appointments as service_posts
+
+    from .personal_engineering import entry_partners
+
     return dict(
+        engineering_entries=entry_partners(state, world, pid)
+        if p["position"] in ("driver", "race-engineer")
+        else [],
         person=profile,
         results=[
             dict(
@@ -140,14 +147,23 @@ def dossier(state, world, pid, wet=False):
             )
         ),
         development=projection(state, world, pid),
+        engineering_covers=[
+            r
+            for r in state.get("engineering_service", {}).get("covers", [])
+            if r["person"] == pid
+        ],
         current=seat,
         history=sorted(history, key=lambda r: r["start"]),
         age=people.age_on(p, state["date"]),
         options=options,
         support=[
-            r
-            for r in state["support"]
-            if r["advisor"] == pid and r["employer"] == state["setup"]["org"]
+            {k: v for k, v in r.items() if k != "salary_cents" or org == r["employer"]}
+            for r in (
+                service_posts(state, world)
+                if p["position"] == "technical-advisor"
+                else ()
+            )
+            if r["advisor"] == pid and org in (r["employer"], r["client"])
         ],
         profile=people.evaluate(
             p, world, state["date"], discipline=discipline, wet=wet

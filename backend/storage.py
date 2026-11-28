@@ -60,6 +60,7 @@ MIGRATIONS = [
     [],  # Activate evidence-led engineering decisions at this revision.
     [],  # Open the two season portfolios at the saved revision.
     [],  # Start supplier operations at the current checkpoint.
+    [],  # Activate exclusive engineering posts without rewriting earlier contracts.
 ]
 
 
@@ -283,6 +284,17 @@ def transaction(write=False):
                     for event in state["manufacturer"]["events"]:
                         write_fact(db, row["id"], state, LINEUP_WORLD, event)
                     store(db, row["id"], state)
+            if idx == 26:
+                from .personal_engineering import activate
+                from .statistics.personnel import refresh
+
+                for row in db.execute(
+                    "SELECT id FROM career WHERE json_extract(state,'$.opening') IS NOT NULL"
+                ).fetchall():
+                    state = checkpoint(db, row["id"])
+                    activate(state)
+                    store(db, row["id"], state)
+                    refresh(db, row["id"], state)
             db.execute(f"PRAGMA user_version={idx + 1}")
         yield db
         db.commit()

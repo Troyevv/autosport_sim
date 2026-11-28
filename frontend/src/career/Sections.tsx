@@ -359,6 +359,12 @@ export function Briefing({
         </small>
         <h3>{e.name}</h3>
         <p>{e.sessions.join(' · ')}</p>
+        {c.engineering_briefing?.map((r) => <details key={r.entry}>
+          <summary>№ {world.entries[r.entry].number} · {world.organizations[world.entries[r.entry].org].name}</summary>
+          <p>Гоночный инженер · {r.engineer ? world.names[r.engineer] : 'Вакансия'}</p>
+          {r.feedback.map((f) => <p key={f.person}>{world.names[f.person]} · {f.decision === 'await-feedback' ? 'Пока нет отчётов пилота' : (f.decision === 'endorse' ? 'Инженер подтверждает обратную связь' : 'Инженеру нужны дополнительные наблюдения') + ' · отчётов ' + f.reports.length}</p>)}
+          {r.consultants.map((a) => <p key={a.person}>{world.names[a.person]} · {world.organizations[a.maker].name} · {a.products.map((v) => world.products[v]?.name || v).join(', ')} · открытых обращений {a.cases.length}{a.cases.length > 0 && a.review_quality != null && (a.review_quality >= 60 ? ' · рекомендован разбор причины со штабом' : ' · требуется сверка измерений со штабом')}</p>)}
+        </details>)}
       </div>
       <Button primary onClick={onConfirm} disabled={busy}>
         Подтвердить брифинг

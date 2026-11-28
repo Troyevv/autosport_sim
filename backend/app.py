@@ -40,7 +40,11 @@ def world(career: str | None = None):
             from .branding import world_view
 
             state = storage.checkpoint(db, career)
-            catalog = world_view(lineup_for(state), state)
+        if "engineering_service" not in state:
+            service.load(career, resume=True)
+            with storage.transaction() as db:
+                state = storage.checkpoint(db, career)
+        catalog = world_view(lineup_for(state), state)
     return {
         **{
             k: v
@@ -50,7 +54,10 @@ def world(career: str | None = None):
         "staff_rules": {
             k: v for k, v in catalog["staff_rules"].items() if k != "training"
         },
-        "faces": {p: v["face"] for p, v in catalog["profiles"].items()},
+        "faces": {p: v["face"] for p, v in catalog["profiles"].items()}
+        | ({p: v["face"] for p, v in state["people"].items()} if career else {}),
+        "names": catalog["names"]
+        | ({p: v["name"] for p, v in state["people"].items()} if career else {}),
     }
 
 
@@ -80,12 +87,12 @@ async def import_career(request: Request):
                 raise RuleError("Файл превышает допустимый размер.", 413)
             await run_in_threadpool(upload.write, chunk)
         upload.seek(0)
-        return await run_in_threadpool(archive.read_file, upload)
+        return await run_in_threadpool(archive.read_file, upload, resume=True)
 
 
 @app.get("/api/careers/{cid}")
 def load(cid: str):
-    return service.load(cid)
+    return service.load(cid, resume=True)
 
 
 @app.get("/api/careers/{cid}/pit-wall")

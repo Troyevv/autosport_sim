@@ -242,6 +242,11 @@ def check_terms(state, catalog, offer):
         raise RuleError("Консультант занят по договору поддержки.")
     if "growth_since" in state and preparation.busy(state, p["id"], day, end):
         raise RuleError("Сотрудник занят в утверждённой программе.")
+    if any(
+        r["person"] == p["id"] and r["end"] > day
+        for r in state.get("engineering_service", {}).get("covers", [])
+    ):
+        raise RuleError("Инженер уже назначен на замену.", 409)
     if p.get("training") and p["training"]["end"] > day:
         raise RuleError("Курс подготовки пересекается с началом договора.")
     if (
@@ -390,7 +395,14 @@ def resolve(state, catalog, offer):
     )
 
 
-def dates(state):
+def dates(state, *, staffing_intervals=False):
+    if staffing_intervals and "engineering_service" in state:
+        for r in [*state["support"], *state["engineering_service"]["covers"]]:
+            yield r["start"]
+            yield r["end"]
+        for r in state["market"]["supplies"].values():
+            yield r["start"]
+            yield r["end"]
     for asset in state.get("estate", {}).get("assets", {}).values():
         if asset["status"] in ("construction", "upgrade"):
             yield asset["ready"]
@@ -445,7 +457,17 @@ def advance_dates(state, catalog, target):
         month = date(
             current.year + current.month // 12, current.month % 12 + 1, 1
         ).isoformat()
-        day = min([month, target, *(d for d in dates(state) if d > state["date"])])
+        day = min(
+            [
+                month,
+                target,
+                *(
+                    d
+                    for d in dates(state, staffing_intervals=True)
+                    if d > state["date"]
+                ),
+            ]
+        )
         if "research" in state:
             from . import research
 
@@ -677,7 +699,7 @@ def fill_vacancies(state, catalog):
         if not r["end"] or r["end"] > day
     }
     for seat in catalog["assignments"].values():
-        if seat.get("duty") == "relief":
+        if seat.get("duty") == "relief" or seat.get("engineering_reserve"):
             continue
         role = career_choice.office(catalog, seat)
         org = seat["org"]
@@ -831,6 +853,10 @@ def command(state, catalog, action, args):
                 "growth_since" in state
                 and preparation.busy(state, p["id"], day, shifted(day, 1))
             )
+            or any(
+                r["person"] == p["id"] and r["end"] > day
+                for r in state.get("engineering_service", {}).get("covers", [])
+            )
             or row.get("transfer_on")
             or leaving_mid_session(catalog, seat, day)
             or any(r["advisor"] == p["id"] and r["end"] > day for r in state["support"])
@@ -851,7 +877,17 @@ def command(state, catalog, action, args):
             p["training"] = None
         notice(state, p["name"] + " · контракт расторгнут.")
         update_payroll(state, catalog, day)
+    elif action == "engineer-cover":
+        from .personal_engineering import cover_entry
+
+        cover_entry(state, catalog, seat, row, args)
     elif action == "advisor-assign":
+        if "engineering_service" in state:
+            from .personal_engineering import cover
+
+            return cover(state, catalog, seat, row, args)
+        if "entry" not in args:
+            raise RuleError("Для архивных правил укажите заявку и продукт.")
         assign_support(state, catalog, seat, row, args)
 
 

@@ -28,20 +28,24 @@ def initialize(state):
     if state.get("identity_schema") == 1:
         return
     for pid, p in state["people"].items():
-        country = state["setup"].get("country") if pid == state["player_id"] else None
-        country = country or p.get("country") or COUNTRY_IDS[p["nationality"]]
-        sample = sha256(("public-profile:" + pid).encode()).digest()
-        other_regions = [code for code in RACE_COUNTRIES if code != country]
-        foreign = other_regions[sample[12] % len(other_regions)]
-        p.update(
-            country=country,
-            nationality=COUNTRIES[country],
-            authority=20 + sample[0] % 76,
-            popularity=sample[1] % 96,
-            regional_popularity={country: sample[2] % 96, foreign: sample[13] % 96},
-            media_traits={k: 15 + sample[i + 3] % 81 for i, k in enumerate(TRAITS)},
-        )
+        initialize_person(state, pid, p)
     state["identity_schema"] = 1
+
+
+def initialize_person(state, pid, p):
+    country = state["setup"].get("country") if pid == state["player_id"] else None
+    country = country or p.get("country") or COUNTRY_IDS[p["nationality"]]
+    sample = sha256(("public-profile:" + pid).encode()).digest()
+    other_regions = [code for code in RACE_COUNTRIES if code != country]
+    foreign = other_regions[sample[12] % len(other_regions)]
+    p.update(
+        country=country,
+        nationality=COUNTRIES[country],
+        authority=20 + sample[0] % 76,
+        popularity=sample[1] % 96,
+        regional_popularity={country: sample[2] % 96, foreign: sample[13] % 96},
+        media_traits={k: 15 + sample[i + 3] % 81 for i, k in enumerate(TRAITS)},
+    )
 
 
 def bounded(value):

@@ -124,7 +124,7 @@ def write_file(cid):
         raise
 
 
-def read_file(file):
+def read_file(file, *, resume=False):
     def line(limit):
         data = file.readline(limit + 1)
         if len(data) > limit:
@@ -137,7 +137,7 @@ def read_file(file):
             raw = file.read(CORE_LIMIT + 1)
             if len(raw) > CORE_LIMIT:
                 raise RuleError("Превышен размер JSON сохранения.", 413)
-            return service.import_save(json.loads(raw))
+            return service.import_save(json.loads(raw), resume=resume)
         core = line(CORE_LIMIT)
         checksum = hashlib.sha256(core)
 
@@ -153,7 +153,7 @@ def read_file(file):
                 yield item
 
         return service.import_save(
-            json.loads(core), statistics_records=checked_records()
+            json.loads(core), statistics_records=checked_records(), resume=resume
         )
     except RuleError:
         raise

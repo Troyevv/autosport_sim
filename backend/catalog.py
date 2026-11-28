@@ -350,9 +350,16 @@ def base_catalog(state):
 
 
 def lineup_for(state):
-    if state.get("opening") == FIRST_VERSION:
-        return FIRST_LINEUP
-    return SEASON_LINEUP if state.get("opening") else LINEUP_WORLD
+    from .personal_engineering import catalog
+
+    world = (
+        FIRST_LINEUP
+        if state.get("opening") == FIRST_VERSION
+        else SEASON_LINEUP
+        if state.get("opening")
+        else LINEUP_WORLD
+    )
+    return catalog(state, world)
 
 
 def career_catalog(state, world):

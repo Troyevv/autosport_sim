@@ -58,39 +58,7 @@ def initialize(state, catalog):
             state["people"][pid] = person
     for pid, person in state["people"].items():
         pos = roles.get(pid) or person["position"]
-        profile = catalog["positions"][pos]["skills"]
-        baseline = sum(person["skills"].values()) // len(person["skills"])
-        seed_id = (
-            catalog["assignments"][state["setup"]["org"] + ":" + pos]["person"]
-            if pid == "player"
-            else pid
-        )
-        seed_profile = catalog["profiles"].get(seed_id, {})
-        person["skills"] = {
-            k: person["skills"].get(k, seed_profile.get("skills", {}).get(k, baseline))
-            for k in profile
-        }
-        if person["specialization"] not in profile:
-            person["specialization"] = profile[0]
-        digest = sha256(pid.encode()).digest()
-        person.update(
-            position=pos,
-            adaptation=dict.fromkeys(disciplines_in_world, 0),
-            discipline_days=dict.fromkeys(disciplines_in_world, 0),
-            worked_days=0,
-            training=None,
-            courses=0,
-        )
-        for i, k in enumerate(
-            ("ambition", "loyalty", "professionalism", "adaptability", "reputation")
-        ):
-            person[k] = 40 + digest[i] % 55
-        traits = ["specialist" if digest[0] % 4 else "inconsistent"]
-        if pos == "driver" and (
-            person["specialization"] == "Дождь" or digest[1] % 3 == 0
-        ):
-            traits.append("rain")
-        person["traits"] = [dict(id=t, start=START, end=None) for t in traits]
+        initialize_person(state, catalog, person, pos, disciplines_in_world)
     counts = {}
     for seat in catalog["assignments"].values():
         counts[seat["org"]] = counts.get(seat["org"], 0) + 1
@@ -144,6 +112,41 @@ def initialize(state, catalog):
     from .media_profile import initialize as initialize_identity
 
     initialize_identity(state)
+
+
+def initialize_person(state, catalog, person, pos, disciplines_in_world):
+    pid = person["id"]
+    profile = catalog["positions"][pos]["skills"]
+    baseline = sum(person["skills"].values()) // len(person["skills"])
+    seed_id = (
+        catalog["assignments"][state["setup"]["org"] + ":" + pos]["person"]
+        if pid == "player"
+        else pid
+    )
+    seed_profile = catalog["profiles"].get(seed_id, {})
+    person["skills"] = {
+        k: person["skills"].get(k, seed_profile.get("skills", {}).get(k, baseline))
+        for k in profile
+    }
+    if person["specialization"] not in profile:
+        person["specialization"] = profile[0]
+    digest = sha256(pid.encode()).digest()
+    person.update(
+        position=pos,
+        adaptation=dict.fromkeys(disciplines_in_world, 0),
+        discipline_days=dict.fromkeys(disciplines_in_world, 0),
+        worked_days=0,
+        training=None,
+        courses=0,
+    )
+    for i, k in enumerate(
+        ("ambition", "loyalty", "professionalism", "adaptability", "reputation")
+    ):
+        person[k] = 40 + digest[i] % 55
+    traits = ["specialist" if digest[0] % 4 else "inconsistent"]
+    if pos == "driver" and (person["specialization"] == "Дождь" or digest[1] % 3 == 0):
+        traits.append("rain")
+    person["traits"] = [dict(id=t, start=START, end=None) for t in traits]
 
 
 def disciplines(catalog, seat):

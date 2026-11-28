@@ -1,6 +1,6 @@
 from datetime import date
 from typing import Annotated, Literal
-from pydantic import AfterValidator, BaseModel, ConfigDict, Field
+from pydantic import AfterValidator, BaseModel, ConfigDict, Field, RootModel
 
 
 class Fields(BaseModel):
@@ -44,9 +44,18 @@ class Course(Seat):
     skill: Id
 
 
-class Support(Seat):
+class EngineeringCover(Seat):
     entry: Id
+    start: Day
+    end: Day
+
+
+class Support(EngineeringCover):
     product: Id
+
+
+class ClientCover(Seat):
+    client: Id
     start: Day
     end: Day
 
@@ -95,6 +104,10 @@ class Program(Fields):
     ]
 
 
+class SupportOrder(RootModel[ClientCover | Support]):
+    """Portable command logs before #64 used an entry and product as the client selector."""
+
+
 ORDERS = {
     "prepare-program": Program,
     "manufacturer-backing": Sponsorship,
@@ -109,5 +122,6 @@ ORDERS = {
     "offer-withdraw": Reply,
     "staff-release": Seat,
     "staff-train": Course,
-    "advisor-assign": Support,
+    "advisor-assign": SupportOrder,
+    "engineer-cover": EngineeringCover,
 }

@@ -802,6 +802,10 @@ def sign_supply(state, world, bid, reply, key):
                     reserved=True,
                 )
             )
+    if "engineering_service" in state:
+        from ..personal_engineering import check_capacity
+
+        allocation = check_capacity(state, world, t.sponsor, t.org, t.start, t.end)
     if rows:
         register(state, Schedule(installments=rows))
     state["market"]["supplies"][key] = dict(
@@ -824,6 +828,10 @@ def sign_supply(state, world, bid, reply, key):
         testing=reply.testing and s.testing,
         development=reply.development and s.development,
     )
+    if "engineering_service" in state and allocation:
+        from ..personal_engineering import allocate
+
+        allocate(state, world, key, t, *allocation)
 
 
 def experience(state, world, offer):
@@ -1142,8 +1150,17 @@ def tick(state, world):
                 "pockets": dict(state["finance"]["pockets"]),
             },
         }
+        staged_world = world
+        if "engineering_service" in state:
+            staged["support"] = list(state["support"])
+            staged["seats"] = dict(state["seats"])
+            staged["engineering_service"] = {
+                **state["engineering_service"],
+                "posts": dict(state["engineering_service"]["posts"]),
+            }
+            staged_world = dict(world, assignments=dict(world["assignments"]))
         try:
-            respond(staged, world, reply, t["org"], deferred=True)
+            respond(staged, staged_world, reply, t["org"], deferred=True)
         except RuleError as err:
             o.update(status="rejected", reason=str(err))
         else:
@@ -1160,6 +1177,13 @@ def tick(state, world):
                         ]
                     ),
                 )
+            if "engineering_service" in state:
+                state["support"] = staged["support"]
+                state["seats"].update(staged["seats"])
+                state["engineering_service"]["posts"].update(
+                    staged["engineering_service"]["posts"]
+                )
+                world["assignments"].update(staged["engineering_service"]["posts"])
             market.update(staged["market"])
             settle(state)
 
@@ -1370,6 +1394,10 @@ def end_supply(state, actor, key):
         ):
             row.update(status="cancelled", cancelled=state["date"])
     d.update(status="terminated", ended=state["date"])
+    if "engineering_service" in state:
+        from ..personal_engineering import end_obligations
+
+        end_obligations(state, d["sponsor"], d["org"])
 
 
 ORDERS["finance-end-supply"] = SupplyExit

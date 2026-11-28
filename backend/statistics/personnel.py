@@ -359,6 +359,16 @@ def refresh(db, cid, state, previous=None, action=None, args=None):
             and terms["support"]
         )
 
+    if (
+        org
+        and state["setup"]["role"] == "manufacturer"
+        and "engineering_service" in state
+    ):
+        from ..personal_engineering import telemetry_grants
+
+        grants = telemetry_grants(state, world, org)
+    else:
+        grants = [r for r in state["support"] if not r.get("pair") and active_grant(r)]
     db.execute(
         """INSERT INTO stat_reader VALUES(?,?,?,?,?) ON CONFLICT(career)
         DO UPDATE SET org=excluded.org,role=excluded.role,day=excluded.day,support=excluded.support""",
@@ -367,13 +377,7 @@ def refresh(db, cid, state, previous=None, action=None, args=None):
             org,
             state["setup"]["role"],
             state["date"],
-            dump(
-                [
-                    assignment
-                    for assignment in state["support"]
-                    if active_grant(assignment)
-                ]
-            ),
+            dump(grants),
         ),
     )
     if previous is None:

@@ -60,7 +60,31 @@ def assign_advisor(state, world, request):
     from ..employment import assign_support
 
     day = state["date"]
-    if assigned(state, request, day):
+    if "engineering_service" in state:
+        from ..personal_engineering import appointments, cover
+
+        if any(
+            r["start"] <= day < r["end"]
+            for r in appointments(state, world, request["supplier"], request["client"])
+        ):
+            return
+        key = request["supplier"] + ":technical-advisor:reserve"
+        for booking in state["seats"].get(key, []):
+            try:
+                cover(
+                    state,
+                    world,
+                    world["assignments"][key],
+                    booking,
+                    dict(
+                        entry=request["entry"], start=day, end=facilities.later(day, 1)
+                    ),
+                )
+            except RuleError:
+                continue
+            return
+        return
+    if assigned(state, request, day, world):
         return
     org = request["supplier"]
     seat = world["assignments"].get(org + ":technical-advisor")

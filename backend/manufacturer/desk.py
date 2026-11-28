@@ -182,6 +182,26 @@ def projection(state, world):
                 )
             )
     advisor = person(state, org, "technical-advisor") if maker else None
+    from ..personal_engineering import desk as appointments, supply_periods
+
+    assignments = appointments(state, world, org, maker)
+    vacancies = []
+    if "engineering_service" in state:
+        today = state["date"]
+        staffed = {
+            (r["employer"], r["client"])
+            for r in assignments
+            if r["start"] <= today < r["end"]
+        }
+        pairs = supply_periods(
+            state, world, maker=org if maker else None, client=None if maker else org
+        )
+        vacancies = [
+            dict(employer=m, client=c)
+            for (m, c), spans in sorted(pairs.items())
+            if (m, c) not in staffed and any(a <= today < b for a, b in spans)
+        ]
+
     return dict(
         inventory=[
             dict(
@@ -198,7 +218,8 @@ def projection(state, world):
                 decisions=production.actions(state, iid, item["status"]),
             )
             for iid in production.inventory(state, org)
-            if maker and (item := state["production"]["items"].get(iid))
+            if maker
+            and (item := state["production"]["items"].get(iid))
             and (drawing := components.spec(state, iid))
         ],
         catalog=list(catalog.values()),
@@ -212,19 +233,8 @@ def projection(state, world):
         )
         if advisor
         else None,
-        assignments=[
-            dict(
-                name=state["people"][a["advisor"]]["name"],
-                client=a["client"],
-                product=a["product"],
-                start=a["start"],
-                end=a["end"],
-                channels=a["channels"],
-                load=a["allocation_percent"],
-            )
-            for a in state["support"]
-            if org in (a["employer"], a["client"])
-        ],
+        assignments=assignments,
+        advisor_vacancies=vacancies,
         history=[
             r
             for r in reversed(list(office["deliveries"].values()))

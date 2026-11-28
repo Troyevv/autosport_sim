@@ -4840,39 +4840,27 @@ function CaseDossier({ id }) {
 function Advisors() {
   const e = useE(),
     d = e.desks.manufacturer
-  const own = e.career.assignments?.find((a) => a.org === e.career.org && a.occupant && a.position === 'technical-advisor')
-
+  const staff = e.career.assignments.filter((a) => a.position === 'technical-advisor')
+  const [selected, select] = useState('')
+  const own = staff.find((a) => a.id === selected) || staff.find((a) => a.occupant && !a.client) || staff[0]
   const rows = list(d.assignments)
-    .filter((a) => a.status !== 'cancelled')
-    .map((a) => ({
-      ...a,
-      name: a.name || e.name(a.person),
-      client: a.client || a.org,
-      channels: a.channels || [],
-    }))
-    .filter(
-      (a, i, all) =>
-        all.findIndex((x) =>
-          x.id && a.id
-            ? x.id === a.id
-            : x.person === a.person &&
-              x.entry === a.entry &&
-              x.product === a.product &&
-              x.start === a.start &&
-              x.end === a.end,
-        ) === i,
-    )
   return (
     <div className="eng-main-grid">
       <Card title="Технические консультанты" kicker="ЛЮДИ МЕЖДУ ПРОИЗВОДИТЕЛЕМ И КЛИЕНТОМ">
         {own ? (
           <>
-            <Person id={own.occupant?.id} name={own.occupant?.name} role="Технический консультант" />
+            <label className="eng-advisor-picker">Сотрудник
+              <select value={own.id} onChange={(event) => select(event.target.value)}>
+                {staff.map((a) => <option key={a.id} value={a.id}>
+                  {a.occupant?.name || 'Вакансия'} · {a.client ? e.org(a.client) : 'Резерв'}
+                </option>)}
+              </select>
+            </label>
+            {own.occupant && <Person id={own.occupant.id} name={own.occupant.name} role="Технический консультант" />}
             <p>
-              Назначение связано с договором, заявкой, продуктом и периодом. Пересекающиеся работы и
-              право поддержки проверяются до подтверждения.
+              {own.client ? 'Закреплённая команда · ' + e.org(own.client) : 'Резерв для временной поддержки клиентских команд.'}
             </p>
-            {e.maker && (
+            {e.maker && own.occupant && (
               <B
                 primary
                 icon={CalendarDays}
@@ -4897,6 +4885,12 @@ function Advisors() {
         <B onClick={() => e.navigate('manufacturer', 'clients')}>Права клиентских программ</B>
       </Card>
       <Card title="Периоды поддержки">
+        {list(d.advisor_vacancies).map((v) => (
+          <article className="eng-assignment" key={v.employer + v.client}>
+            <Tag>Вакансия</Tag><h3>{e.org(v.client)}</h3>
+            <p>{e.org(v.employer)} · требуется штатный консультант</p>
+          </article>
+        ))}
         {rows.length ? (
           rows.map((a, i) => (
             <article className="eng-assignment" key={a.id || a.name + a.start + i}>
@@ -4905,7 +4899,7 @@ function Advisors() {
               </small>
               <h3>{a.name}</h3>
               <p>
-                {e.org(a.client)} · {AXES[a.product] || a.product}
+                {e.org(a.client)} · {(a.products || [a.product]).map((v) => AXES[v] || v).join(', ')}
               </p>
               {a.entry && (
                 <B onClick={() => e.navigate('manufacturer', 'clients', a.entry)}>
@@ -4916,7 +4910,7 @@ function Advisors() {
                 {a.start > e.date ? 'Будущее назначение' : a.end <= e.date ? 'Завершено' : 'Действует'}
               </Tag>
               <p>
-                {a.channels
+                {(a.channels || [])
                   .map(
                     (x) =>
                       ({
@@ -4929,6 +4923,9 @@ function Advisors() {
                   )
                   .join(' · ')}
               </p>
+              {a.rights?.length > 0 && <details><summary>Права по договорам</summary>
+                {a.rights.map((r) => <p key={r.agreement}>{AXES[r.product]} · {e.world.championships?.[r.series]?.name} · {dateLabel(r.start)} — {dateLabel(r.end)} · {r.channels.length ? r.channels.map((c) => ({distance:'Дистанция',wear:'Износ',feedback:'Обратная связь',temperature:'Температура'})[c] || c).join(', ') : 'Без доступа к телеметрии'}</p>)}
+              </details>}
               {a.load != null && <Progress value={a.load} label="Загрузка на поддержке" />}
             </article>
           ))

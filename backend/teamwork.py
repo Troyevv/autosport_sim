@@ -7,6 +7,7 @@ from itertools import combinations
 
 from .domain import RuleError, occupant_on
 from .personnel import evaluate
+from .personal_engineering import working_person
 
 
 def bounded(value):
@@ -38,14 +39,14 @@ def partnerships(state, world, day):
     """Only recurring professional contacts, including distinct WEC entry crews."""
     programs = defaultdict(lambda: defaultdict(list))
     for aid, seat in world["assignments"].items():
-        if seat.get("academy") or seat.get("duty"):
+        if seat.get("academy") or seat.get("duty") or seat.get("engineering_reserve"):
             continue
         from .driver_availability import participant
 
         pid = (
             participant(state, aid, day)
             if seat["position"] == "driver"
-            else occupant_on(state["seats"][aid], day)
+            else working_person(state, seat, day)
         )
         if not pid:
             continue
@@ -109,6 +110,16 @@ def partnerships(state, world, day):
         ):
             if left in units and right in units:
                 connect("handover", units[left], units[right], org)
+    if "engineering_service" in state:
+        from .personal_engineering import appointments
+
+        for r in appointments(state, world):
+            if r["start"] <= day < r["end"]:
+                chief = occupant_on(
+                    state["seats"].get(r["client"] + ":chief-engineer", []), day
+                )
+                if chief:
+                    connect("technical", r["advisor"], chief, r["client"])
     return result
 
 
@@ -383,20 +394,43 @@ def session_inputs(state, world, entry, event, actor, *, evidence, pressure):
     assigned = {
         participant(state, aid, state["date"])
         if s["position"] == "driver"
-        else occupant_on(state["seats"][aid], state["date"])
+        else working_person(state, s, state["date"])
         for aid, s in program.items()
         if s["org"] == e["org"]
         and not s.get("duty")
+        and not s.get("engineering_reserve")
         and not s.get("academy")
         and s["entry"] in (entry, None)
         and s["series"] in (None, event["series"])
     }
+    advisers = set()
+    if "engineering_service" in state:
+        from .personal_engineering import appointments
+        from .supplier_engineering import agreement
+
+        makers = {
+            t["maker"]
+            for axis in world["cars"][e["car"]]["suppliers"]
+            if (t := agreement(state, world, e, axis))
+        }
+        advisers = {
+            r["advisor"]
+            for r in appointments(state, world, client=e["org"])
+            if r["employer"] in makers and r["start"] <= state["date"] < r["end"]
+        }
+        assigned.update(advisers)
     if actor not in assigned or actor not in state["people"]:
         raise RuleError("У сотрудника нет назначения в этой заявке.")
     results = []
     for pair in partnerships(state, world, state["date"]).values():
         kind, a, b, org = pair
         if org != e["org"] or actor not in (a, b):
+            continue
+        if (
+            kind == "technical"
+            and state["people"].get(a, {}).get("position") == "technical-advisor"
+            and a not in advisers
+        ):
             continue
         if kind in ("feedback", "strategy") and a not in assigned:
             continue

@@ -1,0 +1,741 @@
+"""Exclusive client posts, backed by the dated employment and supply ledgers."""
+
+from collections import defaultdict
+from functools import lru_cache
+from hashlib import sha256
+
+from . import personnel, media_profile
+from .domain import RuleError
+from .opening.catalog import values
+
+
+@lru_cache(maxsize=1)
+def roster():
+    return values("engineering-staff.csv")
+
+
+def position(key, maker, client=None, entry=None):
+    return dict(
+        id=key,
+        org=maker,
+        series=entry["championship"] if entry else None,
+        entry=entry["id"] if entry else None,
+        client=client,
+        person=None,
+        position="race-engineer" if entry else "technical-advisor",
+    )
+
+
+def client_post(maker, client):
+    return f"{maker}:technical-advisor:{client}"
+
+
+def catalog(state, world):
+    office = state.get("engineering_service")
+    if not office:
+        return world
+    return dict(world, assignments=world["assignments"] | office["posts"])
+
+
+def add_person(state, world, record, role, seat):
+    pid = record["id"]
+    digest = sha256(pid.encode()).digest()
+    skills = {
+        s: 49 + digest[i] % 44 for i, s in enumerate(world["positions"][role]["skills"])
+    }
+    person = dict(
+        id=pid,
+        name=record["name"],
+        face=record["face"],
+        origin="generated",
+        nationality=world["countries"][record["country"]],
+        birth_date=record["birth_date"],
+        experience=int(record["experience"]),
+        potential=min(99, max(skills.values()) + digest[6] % 11),
+        skills=skills,
+        specialization=max(skills, key=skills.get),
+        fatigue=0,
+        morale=70,
+    )
+    disciplines = {c["discipline"] for c in world["championships"].values()}
+    personnel.initialize_person(state, world, person, role, disciplines)
+    person.pop("training")
+    person.pop("courses")
+    media_profile.initialize_person(state, pid, person)
+    state["people"][pid] = person
+    if seat is None:
+        return
+    # Opening retainers are monthly. Regular payroll settles the actual days employed.
+    from .employment import ask
+
+    salary = ask(state, world, person, seat)
+    end = f"{int(state['date'][:4]) + 1}-01-01"
+    for d in personnel.disciplines(world, seat):
+        person["adaptation"][d] = 80
+        person["discipline_days"][d] = person["experience"] * 365
+    state["seats"][seat["id"]] = [
+        dict(
+            person=pid,
+            position=role,
+            start=state["date"],
+            end=end,
+            agreed_end=end,
+            salary_cents=salary,
+            buyout_cents=salary * 2,
+            remit="standard",
+        )
+    ]
+
+
+def activate(state):
+    if "engineering_service" in state:
+        return
+    from .catalog import lineup_for
+
+    world = lineup_for(state)
+    office = state["engineering_service"] = dict(
+        since=state["revision"], start=state["date"], posts={}, briefings={}
+    )
+    posts = office["posts"]
+    people = iter(roster())
+    by_maker = defaultdict(set)
+    engineers = {
+        a["entry"]
+        for a in world["assignments"].values()
+        if a["position"] == "race-engineer"
+    }
+    for eid, e in sorted(world["entries"].items()):
+        for maker in world["cars"][e["car"]]["suppliers"].values():
+            by_maker[maker].add(e["org"])
+        if eid not in engineers:
+            key = f"{e['org']}:race-engineer:{e['championship']}:{eid}"
+            posts[key] = position(key, e["org"], entry=e)
+            add_person(state, world, next(people), "race-engineer", posts[key])
+    for maker, clients in sorted(by_maker.items()):
+        original = maker + ":technical-advisor"
+        old = next(
+            (
+                r["client"]
+                for r in state["support"]
+                if r["employer"] == maker
+                and r["start"] <= state["date"] < r["end"]
+                and r["client"] in clients
+            ),
+            None,
+        )
+        first = old or min(clients)
+        posts[original] = dict(world["assignments"][original], client=first)
+        for client in sorted(clients - {first}):
+            key = client_post(maker, client)
+            posts[key] = position(key, maker, client)
+            add_person(state, world, next(people), "technical-advisor", posts[key])
+        # A relief post is a normal job. Large portfolios retain a reserve on opening day.
+        key = original + ":reserve"
+        posts[key] = position(key, maker)
+        state["seats"][key] = []
+        if len(clients) >= 7:
+            add_person(state, world, next(people), "technical-advisor", posts[key])
+    for org, team in world["organizations"].items():
+        if team["kind"] == "team":
+            key = org + ":race-engineer:reserve"
+            posts[key] = dict(
+                position(key, org), position="race-engineer", engineering_reserve=True
+            )
+            state["seats"][key] = []
+    office["covers"] = []
+    for i, record in enumerate(people):
+        add_person(
+            state,
+            world,
+            record,
+            "technical-advisor" if i % 2 == 0 else "race-engineer",
+            None,
+        )
+    for deal in state["market"]["supplies"].values():
+        if deal["status"] == "signed":
+            ensure_post(state, deal["sponsor"], deal["org"])
+    personnel.update_payroll(state, lineup_for(state), state["date"])
+
+
+def ensure_post(state, maker, client):
+    office = state.get("engineering_service")
+    if not office or any(
+        p.get("client") == client and p["org"] == maker
+        for p in office["posts"].values()
+    ):
+        return
+    key = client_post(maker, client)
+    office["posts"][key] = position(key, maker, client)
+    state["seats"][key] = []
+
+
+def supply_periods(state, world, maker=None, client=None):
+    """Union of effective supply periods for each pair, including zero-data contracts."""
+    intervals = defaultdict(list)
+    replaced = {}
+    for d in state["market"]["supplies"].values():
+        if (
+            d["status"] not in ("signed", "expired", "terminated")
+            or client
+            and d["org"] != client
+        ):
+            continue
+        if not state.get("opening"):
+            for eid in d.get("entries", [None]):
+                key = (d["org"], d["series"], d["product"], eid)
+                replaced[key] = min(d["start"], replaced.get(key, d["start"]))
+        if not maker or d["sponsor"] == maker:
+            intervals[d["sponsor"], d["org"]].append(
+                (d["start"], min(d["end"], d.get("ended") or d["end"]))
+            )
+    if not state.get("opening"):
+        for e in world["entries"].values():
+            if client and e["org"] != client:
+                continue
+            for axis, supplier in world["cars"][e["car"]]["suppliers"].items():
+                if maker and supplier != maker:
+                    continue
+                key = (e["org"], e["championship"], axis)
+                end = min(
+                    replaced.get((*key, k), "2026-01-01") for k in (None, e["id"])
+                )
+                intervals[supplier, e["org"]].append(
+                    (state["engineering_service"]["start"], end)
+                )
+    for pair, periods in intervals.items():
+        merged = []
+        for start, end in sorted(periods):
+            if start >= end:
+                continue
+            if merged and start <= merged[-1][1]:
+                merged[-1] = (merged[-1][0], max(merged[-1][1], end))
+            else:
+                merged.append((start, end))
+        intervals[pair] = merged
+    return intervals
+
+
+def subtract(start, end, blocked):
+    for left, right in sorted(blocked):
+        if right <= start or left >= end:
+            continue
+        if start < left:
+            yield start, left
+        start = max(start, right)
+    if start < end:
+        yield start, end
+
+
+def appointments(state, world, maker=None, client=None):
+    office = state.get("engineering_service")
+    manual = [r for r in state["support"] if not maker or r["employer"] == maker]
+    if not office:
+        yield from (r for r in manual if not client or r["client"] == client)
+        return
+    periods = supply_periods(state, world, maker)
+    occupied = defaultdict(list)
+    reserved = defaultdict(list)
+    for r in manual:
+        pair = (r["employer"], r["client"])
+        matches = not client or r["client"] == client
+        if r["start"] < office["start"] and matches:
+            end = min(r["end"], office["start"])
+            yield dict(r, end=end, end_exclusive=end)
+        for left, right in periods[pair]:
+            start = max(left, r["start"], office["start"])
+            end = min(right, r["end"])
+            if start < end:
+                occupied[r["advisor"]].append((start, end))
+                reserved[pair].append((start, end))
+                if matches:
+                    yield dict(r, pair=True, start=start, end=end)
+    for key, post in office["posts"].items():
+        team = post.get("client")
+        org = post["org"]
+        if not team or maker and maker != org or client and client != team:
+            continue
+        for booking in state["seats"][key]:
+            pid = booking["person"]
+            blocked = occupied[pid] + reserved[org, team]
+            for left, right in periods[org, team]:
+                start = max(left, booking["start"], office["start"])
+                end = min(right, booking["end"] or right)
+                for a, b in subtract(start, end, blocked):
+                    yield dict(
+                        id=f"{key}/{pid}/{a}",
+                        advisor=pid,
+                        employer=org,
+                        client=team,
+                        start=a,
+                        end=b,
+                        seat=key,
+                        pair=True,
+                        salary_cents=booking["salary_cents"],
+                    )
+
+
+def grant(state, world, entry, axis, day, terms, rows=None):
+    """Resolve one observation grant from employment, client, component and supply terms."""
+    if not terms or not terms["support"]:
+        return None
+    maker, client = terms["maker"], entry["org"]
+    for r in rows if rows is not None else appointments(state, world, maker, client):
+        if (r["employer"], r["client"]) != (maker, client) or not r["start"] <= day < r[
+            "end"
+        ]:
+            continue
+        if r.get("pair"):
+            from .opening.partners import support_access
+
+            channels, load = support_access(terms["partnership"], maker, axis)
+            return dict(
+                r,
+                agreement=terms["id"],
+                product=axis,
+                entry=entry["id"],
+                channels=sorted(channels),
+                allocation_percent=load,
+                start=max(r["start"], terms.get("start") or r["start"]),
+                end=min(r["end"], terms.get("end") or r["end"]),
+            )
+        if (
+            r["agreement"] == terms["id"]
+            and r["product"] == axis
+            and r.get("entry", entry["id"]) == entry["id"]
+        ):
+            return r
+    return None
+
+
+def cover(state, world, seat, booking, args):
+    entry = world["entries"].get(args.get("entry"))
+    client = args.get("client") or (entry and entry["org"])
+    start, end = args["start"], args["end"]
+    maker = seat["org"]
+    if (
+        not client
+        or seat["position"] != "technical-advisor"
+        or not max(state["date"], booking["start"])
+        <= start
+        < end
+        <= (booking["end"] or end)
+    ):
+        raise RuleError("Проверьте должность и срок трудового договора.")
+    if not any(
+        a <= start and end <= b
+        for a, b in supply_periods(state, world, maker, client)[maker, client]
+    ):
+        raise RuleError("Период замещения выходит за срок поставок клиенту.")
+    from .preparation import busy
+
+    if busy(state, booking["person"], start, end) or any(
+        r["start"] < end
+        and start < r["end"]
+        and (
+            r["advisor"] == booking["person"]
+            or (r["client"] == client and not r.get("seat"))
+        )
+        for r in appointments(state, world, maker)
+    ):
+        raise RuleError("Консультант или клиент занят в этот период.", 409)
+    row = dict(
+        id=f"support-{state['revision']}/{seat['id']}/{start}",
+        advisor=booking["person"],
+        employer=maker,
+        client=client,
+        start=start,
+        end=end,
+        pair=True,
+        salary_cents=booking["salary_cents"],
+    )
+    state["support"].append(row)
+
+
+def telemetry_grants(state, world, maker):
+    from .supplier_engineering import agreement
+
+    day = state["date"]
+    by_client = defaultdict(list)
+    for r in appointments(state, world, maker):
+        if r["start"] <= day < r["end"]:
+            by_client[r["client"]].append(r)
+    grants = []
+    for e in world["entries"].values():
+        if e["org"] not in by_client:
+            continue
+        for axis in world["cars"][e["car"]]["suppliers"]:
+            terms = agreement(state, world, e, axis, day)
+            r = grant(state, world, e, axis, day, terms, by_client[e["org"]])
+            if r:
+                grants.append(r)
+    return grants
+
+
+def check_capacity(state, world, maker, client, start, end):
+    # A new client can use an employed reserve. Register their dated service
+    # after signature, in the same transaction as the commercial agreement.
+    office = state["engineering_service"]
+    rows = list(appointments(state, world, maker))
+    if not list(
+        subtract(
+            start, end, [(r["start"], r["end"]) for r in rows if r["client"] == client]
+        )
+    ):
+        return None
+    from .preparation import busy
+
+    for p in sorted(office["posts"].values(), key=lambda p: p.get("client") != client):
+        if p["org"] != maker or p["position"] != "technical-advisor":
+            continue
+        for r in state["seats"][p["id"]]:
+            if (
+                not busy(state, r["person"], start, end)
+                and r["start"] <= start
+                and (not r["end"] or end <= r["end"])
+                and not any(
+                    a["advisor"] == r["person"]
+                    and a["client"] != client
+                    and a["start"] < end
+                    and start < a["end"]
+                    for a in rows
+                )
+            ):
+                return p, r
+    raise RuleError("На срок новой поставки нужен свободный штатный консультант.", 409)
+
+
+def allocate(state, world, key, terms, post, booking):
+    if post.get("client") == terms.org:
+        return
+    covered = [
+        (r["start"], r["end"])
+        for r in appointments(state, world, terms.sponsor, terms.org)
+    ]
+    for start, end in subtract(terms.start, terms.end, covered):
+        state["support"].append(
+            dict(
+                id=f"{key}/{start}",
+                advisor=booking["person"],
+                employer=terms.sponsor,
+                client=terms.org,
+                start=start,
+                end=end,
+                pair=True,
+                salary_cents=booking["salary_cents"],
+            )
+        )
+
+    # A growing client portfolio can recruit a permanent successor and further relief.
+    # Publish new positions through the same employment catalogue as the opening posts.
+    ensure_post(state, terms.sponsor, terms.org)
+    posts = state["engineering_service"]["posts"]
+    reserves = [
+        p
+        for p in posts.values()
+        if p["org"] == terms.sponsor
+        and p["position"] == "technical-advisor"
+        and not p.get("client")
+    ]
+    if all(state["seats"][p["id"]] for p in reserves):
+        key = f"{terms.sponsor}:technical-advisor:reserve:{len(reserves) + 1}"
+        posts[key] = position(key, terms.sponsor)
+        state["seats"][key] = []
+    world["assignments"].update(posts)
+
+
+def working_contract(state, seat, day):
+    """The paid employment record supplying this job on the requested day."""
+    key = seat["id"]
+    engineer = seat["position"] == "race-engineer" and seat["entry"]
+    office = state.get("engineering_service")
+    if engineer and office:
+        key = next(
+            (
+                r["seat"]
+                for r in office["covers"]
+                if r["entry"] == seat["entry"] and r["start"] <= day < r["end"]
+            ),
+            key,
+        )
+    row = next(
+        (
+            r
+            for r in state["seats"].get(key, ())
+            if r["start"] <= day and (not r["end"] or day < r["end"])
+        ),
+        None,
+    )
+    if row and engineer and office:
+        from .preparation import busy
+
+        if busy(state, row["person"], day, personnel.shifted(day, 1)):
+            return None
+    return row
+
+
+def working_person(state, seat, day):
+    row = working_contract(state, seat, day)
+    return row["person"] if row else None
+
+
+def cover_entry(state, world, seat, booking, args):
+    from .preparation import busy
+
+    entry = world["entries"].get(args["entry"])
+    start, end = args["start"], args["end"]
+    if not seat.get("engineering_reserve") or not entry or entry["org"] != seat["org"]:
+        raise RuleError("Замещать инженера может резервный инженер этой команды.")
+    if (
+        not max(state["date"], booking["start"])
+        <= start
+        < end
+        <= (booking["end"] or end)
+    ):
+        raise RuleError("Замещение должно входить в срок трудового договора.")
+    pid = booking["person"]
+    covers = state["engineering_service"]["covers"]
+    if busy(state, pid, start, end) or any(
+        r["start"] < end
+        and start < r["end"]
+        and (r["person"] == pid or r["entry"] == entry["id"])
+        for r in covers
+    ):
+        raise RuleError("Инженер или заявка заняты в этот период.", 409)
+    covers.append(
+        dict(person=pid, seat=seat["id"], entry=entry["id"], start=start, end=end)
+    )
+
+
+def briefing(state, world, event_id):
+    from .driver_availability import participant
+    from .supplier_engineering import agreement
+    from .teamwork import professional_action
+    from .domain import occupant_on
+
+    event = next(e for e in world["events"] if e["id"] == event_id)
+    day = state["date"]
+    org = state["setup"]["org"]
+    maker = state["setup"]["role"] == "manufacturer"
+    by_client = defaultdict(list)
+    for r in appointments(
+        state, world, maker=org if maker else None, client=None if maker else org
+    ):
+        if r["start"] <= day < r["end"]:
+            by_client[r["client"]].append(r)
+    seats = defaultdict(list)
+    for s in world["assignments"].values():
+        if s["entry"] and s["series"] == event["series"]:
+            seats[s["entry"]].append(s)
+    rows = []
+    for eid, crew in seats.items():
+        e = world["entries"][eid]
+        if event.get("org") and event["org"] != e["org"]:
+            continue
+        if (not maker and e["org"] != org) or (maker and e["org"] not in by_client):
+            continue
+        engineer = next(
+            (
+                working_person(state, s, day)
+                for s in crew
+                if s["position"] == "race-engineer"
+            ),
+            None,
+        )
+        drivers = [
+            p
+            for s in crew
+            if s["position"] == "driver" and (p := participant(state, s["id"], day))
+        ]
+        feedback = []
+        if engineer and not maker:
+            for pid in drivers:
+                reports = [
+                    f
+                    for f in state["council"]["observations"].values()
+                    if f["entry"] == eid
+                    and f["author"] == pid
+                    and f["kind"] == "driver-feedback"
+                ]
+                detail = professional_action(
+                    state,
+                    world,
+                    ("feedback", pid, engineer, e["org"]),
+                    day,
+                    evidence=100 if reports else 0,
+                )
+                feedback.append(
+                    dict(
+                        person=pid,
+                        decision=detail["decision"] if reports else "await-feedback",
+                        reports=[r["reference"] for r in reports],
+                    )
+                )
+        consultants = []
+        products_on_entry = {
+            axis: terms["maker"]
+            for axis in world["cars"][e["car"]]["suppliers"]
+            if (terms := agreement(state, world, e, axis, day))
+        }
+        for r in by_client[e["org"]]:
+            products = [
+                axis
+                for axis, supplier in products_on_entry.items()
+                if supplier == r["employer"]
+            ]
+            if not products:
+                continue
+            chief = occupant_on(
+                state["seats"].get(e["org"] + ":chief-engineer", []), day
+            )
+            cases = [
+                c["id"]
+                for c in state["manufacturer"]["cases"].values()
+                if c["entry"] == eid
+                and c["supplier"] == r["employer"]
+                and c["status"] == "open"
+            ]
+            review = (
+                professional_action(
+                    state,
+                    world,
+                    ("technical", r["advisor"], chief, e["org"]),
+                    day,
+                    evidence=75 if cases else 0,
+                )
+                if chief
+                else {}
+            )
+            consultants.append(
+                dict(
+                    person=r["advisor"],
+                    maker=r["employer"],
+                    products=sorted(products),
+                    cases=cases,
+                    **review,
+                )
+            )
+        if not maker or consultants:
+            rows.append(
+                dict(
+                    entry=eid,
+                    engineer=engineer,
+                    drivers=drivers,
+                    feedback=feedback,
+                    consultants=consultants,
+                )
+            )
+    return rows
+
+
+def desk(state, world, org, maker):
+    """One row per dated person/client link. Display separate contractual rights."""
+    from .opening.partners import support_access
+
+    deals = list(state["market"]["supplies"].values())
+    result = []
+    for a in appointments(
+        state, world, maker=org if maker else None, client=None if maker else org
+    ):
+        rights = []
+        if a.get("pair"):
+            for d in deals:
+                if (d["org"], d["sponsor"]) != (a["client"], a["employer"]) or d[
+                    "status"
+                ] not in ("signed", "terminated", "expired"):
+                    continue
+                start = max(a["start"], d["start"])
+                end = min(a["end"], d["end"], d.get("ended") or d["end"])
+                if start >= end:
+                    continue
+                channels, load = (
+                    support_access(d["partnership"], d["sponsor"], d["product"])
+                    if d["support"]
+                    else ([], 0)
+                )
+                rights.append(
+                    dict(
+                        product=d["product"],
+                        agreement=d["id"],
+                        series=d["series"],
+                        channels=sorted(channels),
+                        load=load,
+                        start=start,
+                        end=end,
+                    )
+                )
+        else:
+            rights.append(
+                dict(
+                    product=a["product"],
+                    agreement=a["agreement"],
+                    channels=a["channels"],
+                    load=a["allocation_percent"],
+                    start=a["start"],
+                    end=a["end"],
+                )
+            )
+        products = sorted({r["product"] for r in rights})
+        result.append(
+            dict(
+                id=a["id"],
+                person=a["advisor"],
+                name=state["people"][a["advisor"]]["name"],
+                client=a["client"],
+                employer=a["employer"],
+                start=a["start"],
+                end=a["end"],
+                products=products,
+                product=products[0] if len(products) == 1 else None,
+                rights=rights,
+                channels=sorted({c for r in rights for c in r["channels"]}),
+                load=max((r["load"] for r in rights), default=0),
+            )
+        )
+    return sorted(
+        result,
+        key=lambda r: (
+            not (r["start"] <= state["date"] < r["end"]),
+            r["client"],
+            r["start"],
+            r["id"],
+        ),
+    )
+
+
+def end_obligations(state, maker, client):
+    from .catalog import lineup_for
+
+    periods = supply_periods(state, lineup_for(state), maker, client)[maker, client]
+    for r in state["support"]:
+        if (r["employer"], r["client"]) != (maker, client) or r["end"] <= state["date"]:
+            continue
+        boundary = max(state["date"], r["start"])
+        end = next((b for a, b in periods if a <= boundary < b), boundary)
+        if end < r["end"]:
+            r["end"] = end
+            if "end_exclusive" in r:
+                r["end_exclusive"] = end
+
+
+def entry_partners(state, world, pid):
+    from .driver_availability import participant
+
+    if "engineering_service" not in state:
+        return []
+    crews = defaultdict(list)
+    engineers = {}
+    for seat in world["assignments"].values():
+        eid = seat["entry"]
+        if not eid:
+            continue
+        if seat["position"] == "driver":
+            driver = participant(state, seat["id"], state["date"])
+            if driver:
+                crews[eid].append(driver)
+        elif seat["position"] == "race-engineer":
+            engineers[eid] = working_person(state, seat, state["date"])
+    return [
+        dict(entry=eid, engineer=engineer, drivers=crews[eid])
+        for eid, engineer in engineers.items()
+        if engineer == pid or pid in crews[eid]
+    ]

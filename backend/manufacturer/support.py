@@ -93,11 +93,36 @@ def open_case(state, world, org, key, order):
         terms["id"],
         key,
     )
+    if "engineering_service" in state:
+        from ..personal_engineering import appointments
+
+        a = next(
+            (
+                r
+                for r in appointments(state, world, row["supplier"], org)
+                if r["start"] <= state["date"] < r["end"]
+            ),
+            None,
+        )
+        row["advisor"] = a["advisor"] if a else None
     cases[key] = row
     return row
 
 
-def assigned(state, row, day):
+def assigned(state, row, day, world=None):
+    if "engineering_service" in state:
+        from ..personal_engineering import grant
+
+        entry = world["entries"][row["entry"]]
+        terms = agreement(state, world, entry, row["axis"], day)
+        if (
+            not terms
+            or terms["id"] != row["contract"]
+            or terms["maker"] != row["supplier"]
+        ):
+            return None
+        return grant(state, world, entry, row["axis"], day, terms)
+
     return next(
         (
             r
@@ -116,7 +141,7 @@ def assigned(state, row, day):
 def evidence(state, world, row):
     e = world["entries"][row["entry"]]
     terms = agreement(state, world, e, row["axis"])
-    advisor = assigned(state, row, state["date"])
+    advisor = assigned(state, row, state["date"], world)
     if (
         not terms
         or terms["id"] != row["contract"]
@@ -134,11 +159,17 @@ def evidence(state, world, row):
             row["specification"],
         ):
             continue
-        grant = support_on(state, advisor["advisor"], fact["day"])
+        historical = assigned(state, row, fact["day"], world)
+        grant = (
+            support_on({"support": [historical]}, advisor["advisor"], fact["day"])
+            if historical
+            else None
+        )
         dated = agreement(state, world, e, row["axis"], fact["day"])
         if (
             not dated
             or dated["id"] != terms["id"]
+            or ("engineering_service" in state and advisor["start"] > fact["day"])
             or not grant
             or grant.agreement != terms["id"]
         ):
@@ -234,7 +265,7 @@ def diagnosis(state, world, row):
             limit = 80 if fact["unit"] == "%" else 800000
             if fact["value"] - (fact["uncertainty"] or 0) >= limit:
                 causes["wear"].append(fact["reference"])
-    advisor = assigned(state, row, state["date"])
+    advisor = assigned(state, row, state["date"], world)
     analyst = person(state, row["supplier"], "chief-analyst")
     reviewer = advisor["advisor"] if advisor else analyst
     confidence = 0
@@ -245,15 +276,23 @@ def diagnosis(state, world, row):
         p = state["people"][reviewer]
         values = evaluate(p, world, state["date"])["values"]
         skill = values.get("Диагностика", values.get("Дефекты", 0))
+        colleague = (
+            person(state, row["client"], "chief-engineer") if advisor else analyst
+        )
         review = (
             professional_action(
                 state,
                 world,
-                ("technical", reviewer, analyst, row["supplier"]),
+                (
+                    "technical",
+                    reviewer,
+                    colleague,
+                    row["client"] if advisor else row["supplier"],
+                ),
                 state["date"],
                 evidence=skill,
             )["review_quality"]
-            if analyst
+            if colleague
             else skill
         )
         allocation = advisor["allocation_percent"] if advisor else 100
@@ -281,7 +320,7 @@ def proposal(state, world, row, report):
     entry = engineering_entry(state, world, row["entry"], row["supplier"], row["axis"])
     engineers = staff(state, entry)
     lead = engineers.get(ROLES[row["axis"]][0])
-    advisor = assigned(state, row, state["date"])
+    advisor = assigned(state, row, state["date"], world)
     peer = advisor["advisor"] if advisor else engineers.get("chief-analyst")
     for role in ("performance", "reliability"):
         engineers[role] = peer

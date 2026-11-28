@@ -80,7 +80,7 @@ class Observation(Fields):
         return self
 
 
-def analyst_for(state, world, entry, fact):
+def observation_grant(state, world, entry, fact):
     """Resolve the reviewer at the report date within the existing #5 data grant."""
     from ..components.registry import drawing_for
 
@@ -110,17 +110,48 @@ def analyst_for(state, world, entry, fact):
         ):
             return None
         contract = terms["id"]
-    for r in state["support"]:
+    if "engineering_service" in state:
+        from ..personal_engineering import grant as client_grant
+
+        r = client_grant(state, world, entry, drawing["slot"], fact["day"], terms)
+        rows = [r] if r else []
+    else:
+        rows = state["support"]
+    for r in rows:
         if r["agreement"] != contract or r.get("entry", entry["id"]) != entry["id"]:
             continue
-        grant = support_on(state, r["advisor"], fact["day"])
+        grant = support_on({"support": [r]}, r["advisor"], fact["day"])
         if not grant or not visible_channels(
             grant, scope, fact["day"], r["employer"], [channel]
         ):
             continue
-        for seat in world["assignments"].values():
-            if seat["org"] == grant.employer and seat["position"] == "analyst":
-                return occupant_on(state["seats"].get(seat["id"], []), fact["day"])
+        if "engineering_service" in state:
+            current = client_grant(
+                state,
+                world,
+                entry,
+                drawing["slot"],
+                state["date"],
+                agreement(state, world, entry, drawing["slot"]),
+            )
+            if (
+                not current
+                or current["start"] > fact["day"]
+                or current["advisor"] != r["advisor"]
+                or current["agreement"] != contract
+                or channel not in current["channels"]
+            ):
+                continue
+        return grant
+    return None
+
+
+def analyst_for(state, world, entry, fact):
+    reviewer = observation_grant(state, world, entry, fact)
+    if reviewer:
+        return occupant_on(
+            state["seats"].get(reviewer.employer + ":analyst", []), fact["day"]
+        )
     return None
 
 
@@ -149,16 +180,18 @@ def receive(state, world, fact: Observation):
         else {"analyst", "chief-analyst", "race-engineer"}
     )
     from ..driver_availability import participant
+    from ..personal_engineering import working_person
 
     if not any(
         seat["position"] in roles
+        and not seat.get("engineering_reserve")
         and seat["org"] == fact.org
         and seat["entry"] in (None, fact.entry)
         and seat["series"] in (None, entry["championship"])
         and (
             participant(state, seat["id"], fact.day)
             if fact.kind == "driver-feedback"
-            else occupant_on(state["seats"].get(seat["id"], []), fact.day)
+            else working_person(state, seat, fact.day)
         )
         == fact.author
         for seat in world["assignments"].values()

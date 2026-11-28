@@ -3,7 +3,6 @@
 from hashlib import sha256
 from math import ceil
 
-from ..domain import occupant_on
 
 from .. import components, development, production, research, teamwork
 from ..components.design import LABELS
@@ -14,7 +13,7 @@ from ..personnel import evaluate
 from ..production.planning import needs
 from ..research.model import INTERACTIONS, METHODS, design_context, evidence
 from .sources import citation
-from .observations import analyst_for
+from .observations import analyst_for, observation_grant
 from .evidence import preferred, protocols, replacement_due, verdict
 
 
@@ -349,6 +348,8 @@ def opening_topics(state, world, e, staff, fitted, covered, studies, projects):
 
 
 def session_topics(state, world, e, staff):
+    from ..personal_engineering import working_person
+
     eid = e["id"]
     for fact in sorted(
         state["council"]["observations"].values(), key=lambda f: f["reference"]
@@ -361,7 +362,7 @@ def session_topics(state, world, e, staff):
             if fact["kind"] != "driver-feedback"
             else next(
                 (
-                    occupant_on(state["seats"][s["id"]], state["date"])
+                    working_person(state, s, state["date"])
                     for s in world["assignments"].values()
                     if s["position"] == "race-engineer" and s["entry"] == eid
                 ),
@@ -392,6 +393,42 @@ def session_topics(state, world, e, staff):
             initiator=reporter,
             importance=4,
         )
+        if row and "engineering_service" in state:
+            if fact["kind"] == "driver-feedback" and reporter:
+                opinion = teamwork.professional_action(
+                    state,
+                    world,
+                    ("feedback", fact["author"], reporter, e["org"]),
+                    state["date"],
+                    evidence=70,
+                )
+                row["positions"][0].update(
+                    confidence=opinion["quality"],
+                    argument="Подтверждаю обратную связь пилота."
+                    if opinion["decision"] == "endorse"
+                    else "Для проверки обратной связи пилота нужны дополнительные измерения.",
+                )
+            grant = observation_grant(state, world, e, fact)
+            if grant and (chief := staff.get("chief-engineer")):
+                quality = teamwork.professional_action(
+                    state,
+                    world,
+                    ("technical", grant.advisor, chief, e["org"]),
+                    state["date"],
+                    evidence=evaluate(
+                        state["people"][grant.advisor], world, state["date"]
+                    )["values"].get("Диагностика", 0),
+                )["review_quality"]
+                row["positions"].append(
+                    dict(
+                        person=grant.advisor,
+                        stance="Консультация производителя",
+                        confidence=quality,
+                        argument="Сопоставим наблюдение с рабочим диапазоном нашего узла."
+                        if quality >= 55
+                        else "Запрашиваю уточнение условий измерения у команды.",
+                    )
+                )
         if row and (analyst := analyst_for(state, world, e, fact)):
             precision = evaluate(state["people"][analyst], world, state["date"])[
                 "values"

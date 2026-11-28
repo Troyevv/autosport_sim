@@ -41,6 +41,19 @@ def eligible(state, world, pid, org, start, end, academy=False):
     ):
         return False
     member = state["people"].get(pid) or state["collectives"][pid]
+    if any(
+        r["person"] == pid and overlaps(start, end, r["start"], r["end"])
+        for r in state.get("engineering_service", {}).get("covers", [])
+    ):
+        return False
+    if "engineering_service" in state and member.get("position") == "technical-advisor":
+        from .personal_engineering import appointments
+
+        if any(
+            r["advisor"] == pid and overlaps(start, end, r["start"], r["end"])
+            for r in appointments(state, world, maker=org)
+        ):
+            return False
     if member["fatigue"] >= 60 or busy(state, pid, start, end):
         return False
     if any(

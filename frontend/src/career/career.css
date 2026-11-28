@@ -312,3 +312,15 @@
 .org-programs li > b { font-variant-numeric: tabular-nums; }
 .org-programs li small, .org-programs li strong { display: block; }
 .org-programs li small { color: var(--muted); margin-top: 2px; }
+
+.career-briefing details {
+  border-top: 1px solid var(--line);
+  padding: 10px 0;
+}
+.career-briefing details:first-of-type {
+  margin-top: 12px;
+}
+.career-briefing summary {
+  cursor: pointer;
+  font-weight: 600;
+}

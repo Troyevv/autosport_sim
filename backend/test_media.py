@@ -12,7 +12,13 @@ def test_bundled_artwork_complete_and_unique():
     assert len(keys) == len(media.index())
     assert len(used) == len(set(used))
     assert set(used).isdisjoint(WORLD["reserve"])
-    assert set(used) | set(WORLD["reserve"]) == faces
+    from .personal_engineering import roster
+
+    additional = {row["face"] for row in roster()}
+    assert len(additional) == len(roster()) and additional.isdisjoint(
+        set(used) | set(WORLD["reserve"])
+    )
+    assert set(used) | set(WORLD["reserve"]) | additional == faces
     assert len(WORLD["reserve"]) >= 200
     matte_slots = set()
     for a in media.index():
@@ -24,9 +30,16 @@ def test_bundled_artwork_complete_and_unique():
             assert 0 <= slot < 16 and (atlas, slot) not in matte_slots
             matte_slots.add((atlas, slot))
             assert a["anatomy"]["neck"] > 0 and a["anatomy"]["breadth"] > 0
-            assert len(a["anatomy"]["body"][0]) == len(a["anatomy"]["body"][1]) == 27
+            if a["entity"] not in additional:
+                assert (
+                    len(a["anatomy"]["body"][0]) == len(a["anatomy"]["body"][1]) == 27
+                )
+            else:
+                assert len(a["anatomy"]["anchor"]) == 3
             with Image.open(path) as im:
-                assert im.mode == "RGBA" and im.size == (480, 560)
+                assert im.mode == "RGBA" and im.size == (
+                    (240, 280) if a["entity"] in additional else (480, 560)
+                )
         elif a["kind"] == "logo":
             assert a["license"] and a["author"] and a["source"].startswith("https://")
     for org in WORLD["organizations"].values():

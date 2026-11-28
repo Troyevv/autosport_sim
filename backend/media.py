@@ -13,7 +13,9 @@ ASSETS.extend(json.loads((ROOT / "logos" / "catalog.json").read_text(encoding="u
 ASSETS.extend(
     json.loads((ROOT / "wardrobe" / "catalog.json").read_text(encoding="utf-8"))
 )
-ASSETS.extend(json.loads((ROOT / "wardrobe/mattes/catalog.json").read_text(encoding="utf-8")))
+ASSETS.extend(
+    json.loads((ROOT / "wardrobe/mattes/catalog.json").read_text(encoding="utf-8"))
+)
 registration = json.loads(
     (ROOT / "wardrobe" / "registration.json").read_text(encoding="utf-8")
 )
@@ -30,6 +32,14 @@ for asset in ASSETS:
             else "Студийная обработка R3.2",
             source="https://github.com/Troyevv/autosport_sim",
         )
+for asset in json.loads((ROOT / "engineering/catalog.json").read_text(encoding="utf-8")):
+    asset.update(
+        author="Alex / OpenAI ImageGen",
+        license="MIT",
+        changes="Студийная регистрация и маски гардероба PIT WALL",
+        source="https://github.com/Troyevv/esport_sim/tree/6af75b6cf20907c34e947fe2fffda5cc01f55bd9",
+    )
+    ASSETS.append(asset)
 BY_ID = {(asset["kind"], asset["entity"]): asset for asset in ASSETS}
 
 
