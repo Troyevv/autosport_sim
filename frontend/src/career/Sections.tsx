@@ -362,7 +362,7 @@ export function Briefing({
         {c.engineering_briefing?.map((r) => (
           <details key={r.entry}>
             <summary>№ {world.entries[r.entry].number} · {world.organizations[world.entries[r.entry].org].name}</summary>
-            <p>Гоночный инженер · {r.engineer ? world.names[r.engineer] : 'Вакансия'}</p>
+            <p>Гоночный инженер · {r.engineer ? world.names[r.engineer] : r.principal ? 'Временно недоступен' : 'Вакансия'}</p>
             {r.principal !== r.engineer && (
               <p>Штатное место · {r.principal ? world.names[r.principal] : 'Вакансия'}</p>
             )}

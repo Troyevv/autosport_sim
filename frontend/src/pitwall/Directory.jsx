@@ -3919,7 +3919,7 @@ function PersonContract({ person, data }) {
         ))}
       {data?.engineering_entries?.map((r) => <Section key={r.entry}
         title={p.seriesName(p.world.entries[r.entry].championship) + ' · № ' + p.world.entries[r.entry].number}>
-        <p>Гоночный инженер · {r.engineer ? p.world.names[r.engineer] : 'Вакансия'}</p>
+        <p>Гоночный инженер · {r.engineer ? p.world.names[r.engineer] : r.principal ? 'Временно недоступен' : 'Вакансия'}</p>
         {r.principal !== r.engineer && (
           <p>Штатный инженер · {r.principal ? p.world.names[r.principal] : 'Вакансия'}</p>
         )}
@@ -4091,7 +4091,9 @@ function AdvisorForm({ person, data }) {
     (p.orgName(x.org) + ' ' + x.productName).toLocaleLowerCase().includes(query.toLocaleLowerCase()))
   const choices = [...new Map(matching.map((x) => [x.org, x])).values()]
   const choice = choices.find((x) => x.org === selected)
-  const busyUntil = rows(data?.support).find((x) => x.start <= c.date && c.date < x.end)?.end
+  const busyUntil = rows(data?.support).find(
+    (x) => x.advisor === person.id && x.start <= c.date && c.date < x.end,
+  )?.end
   function submit(e) {
     e.preventDefault()
     const v = Object.fromEntries(new FormData(e.currentTarget)),
