@@ -97,7 +97,7 @@ def run_smoke(tmp):
     root.mkdir()
     for name in ("start.bat", "stop.bat", "pyproject.toml", "uv.lock"):
         shutil.copy2(SOURCE / name, root / name)
-    for name in ("backend", "frontend", "scripts"):
+    for name in ("backend", "frontend", "scripts", "native"):
         shutil.copytree(
             SOURCE / name,
             root / name,
@@ -145,6 +145,9 @@ def run_smoke(tmp):
                 )
                 print(f"Browser rendered the title screen at {visit['url']} ({agent})", flush=True)
                 return visit["url"]
+            # Preserve the compiler stage if CI times out inside CMake/MSBuild.
+            for detail in root.glob(".autosport/native/*/CMakeFiles/CMakeConfigureLog.yaml"):
+                print(detail.read_text(encoding="utf-8", errors="replace")[-4000:], flush=True)
             raise AssertionError(log.read_text(encoding="utf-8", errors="replace"))
 
         def ports_and_pid(log):
@@ -200,6 +203,8 @@ def run_smoke(tmp):
                     assert response.headers.get_content_maintype() == "image"
                     assert len(response.read()) > 128
             assert (root / ".venv/Scripts/python.exe").is_file()
+            native = next((root / ".venv/Lib/site-packages").glob("_race_space*.pyd"))
+            built = native.stat().st_mtime_ns
             modules = root / "frontend/node_modules"
             sentinel = modules / "keep-on-warm-start"
             sentinel.touch()
@@ -214,6 +219,7 @@ def run_smoke(tmp):
                 sock.close()
             second, log = launch("start")
             assert wait_for_launch(second, log) == "http://127.0.0.1:5173"
+            assert native.stat().st_mtime_ns == built, "unchanged native binary rebuilt"
             assert sentinel.exists(), "npm reinstalled unchanged packages"
             assert "Зависимости интерфейса уже установлены" in log.read_text(
                 encoding="utf-8", errors="replace"
@@ -227,8 +233,11 @@ def run_smoke(tmp):
             command("stop")
             with (root / "frontend/package.json").open("a") as f:
                 f.write("\n")
+            with (root / "native/race/bindings.cpp").open("a") as f:
+                f.write("\n// Incremental build probe.\n")
             third, log = launch("start")
             wait_for_launch(third, log)
+            assert native.stat().st_mtime_ns != built, "changed native source was ignored"
             assert not sentinel.exists(), "changed manifest did not trigger npm ci"
             command("stop")
             assert third.wait(10) == 0

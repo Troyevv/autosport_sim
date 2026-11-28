@@ -13,8 +13,10 @@ from .catalog import SEASON_LINEUP, lineup_for
 from .domain import RuleError
 from .statistics import archive, facts, telemetry
 from .livery import GARAGE
+from .race.api import router as race_router
 
 app = FastAPI(title="Autosport Sim", version="0.2.0")
+app.include_router(race_router)
 
 
 @app.exception_handler(RuleError)
