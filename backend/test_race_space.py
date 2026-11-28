@@ -41,7 +41,12 @@ def test_configurations(layout_id):
     assert abs(road.length / info["length_m"] - 1) < 0.012
     assert 0 < track.exit < track.entry < road.length
     assert 0 < track.pit_timing < pit.length
-    assert 0 < info["sectors"][0] < info["sectors"][1] < 1
+    splits = [0, *info["sectors"], 1]
+    assert all(start < end for start, end in zip(splits, splits[1:]))
+    if layout_id == "circuito-de-navarra:speed-circuit":
+        assert [s * 4313 for s in info["sectors"]] == pytest.approx(
+            [1255, 2200, 3325], abs=0.001
+        )
     assert all(0 <= a < 1 and 0 <= b < 1 and a != b for a, b in info["drs"])
     assert info["sources"]["centreline"].startswith("https://")
     car = LINE_CLASSES["kart" if layout_id.endswith(":international") else "formula"]

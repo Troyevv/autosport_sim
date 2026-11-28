@@ -6,6 +6,8 @@
   "length_m": 4313,
   "sources": {
     "centreline": "https://github.com/p-souto/project-nomad-extra-maps/releases/download/v1/spain.pmtiles",
+    "timing_plan": "https://rfme.com/wp-content/uploads/2024/10/Libre-SSP_NG.pdf",
+    "season_timing": "https://racingweekend.alkamelsystems.com/Results/04_2025/02_NAVARRA/594_COPA%20CLIO%20ESPANA/202505031520_QUALIFYING%202/23_Analysis_QUALIFYING%202.PDF",
     "operator": "https://www.circuitodenavarra.com/about/redevelopment",
     "2024_redevelopment": "https://driven-international.com/circuito-de-navarra-redevelopment",
     "length": "https://www.circuitodenavarra.com/about/circuit-layouts",
@@ -16,7 +18,7 @@
     "elevation": "estimated relative profile, local finish datum; no elevation survey",
     "width": "estimated nominal width",
     "surface": "estimated kerbs, runoff, roughness and banking",
-    "sectors": "estimated",
+    "sectors": "official four-sector timing plan, 1255/2200/3325 m on the 4313 m layout",
     "pit": "mapped lane; estimated junction tapers and timing gate",
     "grid_boxes": "estimated spacing and usable apron",
     "drs": "no DRS intervals in this configuration"
@@ -26,8 +28,9 @@
     42.559214221446496
   ],
   "sectors": [
-    0.33333333,
-    0.66666667
+    0.29098076,
+    0.51008579,
+    0.77092511
   ],
   "drs": [],
   "pit_entry": 0.75803318,

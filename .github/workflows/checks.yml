@@ -47,6 +47,8 @@ jobs:
       - run: npx playwright install --with-deps chromium
       - run: npm run smoke
   windows-launcher:
+    env:
+      PYTHONUTF8: "1"
     runs-on: windows-2022
     timeout-minutes: 12
     steps:
