@@ -68,6 +68,8 @@ def prepare():
         stdin=subprocess.DEVNULL,
         check=True,
     )
+    say("Проверка и сборка пространственного ядра C++20…")
+    subprocess.run([PYTHON, ROOT / "scripts/build_race.py"], cwd=ROOT, check=True)
     modules = FRONT / "node_modules"
     stamp = modules / ".autosport-install"
     digest = hashlib.sha256()

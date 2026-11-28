@@ -1,0 +1,16 @@
+# Происхождение карт сезона 2025
+
+У каждой конфигурации есть поля `sources` и `quality`. Первое указывает конкретные файлы и документы, второе описывает способ получения каждого канала. Скомпилированные сечения входят в репозиторий, во время сборки и гонки загрузка карт не требуется.
+
+| Данные | Источник и условия использования |
+|---|---|
+| План оси и пит-лейна | © OpenStreetMap contributors, ODbL 1.0. Локальная база производных геоданных доступна в исходном JSON в этом репозитории. [OpenStreetMap](https://www.openstreetmap.org/copyright) · [ODbL](https://opendatacommons.org/licenses/odbl/1-0/) |
+| Выбор конфигураций и слои | OSM в выпусках [Track Atlas](https://github.com/tobi/track-atlas/blob/8c12ac414ea74ffe4a3ef74b294a2eafab7ee60d/ATTRIBUTION.md) и [региональных Protomaps PMTiles](https://github.com/p-souto/project-nomad-extra-maps/releases/tag/v1). Отдельные отметки секторов и пит-лейна восходят к [Lovely Track Data](https://github.com/Lovely-Sim-Racing/lovely-track-data) |
+| Высота и часть ширин | © OpenTrackData, производные от © OpenStreetMap contributors. Высоты AWS Terrain Tiles. Исходные подложки измерений включают USGS NAIP, IGN, PNOA и basemap.at. [Полная атрибуция](https://github.com/chendo/opentrackdata/blob/31dda5f6cb9bad2de52c81af9b91796e7ee6f7f8/ATTRIBUTION.md) · [Условия данных](licenses/ODbL-1.0.txt) |
+| Ось Norisring, выборочные ширины | Technical University of Munich, Chair of Automotive Technology, Alexander Heilmeier и соавторы. Исторические измерения совмещены с актуальной осью в плоскости. Для переноса ширины проверены расстояние до образца (до 5 м) и согласование направлений (абсолютный косинус больше 0,96). [Оригинальные данные](https://github.com/TUMFTM/racetrack-database/tree/e59595d1f3573b30d1ded6a08984935b957688e0/tracks) · [LGPLv3](licenses/racetrack-database-LGPL.txt) |
+| Paul Ricard | Tomislav Bacinger, географический контур трассы. [F1 Circuits](https://github.com/bacinger/f1-circuits) · [Лицензия MIT](licenses/f1-circuits-MIT.txt) |
+| Knockhill | Локальный контур clockwise оцифрован по [RaceTracksAPI](https://github.com/LigasAVBrasil/RaceTracksAPI). Координаты локальные, масштаб привязан к длине круга |
+| Старт, сектора, направление и DRS | Открытые факты квалификационных кругов [OpenF1](https://openf1.org/) и [f1data](https://github.com/martintxortiz/f1data). Для остальных трасс использованы координаты створа [RaceCapture](https://github.com/autosportlabs/RaceCapture-Pro_firmware/tree/master/data/start_finish_points), если они доступны. Ссылки на карты FIA Баку и Лас-Вегаса указаны в паспортах |
+| Длины и конфигурации | Документы FIA и организаторов серий, сезонные карточки Формулы-1 и FIA WEC, справочник FIA Karting, схема реконструкции Наварры. Привязка к этапам берётся из календаря проекта. [Список лицензированных трасс FIA](https://www.fia.com/sites/default/files/circuits_fia20250506.pdf) · [FIA Karting 2025](https://backend.fiakarting.com/sites/default/files/FIA_KARTING_MEDIA_GUIDE_2025_vEN_v3_1.pdf) |
+
+Для исправления карты следует зафиксировать изменяемый участок и источник, обновить отметку качества соответствующего канала и проверить опубликованную длину, топологию, створы и технический чертёж. Поле `length_m` хранит независимое паспортное значение, а `circuit_length_m` вычисляется из оси ядра.

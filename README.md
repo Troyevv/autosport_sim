@@ -10,7 +10,7 @@
 
 ### Windows — двойной клик
 
-1. Один раз установите [uv для Windows](https://docs.astral.sh/uv/getting-started/installation/) версии 0.13.9 или новее и [Node.js 24 LTS с npm](https://nodejs.org/). Также поддерживается Node.js 22 LTS от 22.13. Нужен npm от версии 9. При первом запуске uv найдёт совместимый Python (3.11–3.14) и при необходимости загрузит его.
+1. Один раз установите [uv для Windows](https://docs.astral.sh/uv/getting-started/installation/) версии 0.13.9 или новее и [Node.js 24 LTS с npm](https://nodejs.org/). Также поддерживается Node.js 22 LTS от 22.13. Нужен npm от версии 9. Для сборки нативного модуля установите Visual Studio Build Tools 2022 с компонентами Desktop development with C++, MSVC v143 и Windows SDK. При первом запуске uv найдёт совместимый Python (3.11–3.14) и при необходимости загрузит его.
 2. В Проводнике дважды нажмите **start.bat** в корне репозитория. При первом запуске нужны интернет и доступ на запись в папку игры. Окно покажет версии инструментов, подготовку окружения и сборку. Браузер откроется после ответа API и загрузки собранного интерфейса через локальный сервер.
 3. Оставьте окно запуска открытым во время игры. Ещё один двойной клик по **start.bat** откроет работающий экземпляр. Пока идёт подготовка, достаточно дождаться первого запуска.
 4. Для остановки дважды нажмите **stop.bat** или закройте окно запуска. Закрытие одной вкладки браузера оставляет игру запущенной.
@@ -21,12 +21,13 @@
 
 ### Linux и ручной запуск для разработки
 
-Потребуются Python 3.12, [uv](https://docs.astral.sh/uv/getting-started/installation/) и Node.js 24 LTS с npm. Используйте два терминала в корне репозитория. Команды одинаковы для PowerShell и Bash.
+Потребуются компилятор C++20, заголовочные файлы Python, Python 3.12, [uv](https://docs.astral.sh/uv/getting-started/installation/) и Node.js 24 LTS с npm. Используйте два терминала в корне репозитория. Команды одинаковы для PowerShell и Bash.
 
 В первом терминале установите Python-зависимости из `uv.lock` и запустите API.
 
 ```sh
 uv sync --locked --python 3.12
+uv run --locked python scripts/build_race.py --test
 uv run --locked uvicorn backend.app:app --host 127.0.0.1 --port 8102
 ```
 
@@ -46,6 +47,8 @@ npm run dev -- --host 127.0.0.1 --port 5173 --strictPort
 npm run build
 npm run preview -- --host 127.0.0.1 --port 4173 --strictPort
 ```
+
+[Пространственная модель, источники трасс и технический чертёж](docs/issue-16/README.md)
 
 ### Проверки
 
