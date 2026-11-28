@@ -5,7 +5,9 @@ from functools import lru_cache
 import json
 from pathlib import Path
 
-from _race_space import CONTRACT_VERSION, Lines, Road, Track
+from _race_space import Body, Cursor, CONTRACT_VERSION, Lines, Road, Track
+
+from .vehicles import CLASSES
 
 VERSION = "2025.1"
 DATA = Path(__file__).with_name("data")
@@ -53,6 +55,23 @@ LINE_CLASSES = {
 }
 
 
+def envelope(spec):
+    return spec.length, spec.width, spec.height
+
+
+# Geometry previews use the largest representative for the selected line class.
+GRID_ENVELOPES = {
+    key: envelope(CLASSES[category])
+    for key, category in {
+        "formula": "F1",
+        "junior": "F2",
+        "gt": "GT3",
+        "prototype": "Hypercar",
+        "kart": "OK",
+    }.items()
+}
+
+
 def event_layout(event):
     if event["kind"] == "presentation":
         return None
@@ -76,19 +95,32 @@ class Layout:
     info: dict
     track: Track
 
-    def grid(self, count):
+    def grid(self, count, envelopes=None):
         """Grid centres on the circuit, in grid order; pole is position one."""
         if not 0 <= count <= 128:
             raise ValueError("invalid grid size")
         grid = self.info["grid"]
         road = self.track.ribbon(Road.circuit)
-        return [
+        centres = [
             (
                 (grid["first_m"] - i * grid["pitch_m"]) % road.length,
                 grid["offset_m"] * (1 if i % 2 == 0 else -1),
             )
             for i in range(count)
         ]
+
+        if envelopes is None:
+            envelopes = [
+                GRID_ENVELOPES[
+                    "kart" if self.info["id"].endswith(":international") else "formula"
+                ]
+            ] * count
+        bodies = [
+            Body(str(i), Cursor(Road.circuit, s, 0), d, *size)
+            for i, ((s, d), size) in enumerate(zip(centres, envelopes, strict=True))
+        ]
+        offsets = self.track.grid_offsets(bodies)
+        return [(s, d) for (s, _), d in zip(centres, offsets, strict=True)]
 
     def boxes(self):
         """Stable physical bay positions on the service side of the pit road."""
@@ -178,6 +210,8 @@ def geometry_snapshot(
             name: lines.pit_offsets([(s, p) for s in pit_distances])
             for p, name in ((-1, "right"), (0, "dry"), (1, "left"))
         },
-        "grid_coordinates_m": layout.grid(grid_count),
+        "grid_coordinates_m": layout.grid(
+            grid_count, [GRID_ENVELOPES[vehicle_class]] * grid_count
+        ),
         "box_coordinates_m": layout.boxes(),
     }

@@ -124,6 +124,90 @@ Frame Ribbon::frame(double s, double offset) const {
     point.z += section.crossfall * offset;
     return {point, direction, std::lerp(a.curvature, b.curvature, t), direction.z, section};
 }
+bool Ribbon::contains_footprint(const Body &body) const {
+    require(closed_ && body.position.s >= 0 && body.position.s < length() &&
+                std::abs(body.offset) < 200,
+            "invalid grid coordinate");
+    const auto origin = frame(body.position.s, body.offset);
+    if (origin.section.surface(body.offset) != Surface::asphalt)
+        return false;
+    Vec axis = origin.forward * std::cos(body.heading_delta) +
+               normal(origin.forward) * std::sin(body.heading_delta);
+    axis.z = 0;
+    Vec side = normal(axis);
+    // A box containing an interior point is inside this strip iff neither edge
+    // enters the box. Follow this branch only (a bridge can cross the grid).
+    const double reach = 4 * (body.length + body.width + std::abs(body.offset)) + 5;
+    auto cap = [&](int sign) {
+        // Stop at the first transversal beyond the whole box. A second arm
+        // of a hairpin may pass through its XY bounding box farther along s.
+        for (double ds = .5; ds <= reach; ds += .5) {
+            auto f = frame(body.position.s + sign * ds);
+            Vec t{f.forward.x, f.forward.y, 0};
+            double r =
+                .5 * (body.length * std::abs(dot(axis, t)) + body.width * std::abs(dot(side, t)));
+            if (sign * dot(f.point - origin.point, t) > r + .002)
+                return body.position.s + sign * ds;
+        }
+        return body.position.s + sign * reach;
+    };
+    double begin = cap(-1), end = cap(1);
+    auto boundary = [&](const Frame &f, int sign) {
+        return f.point + normal(f.forward) * (sign > 0 ? f.section.left : -f.section.right);
+    };
+    auto intersects = [&](Vec a, Vec b, double pad) {
+        double lo = 0, hi = 1;
+        for (auto [n, half] :
+             {std::pair{axis, body.length * .5}, std::pair{side, body.width * .5}}) {
+            double start = dot(a - origin.point, n), delta = dot(b - a, n);
+            if (std::abs(delta) < 1e-12) {
+                if (std::abs(start) > half + pad)
+                    return false;
+            } else {
+                double t0 = (-half - pad - start) / delta, t1 = (half + pad - start) / delta;
+                lo = std::max(lo, std::min(t0, t1));
+                hi = std::min(hi, std::max(t0, t1));
+                if (lo > hi)
+                    return false;
+            }
+        }
+        return true;
+    };
+    // The centre and width are affine on each tessellation segment. The
+    // normal turns monotonically between its ends. Bound its deviation from
+    // the boundary chord by width times the full change in unit normal.
+    auto touches = [&](auto &&self, double s0, double s1, const Frame &a, const Frame &b,
+                       int sign) -> bool {
+        double width = sign > 0 ? std::max(a.section.left, b.section.left)
+                                : std::max(a.section.right, b.section.right);
+        double error = width * std::hypot(a.forward.x - b.forward.x, a.forward.y - b.forward.y);
+        if (!intersects(boundary(a, sign), boundary(b, sign), error + .001))
+            return false;
+        if (error < .001 || s1 - s0 < .001)
+            return true;
+        double mid = (s0 + s1) * .5;
+        auto f = frame(mid);
+        return self(self, s0, mid, a, f, sign) || self(self, mid, s1, f, b, sign);
+    };
+    // Iterate the original knots in unwrapped order, including the finish seam.
+    for (int lap = static_cast<int>(std::floor(begin / length()));
+         lap <= std::floor(end / length()); ++lap) {
+        double base = lap * length();
+        double a = std::max(0., begin - base), b = std::min(length(), end - base);
+        auto it = std::upper_bound(distances_.begin(), distances_.end(), a);
+        Frame f = frame(a);
+        while (a < b && it != distances_.end()) {
+            double next = std::min(*it++, b);
+            Frame g = frame(next);
+            if (touches(touches, a, next, f, g, -1) || touches(touches, a, next, f, g, 1))
+                return false;
+            a = next;
+            f = g;
+        }
+    }
+    return true;
+}
+
 Surface Ribbon::surface(double s, double offset) const {
     return frame(s, offset).section.surface(offset);
 }
