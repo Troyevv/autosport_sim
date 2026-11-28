@@ -29,7 +29,7 @@ def initialize(state):
     state.setdefault(
         "components",
         dict(
-            catalog="2025-parts-v2" if state.get("opening") else VERSION,
+            catalog="2025-parts-v3" if state.get("opening") else VERSION,
             since=state["revision"],
             date=state["date"],
             revisions={},

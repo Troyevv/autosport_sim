@@ -24,14 +24,15 @@ void validate(const Control &c) {
                 in(c.deploy, 0, 1) && in(c.preference, -1, 1),
             "invalid control");
 }
-double forward_delta(const State &a, const State &b, double len) {
-    return (b.cursor.lap - a.cursor.lap) * len + b.cursor.s - a.cursor.s;
+double forward_delta(const Cursor &a, const State &b, double len) {
+    return (b.cursor.lap - a.lap) * len + b.cursor.s - a.s;
 }
 double ahead(double from, double to, double len) {
     return to >= from ? to - from : to - from + len;
 }
 struct Step {
-    State before;
+    Cursor origin;
+    double initial_v, initial_distance;
     Motion motion;
     Control input;
     double wake = 0, travel = 0, impact_speed = 0, impact_lateral = 0;
@@ -127,8 +128,8 @@ void resolve_contacts(std::vector<Step> &steps, const std::vector<Vehicle> &cars
         const auto &peer = cars[bi].spec.id;
         if (std::find(a.peers.begin(), a.peers.end(), peer) == a.peers.end()) {
             a.peers.push_back(peer);
-            if (std::find(a.before.contact_peers.begin(), a.before.contact_peers.end(), peer) ==
-                a.before.contact_peers.end())
+            const auto &previous = cars[ai].state.contact_peers;
+            if (std::find(previous.begin(), previous.end(), peer) == previous.end())
                 batch.events.push_back(
                     {"contact", cars[ai].spec.id, peer, (tick + now) * dt, 0, 0});
         }
@@ -138,10 +139,10 @@ void resolve_contacts(std::vector<Step> &steps, const std::vector<Vehicle> &cars
     if (std::any_of(steps.begin(), steps.end(), [](auto &s) { return s.hit; }))
         move(1);
 }
-Sample sample(const Vehicle &car, const Ribbon &road, std::int64_t tick) {
+Sample sample(const Vehicle &car, std::int64_t tick) {
     const auto &s = car.state;
     const auto &r = car.reading;
-    const auto world = pose(road, s.cursor.s, s.d, s.heading);
+    const auto world = pose(car.frame, s.heading);
     Sample row = {double(tick),
                   s.cursor.s,
                   s.d,
@@ -172,6 +173,7 @@ Sample sample(const Vehicle &car, const Ribbon &road, std::int64_t tick) {
                   r.wake,
                   double(s.contacted),
                   r.shift};
+    row.reserve(97);
     for (size_t i = 0; i < 4; ++i) {
         const auto &t = s.tyres[i];
         const auto &w = r.wheels[i];
@@ -179,6 +181,16 @@ Sample sample(const Vehicle &car, const Ribbon &road, std::int64_t tick) {
                    {t.surface, t.core, pressure_kpa(car.spec, t, i), t.wear, t.degradation, t.grain,
                     t.blister, t.flat, double(t.cycles), double(t.punctured), w.load, w.mu, w.fx,
                     w.fy, w.lock, w.slip_power});
+    }
+    const auto &profile = car.profile;
+    if (!s.command.automatic || profile.speed.empty())
+        row.insert(row.end(), {0., 0., 0.});
+    else {
+        double u = s.cursor.s / profile.step;
+        size_t i = static_cast<size_t>(u) % profile.speed.size(),
+               j = (i + 1) % profile.speed.size();
+        for (auto series : {&profile.speed, &profile.curvature, &profile.offset})
+            row.push_back(std::lerp((*series)[i], (*series)[j], u - std::floor(u)));
     }
     return row;
 }
@@ -234,7 +246,8 @@ Dynamics::Dynamics(const Track &track, Conditions env, std::vector<std::pair<Spe
         while (s.gear < p.gears &&
                start.v * ratios[s.gear - 1] / p.radius > .95 * p.redline * std::acos(-1.) / 30.)
             ++s.gear;
-        cars_.push_back({std::move(p), s, {}, {}, std::move(ratios), start.d});
+        cars_.push_back(
+            {std::move(p), s, {}, {}, std::move(ratios), start.d, road.frame(s.cursor.s, s.d)});
     }
     require(track.overlaps(bodies).empty(), "overlapping grid envelopes");
 }
@@ -295,8 +308,10 @@ void Dynamics::restore(std::int64_t tick, std::vector<State> states, std::vector
         require(order.tick >= tick, "checkpoint contains past control");
     enqueue(std::move(queue));
     tick_ = tick;
-    for (size_t i = 0; i < states.size(); ++i)
+    for (size_t i = 0; i < states.size(); ++i) {
+        cars_[i].frame = track_.ribbon(Road::circuit).frame(states[i].cursor.s, states[i].d);
         cars_[i].state = std::move(states[i]);
+    }
 }
 void Dynamics::step(Batch &batch) {
     const auto &road = track_.ribbon(Road::circuit);
@@ -317,8 +332,10 @@ void Dynamics::step(Batch &batch) {
         auto &st = steps[i];
         const auto &s = car.state;
         const auto &p = car.spec;
-        st.before = s;
-        st.motion = {pose(road, s.cursor.s, s.d, s.heading), {}, p.length, p.width, p.height};
+        st.origin = s.cursor;
+        st.initial_v = s.v;
+        st.initial_distance = s.distance;
+        st.motion = {pose(car.frame, s.heading), {}, p.length, p.width, p.height};
         st.motion.to = st.motion.from;
 
         double gap = 1e6, leader_v = 0;
@@ -350,7 +367,7 @@ void Dynamics::step(Batch &batch) {
             st.wake = std::max(st.wake, signal);
         }
         if (s.command.automatic)
-            plan(track_, car, env_);
+            plan(track_, car, env_, geometry_);
         st.input = control(track_, car, gap, leader_v);
         if (p.drs && env_.drs_enabled && env_.water_mm < .5 && st.input.drs &&
             st.input.brake == 0) {
@@ -371,7 +388,7 @@ void Dynamics::step(Batch &batch) {
         integrate(track_, car, env_, st.wake, st.drs, st.input);
         st.impact_speed = s.v;
         st.impact_lateral = s.lateral_v;
-        st.motion.to = pose(road, s.cursor.s, s.d, s.heading);
+        st.motion.to = pose(car.frame, s.heading);
     }
     resolve_contacts(steps, cars_, tick_, batch);
     struct Detection {
@@ -384,13 +401,13 @@ void Dynamics::step(Batch &batch) {
         auto &s = car.state;
         const auto &st = steps[i];
 
-        double ds = forward_delta(st.before, s, len);
+        double ds = forward_delta(st.origin, s, len);
         if (st.hit) {
             const auto impact = st.motion.to;
-            s.distance = st.before.distance + st.travel;
+            s.distance = st.initial_distance + st.travel;
             // Invert the local horizontal frame. A global closest 3D point
             // can be on a different branch or station on a banked road.
-            double station = st.before.cursor.s + ds;
+            double station = st.origin.s + ds;
             for (int iter = 0; iter < 8; ++iter) {
                 auto f = road.frame(station);
                 double dx = impact.centre.x - f.point.x, dy = impact.centre.y - f.point.y;
@@ -402,21 +419,21 @@ void Dynamics::step(Batch &batch) {
             }
             double lap = std::floor(station / len);
             s.cursor = {Road::circuit, station - lap * len,
-                        st.before.cursor.lap + static_cast<std::int64_t>(lap)};
-            s.heading =
-                std::remainder(impact.yaw - pose(road, s.cursor.s, s.d, 0).yaw, 2 * std::acos(-1.));
+                        st.origin.lap + static_cast<std::int64_t>(lap)};
+            car.frame = road.frame(s.cursor.s, s.d);
+            s.heading = std::remainder(impact.yaw - pose(car.frame, 0).yaw, 2 * std::acos(-1.));
             s.v = st.impact_speed;
             s.ay += (st.impact_lateral - s.lateral_v) / dt;
             s.lateral_v = st.impact_lateral;
-            s.ax = (s.v - st.before.v) / dt;
+            s.ax = (s.v - st.initial_v) / dt;
             s.contacted = true;
         }
         s.contact_peers = st.peers;
-        double moved = forward_delta(st.before, s, len);
+        double moved = forward_delta(st.origin, s, len);
         if (moved <= 0)
             continue;
         auto crossing = [&](double gate) {
-            double travel = ahead(st.before.cursor.s, gate, len);
+            double travel = ahead(st.origin.s, gate, len);
             if (travel == 0)
                 travel = len;
             return travel <= moved ? (tick_ + travel / moved) * dt : -1.;
@@ -465,7 +482,7 @@ Batch Dynamics::advance(int ticks, int stride) {
         step(batch);
         if (stride && tick_ % stride == 0)
             for (const auto &car : cars_)
-                batch.rows[car.spec.id].push_back(sample(car, track_.ribbon(Road::circuit), tick_));
+                batch.rows[car.spec.id].push_back(sample(car, tick_));
     }
     return batch;
 }

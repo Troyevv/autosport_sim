@@ -62,8 +62,10 @@ WHEEL_CHANNELS = (
     "lock",
     "slip_w",
 )
-CHANNELS = BASE_CHANNELS + tuple(
-    f"{wheel}_{name}" for wheel in CORNERS for name in WHEEL_CHANNELS
+CHANNELS = (
+    BASE_CHANNELS
+    + tuple(f"{wheel}_{name}" for wheel in CORNERS for name in WHEEL_CHANNELS)
+    + ("profile_m_s", "profile_curvature_m_inv", "profile_offset_m")
 )
 INDEX = {name: i for i, name in enumerate(CHANNELS)}
 
@@ -199,13 +201,14 @@ class Session:
         with self._lock:
             return dict(
                 version=1,
+                physics_revision=2,
                 config=deepcopy(self._config),
                 native=self._native.checkpoint(),
             )
 
     @classmethod
     def resume(cls, saved):
-        if saved["version"] != 1:
+        if saved["version"] != 1 or saved.get("physics_revision", 1) not in {1, 2}:
             raise ValueError("Unsupported race physics checkpoint")
         result = cls(**saved["config"])
         result._native.restore(saved["native"])
@@ -336,6 +339,7 @@ def channel_identity(col):
     units = {
         "m": "m",
         "m_s": "m/s",
+        "m_inv": "1/m",
         "m_s2": "m/s²",
         "rad": "rad",
         "kg": "kg",

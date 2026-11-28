@@ -13,7 +13,9 @@ double extent(const Motion &m, double yaw, double axis) {
 }
 } // namespace
 Pose pose(const Ribbon &road, double s, double offset, double heading) {
-    const auto f = road.frame(s, offset);
+    return pose(road.frame(s, offset), heading);
+}
+Pose pose(const Frame &f, double heading) {
     return {f.point, std::atan2(f.forward.y, f.forward.x) + heading};
 }
 Pose interpolate(Pose a, Pose b, double t) {

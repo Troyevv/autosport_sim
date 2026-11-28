@@ -56,18 +56,20 @@ void heat_tyre(Tyre &t, const Spec &p, const Conditions &env, const Wheel &wheel
 Forces aerodynamics(const Spec &p, double v, double wake, bool drs, double roughness) {
     const double q = .5 * air_density * v * v;
     const double wing = p.wing_area * p.wing * (drs ? .77 : 1.);
-    const double free_load = q * (wing + p.floor_area);
+    const double free_load = q * (p.front_area + wing + p.floor_area);
     const double compression = free_load * (1 / (p.spring_rate * p.spring) + 1 / p.tyre_rate);
     const double travel = std::max(1., p.static_mm + p.ride_mm - .54 * p.design_mm);
     const double clearance = p.static_mm + p.ride_mm - travel * std::tanh(compression / travel);
     const double floor =
         p.floor_area * std::clamp(1 - std::abs(clearance - p.design_mm) / p.design_mm, 0., 1.);
+    const double front_load = q * p.front_area * (1 - .35 * wake);
     const double wing_load = q * wing * (1 - .21 * wake);
     const double floor_load = q * floor * (1 - .42 * wake) / (1 + roughness * 2 * p.spring);
     const double drag_area =
         p.base_drag + .55 * p.inlet * p.cooling + p.wing_drag * square(p.wing) * (drs ? .60 : 1.);
-    return {q * drag_area * (1 - .31 * wake), wing_load + floor_load,
-            (wing_load * .18 + floor_load * .62) / std::max(1., wing_load + floor_load),
+    return {q * drag_area * (1 - .31 * wake), front_load + wing_load + floor_load,
+            (front_load + wing_load * .18 + floor_load * .62) /
+                std::max(1., front_load + wing_load + floor_load),
             1 - .33 * wake};
 }
 double pressure_kpa(const Spec &p, const Tyre &t, size_t corner) {
@@ -99,7 +101,7 @@ void integrate(const Track &track, Vehicle &car, const Conditions &env, double w
     auto &r = car.reading;
     r = {};
     const auto &road = track.ribbon(Road::circuit);
-    const auto frame = road.frame(s.cursor.s, s.d);
+    const auto &frame = car.frame;
     const double v = s.v, mass = p.dry_mass + p.driver_mass + s.fuel;
     const double normal_g =
         gravity / std::sqrt(1 + square(frame.grade) + square(frame.section.crossfall));
@@ -160,6 +162,8 @@ void integrate(const Track &track, Vehicle &car, const Conditions &env, double w
     const bool front_motor = p.deploy_floor > 0;
     double lateral_scale = 0;
     double sum_x = 0, sum_y = 0, applied_drive = 0, applied_motor = 0, regen_brake = 0;
+    auto front_section = road.frame(s.cursor.s + (1 - p.front_weight) * p.wheelbase).section;
+    auto rear_section = road.frame(s.cursor.s - p.front_weight * p.wheelbase).section;
     for (int i = 0; i < 4; ++i) {
         bool f = i < 2, left = i % 2 == 0;
         double axle = f ? front : rear;
@@ -168,11 +172,22 @@ void integrate(const Track &track, Vehicle &car, const Conditions &env, double w
         auto &w = r.wheels[i];
         w.load = axle * .5 + (left ? -1 : 1) * transfer;
         w.pressure = pressure_kpa(p, s.tyres[i], i);
-        const double axle_s = s.cursor.s + (f ? 1 - p.front_weight : -p.front_weight) * p.wheelbase;
-        auto material = road.surface(axle_s, s.d + (left ? 1 : -1) * p.width * .41);
+        auto material =
+            (f ? front_section : rear_section).surface(s.d + (left ? 1 : -1) * p.width * .41);
         w.mu =
             tyre_mu(p, s.tyres[i], w.load, w.pressure, env.water_mm, v) * surface_factor(material);
         const double capacity = std::max(1., w.mu * w.load);
+        // The reference actuator can ease common line pressure before an
+        // unloaded wheel locks. Preserve hydraulic bias and manual lock-up.
+        double brake_at_full = p.brake_nm / p.radius * (f ? p.bias : 1 - p.bias) * .5;
+        if (input.automatic && brake_at_full > 0)
+            input.brake = std::min(input.brake, capacity / brake_at_full);
+    }
+    for (int i = 0; i < 4; ++i) {
+        bool f = i < 2;
+        double axle = f ? front : rear;
+        auto &w = r.wheels[i];
+        double capacity = std::max(1., w.mu * w.load);
         double split = std::lerp(.5, w.load / axle, p.differential);
         double motor_w = (f == front_motor) ? drive * motor_fraction * split : 0.;
         double drive_w = motor_w + (f ? 0 : drive * (1 - motor_fraction) * split);
@@ -251,11 +266,12 @@ void integrate(const Track &track, Vehicle &car, const Conditions &env, double w
         }
     }
     s.d += travel * std::sin(heading_mid) + lateral_travel * std::cos(heading_mid);
-    auto next = road.frame(s.cursor.s);
+    auto next = road.frame(s.cursor.s, s.d);
     double road_turn =
         std::atan2(frame.forward.x * next.forward.y - frame.forward.y * next.forward.x,
                    frame.forward.x * next.forward.x + frame.forward.y * next.forward.y);
     s.heading = std::remainder(s.heading + yaw_step - road_turn, 2 * std::numbers::pi);
+    car.frame = next;
     s.distance += std::hypot(travel, lateral_travel);
     r.rpm = rpm;
     r.power = combustion;

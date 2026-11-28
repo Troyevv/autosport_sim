@@ -34,6 +34,9 @@ Spec specification(const py::dict &data) {
     NUMBER(inlet);
     NUMBER(radiator_inlet);
     NUMBER(base_drag);
+    x.front_area = data.contains("front_area") ? data["front_area"].cast<double>() : 0.;
+    if (!(x.front_area >= 0 && x.front_area < 10))
+        throw std::invalid_argument("invalid front wing");
     NUMBER(wing_area);
     NUMBER(wing_drag);
     NUMBER(floor_area);

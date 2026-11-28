@@ -2,6 +2,7 @@
 #include "contact.hpp"
 #include <array>
 #include <map>
+#include <memory>
 #include <tuple>
 
 namespace race {
@@ -10,7 +11,8 @@ struct Spec {
     std::string id;
     double length, width, height, wheelbase, cg_height, front_weight, driver_mass;
     double dry_mass, power_kw, torque_nm, heat_kw, bsfc, flow_kg_s;
-    double radiator_kw, inlet, radiator_inlet, base_drag, wing_area, wing_drag, floor_area;
+    double radiator_kw, inlet, radiator_inlet, base_drag, front_area, wing_area, wing_drag,
+        floor_area;
     double spring_rate, tyre_rate, static_mm, design_mm, brake_nm, radius, mu;
     double efficiency, input_nm, first_ratio, top_ratio, final_drive, redline, shift_s, gear_heat;
     int gears;
@@ -85,9 +87,12 @@ struct Batch {
 struct LinePoint {
     double d, ds, curvature, grade, crossfall, roughness;
 };
+using Candidates = std::vector<std::vector<LinePoint>>;
+using GeometryCache =
+    std::map<std::tuple<bool, double, double, double>, std::shared_ptr<const Candidates>>;
 struct Profile {
-    std::vector<std::vector<LinePoint>> candidates;
-    std::vector<double> offset, speed;
+    std::shared_ptr<const Candidates> candidates;
+    std::vector<double> offset, speed, curvature, tangent, acceleration;
     double step{};
     int grip_bin = -1, mass_bin = -1;
 };
@@ -98,13 +103,13 @@ struct Vehicle {
     Reading reading;
     std::vector<double> ratios;
     double grid_offset;
+    Frame frame; // ribbon frame at the current centre, derived from cursor and d
 };
 Forces aerodynamics(const Spec &p, double v, double wake, bool drs, double roughness);
 double tyre_mu(const Spec &p, const Tyre &t, double load, double pressure, double water,
                double speed);
 double pressure_kpa(const Spec &p, const Tyre &t, size_t corner);
-void plan(const Track &track, Vehicle &car, const Conditions &env, int saved_grip = -1,
-          int saved_mass = -1);
+void plan(const Track &track, Vehicle &car, const Conditions &env, GeometryCache &cache);
 Control control(const Track &track, const Vehicle &car, double gap, double leader_v);
 void integrate(const Track &track, Vehicle &car, const Conditions &env, double wake, bool drs,
                Control input, double seconds = dt);
@@ -123,6 +128,7 @@ class Dynamics {
     const Track &track_;
     Conditions env_;
     std::vector<Vehicle> cars_;
+    GeometryCache geometry_;
     std::vector<Order> orders_;
     std::int64_t tick_ = 0;
     void step(Batch &batch);

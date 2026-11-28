@@ -2,8 +2,10 @@
 
 import json
 from pathlib import Path
+from math import pi
 from dataclasses import dataclass
 from hashlib import sha256
+from functools import lru_cache
 
 from ..catalog import LINEUP_WORLD as WORLD, SEASON_LINEUP, slug
 from ..opening.engineering import specification
@@ -35,7 +37,27 @@ class Opening:
     rules: dict
 
 
-def build(world):
+# Total hydraulic torque at four wheels, T = 2 p A mu r per caliper.
+# Rated pressure (MPa), summed one-side piston area over four calipers
+# (mm²), friction coefficient and effective friction radius (m).
+CARBON_BRAKES = {
+    "F1": (13.0, 8800, 0.52, 0.134),
+    "F2": (10.0, 7800, 0.48, 0.125),
+}
+# Peak shaft torque in Nm. F2 and F4 are published specifications.
+# F3 and FR are estimates consistent with P = Tω at their rated power rpm.
+FORMULA_TORQUE = {"F2": 570, "F3": 365, "F4": 270, "FR": 335}
+# Homologated front wing planform (m²) and section-averaged lift coefficient.
+FRONT_WINGS = {
+    "F1": (1.45, 1.35),
+    "F2": (1.14, 1.10),
+    "F3": (0.95, 1.05),
+    "FR": (0.80, 0.92),
+    "F4": (0.68, 0.85),
+}
+
+
+def build(world, *, revised=False):
     specs, stock, fitted, interfaces, by_org = {}, {}, {}, {}, {}
     rules = {}
     models = json.loads(
@@ -85,6 +107,12 @@ def build(world):
             maker = car["suppliers"].get(slot, org if open_design else constructor)
             family = f"{reg}/{interface}/{maker}/{slot}"
             version = family + "/1"
+            if revised and category in FORMULA_TORQUE:
+                torque = FORMULA_TORQUE[category]
+                if slot == "engine":
+                    physical["peak_torque_nm"] = torque
+                if slot == "transmission":
+                    physical["input_limit_nm"] = torque * 1.16
             life_m = (
                 specification(category, interface, maker, slot, physical)
                 if world.get("opening")
@@ -92,6 +120,20 @@ def build(world):
                 if slot == "tyre"
                 else 5000000
             )
+            if revised and slot == "brakes" and category in CARBON_BRAKES:
+                pressure, area, friction, radius = CARBON_BRAKES[category]
+                physical["total_torque_nm"] = round(
+                    2 * pressure * area * friction * radius, 2
+                )
+            if revised and slot == "chassis" and category in FRONT_WINGS:
+                area, coefficient = FRONT_WINGS[category]
+                lift_area = area * coefficient
+                span = {"F1": 2.0, "F2": 1.9, "F3": 1.89, "F4": 1.73, "FR": 1.85}[
+                    category
+                ]
+                physical["front_lift_area_m2"] = lift_area
+                # Finite-wing induced drag at the homologated incidence.
+                physical["base_drag_area_m2"] += lift_area**2 / (pi * 0.85 * span**2)
             drawing = dict(
                 id=version,
                 family=family,
@@ -135,8 +177,17 @@ def build(world):
 
 
 OPENING = build(WORLD)
-SEASON_PARTS = build(SEASON_LINEUP)
+SEASON_PARTS = build(SEASON_LINEUP, revised=True)
+
+
+@lru_cache(maxsize=1)
+def legacy_season():
+    return build(SEASON_LINEUP)
 
 
 def parts_for(state):
-    return SEASON_PARTS if state and state.get("opening") else OPENING
+    if not state or not state.get("opening"):
+        return OPENING
+    if state.get("components", {}).get("catalog") == "2025-parts-v2":
+        return legacy_season()
+    return SEASON_PARTS

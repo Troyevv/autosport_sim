@@ -19,7 +19,7 @@ jobs:
           cmake -S native/race -B build-sanitized -DRACE_PYTHON=OFF -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-fsanitize=address,undefined -fno-omit-frame-pointer -fno-sanitize-recover=all"
           cmake --build build-sanitized --parallel
           ctest --test-dir build-sanitized --output-on-failure
-      - run: uv run --locked ruff check backend scripts/build_race.py scripts/inspect_track.py scripts/inspect_dynamics.py scripts/benchmark_dynamics.py
+      - run: uv run --locked ruff check backend scripts/build_race.py scripts/inspect_track.py scripts/inspect_dynamics.py scripts/benchmark_dynamics.py scripts/audit_dynamics.py scripts/compare_dynamics.py
       - run: uv run --locked --extra studio-tools python -m pytest -q
   interface:
     runs-on: ubuntu-24.04

@@ -74,7 +74,7 @@ def render(layout_id, entries, output, seconds, water):
         f"{seconds} с симуляции   ·   шаг 20 мс   ·   запись 5 Гц   ·   вода {water:g} мм",
     )
     channels = [
-        ("speed_m_s", "Скорость, м/с"),
+        ("speed_m_s", "Скорость, м/с · пунктир показывает профиль"),
         ("downforce_n", "Прижимная сила, кН"),
         ("rl_surface_c", "Задняя левая шина, поверхность, °C"),
         ("wake", "Интенсивность следа, доля"),
@@ -95,6 +95,15 @@ def render(layout_id, entries, output, seconds, water):
                 color=color,
                 lw=1.05,
             )
+            if key == "speed_m_s":
+                ax.plot(
+                    [t * 0.02 for t in values("tick")],
+                    values("profile_m_s"),
+                    color=color,
+                    ls="--",
+                    lw=0.7,
+                    alpha=0.7,
+                )
             ax.set_title(label, loc="left", fontsize=10, pad=3)
             ax.grid(axis="y", alpha=0.18)
             ax.set_xlim(0, seconds)

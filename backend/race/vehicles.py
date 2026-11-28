@@ -152,6 +152,7 @@ def freeze(
         radiator_inlet=p["cooling"]["inlet_area_m2"],
         inlet=p["chassis"]["inlet_area_m2"],
         base_drag=p["chassis"]["base_drag_area_m2"],
+        front_area=p["chassis"].get("front_lift_area_m2", 0),
         wing_area=wing.get("lift_area_m2", 0),
         wing_drag=wing.get("drag_area_m2", 0),
         floor_area=floor.get("lift_area_m2", 0),
