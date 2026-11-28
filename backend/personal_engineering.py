@@ -630,7 +630,12 @@ def working_contract(state, seat, day):
     if row and engineer and office:
         from .preparation import busy
 
-        if busy(state, row["person"], day, personnel.shifted(day, 1)):
+        if "duty_since" in office and day < state["date"]:
+            if any(
+                a <= day < b for a, b in unavailable_intervals(state)[row["person"]]
+            ):
+                return None
+        elif busy(state, row["person"], day, personnel.shifted(day, 1)):
             return None
     return row
 

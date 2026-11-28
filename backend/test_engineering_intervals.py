@@ -158,6 +158,13 @@ def test_paid_and_effective_engineer_have_different_experience(career):
         if r["entry"] == principal["entry"]
     )
     assert (row["principal"], row["engineer"]) == (regular, substitute)
+    # Finishing a preparation must not rewrite who worked on its last occupied day.
+    s["date"] = "2025-02-05"
+    s["preparations"]["post-race-debrief"] = dict(
+        start="2025-02-03", end="2025-02-04", status="completed", participants=[regular]
+    )
+    assert staff.working_person(s, principal, "2025-02-03") is None
+    assert staff.working_person(s, principal, "2025-02-04") == regular
 
 
 def test_product_grants_replacement_expiry_and_new_supplier(career):
