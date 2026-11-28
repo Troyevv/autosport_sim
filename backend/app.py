@@ -87,7 +87,8 @@ async def import_career(request: Request):
                 raise RuleError("Файл превышает допустимый размер.", 413)
             await run_in_threadpool(upload.write, chunk)
         upload.seek(0)
-        return await run_in_threadpool(archive.read_file, upload, resume=True)
+        # Pre-opening archives retain their original checkpoint until the career is opened.
+        return await run_in_threadpool(archive.read_file, upload)
 
 
 @app.get("/api/careers/{cid}")
