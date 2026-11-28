@@ -495,11 +495,9 @@ def apply(state, catalog, action, payload=None):
             raise RuleError("Нет ожидающего брифинга.", 409)
         event = state["pending"].pop(0)
         if "engineering_service" in state:
-            from .personal_engineering import briefing
+            from .personal_engineering import confirm_briefing
 
-            state["engineering_service"]["briefings"][event] = briefing(
-                state, catalog, event
-            )
+            confirm_briefing(state, catalog, event)
         state["checkpoint"] = "briefing:" + event
     else:
         raise RuleError("У этой должности нет полномочий на команду.", 403)

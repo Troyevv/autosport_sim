@@ -101,9 +101,21 @@ def dossier(state, world, pid, wet=False):
         )
     from .personal_engineering import appointments as service_posts
 
-    from .personal_engineering import entry_partners
+    from .personal_engineering import entry_partners, service_deals
 
     return dict(
+        assignment_choices=[
+            dict(org=c, series=series, product=axis)
+            for c, series, axis in sorted(
+                {
+                    (d["org"], d["series"], d["product"])
+                    for d in service_deals(state, world, maker=org)
+                    if d["status"] == "signed" and d["end"] > state["date"]
+                }
+            )
+        ]
+        if p["position"] == "technical-advisor" and seat and seat["org"] == org
+        else [],
         engineering_entries=entry_partners(state, world, pid)
         if p["position"] in ("driver", "race-engineer")
         else [],

@@ -99,19 +99,28 @@ def activate(state):
     posts = office["posts"]
     people = iter(roster())
     by_maker = defaultdict(set)
+    # Use the saved contracts. A supplier can have changed before the upgrade.
+    for (maker, client), spans in supply_periods(state, world).items():
+        if any(a <= state["date"] < b for a, b in spans):
+            by_maker[maker].add(client)
     engineers = {
         a["entry"]
         for a in world["assignments"].values()
         if a["position"] == "race-engineer"
     }
     for eid, e in sorted(world["entries"].items()):
-        for maker in world["cars"][e["car"]]["suppliers"].values():
-            by_maker[maker].add(e["org"])
         if eid not in engineers:
             key = f"{e['org']}:race-engineer:{e['championship']}:{eid}"
             posts[key] = position(key, e["org"], entry=e)
             add_person(state, world, next(people), "race-engineer", posts[key])
-    for maker, clients in sorted(by_maker.items()):
+    for maker in sorted(
+        {
+            a["org"]
+            for a in world["assignments"].values()
+            if a["position"] == "technical-advisor"
+        }
+    ):
+        clients = by_maker[maker]
         original = maker + ":technical-advisor"
         old = next(
             (
@@ -123,18 +132,20 @@ def activate(state):
             ),
             None,
         )
-        first = old or min(clients)
+        first = old or min(clients, default=None)
         posts[original] = dict(world["assignments"][original], client=first)
         for client in sorted(clients - {first}):
             key = client_post(maker, client)
             posts[key] = position(key, maker, client)
-            add_person(state, world, next(people), "technical-advisor", posts[key])
+            state["seats"][key] = []
+            if record := next(people, None):
+                add_person(state, world, record, "technical-advisor", posts[key])
         # A relief post is a normal job. Large portfolios retain a reserve on opening day.
         key = original + ":reserve"
         posts[key] = position(key, maker)
         state["seats"][key] = []
-        if len(clients) >= 7:
-            add_person(state, world, next(people), "technical-advisor", posts[key])
+        if len(clients) >= 7 and (record := next(people, None)):
+            add_person(state, world, record, "technical-advisor", posts[key])
     for org, team in world["organizations"].items():
         if team["kind"] == "team":
             key = org + ":race-engineer:reserve"
@@ -143,6 +154,21 @@ def activate(state):
             )
             state["seats"][key] = []
     office["covers"] = []
+    # Multi-programme teams can retain a substitute in the same payroll as their starters.
+    multi = sorted(
+        org
+        for org, team in world["organizations"].items()
+        if team["kind"] == "team" and len(team["programs"]) > 1
+    )
+    for org in multi[:2]:
+        if record := next(people, None):
+            add_person(
+                state,
+                world,
+                record,
+                "race-engineer",
+                posts[org + ":race-engineer:reserve"],
+            )
     for i, record in enumerate(people):
         add_person(
             state,
@@ -169,39 +195,61 @@ def ensure_post(state, maker, client):
     state["seats"][key] = []
 
 
+def service_deals(state, world, maker=None, client=None):
+    """Signed supply history, including pre-opening careers' original entry agreements."""
+    legacy = bool(state.get("engineering_service")) and not state.get("opening")
+    replaced = {}
+    for deal in state["market"]["supplies"].values():
+        if deal["status"] not in ("signed", "expired", "terminated") or (
+            client and deal["org"] != client
+        ):
+            continue
+        if legacy:
+            for eid in deal.get("entries", [None]):
+                key = (deal["org"], deal["series"], deal["product"], eid)
+                replaced[key] = min(deal["start"], replaced.get(key, deal["start"]))
+        if not maker or deal["sponsor"] == maker:
+            yield deal
+    if not legacy:
+        return
+    from .supplier_engineering import agreement
+
+    start = state["engineering_service"]["start"]
+    for entry in world["entries"].values():
+        if client and entry["org"] != client:
+            continue
+        for axis, supplier in world["cars"][entry["car"]]["suppliers"].items():
+            if maker and supplier != maker:
+                continue
+            key = (entry["org"], entry["championship"], axis)
+            end = min(
+                replaced.get((*key, k), "2026-01-01") for k in (None, entry["id"])
+            )
+            if end <= start:
+                continue
+            terms = agreement(state, world, entry, axis, start)
+            if terms and terms["maker"] == supplier:
+                yield dict(
+                    id=terms["id"],
+                    org=entry["org"],
+                    series=entry["championship"],
+                    product=axis,
+                    sponsor=supplier,
+                    status="signed",
+                    start=start,
+                    end=end,
+                    partnership=terms["partnership"],
+                    support=terms["support"],
+                )
+
+
 def supply_periods(state, world, maker=None, client=None):
     """Union of effective supply periods for each pair, including zero-data contracts."""
     intervals = defaultdict(list)
-    replaced = {}
-    for d in state["market"]["supplies"].values():
-        if (
-            d["status"] not in ("signed", "expired", "terminated")
-            or client
-            and d["org"] != client
-        ):
-            continue
-        if not state.get("opening"):
-            for eid in d.get("entries", [None]):
-                key = (d["org"], d["series"], d["product"], eid)
-                replaced[key] = min(d["start"], replaced.get(key, d["start"]))
-        if not maker or d["sponsor"] == maker:
-            intervals[d["sponsor"], d["org"]].append(
-                (d["start"], min(d["end"], d.get("ended") or d["end"]))
-            )
-    if not state.get("opening"):
-        for e in world["entries"].values():
-            if client and e["org"] != client:
-                continue
-            for axis, supplier in world["cars"][e["car"]]["suppliers"].items():
-                if maker and supplier != maker:
-                    continue
-                key = (e["org"], e["championship"], axis)
-                end = min(
-                    replaced.get((*key, k), "2026-01-01") for k in (None, e["id"])
-                )
-                intervals[supplier, e["org"]].append(
-                    (state["engineering_service"]["start"], end)
-                )
+    for d in service_deals(state, world, maker, client):
+        intervals[d["sponsor"], d["org"]].append(
+            (d["start"], min(d["end"], d.get("ended") or d["end"]))
+        )
     for pair, periods in intervals.items():
         merged = []
         for start, end in sorted(periods):
@@ -440,7 +488,6 @@ def allocate(state, world, key, terms, post, booking):
         key = f"{terms.sponsor}:technical-advisor:reserve:{len(reserves) + 1}"
         posts[key] = position(key, terms.sponsor)
         state["seats"][key] = []
-    world["assignments"].update(posts)
 
 
 def working_contract(state, seat, day):
@@ -504,6 +551,48 @@ def cover_entry(state, world, seat, booking, args):
     covers.append(
         dict(person=pid, seat=seat["id"], entry=entry["id"], start=start, end=end)
     )
+
+
+def npc_crew_cover(state, world, end):
+    """An NPC manager fills an uncovered entry using an available contracted substitute."""
+    from .domain import occupant_on
+
+    day = state["date"]
+    reserves = {}
+    for key, seat in state["engineering_service"]["posts"].items():
+        if not seat.get("engineering_reserve"):
+            continue
+        org = seat["org"]
+        manager = occupant_on(state["seats"].get(org + ":manager", []), day)
+        booking = working_contract(state, seat, day)
+        if booking and manager and manager != state["player_id"]:
+            reserves[org] = (seat, booking)
+    if not reserves:
+        return
+    for seat in world["assignments"].values():
+        org = seat["org"]
+        if (
+            org not in reserves
+            or seat["position"] != "race-engineer"
+            or not seat["entry"]
+        ):
+            continue
+        if working_person(state, seat, day):
+            continue
+        reserve, booking = reserves[org]
+        try:
+            cover_entry(
+                state,
+                world,
+                reserve,
+                booking,
+                dict(
+                    entry=seat["entry"], start=day, end=min(booking["end"] or end, end)
+                ),
+            )
+        except RuleError:
+            continue
+        del reserves[org]
 
 
 def briefing(state, world, event_id):
@@ -627,11 +716,36 @@ def briefing(state, world, event_id):
     return rows
 
 
+def confirm_briefing(state, world, event):
+    from .teamwork import record_event
+
+    rows = briefing(state, world, event)
+    for row in rows:
+        for review in row["feedback"]:
+            actor, peer = review["person"], row["engineer"]
+            for reference in review["reports"]:
+                source = "briefing-feedback/" + reference
+                # A later meeting can revisit the report without double counting trust.
+                if f"feedback|{actor}|{peer}|{source}" in state["cooperation_events"]:
+                    continue
+                outcome = (
+                    "confirmed-feedback"
+                    if review["decision"] == "endorse"
+                    else "unclear-feedback"
+                )
+                record_event(state, world, actor, peer, outcome, source, state["date"])
+    state["engineering_service"]["briefings"][event] = rows
+
+
 def desk(state, world, org, maker):
     """One row per dated person/client link. Display separate contractual rights."""
     from .opening.partners import support_access
 
-    deals = list(state["market"]["supplies"].values())
+    deals = list(
+        service_deals(
+            state, world, maker=org if maker else None, client=None if maker else org
+        )
+    )
     result = []
     for a in appointments(
         state, world, maker=org if maker else None, client=None if maker else org

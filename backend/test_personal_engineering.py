@@ -289,6 +289,7 @@ def test_client_growth_reserves_one_employee_before_posting_charges(career):
     assert before == s["finance"]["instalments"]
     assert "growth/" + clients[1] not in s["market"]["supplies"]
 
+    w = lineup_for(s)
     post = w["assignments"][reserve + ":2"]
     used = {
         r["person"]
@@ -380,6 +381,12 @@ def test_briefing_feedback_diagnostic_evidence_and_expiring_access(career):
     after = crew()
     assert request["advisor"] == g.advisor
     assert after["feedback"][0]["reports"] == [report.reference]
+    engineering.confirm_briefing(s, w, event["id"])
+    key = f"feedback|{report.author}|{after['engineer']}"
+    change = s["relationships"][key]["trust_change"]
+    assert change in (3, -1)
+    engineering.confirm_briefing(s, w, event["id"])
+    assert s["relationships"][key]["trust_change"] == change
     reviewer = next(a for a in after["consultants"] if a["person"] == g.advisor)
     assert request["id"] in reviewer["cases"] and "review_quality" in reviewer
     assert support.evidence(s, w, request)[0]["reference"] == report.reference
@@ -396,3 +403,33 @@ def test_briefing_feedback_diagnostic_evidence_and_expiring_access(career):
     assert not support.evidence(s, w, request)
     s["date"] = "2025-02-03"
     assert observation_grant(s, w, e, dated) is None
+
+
+def test_npc_manager_uses_its_contracted_relief(career):
+    _, state, world = career
+    day = state["date"]
+    reserve = next(
+        p
+        for p in world["assignments"].values()
+        if p.get("engineering_reserve") and state["seats"][p["id"]]
+    )
+    seat = next(
+        p
+        for p in world["assignments"].values()
+        if p["org"] == reserve["org"]
+        and p["position"] == "race-engineer"
+        and p["entry"]
+    )
+    previous = state["seats"][seat["id"]][0]
+    previous["end"] = day
+    engineering.npc_crew_cover(state, world, "2025-02-04")
+    person = state["seats"][reserve["id"]][0]["person"]
+    assert engineering.working_person(state, seat, day) == person
+    assert (
+        len(
+            [c for c in state["engineering_service"]["covers"] if c["person"] == person]
+        )
+        == 1
+    )
+    assert engineering.working_person(state, seat, "2025-02-04") is None
+    assert state["seats"][seat["id"]] == [previous]

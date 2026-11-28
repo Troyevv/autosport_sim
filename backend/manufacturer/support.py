@@ -456,6 +456,25 @@ def resolve(state, world, org, order):
             "Диагностика",
             "completed",
         )
+        if (
+            "engineering_service" in state
+            and state["people"][report["reviewer"]]["position"] == "technical-advisor"
+        ):
+            from ..teamwork import record_event
+
+            chief = person(state, row["client"], "chief-engineer")
+            if chief:
+                record_event(
+                    state,
+                    world,
+                    report["reviewer"],
+                    chief,
+                    "verified-analysis"
+                    if any(report["causes"].values())
+                    else "incomplete-analysis",
+                    row["id"],
+                    state["date"],
+                )
     row["proposal"] = brief["id"]
     row.update(
         status=choice,

@@ -331,7 +331,7 @@ export function PersonnelDirectory() {
     return [
       s.duty ? dutyNames[s.duty] || s.duty : positionName(s.position),
       s.client && orgName(s.client),
-      s.id.endsWith(':reserve') && !s.duty && 'Резерв',
+      (s.engineering_reserve || (s.position === 'technical-advisor' && !s.client)) && 'Резерв',
       s.series && seriesName(s.series),
       e && '№ ' + e.number,
     ]
@@ -4063,7 +4063,11 @@ function AdvisorAssignments({ person, data }) {
 }
 function AdvisorForm({ person, data }) {
   const p = usePeople(),
-    { g, c, clients, state, update, notify } = p
+    { g, c } = p
+  const clients = (data.assignment_choices || []).map((row) => ({
+    ...row,
+    productName: p.world.products?.[row.product]?.name || row.product,
+  }))
   const [query, setQuery] = useState(''),
     [series, setSeries] = useState(''),
     [selected, select] = useState(''),

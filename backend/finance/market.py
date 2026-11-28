@@ -1150,7 +1150,6 @@ def tick(state, world):
                 "pockets": dict(state["finance"]["pockets"]),
             },
         }
-        staged_world = world
         if "engineering_service" in state:
             staged["support"] = list(state["support"])
             staged["seats"] = dict(state["seats"])
@@ -1158,9 +1157,8 @@ def tick(state, world):
                 **state["engineering_service"],
                 "posts": dict(state["engineering_service"]["posts"]),
             }
-            staged_world = dict(world, assignments=dict(world["assignments"]))
         try:
-            respond(staged, staged_world, reply, t["org"], deferred=True)
+            respond(staged, world, reply, t["org"], deferred=True)
         except RuleError as err:
             o.update(status="rejected", reason=str(err))
         else:
@@ -1183,7 +1181,6 @@ def tick(state, world):
                 state["engineering_service"]["posts"].update(
                     staged["engineering_service"]["posts"]
                 )
-                world["assignments"].update(staged["engineering_service"]["posts"])
             market.update(staged["market"])
             settle(state)
 

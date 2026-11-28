@@ -468,6 +468,10 @@ def advance_dates(state, catalog, target):
                 ),
             ]
         )
+        if "engineering_service" in state:
+            from .personal_engineering import npc_crew_cover
+
+            npc_crew_cover(state, catalog, day)
         if "research" in state:
             from . import research
 
@@ -497,6 +501,10 @@ def advance_dates(state, catalog, target):
             from .finance import market
 
             market.tick(state, catalog)
+            if "engineering_service" in state:
+                from .catalog import lineup_for
+
+                catalog = lineup_for(state)
         if "control" in state:
             from .finance import budget
 

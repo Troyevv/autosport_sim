@@ -4837,6 +4837,15 @@ function CaseDossier({ id }) {
     </div>
   )
 }
+const SUPPORT_CHANNELS = {
+  distance: 'Дистанция',
+  temperature: 'Температура',
+  feedback: 'Обратная связь',
+  inspection: 'Контроль качества',
+  wear: 'Износ',
+}
+const channelNames = (channels) => channels.map((key) => SUPPORT_CHANNELS[key] || key).join(' · ')
+
 function Advisors() {
   const e = useE(),
     d = e.desks.manufacturer
@@ -4909,23 +4918,22 @@ function Advisors() {
               <Tag>
                 {a.start > e.date ? 'Будущее назначение' : a.end <= e.date ? 'Завершено' : 'Действует'}
               </Tag>
-              <p>
-                {(a.channels || [])
-                  .map(
-                    (x) =>
-                      ({
-                        distance: 'Дистанция',
-                        temperature: 'Температура',
-                        feedback: 'Обратная связь',
-                        inspection: 'Контроль качества',
-                        wear: 'Износ',
-                      })[x] || x,
-                  )
-                  .join(' · ')}
-              </p>
-              {a.rights?.length > 0 && <details><summary>Права по договорам</summary>
-                {a.rights.map((r) => <p key={r.agreement}>{AXES[r.product]} · {e.world.championships?.[r.series]?.name} · {dateLabel(r.start)} — {dateLabel(r.end)} · {r.channels.length ? r.channels.map((c) => ({distance:'Дистанция',wear:'Износ',feedback:'Обратная связь',temperature:'Температура'})[c] || c).join(', ') : 'Без доступа к телеметрии'}</p>)}
-              </details>}
+              <p>{channelNames(a.channels || [])}</p>
+              {a.rights?.length > 0 && (
+                <details>
+                  <summary>Права по договорам</summary>
+                  {a.rights.map((right) => (
+                    <p key={right.agreement}>
+                      {AXES[right.product] || right.product}
+                      {right.series && ' · ' + e.world.championships[right.series]?.name}
+                      {' · '}{dateLabel(right.start)} — {dateLabel(right.end)}
+                      {' · '}{right.channels.length
+                        ? channelNames(right.channels) + ' · загрузка ' + right.load + '%'
+                        : 'Без доступа к телеметрии'}
+                    </p>
+                  ))}
+                </details>
+              )}
               {a.load != null && <Progress value={a.load} label="Загрузка на поддержке" />}
             </article>
           ))
