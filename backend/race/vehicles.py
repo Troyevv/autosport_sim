@@ -3,6 +3,7 @@
 from dataclasses import asdict, dataclass
 from math import isfinite
 
+from .drivers import career_driver, profile
 from .. import components
 from ..catalog import SEASON_LINEUP, lineup_for
 from ..components.catalog import SEASON_PARTS
@@ -248,7 +249,7 @@ def opening_vehicle(entry_id, *, setup=None, compound=None, fuel=None, temp=25.0
         for slot, iid in SEASON_PARTS.installed[entry_id].items()
     }
     config = {k: car[k] for k in ("season", "generation", "regulation", "concept")}
-    return freeze(
+    result = freeze(
         entry,
         car,
         config,
@@ -261,8 +262,22 @@ def opening_vehicle(entry_id, *, setup=None, compound=None, fuel=None, temp=25.0
         temp,
     )
 
+    person = SEASON_LINEUP["profiles"][entry["crew"][0]]
+    result["driver"] = profile(person, person["skills"], None)
+    return result
 
-def career_vehicle(state, entry_id, *, setup=None, compound=None, fuel=None, temp=25.0):
+
+def career_vehicle(
+    state,
+    entry_id,
+    *,
+    setup=None,
+    compound=None,
+    fuel=None,
+    temp=25.0,
+    driver=None,
+    wet=False,
+):
     """Admit the fitted configuration on the date of the authoritative career state."""
     world = lineup_for(state)
     entry = world["entries"][entry_id]
@@ -291,5 +306,6 @@ def career_vehicle(state, entry_id, *, setup=None, compound=None, fuel=None, tem
         fuel,
         temp,
     )
+    result["driver"] = career_driver(state, world, entry, driver, wet)
     result["day"] = state["date"]
     return result

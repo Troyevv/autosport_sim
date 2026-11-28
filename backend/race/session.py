@@ -65,7 +65,14 @@ WHEEL_CHANNELS = (
 CHANNELS = (
     BASE_CHANNELS
     + tuple(f"{wheel}_{name}" for wheel in CORNERS for name in WHEEL_CHANNELS)
-    + ("profile_m_s", "profile_curvature_m_inv", "profile_offset_m")
+    + (
+        "profile_m_s",
+        "profile_curvature_m_inv",
+        "profile_offset_m",
+        "wheelspin",
+        "clutch",
+        "push_force_n",
+    )
 )
 INDEX = {name: i for i, name in enumerate(CHANNELS)}
 
@@ -80,6 +87,11 @@ class Command:
     preference: float = 0.0
     drs: bool = True
     gear: int = 0
+    flag: int = 0
+    clutch: float = 1.0
+    push: bool = False
+    reverse: bool = False
+    ignition: bool = True
 
 
 class Session:
@@ -98,9 +110,12 @@ class Session:
         kind="test",
         layout_version=VERSION,
         tyre_sets=None,
+        formation=False,
     ):
         if kind not in {"test", "practice", "qualifying", "sprint", "race"}:
             raise ValueError("Unknown session kind")
+        if formation and kind not in {"race", "sprint"}:
+            raise ValueError("Formation requires a race start")
         layout = load_layout(layout_id, layout_version)
         field = deepcopy(field)
         envelopes = [
@@ -120,6 +135,9 @@ class Session:
                 row["start"]["tyres"] = deepcopy(saved["tyres"])
             row["start"].setdefault("s", s)
             row["start"].setdefault("d", d)
+        people = [row["driver"]["id"] for row in field if "driver" in row]
+        if len(people) != len(set(people)):
+            raise ValueError("Driver admitted to two entries")
         serials = [
             part["instance"] for row in field for part in row["components"].values()
         ]
@@ -136,8 +154,12 @@ class Session:
             water_mm=water_mm,
             drs_enabled=drs_enabled,
             kind=kind,
+            formation=formation,
         )
         conditions = dict(
+            seed=seed,
+            race_start=kind in {"race", "sprint"},
+            formation=formation,
             ambient=ambient,
             track_c=track_c,
             water_mm=water_mm,
@@ -163,7 +185,14 @@ class Session:
         for entry in entries:
             if world["entries"][entry]["championship"] != event["series"]:
                 raise ValueError("Entry is outside event series")
-            field.append(career_vehicle(state, entry, **(options or {}).get(entry, {})))
+            field.append(
+                career_vehicle(
+                    state,
+                    entry,
+                    wet=conditions.get("water_mm", 0) > 0,
+                    **(options or {}).get(entry, {}),
+                )
+            )
         conditions.setdefault("seed", state["setup"]["seed"])
         return cls(event_layout(event), field, **conditions)
 
@@ -201,20 +230,20 @@ class Session:
         with self._lock:
             return dict(
                 version=1,
-                physics_revision=2,
+                physics_revision=3,
                 config=deepcopy(self._config),
                 native=self._native.checkpoint(),
             )
 
     @classmethod
     def resume(cls, saved):
-        if saved["version"] != 1 or saved.get("physics_revision", 1) not in {1, 2}:
+        if saved["version"] != 1 or saved.get("physics_revision", 1) not in {1, 2, 3}:
             raise ValueError("Unsupported race physics checkpoint")
         result = cls(**saved["config"])
         result._native.restore(saved["native"])
         return result
 
-    def _check_context(self, vehicle, context):
+    def _driver_context(self, vehicle, context):
         if "day" not in vehicle:
             raise ValueError("Statistics require a dated career admission")
         if (
@@ -238,14 +267,19 @@ class Session:
         ):
             raise ValueError("Telemetry context differs from frozen admission")
 
+        driver = vehicle.get("driver", {}).get("id")
+        if context.person is not None and driver and context.person != driver:
+            raise ValueError("Statistics driver differs from frozen admission")
+        return context.model_copy(update={"person": driver or context.person})
+
     def event_facts(self, batch, contexts):
-        """Timed laps and observed contacts. Record certification belongs to race control."""
+        """Archive measured race facts and private decisions on the shared #35 contract."""
         entries = {v["entry"]: v for v in self._config["field"]}
         for event in batch["events"]:
             entry = event["entry"]
             vehicle = entries[entry]
             context = contexts[entry]
-            self._check_context(vehicle, context)
+            context = self._driver_context(vehicle, context)
             end_us = round(event["time_s"] * 1e6)
             if event["kind"] == "lap":
                 start = round((event["time_s"] - event["elapsed_s"]) * 1e6)
@@ -262,17 +296,46 @@ class Session:
                     eligible_for_record=False,
                 )
             else:
+                code = event["kind"]
+                internal = code in {
+                    "attack",
+                    "counterattack",
+                    "attack-aborted",
+                    "crossover",
+                    "defence",
+                    "steering-error",
+                    "missed-braking",
+                }
+                kind = (
+                    "strategy"
+                    if internal
+                    else "position"
+                    if code in {"position", "attack-completed"}
+                    else "incident"
+                )
+                source = f"{entry}/{event['other']}/{end_us}"
                 data = dict(
-                    kind="incident",
-                    source_id=f"{entry}/{event['other']}/{end_us}",
+                    kind=kind,
+                    source_id=source if code == "contact" else f"{code}/{source}",
                     at_us=end_us,
                     related_event=None,
-                    code="vehicle-contact",
+                    code="vehicle-contact" if code == "contact" else code,
+                    measurements=(
+                        [
+                            dict(
+                                quantity="position",
+                                unit="place",
+                                value=event["position"],
+                            )
+                        ]
+                        if "position" in event
+                        else []
+                    ),
                 )
             yield Fact(
                 version=1,
                 day=vehicle["day"],
-                access="public",
+                access="internal" if data["kind"] == "strategy" else "public",
                 data=dict(data, context=context),
             )
 
@@ -284,7 +347,7 @@ class Session:
         for entry, rows in batch["rows"].items():
             vehicle = entries[entry]
             context = contexts[entry]
-            self._check_context(vehicle, context)
+            context = self._driver_context(vehicle, context)
             if any(b[0] - a[0] != period_ticks for a, b in zip(rows, rows[1:])):
                 raise ValueError("Samples have a different recording period")
             for index, col in enumerate(CHANNELS[1:], 1):

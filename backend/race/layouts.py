@@ -9,7 +9,8 @@ from _race_space import Body, Cursor, CONTRACT_VERSION, Lines, Road, Track
 
 from .vehicles import CLASSES
 
-VERSION = "2025.1"
+BASE_VERSION = "2025.1"
+VERSION = "2025.2"
 DATA = Path(__file__).with_name("data")
 ALIASES = {
     "circuit-zandvoort-nl": "zandvoort:gp",
@@ -81,9 +82,13 @@ def event_layout(event):
 
 @lru_cache
 def _files(version):
-    if version != VERSION:
+    if version not in {BASE_VERSION, VERSION}:
         raise KeyError(version)
-    return {p.stem.replace("--", ":"): p for p in (DATA / version).glob("*.json")}
+    files = {} if version == BASE_VERSION else _files(BASE_VERSION).copy()
+    files.update(
+        {p.stem.replace("--", ":"): p for p in (DATA / version).glob("*.json")}
+    )
+    return files
 
 
 def layout_ids(version=VERSION):
@@ -144,13 +149,15 @@ class Layout:
 
 @lru_cache(maxsize=64)
 def load_layout(layout_id, version=VERSION):
-    data = json.loads(_files(version)[layout_id].read_bytes())
+    path = _files(version)[layout_id]
+    data = json.loads(path.read_bytes())
     if (data["contract_version"], data["id"], data["version"]) != (
         CONTRACT_VERSION,
         layout_id,
-        version,
+        path.parent.name,
     ):
         raise ValueError("geometry identity or version mismatch")
+    data["version"] = version
     sectors = data["sectors"]
     if sorted(set(sectors)) != sectors or not all(0 < gate < 1 for gate in sectors):
         raise ValueError("invalid split order")

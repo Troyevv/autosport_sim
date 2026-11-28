@@ -1,0 +1,5 @@
+series,cars,seconds,seed,attacks,completed,aborted,pending,defences,counters,crossovers,contacts,errors,blocked,recovered,laps,min_laps,moving,wall_s,car_ticks_s,two_headless_wall_s
+kart-ok,98,600,27,1702,205,1478,19,2716,333,731,164,307,1,1,498,5,98,7.1,414097,6.475
+kart-okj,89,600,27,1528,62,1454,12,1998,107,921,20,204,33,33,385,4,89,5.307,503078,5.53
+f1,20,600,27,84,2,82,0,46,6,17,0,11,0,0,100,5,20,1.019,589000,1.093
+wec,36,600,27,255,40,215,0,69,23,112,11,50,0,0,133,3,36,1.449,745523,1.498

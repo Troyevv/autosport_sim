@@ -250,7 +250,11 @@ def test_aero_concepts_exchange_advantage_between_tracks():
     # Shipped Ferrari and Aston Martin serials, same fuel, compound and controls.
     def flying_lap(track, entry, setup=None):
         s = Session(track, [opening_vehicle(entry, setup=setup, temp=95, fuel=35)])
-        return s.advance(15000, sample_every=0)["events"][1]["elapsed_s"]
+        return [
+            e["elapsed_s"]
+            for e in s.advance(15000, sample_every=0)["events"]
+            if e["kind"] == "lap"
+        ][1]
 
     # A change in layout alters the difference between these two concepts.
     # The identity of the winning constructor is not a physics invariant.
@@ -274,6 +278,7 @@ def test_short_run_and_long_stint_have_different_compound_optima():
         return [
             e["elapsed_s"]
             for e in Session(MONZA, [v]).advance(150000, sample_every=0)["events"]
+            if e["kind"] == "lap"
         ]
 
     hard, soft = stint("C1"), stint("C5")

@@ -21,7 +21,8 @@ void validate(const Tyre &t) {
 }
 void validate(const Control &c) {
     require(in(c.throttle, 0, 1) && in(c.brake, 0, 1) && in(c.steer, -.65, .65) &&
-                in(c.deploy, 0, 1) && in(c.preference, -1, 1),
+                in(c.clutch, 0, 1) && in(c.flag, 0, 2) && in(c.deploy, 0, 1) &&
+                in(c.preference, -1, 1),
             "invalid control");
 }
 double forward_delta(const Cursor &a, const State &b, double len) {
@@ -104,18 +105,19 @@ void resolve_contacts(std::vector<Step> &steps, const std::vector<Vehicle> &cars
         vb.y += impulse * ib * n.y;
         move(first);
         now = std::lerp(now, 1., first);
-        auto redirect = [&](Step &st, Vec v) {
+        auto redirect = [&](Step &st, Vec v, bool reversing) {
             st.hit = true;
             auto &m = st.motion;
             double yaw = m.from.yaw;
             m.to.yaw = yaw;
             m.to.centre.x = m.from.centre.x + v.x * (1 - now) * dt;
             m.to.centre.y = m.from.centre.y + v.y * (1 - now) * dt;
-            st.impact_speed = std::max(0., v.x * std::cos(yaw) + v.y * std::sin(yaw));
+            st.impact_speed =
+                std::max(0., (reversing ? -1. : 1.) * (v.x * std::cos(yaw) + v.y * std::sin(yaw)));
             st.impact_lateral = -v.x * std::sin(yaw) + v.y * std::cos(yaw);
         };
-        redirect(a, va);
-        redirect(b, vb);
+        redirect(a, va, cars[ai].state.reversing);
+        redirect(b, vb, cars[bi].state.reversing);
         // A pinched cluster may have no free displacement in the remaining
         // interval. Keep its boxes at time of impact, continue the other cars.
         ++a.impacts;
@@ -158,7 +160,7 @@ Sample sample(const Vehicle &car, std::int64_t tick) {
                   s.fuel,
                   s.energy,
                   s.coolant,
-                  double(s.gear),
+                  double(s.reversing ? -1 : s.gear),
                   r.rpm,
                   r.power,
                   r.electric_kw,
@@ -192,6 +194,7 @@ Sample sample(const Vehicle &car, std::int64_t tick) {
         for (auto series : {&profile.speed, &profile.curvature, &profile.offset})
             row.push_back(std::lerp((*series)[i], (*series)[j], u - std::floor(u)));
     }
+    row.insert(row.end(), {r.wheelspin, r.clutch, r.push_force});
     return row;
 }
 } // namespace
@@ -246,10 +249,32 @@ Dynamics::Dynamics(const Track &track, Conditions env, std::vector<std::pair<Spe
         while (s.gear < p.gears &&
                start.v * ratios[s.gear - 1] / p.radius > .95 * p.redline * std::acos(-1.) / 30.)
             ++s.gear;
-        cars_.push_back(
-            {std::move(p), s, {}, {}, std::move(ratios), start.d, road.frame(s.cursor.s, s.d)});
+        cars_.push_back({std::move(p),
+                         s,
+                         {},
+                         {},
+                         std::move(ratios),
+                         start.d,
+                         start.s,
+                         road.frame(s.cursor.s, s.d)});
+        initialise_driver(cars_.back(), env_);
     }
     require(track.overlaps(bodies).empty(), "overlapping grid envelopes");
+    // Unwrap the occupied grid arc across zero, independent of entry order.
+    std::vector<double> stations;
+    for (const auto &car : cars_)
+        stations.push_back(car.grid_station);
+    std::sort(stations.begin(), stations.end());
+    double first = stations.front(), empty = road.length() + first - stations.back();
+    for (size_t i = 1; i < stations.size(); ++i) {
+        double gap = stations[i] - stations[i - 1];
+        if (gap > empty) {
+            empty = gap;
+            first = stations[i];
+        }
+    }
+    for (auto &car : cars_)
+        car.grid_lap = car.grid_station < first ? 1 : 0;
 }
 void Dynamics::enqueue(std::vector<Order> orders) {
     require(orders.size() + orders_.size() <= 32768, "control queue capacity exceeded");
@@ -300,6 +325,26 @@ void Dynamics::restore(std::int64_t tick, std::vector<State> states, std::vector
                 "invalid checkpoint gear or timing");
         for (double time : s.split_times)
             require(in(time, -1, tick * dt), "invalid sector time");
+        const auto &m = s.mind;
+        require(in(m.tactic, 0, int(Tactic::pit)) && in(m.position, 0, cars_.size()) &&
+                    in(m.lane, -1e7, 1e7) && in(m.gap, -1e7, 1e7) && in(m.speed_limit, 0, 2000) &&
+                    in(m.sense_time, 0, tick * dt) && in(m.side, -1, 1) &&
+                    in(m.radio_line, -1, 1) && in(m.crawl_speed, -3, 4) &&
+                    in(m.crawl_steer, -.65, .65),
+                "invalid checkpoint driver plan");
+        for (auto value :
+             {m.attention, m.confidence, m.fatigue, m.tension, m.composure, m.familiarity,
+              m.pedal_limit, m.deploy, m.previous_throttle, m.radio_deploy, m.grip_estimate,
+              m.wheelspin, m.lock, m.wake, m.blend, m.brake_ceiling})
+            require(in(value, 0, 1), "invalid checkpoint driver feedback");
+        for (auto clock : {m.next_scan, m.attack_ticks, m.retry_tick, m.rival_until, m.release_tick,
+                           m.error_until, m.blocked_ticks, m.green_tick})
+            require(clock >= 0 && clock <= 100000001000LL, "invalid checkpoint driver clock");
+        for (const auto &id : {m.target, m.rival, m.defended})
+            require(id.empty() ||
+                        (id != p.id && std::any_of(cars_.begin(), cars_.end(),
+                                                   [&](const auto &v) { return v.spec.id == id; })),
+                    "unknown checkpoint opponent");
         validate(s.command);
     }
     // Called only on a freshly reconstructed session.
@@ -322,10 +367,33 @@ void Dynamics::step(Batch &batch) {
         auto it = std::lower_bound(
             cars_.begin(), cars_.end(), o.entry,
             [](const Vehicle &c, const std::string &id) { return c.spec.id < id; });
+        if (!o.command.automatic && !it->state.mind.target.empty()) {
+            batch.events.push_back({"attack-aborted", it->spec.id, it->state.mind.target,
+                                    tick_ * dt, 0, it->state.completed_laps});
+            it->state.mind.target.clear();
+        }
         it->state.command = o.command;
     }
     if (consumed)
         orders_.erase(orders_.begin(), orders_.begin() + consumed);
+    if (env_.formation && !cars_.front().state.mind.formation_done) {
+        // The starter observes the grid and broadcasts a single release signal.
+        bool ready = std::all_of(cars_.begin(), cars_.end(), [&](const Vehicle &c) {
+            double left = (1 - c.state.cursor.lap) * len + c.grid_station - c.state.cursor.s;
+            return c.state.mind.rolling ? left <= 0 : left < 2 && c.state.v < 1;
+        });
+        if (ready) {
+            for (auto &c : cars_) {
+                auto &m = c.state.mind;
+                m.formation_done = true;
+                m.roll_speed = c.state.v;
+                m.release_tick += tick_;
+                m.green_tick += tick_;
+                c.state.last_gate = -1;
+                c.state.completed_laps = 0;
+            }
+        }
+    }
     std::vector<Step> steps(cars_.size());
     for (size_t i = 0; i < cars_.size(); ++i) {
         auto &car = cars_[i];
@@ -338,7 +406,6 @@ void Dynamics::step(Batch &batch) {
         st.motion = {pose(car.frame, s.heading), {}, p.length, p.width, p.height};
         st.motion.to = st.motion.from;
 
-        double gap = 1e6, leader_v = 0;
         for (size_t j = 0; j < cars_.size(); ++j) {
             if (i == j)
                 continue;
@@ -349,13 +416,6 @@ void Dynamics::step(Batch &batch) {
                 continue;
             const double space = delta - (p.length + other.spec.length) * .5;
             double lateral = std::abs(t.d - s.d);
-            if ((lateral < (p.width + other.spec.width) * .5 + .35 ||
-                 (s.command.automatic && t.command.automatic && t.v > 1 &&
-                  std::abs(s.command.preference - t.command.preference) < .1)) &&
-                space < gap) {
-                gap = space;
-                leader_v = t.v;
-            }
             double wake_width = (other.spec.width + p.width) * .32 + .022 * delta;
             double source =
                 std::clamp(.50 + .23 * other.spec.base_drag + .08 * other.spec.wing_area, .4, 1.);
@@ -366,9 +426,13 @@ void Dynamics::step(Batch &batch) {
                                      .5 * lateral * lateral / (wake_width * wake_width));
             st.wake = std::max(st.wake, signal);
         }
-        if (s.command.automatic)
+        if (s.command.automatic) {
             plan(track_, car, env_, geometry_);
-        st.input = control(track_, car, gap, leader_v);
+            think(track_, env_, cars_, i, tick_, batch);
+        }
+        const auto &mind = s.mind;
+        double gap = mind.gap + (mind.lead_v - s.v) * (tick_ * dt - mind.sense_time);
+        st.input = control(track_, car, gap, mind.lead_v);
         if (p.drs && env_.drs_enabled && env_.water_mm < .5 && st.input.drs &&
             st.input.brake == 0) {
             for (size_t z = 0; z < env_.zones.size(); ++z) {
@@ -428,6 +492,30 @@ void Dynamics::step(Batch &batch) {
             s.ax = (s.v - st.initial_v) / dt;
             s.contacted = true;
         }
+        auto &mind = s.mind;
+        if (mind.launch_pending && (mind.rolling || s.v > .01)) {
+            const char *kind = tick_ < mind.green_tick ? "false-start"
+                               : mind.rolling          ? "rolling-start"
+                                                       : "standing-start";
+            batch.events.push_back({kind, car.spec.id, "", (tick_ + 1) * dt, 0, s.completed_laps});
+            mind.launch_pending = false;
+        }
+        mind.previous_throttle = car.reading.throttle;
+        mind.last_brake = car.reading.brake;
+        mind.wheelspin = car.reading.wheelspin;
+        mind.wake = st.wake;
+        mind.lock = 0;
+        for (const auto &w : car.reading.wheels)
+            mind.lock = std::max(mind.lock, w.lock);
+        // A locking tyre gives the driver a measured safe pedal pressure.
+        // Reapply progressively as the car straightens and load returns.
+        if (mind.lock > .01)
+            mind.brake_ceiling =
+                std::min(mind.brake_ceiling,
+                         mind.last_brake / (1 + mind.lock) * (.89 + .06 * car.spec.driver.braking));
+        else
+            mind.brake_ceiling =
+                std::min(1., mind.brake_ceiling + dt * (.035 + .05 * car.spec.driver.braking));
         s.contact_peers = st.peers;
         double moved = forward_delta(st.origin, s, len);
         if (moved <= 0)
@@ -446,7 +534,7 @@ void Dynamics::step(Batch &batch) {
         double finish = crossing(0);
         if (finish >= 0 && s.cursor.lap > s.last_gate_index) {
             s.last_gate_index = s.cursor.lap;
-            if (s.last_gate >= 0)
+            if (s.last_gate >= 0 && s.mind.formation_done)
                 batch.events.push_back({"lap", car.spec.id, "", finish, finish - s.last_gate,
                                         ++s.completed_laps, s.split_times});
             s.last_gate = finish;
@@ -467,6 +555,30 @@ void Dynamics::step(Batch &batch) {
                 latest = std::max(latest, cars_[j].state.detection_time[zone]);
         cars_[i].state.eligible[zone] = time - latest <= 1.;
         cars_[i].state.detection_time[zone] = time;
+    }
+    for (auto &c : cars_)
+        finish_attack(c, cars_, len, tick_ + 1, batch);
+    std::vector<size_t> order(cars_.size());
+    for (size_t i = 0; i < order.size(); ++i)
+        order[i] = i;
+    std::stable_sort(order.begin(), order.end(), [&](size_t a, size_t b) {
+        const auto &u = cars_[a].state.cursor, &v = cars_[b].state.cursor;
+        return std::pair{u.lap + cars_[a].grid_lap, u.s} >
+               std::pair{v.lap + cars_[b].grid_lap, v.s};
+    });
+    for (size_t i = 0; i < order.size(); ++i) {
+        auto &c = cars_[order[i]];
+        auto &pos = c.state.mind.position;
+        if (pos != int(i + 1) && (pos || env_.race_start))
+            batch.events.push_back({"position",
+                                    c.spec.id,
+                                    "",
+                                    (tick_ + 1) * dt,
+                                    0,
+                                    c.state.completed_laps,
+                                    {},
+                                    int(i + 1)});
+        pos = int(i + 1);
     }
     ++tick_;
 }

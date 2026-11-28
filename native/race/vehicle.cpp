@@ -103,6 +103,22 @@ void integrate(const Track &track, Vehicle &car, const Conditions &env, double w
     const auto &road = track.ribbon(Road::circuit);
     const auto &frame = car.frame;
     const double v = s.v, mass = p.dry_mass + p.driver_mass + s.fuel;
+    if (input.reverse != s.reversing) {
+        if (v < .10)
+            s.reversing = input.reverse;
+        else {
+            input.throttle = 0;
+            input.brake = std::max(.35, input.brake);
+            input.push = false;
+        }
+    }
+    if (s.reversing) {
+        s.gear = 1;
+        input.deploy = 0;
+        if (v > 2 || p.kart)
+            input.throttle = 0;
+    }
+    const double direction = s.reversing ? -1. : 1.;
     const double normal_g =
         gravity / std::sqrt(1 + square(frame.grade) + square(frame.section.crossfall));
     auto aero = aerodynamics(p, v, wake, drs, frame.section.roughness);
@@ -120,7 +136,7 @@ void integrate(const Track &track, Vehicle &car, const Conditions &env, double w
         mass * (v * v * k + normal_g * frame.section.crossfall + slip_correction);
     double rpm = v / p.radius * car.ratios[s.gear - 1] / radians_per_rpm;
     s.shift_left = std::max(0., s.shift_left - h);
-    if (!s.shift_left && !p.kart) {
+    if (!s.shift_left && !p.kart && !s.reversing) {
         int gear = s.gear;
         if (input.gear > 0) {
             int requested =
@@ -141,6 +157,11 @@ void integrate(const Track &track, Vehicle &car, const Conditions &env, double w
     }
     // Launch clutch for cars; direct drive karts require a rolling start.
     rpm = p.kart ? rpm : std::max(rpm, .37 * p.redline);
+    if (!input.ignition) {
+        rpm = 0;
+        input.deploy = 0;
+        input.clutch = 0;
+    }
     const double omega = std::max(1., rpm * radians_per_rpm);
     const double torque_shape = std::clamp(1 - .95 * square(rpm / p.redline - .67), .15, 1.);
     double throttle = (s.shift_left > 0 || rpm > p.redline || s.fuel <= 0 || (p.kart && rpm < 600))
@@ -155,8 +176,9 @@ void integrate(const Track &track, Vehicle &car, const Conditions &env, double w
         motor = std::min(motor, std::max(0., p.lap_deploy_kj - s.used_kj) / h);
     motor = std::min(motor, p.power_kw);
     const double shaft_kw =
-        throttle * std::min({p.power_kw, ice + motor,
-                             std::min(p.input_nm, p.torque_nm * torque_shape) * omega / 1000.});
+        input.clutch * throttle *
+        std::min({p.power_kw, ice + motor,
+                  std::min(p.input_nm, p.torque_nm * torque_shape) * omega / 1000.});
     const double drive = 1000 * shaft_kw / omega * car.ratios[s.gear - 1] * p.efficiency / p.radius;
     const double motor_fraction = shaft_kw > 0 ? std::min(1., throttle * motor / shaft_kw) : 0.;
     const bool front_motor = p.deploy_floor > 0;
@@ -177,11 +199,6 @@ void integrate(const Track &track, Vehicle &car, const Conditions &env, double w
         w.mu =
             tyre_mu(p, s.tyres[i], w.load, w.pressure, env.water_mm, v) * surface_factor(material);
         const double capacity = std::max(1., w.mu * w.load);
-        // The reference actuator can ease common line pressure before an
-        // unloaded wheel locks. Preserve hydraulic bias and manual lock-up.
-        double brake_at_full = p.brake_nm / p.radius * (f ? p.bias : 1 - p.bias) * .5;
-        if (input.automatic && brake_at_full > 0)
-            input.brake = std::min(input.brake, capacity / brake_at_full);
     }
     for (int i = 0; i < 4; ++i) {
         bool f = i < 2;
@@ -193,6 +210,8 @@ void integrate(const Track &track, Vehicle &car, const Conditions &env, double w
         double drive_w = motor_w + (f ? 0 : drive * (1 - motor_fraction) * split);
         double brake_w = input.brake * p.brake_nm / p.radius * (f ? p.bias : 1 - p.bias) * .5;
         double request_x = drive_w - brake_w;
+        if (drive_w > capacity && drive_w > brake_w)
+            r.wheelspin = std::max(r.wheelspin, 1 - capacity / drive_w);
         const double request_y =
             lateral_request * (f ? front_share : 1 - front_share) * w.load / axle;
         const double utilisation = std::hypot(request_x, request_y) / capacity;
@@ -243,16 +262,22 @@ void integrate(const Track &track, Vehicle &car, const Conditions &env, double w
     double rolling = mass * normal_g *
                      (.013 + frame.section.roughness * .4 +
                       (frame.section.surface(s.d) == Surface::outside ? .075 : 0));
-    double ax = (sum_x - aero.drag - rolling) / mass - normal_g * frame.grade;
+    // Push-start a direct-drive kart. The driver's feet supply a bounded
+    // external force and work only up to jogging speed, with the brake released.
+    if (p.kart && input.push && v < 2.4 && input.brake < .02 && s.fuel > 0)
+        r.push_force = std::min(.36 * p.driver_mass * gravity, 240. / std::max(.4, v));
+    sum_x += r.push_force;
+    r.clutch = input.clutch;
+    double ax = (sum_x - aero.drag - rolling) / mass - direction * normal_g * frame.grade;
     s.v = std::max(0., v + h * ax);
     s.ax = (s.v - v) / h;
     s.ay = sum_y / mass - normal_g * frame.section.crossfall;
-    const double travel = (s.v + v) * h * .5;
+    const double travel = direction * (s.v + v) * h * .5;
     double slip_change = slip_correction * lateral_scale;
     double lateral_travel = h * (s.lateral_v + .5 * h * slip_change);
     s.lateral_v += h * slip_change;
     const double yaw_step =
-        std::clamp((s.ay - slip_change) / std::max(1., (s.v + v) * .5) * h, -.3, .3);
+        std::clamp((s.ay - slip_change) * direction / std::max(1., (s.v + v) * .5) * h, -.3, .3);
     double heading_mid = s.heading + .5 * yaw_step;
     const double ds = (travel * std::cos(heading_mid) - lateral_travel * std::sin(heading_mid)) /
                       std::max(.35, 1 - frame.curvature * s.d) / std::sqrt(1 + square(frame.grade));

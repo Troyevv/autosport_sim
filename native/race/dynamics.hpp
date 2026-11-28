@@ -1,5 +1,6 @@
 #pragma once
 #include "contact.hpp"
+#include "driver.hpp"
 #include <array>
 #include <map>
 #include <memory>
@@ -22,12 +23,15 @@ struct Spec {
     double compound_grip, compound_wear, compound_drain, tread_mm;
     std::array<double, 4> cold_kpa;
     bool abs, drs, kart;
+    Driver driver;
 };
 struct Conditions {
     double ambient, track_c, water_mm;
     bool drs_enabled, unrestricted_drs;
     std::vector<std::array<double, 2>> zones; // fractional start/end pairs
     std::vector<double> sectors;
+    std::uint64_t seed{};
+    bool race_start = false, formation = false;
 };
 struct Tyre {
     double surface{}, core{}, wear{}, degradation{}, grain{}, blister{}, flat{};
@@ -40,8 +44,13 @@ struct Start {
 };
 struct Control {
     bool automatic = true;
+    double clutch = 1;
+    bool ignition = true;
+    bool reverse = false;
+    bool push = false; // driver pushing a stalled direct-drive kart
     double throttle{}, brake{}, steer{}, deploy = 1, preference = 0;
     bool drs = true;
+    int flag = 0; // 0 green, 1 neutralised, 2 approach pit entry
     int gear = 0; // zero selects the automatic shift controller
 };
 struct Order {
@@ -55,12 +64,13 @@ struct State {
     double used_kj{}, recovered_kj{}, distance{}, last_gate = -1;
     std::int64_t completed_laps{}, last_gate_index{};
     int gear = 1;
-    bool contacted{};
+    bool contacted{}, reversing{};
     std::vector<double> detection_time, split_times;
     std::vector<int> eligible;
     std::vector<std::string> contact_peers;
     std::array<Tyre, 4> tyres;
     Control command;
+    Mind mind;
 };
 struct Forces {
     double drag, lift, front_fraction, airflow;
@@ -70,7 +80,8 @@ struct Wheel {
 };
 struct Reading {
     double rpm{}, power{}, electric_kw{}, drag{}, lift{}, airflow{}, wake{}, ax{}, ay{};
-    double throttle{}, brake{}, steer{}, drs{}, front_aero{}, shift{};
+    double throttle{}, brake{}, steer{}, drs{}, front_aero{}, shift{}, wheelspin{}, clutch = 1,
+                                                                                    push_force{};
     std::array<Wheel, 4> wheels{};
 };
 struct Event {
@@ -78,6 +89,7 @@ struct Event {
     double time, elapsed;
     std::int64_t lap;
     std::vector<double> split_times;
+    int position{};
 };
 using Sample = std::vector<double>;
 struct Batch {
@@ -102,14 +114,20 @@ struct Vehicle {
     Profile profile;
     Reading reading;
     std::vector<double> ratios;
-    double grid_offset;
+    double grid_offset, grid_station;
     Frame frame; // ribbon frame at the current centre, derived from cursor and d
+    int grid_lap = 0; // initial epoch for a grid straddling the timing line
 };
 Forces aerodynamics(const Spec &p, double v, double wake, bool drs, double roughness);
 double tyre_mu(const Spec &p, const Tyre &t, double load, double pressure, double water,
                double speed);
 double pressure_kpa(const Spec &p, const Tyre &t, size_t corner);
 void plan(const Track &track, Vehicle &car, const Conditions &env, GeometryCache &cache);
+void initialise_driver(Vehicle &car, const Conditions &env);
+void think(const Track &track, const Conditions &env, std::vector<Vehicle> &field, size_t index,
+           std::int64_t tick, Batch &batch);
+void finish_attack(Vehicle &car, const std::vector<Vehicle> &field, double length,
+                   std::int64_t tick, Batch &batch);
 Control control(const Track &track, const Vehicle &car, double gap, double leader_v);
 void integrate(const Track &track, Vehicle &car, const Conditions &env, double wake, bool drs,
                Control input, double seconds = dt);

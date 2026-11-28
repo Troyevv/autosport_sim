@@ -72,4 +72,33 @@ int main() {
         for (double x : row)
             if (!std::isfinite(x))
                 throw std::runtime_error("non-finite telemetry");
+
+    // Full closed loop on a traffic field, also exercised by the sanitizer build.
+    std::vector<std::pair<Spec, Start>> entries;
+    for (int i = 0; i < 12; ++i) {
+        auto kart = p;
+        kart.id = "kart-" + std::to_string(i);
+        kart.driver.id = "pilot-" + std::to_string(i);
+        kart.driver.risk = i / 12.;
+        auto grid = start;
+        grid.s = 120. - 4. * i;
+        grid.d = i % 2 ? 2. : -2.;
+        entries.emplace_back(kart, grid);
+    }
+    Conditions race{22, 30, 0, false, false, {}};
+    race.race_start = true;
+    race.seed = 18;
+    Dynamics pack(track, race, entries), replay(track, race, entries);
+    pack.advance(923, 0);
+    std::vector<State> minds;
+    for (const auto &car : pack.cars())
+        minds.push_back(car.state);
+    replay.restore(pack.tick(), minds, pack.orders());
+    auto live_batch = pack.advance(1500, 10), replay_batch = replay.advance(1500, 10);
+    if (live_batch.rows != replay_batch.rows ||
+        live_batch.events.size() != replay_batch.events.size())
+        throw std::runtime_error("traffic replay diverged");
+    for (const auto &car : pack.cars())
+        if (!car.state.mind.started || car.state.distance < 100 || !std::isfinite(car.state.v))
+            throw std::runtime_error("driver failed to launch on proving ground");
 }
