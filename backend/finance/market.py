@@ -802,13 +802,7 @@ def sign_supply(state, world, bid, reply, key):
                     reserved=True,
                 )
             )
-    if "engineering_service" in state:
-        from ..personal_engineering import check_capacity
-
-        allocation = check_capacity(state, world, t.sponsor, t.org, t.start, t.end)
-    if rows:
-        register(state, Schedule(installments=rows))
-    state["market"]["supplies"][key] = dict(
+    deal = dict(
         id=key,
         sponsor=t.sponsor,
         org=t.org,
@@ -828,10 +822,21 @@ def sign_supply(state, world, bid, reply, key):
         testing=reply.testing and s.testing,
         development=reply.development and s.development,
     )
-    if "engineering_service" in state and allocation:
-        from ..personal_engineering import allocate
+    if "engineering_service" in state:
+        from ..personal_engineering import check_capacity, allocate
 
-        allocate(state, world, key, t, *allocation)
+        pending = dict(
+            state,
+            market=dict(
+                state["market"], supplies={**state["market"]["supplies"], key: deal}
+            ),
+        )
+        allocation = check_capacity(pending, world, t.sponsor, t.org, t.start, t.end)
+    if rows:
+        register(state, Schedule(installments=rows))
+    state["market"]["supplies"][key] = deal
+    if "engineering_service" in state and allocation:
+        allocate(state, key, t, allocation)
 
 
 def experience(state, world, offer):

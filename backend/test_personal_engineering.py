@@ -19,8 +19,7 @@ MERCEDES = "supplier-mercedes"
 WILLIAMS = "team-williams-racing"
 
 
-@pytest.fixture
-def career(tmp_path, monkeypatch):
+def engineering_career(tmp_path, monkeypatch):
     monkeypatch.setenv("AUTOSPORT_DATA_DIR", str(tmp_path))
     c = service.create(
         service.CareerInput(
@@ -30,6 +29,9 @@ def career(tmp_path, monkeypatch):
     with storage.transaction() as db:
         state = storage.checkpoint(db, c["id"])
     return c, state, lineup_for(state)
+
+
+career = pytest.fixture(name="career")(engineering_career)
 
 
 def current(s, w, day):
@@ -381,10 +383,11 @@ def test_briefing_feedback_diagnostic_evidence_and_expiring_access(career):
     after = crew()
     assert request["advisor"] == g.advisor
     assert after["feedback"][0]["reports"] == [report.reference]
-    engineering.confirm_briefing(s, w, event["id"])
     key = f"feedback|{report.author}|{after['engineer']}"
+    previous = s["relationships"][key]["trust_change"]
+    engineering.confirm_briefing(s, w, event["id"])
     change = s["relationships"][key]["trust_change"]
-    assert change in (3, -1)
+    assert change - previous in (3, -1)
     engineering.confirm_briefing(s, w, event["id"])
     assert s["relationships"][key]["trust_change"] == change
     reviewer = next(a for a in after["consultants"] if a["person"] == g.advisor)

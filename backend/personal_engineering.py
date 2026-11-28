@@ -274,58 +274,143 @@ def subtract(start, end, blocked):
         yield start, end
 
 
-def appointments(state, world, maker=None, client=None):
+def temporary_assignment(state, row):
+    if "duty" in row:
+        return row["duty"] == "cover"
+    # Early #64 saves used the signed supply ID as the prefix for commercial deployments.
+    return (
+        row.get("pair", False)
+        and row["id"].rsplit("/", 1)[0] not in state["market"]["supplies"]
+    )
+
+
+def unavailable_intervals(state):
+    spans = defaultdict(list)
+    for item in state["preparations"].values():
+        if item["status"] not in ("cancelled", "rejected"):
+            for pid in item["participants"]:
+                spans[pid].append((item["start"], item["end"]))
+    for item in state.get("research", {}).get("handovers", {}).values():
+        day = item["date"]
+        for pid in (item["mentor"], item["recipient"]):
+            spans[pid].append((day, personnel.shifted(day, 1)))
+    return spans
+
+
+def appointments(state, world, maker=None, client=None, *, include_covers=True):
     office = state.get("engineering_service")
     manual = [r for r in state["support"] if not maker or r["employer"] == maker]
     if not office:
         yield from (r for r in manual if not client or r["client"] == client)
         return
     periods = supply_periods(state, world, maker)
-    occupied = defaultdict(list)
+    occupied = unavailable_intervals(state) if include_covers else defaultdict(list)
     reserved = defaultdict(list)
-    for r in manual:
-        pair = (r["employer"], r["client"])
-        matches = not client or r["client"] == client
-        if r["start"] < office["start"] and matches:
-            end = min(r["end"], office["start"])
-            yield dict(r, end=end, end_exclusive=end)
-        for left, right in periods[pair]:
-            start = max(left, r["start"], office["start"])
-            end = min(right, r["end"])
-            if start < end:
-                occupied[r["advisor"]].append((start, end))
-                reserved[pair].append((start, end))
-                if matches:
-                    yield dict(r, pair=True, start=start, end=end)
+    employments = defaultdict(list)
+    principals = []
     for key, post in office["posts"].items():
-        team = post.get("client")
         org = post["org"]
-        if not team or maker and maker != org or client and client != team:
+        if post["position"] != "technical-advisor" or maker and org != maker:
             continue
         for booking in state["seats"][key]:
             pid = booking["person"]
-            blocked = occupied[pid] + reserved[org, team]
-            for left, right in periods[org, team]:
-                start = max(left, booking["start"], office["start"])
-                end = min(right, booking["end"] or right)
-                for a, b in subtract(start, end, blocked):
+            employments[org, pid].append(booking)
+            if post.get("client"):
+                principals.append(
+                    (
+                        dict(
+                            id=key + "/" + pid,
+                            advisor=pid,
+                            employer=org,
+                            client=post["client"],
+                            seat=key,
+                            start=booking["start"],
+                            end=booking["end"],
+                            salary_cents=booking["salary_cents"],
+                        ),
+                        booking,
+                        False,
+                    )
+                )
+    candidates = []
+    for row in sorted(manual, key=lambda r: not temporary_assignment(state, r)):
+        if row["start"] < office["start"] and (not client or row["client"] == client):
+            end = min(row["end"], office["start"])
+            if row["start"] < end:
+                yield dict(row, end=end, end_exclusive=end)
+        temporary = temporary_assignment(state, row)
+        if include_covers or not temporary:
+            candidates.extend(
+                (row, booking, temporary)
+                for booking in employments[row["employer"], row["advisor"]]
+            )
+
+    # Project the person actually doing the work. The underlying employment and
+    # commercial records stay intact throughout a temporary replacement.
+    for row, booking, temporary in [*candidates, *principals]:
+        pid = row["advisor"]
+        pair = row["employer"], row["client"]
+        for left, right in periods[pair]:
+            start = max(left, row["start"], booking["start"], office["start"])
+            end = min(right, row["end"] or right, booking["end"] or right)
+            for a, b in subtract(start, end, occupied[pid] + reserved[pair]):
+                occupied[pid].append((a, b))
+                reserved[pair].append((a, b))
+                if not client or row["client"] == client:
                     yield dict(
-                        id=f"{key}/{pid}/{a}",
-                        advisor=pid,
-                        employer=org,
-                        client=team,
+                        row,
+                        id=row["id"] + "/" + a,
+                        pair=True,
                         start=a,
                         end=b,
-                        seat=key,
-                        pair=True,
+                        temporary=temporary,
                         salary_cents=booking["salary_cents"],
                     )
+
+
+def duty_history(state, world, maker=None, client=None):
+    """Name both the permanent assignee and the actual worker at every change of duty."""
+    by_pair = defaultdict(list)
+    for row in appointments(state, world, maker, client, include_covers=False):
+        by_pair[row["employer"], row["client"]].append(row)
+    for row in appointments(state, world, maker, client):
+        if not row.get("temporary"):
+            yield dict(row, principal=row["advisor"])
+            continue
+        principals = by_pair[row["employer"], row["client"]]
+        changes = sorted(
+            {row["start"], row["end"]}
+            | {
+                d
+                for p in principals
+                for d in (p["start"], p["end"])
+                if row["start"] < d < row["end"]
+            }
+        )
+        for start, end in zip(changes, changes[1:]):
+            pid = next(
+                (p["advisor"] for p in principals if p["start"] <= start < p["end"]),
+                None,
+            )
+            yield dict(
+                row, id=row["id"] + "/" + start, principal=pid, start=start, end=end
+            )
 
 
 def grant(state, world, entry, axis, day, terms, rows=None):
     """Resolve one observation grant from employment, client, component and supply terms."""
     if not terms or not terms["support"]:
         return None
+    from .supplier_engineering import agreement
+
+    actual = agreement(state, world, entry, axis, day)
+    if (
+        not actual
+        or not actual["support"]
+        or (actual["id"], actual["maker"]) != (terms["id"], terms["maker"])
+    ):
+        return None
+    terms = actual
     maker, client = terms["maker"], entry["org"]
     for r in rows if rows is not None else appointments(state, world, maker, client):
         if (r["employer"], r["client"]) != (maker, client) or not r["start"] <= day < r[
@@ -381,13 +466,14 @@ def cover(state, world, seat, booking, args):
         and start < r["end"]
         and (
             r["advisor"] == booking["person"]
-            or (r["client"] == client and not r.get("seat"))
+            or (r["client"] == client and r.get("temporary"))
         )
         for r in appointments(state, world, maker)
     ):
         raise RuleError("Консультант или клиент занят в этот период.", 409)
     row = dict(
         id=f"support-{state['revision']}/{seat['id']}/{start}",
+        duty="cover",
         advisor=booking["person"],
         employer=maker,
         client=client,
@@ -420,56 +506,66 @@ def telemetry_grants(state, world, maker):
 
 
 def check_capacity(state, world, maker, client, start, end):
-    # A new client can use an employed reserve. Register their dated service
-    # after signature, in the same transaction as the commercial agreement.
-    office = state["engineering_service"]
+    """Plan only the uncovered portions, against the proposed supply and signed employment."""
     rows = list(appointments(state, world, maker))
-    if not list(
-        subtract(
-            start, end, [(r["start"], r["end"]) for r in rows if r["client"] == client]
-        )
-    ):
-        return None
-    from .preparation import busy
-
-    for p in sorted(office["posts"].values(), key=lambda p: p.get("client") != client):
-        if p["org"] != maker or p["position"] != "technical-advisor":
+    covered = [(r["start"], r["end"]) for r in rows if r["client"] == client]
+    gaps = list(subtract(start, end, covered))
+    if not gaps:
+        return []
+    occupied = unavailable_intervals(state)
+    for r in rows:
+        if r["client"] != client:
+            occupied[r["advisor"]].append((r["start"], r["end"]))
+    available = []
+    for post in state["engineering_service"]["posts"].values():
+        if post["org"] != maker or post["position"] != "technical-advisor":
             continue
-        for r in state["seats"][p["id"]]:
-            if (
-                not busy(state, r["person"], start, end)
-                and r["start"] <= start
-                and (not r["end"] or end <= r["end"])
-                and not any(
-                    a["advisor"] == r["person"]
-                    and a["client"] != client
-                    and a["start"] < end
-                    and start < a["end"]
-                    for a in rows
-                )
+        for booking in state["seats"][post["id"]]:
+            pid = booking["person"]
+            for a, b in subtract(
+                max(start, booking["start"]),
+                min(end, booking["end"] or end),
+                occupied[pid],
             ):
-                return p, r
-    raise RuleError("На срок новой поставки нужен свободный штатный консультант.", 409)
+                available.append((a, b, post["id"], booking))
+    plan = []
+    for date, stop in gaps:
+        while date < stop:
+            # Longest continuous coverage first. The seat ID breaks ties reproducibly.
+            choice = max(
+                (item for item in available if item[0] <= date < item[1]),
+                key=lambda item: (item[1], item[2]),
+                default=None,
+            )
+            if not choice:
+                raise RuleError(
+                    f"На период с {date} по {stop} нужен свободный штатный консультант.",
+                    409,
+                )
+            _, until, _, booking = choice
+            until = min(stop, until)
+            plan.append(
+                dict(
+                    advisor=booking["person"],
+                    start=date,
+                    end=until,
+                    salary_cents=booking["salary_cents"],
+                )
+            )
+            date = until
+    return plan
 
 
-def allocate(state, world, key, terms, post, booking):
-    if post.get("client") == terms.org:
-        return
-    covered = [
-        (r["start"], r["end"])
-        for r in appointments(state, world, terms.sponsor, terms.org)
-    ]
-    for start, end in subtract(terms.start, terms.end, covered):
+def allocate(state, key, terms, plan):
+    for assignment in plan:
         state["support"].append(
             dict(
-                id=f"{key}/{start}",
-                advisor=booking["person"],
+                id=f"{key}/{assignment['start']}",
                 employer=terms.sponsor,
                 client=terms.org,
-                start=start,
-                end=end,
                 pair=True,
-                salary_cents=booking["salary_cents"],
+                duty="service",
+                **assignment,
             )
         )
 
@@ -492,26 +588,26 @@ def allocate(state, world, key, terms, post, booking):
 
 def working_contract(state, seat, day):
     """The paid employment record supplying this job on the requested day."""
-    key = seat["id"]
+    from .personnel import active
+
+    def contract(key, person=None):
+        return next(
+            (
+                r
+                for r in state["seats"].get(key, ())
+                if active(r, day) and (not person or r["person"] == person)
+            ),
+            None,
+        )
+
+    row = contract(seat["id"])
     engineer = seat["position"] == "race-engineer" and seat["entry"]
     office = state.get("engineering_service")
     if engineer and office:
-        key = next(
-            (
-                r["seat"]
-                for r in office["covers"]
-                if r["entry"] == seat["entry"] and r["start"] <= day < r["end"]
-            ),
-            key,
-        )
-    row = next(
-        (
-            r
-            for r in state["seats"].get(key, ())
-            if r["start"] <= day and (not r["end"] or day < r["end"])
-        ),
-        None,
-    )
+        for cover in office["covers"]:
+            if cover["entry"] == seat["entry"] and cover["start"] <= day < cover["end"]:
+                row = contract(cover["seat"], cover["person"]) or row
+                break
     if row and engineer and office:
         from .preparation import busy
 
@@ -551,6 +647,30 @@ def cover_entry(state, world, seat, booking, args):
     covers.append(
         dict(person=pid, seat=seat["id"], entry=entry["id"], start=start, end=end)
     )
+
+
+def practice_by_duty(state, world, day):
+    practice = defaultdict(set)
+    for seat in world["assignments"].values():
+        if seat["position"] == "race-engineer" and seat["entry"]:
+            person = working_person(state, seat, day)
+            if person:
+                practice[person].add(
+                    world["championships"][seat["series"]]["discipline"]
+                )
+    clients = {
+        (r["employer"], r["client"]): r["advisor"]
+        for r in appointments(state, world)
+        if r["start"] <= day < r["end"]
+    }
+    for deal in service_deals(state, world):
+        if deal["start"] <= day < min(deal["end"], deal.get("ended") or deal["end"]):
+            person = clients.get((deal["sponsor"], deal["org"]))
+            if person:
+                practice[person].add(
+                    world["championships"][deal["series"]]["discipline"]
+                )
+    return practice
 
 
 def npc_crew_cover(state, world, end):
@@ -606,7 +726,7 @@ def briefing(state, world, event_id):
     org = state["setup"]["org"]
     maker = state["setup"]["role"] == "manufacturer"
     by_client = defaultdict(list)
-    for r in appointments(
+    for r in duty_history(
         state, world, maker=org if maker else None, client=None if maker else org
     ):
         if r["start"] <= day < r["end"]:
@@ -697,6 +817,8 @@ def briefing(state, world, event_id):
             consultants.append(
                 dict(
                     person=r["advisor"],
+                    principal=r["principal"],
+                    temporary=r.get("temporary", False),
                     maker=r["employer"],
                     products=sorted(products),
                     cases=cases,
@@ -708,6 +830,14 @@ def briefing(state, world, event_id):
                 dict(
                     entry=eid,
                     engineer=engineer,
+                    principal=next(
+                        (
+                            occupant_on(state["seats"][s["id"]], day)
+                            for s in crew
+                            if s["position"] == "race-engineer"
+                        ),
+                        None,
+                    ),
                     drivers=drivers,
                     feedback=feedback,
                     consultants=consultants,
@@ -747,7 +877,7 @@ def desk(state, world, org, maker):
         )
     )
     result = []
-    for a in appointments(
+    for a in duty_history(
         state, world, maker=org if maker else None, client=None if maker else org
     ):
         rights = []
@@ -793,6 +923,8 @@ def desk(state, world, org, maker):
             dict(
                 id=a["id"],
                 person=a["advisor"],
+                temporary=a.get("temporary", False),
+                principal=a["principal"],
                 name=state["people"][a["advisor"]]["name"],
                 client=a["client"],
                 employer=a["employer"],
@@ -820,15 +952,67 @@ def end_obligations(state, maker, client):
     from .catalog import lineup_for
 
     periods = supply_periods(state, lineup_for(state), maker, client)[maker, client]
-    for r in state["support"]:
-        if (r["employer"], r["client"]) != (maker, client) or r["end"] <= state["date"]:
+    future = []
+    for row in state["support"]:
+        if (row["employer"], row["client"]) != (maker, client) or row["end"] <= state[
+            "date"
+        ]:
             continue
-        boundary = max(state["date"], r["start"])
-        end = next((b for a, b in periods if a <= boundary < b), boundary)
-        if end < r["end"]:
-            r["end"] = end
-            if "end_exclusive" in r:
-                r["end_exclusive"] = end
+        boundary = max(state["date"], row["start"])
+        intervals = [
+            (max(boundary, a), min(row["end"], b))
+            for a, b in periods
+            if max(boundary, a) < min(row["end"], b)
+        ]
+        if intervals and intervals[0][0] == boundary:
+            _, first_end = intervals.pop(0)
+        else:
+            first_end = boundary
+        for a, b in intervals:
+            piece = dict(
+                row,
+                id=f"{row['id']}/{a}",
+                start=a,
+                end=b,
+                duty="cover" if temporary_assignment(state, row) else "service",
+            )
+            if "end_exclusive" in piece:
+                piece["end_exclusive"] = b
+            future.append(piece)
+        row["end"] = first_end
+        if "end_exclusive" in row:
+            row["end_exclusive"] = first_end
+    state["support"].extend(future)
+
+
+def engineer_cover_history(state, world, person):
+    covers = state.get("engineering_service", {}).get("covers", [])
+    if not covers:
+        return []
+    posts = {
+        s["entry"]: s["id"]
+        for s in world["assignments"].values()
+        if s["position"] == "race-engineer" and s["entry"]
+    }
+    history = []
+    from .domain import occupant_on
+
+    for cover in covers:
+        contracts = state["seats"][posts[cover["entry"]]]
+        edges = sorted(
+            {cover["start"], cover["end"]}
+            | {
+                d
+                for c in contracts
+                for d in (c["start"], c["end"])
+                if d and cover["start"] < d < cover["end"]
+            }
+        )
+        for a, b in zip(edges, edges[1:]):
+            principal = occupant_on(contracts, a)
+            if person in (principal, cover["person"]):
+                history.append(dict(cover, principal=principal, start=a, end=b))
+    return sorted(history, key=lambda r: (r["start"], r["entry"]))
 
 
 def entry_partners(state, world, pid):
@@ -838,6 +1022,9 @@ def entry_partners(state, world, pid):
         return []
     crews = defaultdict(list)
     engineers = {}
+    principals = {}
+    from .domain import occupant_on
+
     for seat in world["assignments"].values():
         eid = seat["entry"]
         if not eid:
@@ -847,9 +1034,12 @@ def entry_partners(state, world, pid):
             if driver:
                 crews[eid].append(driver)
         elif seat["position"] == "race-engineer":
+            principals[eid] = occupant_on(state["seats"][seat["id"]], state["date"])
             engineers[eid] = working_person(state, seat, state["date"])
     return [
-        dict(entry=eid, engineer=engineer, drivers=crews[eid])
+        dict(
+            entry=eid, engineer=engineer, principal=principals[eid], drivers=crews[eid]
+        )
         for eid, engineer in engineers.items()
-        if engineer == pid or pid in crews[eid]
+        if pid in (engineer, principals[eid]) or pid in crews[eid]
     ]

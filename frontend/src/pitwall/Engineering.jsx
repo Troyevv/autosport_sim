@@ -4783,6 +4783,10 @@ function CaseDossier({ id }) {
             Уверенность:{' '}
             {diag.confidence == null ? 'не рассчитывается в карьере' : diag.confidence + '%'}
           </p>
+          {diag.reviewer && <p>Заключение специалиста · {e.name(diag.reviewer)}</p>}
+          {diag.reviewed_references?.length > 0 && (
+            <p>Основания заключения · {diag.reviewed_references.join(', ')}</p>
+          )}
           {diag.observations?.map((o) => (
             <p key={o.reference}>
               {o.observation}
@@ -4907,6 +4911,7 @@ function Advisors() {
                 {dateLabel(a.start)} — {dateLabel(a.end)}
               </small>
               <h3>{a.name}</h3>
+              {a.temporary && <p>Временное замещение · штатный консультант {e.world.names[a.principal] || 'не назначен'}</p>}
               <p>
                 {e.org(a.client)} · {(a.products || [a.product]).map((v) => AXES[v] || v).join(', ')}
               </p>

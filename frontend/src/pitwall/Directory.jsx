@@ -3843,7 +3843,7 @@ function PersonContract({ person, data }) {
   function release() {
     if (current.buyout_cents == null)
       return g.notify('Компенсация не раскрыта — сначала требуется расчёт.', 'warning')
-    if (rows(data?.support).some((x) => !x.seat && x.end > c.date))
+    if (rows(data?.support).some((x) => x.advisor === person.id && !x.seat && x.end > c.date))
       return g.notify('Назначение консультантом препятствует расторжению.', 'warning')
     if (future.length) return g.notify('У сотрудника уже подписано будущее назначение.', 'warning')
     g.confirm({
@@ -3920,6 +3920,9 @@ function PersonContract({ person, data }) {
       {data?.engineering_entries?.map((r) => <Section key={r.entry}
         title={p.seriesName(p.world.entries[r.entry].championship) + ' · № ' + p.world.entries[r.entry].number}>
         <p>Гоночный инженер · {r.engineer ? p.world.names[r.engineer] : 'Вакансия'}</p>
+        {r.principal !== r.engineer && (
+          <p>Штатный инженер · {r.principal ? p.world.names[r.principal] : 'Вакансия'}</p>
+        )}
         <p>{r.drivers.map((id) => p.world.names[id]).join(' · ') || 'Основной состав вакантен'}</p>
       </Section>)}
       {person.position === 'race-engineer' && <EngineerCover data={data} />}
@@ -3991,7 +3994,16 @@ function EngineerCover({data}) {
   if (!reserve && !history.length) return null
   const entries = Object.values(p.world.entries).filter((e) => e.org === c.org)
   return <Section title="Замещение гоночного инженера">
-    {history.map((r) => <p key={r.entry + r.start}>№ {p.world.entries[r.entry].number} · {date(r.start)} — {date(r.end)}</p>)}
+    {history.map((r) => (
+      <article className="p-advisor-assignment" key={r.entry + r.start}>
+        <Icon name="CalendarClock" />
+        <div>
+          <h3>№ {p.world.entries[r.entry].number} · {p.world.names[r.person]}</h3>
+          <p>Временное замещение · {date(r.start)} — {date(r.end)}</p>
+          <small>Штатный инженер · {p.world.names[r.principal] || 'Вакансия'}</small>
+        </div>
+      </article>
+    ))}
     {reserve && current.org === c.org && g.role === 'manager' &&
       <form className="p-form" onSubmit={(e) => {
         e.preventDefault()
@@ -4042,6 +4054,9 @@ function AdvisorAssignments({ person, data }) {
               {date(r.start)} — {date(r.end)}
               {!r.pair && r.entry && ' · №' + p.world.entries?.[r.entry]?.number}
             </p>
+            {r.temporary && (
+              <p>Временно · {p.world.names[r.advisor]} · штатный консультант {p.world.names[r.principal] || 'не назначен'}</p>
+            )}
             {!r.pair && r.product && <small>{p.world.products?.[r.product]?.name || r.product}</small>}
           </div>
           <Status

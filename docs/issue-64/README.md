@@ -21,6 +21,8 @@
 | Экран | 1440 × 900 | 390 × 844 |
 | --- | --- | --- |
 | Консультанты производителя | [Открыть](desktop-consultants.webp) | [Открыть](mobile-consultants.webp) |
+| Профиль консультанта | [Открыть](desktop-portrait.webp) | [Открыть](mobile-portrait.webp) |
+| Права на данные по поставкам | [Открыть](desktop-rights.webp) | [Открыть](mobile-rights.webp) |
 | Досье и назначения | [Открыть](desktop-contract.webp) | [Открыть](mobile-contract.webp) |
 | Замещение у клиентской команды | [Открыть](desktop-appointment.webp) | [Открыть](mobile-appointment.webp) |
 | Обязательный брифинг | [Открыть](desktop-briefing.webp) | [Открыть](mobile-briefing.webp) |

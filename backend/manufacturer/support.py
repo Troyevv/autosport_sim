@@ -209,6 +209,18 @@ def evidence(state, world, row):
 
 
 def diagnosis(state, world, row):
+    if row.get("closed") and "engineering_service" in state:
+        # The signed conclusion belongs to the organization. Raw measurements
+        # are still read through the current worker's contract and channel grant.
+        causes = row.get("grounds", {})
+        return dict(
+            causes=causes,
+            reviewer=row.get("reviewer"),
+            confidence=row.get("confidence", 0),
+            covered=bool(causes.get("design") or causes.get("manufacturing")),
+            reviewed_references=row.get("reviewed_references", []),
+            observations=evidence(state, world, row),
+        )
     # Only metrology findings and recorded QC decisions can substantiate a maker defect.
     d = components.registry.drawing_for(state, row["specification"])
     parent = state["development"]["projects"].get(d.get("reference"), {})
@@ -475,6 +487,8 @@ def resolve(state, world, org, order):
                     row["id"],
                     state["date"],
                 )
+    if "engineering_service" in state:
+        row["reviewed_references"] = [o["reference"] for o in report["observations"]]
     row["proposal"] = brief["id"]
     row.update(
         status=choice,

@@ -229,12 +229,23 @@ def develop(state, catalog, target):
     teamwork.work(state, catalog, start, target)
     employed = set()
     practiced = set()
+    if "engineering_service" in state:
+        from .personal_engineering import practice_by_duty
+
+        for pid, disciplines_worked in practice_by_duty(state, catalog, start).items():
+            employed.add(pid)
+            practiced.update((pid, discipline) for discipline in disciplines_worked)
     for aid, rows in state["seats"].items():
         seat = catalog["assignments"][aid]
         for r in rows:
             if not active(r, start):
                 continue
             pid = r["person"]
+            if "engineering_service" in state and seat["position"] in (
+                "race-engineer",
+                "technical-advisor",
+            ):
+                continue
             employed.add(pid)
             if "lineup" in state and seat["position"] == "driver":
                 from .driver_availability import unavailable
