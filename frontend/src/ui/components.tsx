@@ -131,7 +131,7 @@ export function Table({
           {rows.map((row) => (
             <tr key={row.id} className={row.active ? 'highlight' : ''}>
               {row.cells.map((cell, i) => (
-                <td key={columns[i]}>{cell}</td>
+                <td key={columns[i]} data-label={columns[i]}>{cell}</td>
               ))}
             </tr>
           ))}

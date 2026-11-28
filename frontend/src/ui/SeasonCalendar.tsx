@@ -5,6 +5,7 @@ import { Header, Button, Panel } from './components'
 type CalendarItem = {
   id: string
   day: string
+  end?: string
   title: string
   type: string
   series: string
@@ -28,7 +29,7 @@ export function SeasonCalendar({
 }) {
   const [selected, select] = useState(selectedDate),
     [month, setMonth] = useState(today.slice(0, 7)),
-    [view, setView] = useState('month'),
+    [view, setView] = useState(() => matchMedia('(max-width: 900px)').matches ? 'list' : 'month'),
     [filter, setFilter] = useState(initialFilter)
   const date = new Date(month + '-01T00:00:00Z')
   const year = date.getUTCFullYear(),
@@ -36,14 +37,14 @@ export function SeasonCalendar({
     lead = (date.getUTCDay() + 6) % 7,
     count = new Date(Date.UTC(year, idx + 1, 0)).getUTCDate()
   const events = schedule.filter(
-    (s) => s.day.startsWith(month) && (filter === 'all' || s.series === filter),
+    (s) => (s.day <= month+'-31' && (s.end || s.day) >= month+'-01') && (filter === 'all' || s.series === filter),
   )
   const changeMonth = (delta: number) => {
     const next = new Date(Date.UTC(year, idx + delta, 1)).toISOString().slice(0, 10)
     setMonth(next.slice(0, 7))
     select(next)
   }
-  const selectedEvents = events.filter((e) => e.day === selected)
+  const selectedEvents = events.filter((e) => e.day <= selected && (e.end || e.day) >= selected)
   return (
     <section className="screen">
       <Header section={'Сезон ' + today.slice(0, 4) + ' / Планирование'} title="Календарь" sub={subtitle}>
@@ -107,7 +108,7 @@ export function SeasonCalendar({
                 ))}
                 {Array.from({ length: count }, (_, i) => {
                   const iso = month + '-' + String(i + 1).padStart(2, '0'),
-                    items = events.filter((s) => s.day === iso)
+                    items = events.filter((s) => s.day <= iso && (s.end || s.day) >= iso)
                   return (
                     <button
                       key={iso}

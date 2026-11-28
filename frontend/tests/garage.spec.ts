@@ -1,6 +1,16 @@
-import { test, expect } from '@playwright/test'
+import { expectCarFits, expectCarParked } from './carBounds'
+import { test, expect, type Locator } from '@playwright/test'
 import { join } from 'node:path'
 import type { Catalog } from '../src/garage/model'
+
+async function pixelSignature(canvas: Locator) {
+  return canvas.evaluate(async (el: HTMLCanvasElement) => {
+    const pixels = el.getContext('2d')!.getImageData(0, 0, el.width, el.height).data
+    const digest = await crypto.subtle.digest('SHA-256', pixels.buffer)
+    const hash = Array.from(new Uint8Array(digest), byte => byte.toString(16).padStart(2, '0')).join('')
+    return [el.width, el.height, hash].join(':')
+  })
+}
 
 test('Гараж · две заявки, детали, декали и сохранение', async ({ page }) => {
   const errors: string[] = []
@@ -12,11 +22,13 @@ test('Гараж · две заявки, детали, декали и сохр�
   expect(response.ok()).toBeTruthy()
   const career = await response.json(),
     catalog: Catalog = await (await page.request.get('/api/garage')).json()
-  await page.goto('/?career=' + career.id)
-  if (mobile) await page.getByRole('button', { name: 'Ещё' }).click()
-  await page.getByRole('link', { name: 'Гараж', exact: true }).filter({ visible: true }).click()
-  const view = page.locator('.studio-stage .garage-body')
-  const picture = () => view.evaluate((el) => (el as HTMLCanvasElement).toDataURL())
+  await page.goto('/?career=' + career.id + '#garage')
+  const showroom = page.locator('.garage-hero .car-stand')
+  const components = page.locator('.components-car .car-stand')
+  const paintStudio = page.locator('.livery-stage .car-stand')
+  const view = paintStudio.locator('.garage-body')
+  const body = (stage: Locator) => pixelSignature(stage.locator('.garage-body'))
+  const floor = (stage: Locator) => pixelSignature(stage.locator('.garage-floor'))
   const evidence = async (name: string) => {
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(page.viewportSize()!.width)
     if (process.env.GARAGE_EVIDENCE)
@@ -24,30 +36,45 @@ test('Гараж · две заявки, детали, декали и сохр�
         path: join(process.env.GARAGE_EVIDENCE, (mobile ? 'mobile-' : 'desktop-') + name + '.png'),
       })
   }
-  const tab = (name: string) => page.getByRole('button', { name, exact: true }).click()
-  await expect(page.locator('.studio-stage .car-stand')).toHaveAttribute('data-state', 'ready')
-  const initial = await picture()
-  const floor = () =>
-    page.locator('.studio-stage .garage-floor').evaluate((el) => (el as HTMLCanvasElement).toDataURL())
-  const initialFloor = await floor()
+  const tab = (name: string) => page.locator('.department-workspace').getByRole('tab', { name: new RegExp('^' + name) }).first().click()
+  const action = (name: string) => page.getByRole('button', { name, exact: true }).click()
+  const save = async () => {
+    await action('Сохранить ливрею')
+    const sent = page.waitForResponse(r => r.url().endsWith('/commands') && r.request().method() === 'POST')
+    await page.getByRole('dialog').getByRole('button', { name: 'Сохранить', exact: true }).click()
+    expect((await sent).ok()).toBeTruthy()
+    await expect(page.getByText('Не сохранено', { exact: true })).toHaveCount(0)
+  }
+  await expect(showroom).toHaveAttribute('data-state', 'ready')
+  const initial = await body(showroom)
+  const initialFloor = await floor(showroom)
   await evidence('factory')
   await tab('Компоненты')
+  await expect(components).toHaveAttribute('data-state', 'ready')
+  const originalWing = await body(components)
   await page.getByLabel('Антикрыло в предпросмотре').selectOption({ label: 'Низкий профиль · пример' })
-  await expect.poll(picture).not.toBe(initial)
+  await expect.poll(() => body(components)).not.toBe(originalWing)
   await page.getByLabel('Антикрыло в предпросмотре').selectOption('standard')
-  await expect.poll(picture).toBe(initial)
+  await expect.poll(() => body(components)).toBe(originalWing)
   await tab('Ливрея')
+  await expect(paintStudio).toHaveAttribute('data-state', 'ready')
+  const originalPaint = await body(paintStudio)
+  const originalReflection = await floor(paintStudio)
   await page.getByLabel('Основной цвет').fill('#ed2459')
-  await page.getByLabel('Рисунок').selectOption('weave')
-  await page.getByLabel('Гоночный номер').fill('047')
-  await expect.poll(picture).not.toBe(initial)
-  await expect.poll(floor).not.toBe(initialFloor)
+  await page.getByRole('combobox', { name: 'Рисунок', exact: true }).selectOption('weave')
+  await page.getByLabel('Бортовой номер').fill('047')
+  await expect.poll(() => body(paintStudio)).not.toBe(originalPaint)
+  await expect.poll(() => floor(paintStudio)).not.toBe(originalReflection)
   await evidence('paint')
-  await tab('Спонсоры')
-  await tab('Добавить знак')
-  await page.getByRole('combobox', { name: 'Знак', exact: true }).selectOption('axis')
-  await page.getByLabel('Размер, %').fill('60')
-  await page.getByLabel('Поворот, °').fill('-24')
+  await page.locator('.livery-controls').getByRole('tab', { name: /Размещения/ }).click()
+  await action('Добавить знак')
+  const form = page.getByRole('dialog')
+  await form.getByLabel('Партнёр').selectOption('axis')
+  await form.getByLabel('Зона').selectOption(catalog.sponsors.axis.zones[0])
+  await form.getByRole('button', { name: 'Добавить', exact: true }).click()
+  await page.getByLabel('Масштаб').fill('0.60')
+  await page.getByLabel('Поворот', { exact: true }).fill('-24')
+  await action('Показать зоны размещения')
   await view.scrollIntoViewIfNeeded()
   const zone = await page.locator('.decal-region').boundingBox()
   const x = zone!.x + zone!.width * 0.71,
@@ -59,12 +86,11 @@ test('Гараж · две заявки, детали, декали и сохр�
     await page.mouse.move(x, y, { steps: 3 })
     await page.mouse.up()
   }
-  expect(Number(await page.getByLabel('По горизонтали, %').inputValue())).toBeGreaterThan(50)
-  await tab('На слой ниже')
-  await tab('Удалить')
-  await tab('Отменить')
-  await tab('Сохранить в карьере')
-  await expect(page.getByRole('status').filter({ hasText: 'Ливрея сохранена в карьере' })).toBeVisible()
+  expect(Number(await page.getByLabel('По горизонтали').inputValue())).toBeGreaterThan(0.5)
+  await action('Ниже')
+  await action('Удалить')
+  await action('Отменить изменение')
+  await save()
   const saved = await (await page.request.get('/api/careers/' + career.id)).json()
   const paint = saved.liveries['f1-4']
   expect(paint.decals).toHaveLength(catalog.entries['f1-4'].livery.decals.length + 1)
@@ -75,38 +101,37 @@ test('Гараж · две заявки, детали, декали и сохр�
   ).toBeTruthy()
   expect(paint.number).toBe('047')
   await page.reload()
-  await expect(page.locator('.studio-status')).toContainText('Карьерная ливрея')
   await tab('Ливрея')
   await expect(page.getByLabel('Основной цвет')).toHaveValue('#ed2459')
-  await expect(page.getByLabel('Гоночный номер')).toHaveValue('047')
-  await page.getByRole('combobox', { name: 'Заявка', exact: true }).selectOption('f1-81')
-  await expect(page.getByLabel('Гоночный номер')).toHaveValue('81')
+  await expect(page.getByLabel('Бортовой номер')).toHaveValue('047')
+  await page.getByRole('combobox', { name: 'Автомобиль', exact: true }).selectOption('f1-81')
+  await expect(page.getByLabel('Бортовой номер')).toHaveValue('81')
   for (const series of ['f2', 'f3', 'dtm', 'wec']) {
-    await page.getByRole('combobox', { name: 'Чемпионат', exact: true }).selectOption(series)
+    await page.getByRole('combobox', { name: 'Чемпионат гаража', exact: true }).selectOption(series)
     await expect(page.locator('.car-stand')).toHaveAttribute('data-state', 'ready')
-    await tab('Стартовая сетка')
-    const dialog = page.getByRole('dialog')
-    await expect(dialog.locator('.grid-cars button')).toHaveCount(
+    await expectCarFits(page.locator('.studio-stage').first())
+    const entries = page.getByRole('combobox', { name: 'Автомобиль' })
+    await expect(entries.locator('option')).toHaveCount(
       Object.keys(catalog.entries).filter((id) => id.startsWith(series + '-')).length,
     )
-    await dialog.locator('.grid-cars button').last().click()
-    await expect(dialog).toHaveCount(0)
-    await expect(page.locator('.studio-status')).toContainText('Стартовая ливрея')
+    const last = await entries.locator('option').last().getAttribute('value')
+    await entries.selectOption(last!)
+    await expect(page.getByLabel('Основной цвет')).toBeDisabled()
   }
-  await page.getByRole('combobox', { name: 'Чемпионат', exact: true }).selectOption('f1')
-  await expect(page.getByLabel('Гоночный номер')).toHaveValue('047')
-  await page.getByLabel('Палитра').selectOption({ label: 'Серебро и кобальт' })
-  await page.getByLabel('Рисунок').selectOption('heritage')
+  await page.getByRole('combobox', { name: 'Чемпионат гаража', exact: true }).selectOption('f1')
+  await expect(page.getByLabel('Бортовой номер')).toHaveValue('047')
+  await page.getByLabel('Готовая палитра').selectOption({ label: 'Серебро и кобальт' })
+  await page.getByRole('combobox', { name: 'Рисунок', exact: true }).selectOption('heritage')
   await evidence('second-paint')
-  await tab('Исходная')
-  // The mobile editor crops the room differently, moving its projected lamps.
-  await tab('Обзор')
-  await expect.poll(picture).toBe(initial)
-  await expect.poll(floor).toBe(initialFloor)
-  await tab('Сохранить в карьере')
-  await expect(page.getByRole('status').filter({ hasText: 'Ливрея сохранена в карьере' })).toBeVisible()
-  await tab('Спонсоры')
-  if (mobile) await page.getByLabel('Поворот, °').scrollIntoViewIfNeeded()
+  await action('Исходная')
+  await page.getByRole('dialog').getByRole('button', { name: 'Подтвердить' }).click()
+  await save()
+  await tab('Автомобиль')
+  await expect.poll(() => body(showroom)).toBe(initial)
+  await expect.poll(() => floor(showroom)).toBe(initialFloor)
+  await tab('Ливрея')
+  await page.locator('.livery-controls').getByRole('tab', { name: /Размещения/ }).click()
+  if (mobile) await page.getByLabel('Поворот', { exact: true }).scrollIntoViewIfNeeded()
   await evidence('decals')
   expect(errors).toEqual([])
 })
@@ -118,7 +143,7 @@ test('Гараж · резервный профиль и повторная за
   const career = await response.json()
   const url = '/?career=' + career.id + '#garage'
   const body = page.locator('.studio-stage .garage-body')
-  const snapshot = () => body.evaluate((el) => (el as HTMLCanvasElement).toDataURL())
+  const snapshot = () => pixelSignature(body)
   const ready = () =>
     expect(page.locator('.studio-stage .car-stand')).toHaveAttribute('data-state', 'ready')
   await page.goto(url)
@@ -138,4 +163,37 @@ test('Гараж · резервный профиль и повторная за
   await retry.click()
   await ready()
   expect(await snapshot()).toBe(factory)
+})
+
+test('Парковка относительно пола, вывески и оборудования для всего каталога кузовов', async ({page}) => {
+  test.setTimeout(120000)
+  const response = await page.request.post('/api/careers', {
+    data: { name: 'Положение на полу', role: 'manager', org: 'team-oracle-red-bull-racing', series: 'f1', seed: 51 },
+  })
+  await expect(response).toBeOK()
+  const career = await response.json()
+  const catalog: Catalog = await (await page.request.get('/api/garage')).json()
+  const entries = new Map(Object.entries(catalog.entries).map(([id, preset]) => [preset.geometry, id]))
+  for (const [model, id] of entries) {
+    await test.step(model, async () => {
+      await page.goto('/?career=' + career.id + '#garage?entity=' + id)
+      const stage = page.locator('.garage-hero .studio-stage')
+      await expect(stage.locator('.car-stand')).toHaveAttribute('data-geometry', model)
+      await expectCarFits(stage)
+      await expectCarParked(stage)
+    })
+  }
+  await page.goto('/?career=' + career.id + '#world?tab=entries')
+  const hero = page.locator('.championship-hero')
+  for (const width of [844, 1366, 2560]) {
+    await page.setViewportSize({width, height: 768})
+    const stage = hero.locator('.studio-stage')
+    await expectCarParked(stage)
+    const image = (await stage.boundingBox())!
+    for (const panel of [hero.locator(':scope > div:first-child'), hero.locator('.championship-facts')]) {
+      const box = (await panel.boundingBox())!
+      expect(box.x + box.width).toBeLessThanOrEqual(image.x + 1)
+    }
+  }
+
 })

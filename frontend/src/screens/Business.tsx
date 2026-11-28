@@ -101,18 +101,21 @@ export function Organization() {
         </Button>
       </Header>
       <Banner />
-      <Stats
-        items={[
-          ['Гоночные программы', '03', 'Формула · GT · Выносливость'],
-          ['Общий резерв', millions(state.balanceCents), 'Доступно для инвестиций'],
-          [
-            'Стоимость группы',
-            millions(data.reports.groupValue),
-            data.reports.groupGrowth + ' к прошлому сезону',
-          ],
-          ['Доверие совета', data.reports.trust + ' / 100', 'Цели согласованы'],
-        ]}
-      />
+      <details className="demo-summary">
+        <summary>Сводные показатели</summary>
+        <Stats
+          items={[
+            ['Гоночные программы', '03', 'Формула · GT · Выносливость'],
+            ['Общий резерв', millions(state.balanceCents), 'Доступно для инвестиций'],
+            [
+              'Стоимость группы',
+              millions(data.reports.groupValue),
+              data.reports.groupGrowth + ' к прошлому сезону',
+            ],
+            ['Доверие совета', data.reports.trust + ' / 100', 'Цели согласованы'],
+          ]}
+        />
+      </details>
       <div className="management-tabs">
         <Choices
           label="Управление организацией"
@@ -233,14 +236,21 @@ export function Production() {
         </Button>
       </Header>
       <Banner production />
-      <Stats
-        items={[
-          ['Клиентские команды', '04', 'В трёх дисциплинах'],
-          ['Загрузка производства', state.load + '%', 'Свободный резерв · ' + (100 - state.load) + '%'],
-          ['Портфель заказов', millions(data.reports.orderBook), 'Исходные обязательства'],
-          ['Надёжность поставок', data.reports.deliveryRate, 'За последние 12 месяцев'],
-        ]}
-      />
+      <details className="demo-summary">
+        <summary>Сводные показатели</summary>
+        <Stats
+          items={[
+            ['Клиентские команды', '04', 'В трёх дисциплинах'],
+            [
+              'Загрузка производства',
+              state.load + '%',
+              'Свободный резерв · ' + (100 - state.load) + '%',
+            ],
+            ['Портфель заказов', millions(data.reports.orderBook), 'Исходные обязательства'],
+            ['Надёжность поставок', data.reports.deliveryRate, 'За последние 12 месяцев'],
+          ]}
+        />
+      </details>
       <div className="management-tabs">
         <Choices
           label="Производство"
@@ -314,8 +324,8 @@ export function Production() {
                           action={accepted ? 'Завершить заказ' : 'Принять заказ'}
                           onConfirm={() => send({ type: accepted ? 'finishOrder' : 'order', id: o.id })}
                         >
-                          {o.product} · {o.units} шт. {accepted ? 'Освободится' : 'Потребуется'} {o.load}%
-                          мощности.
+                          {o.product} · {o.units} шт. {accepted ? 'Освободится' : 'Потребуется'} {o.load}
+                          % мощности.
                         </Confirm>,
                       )
                     }
@@ -335,7 +345,10 @@ export function Production() {
           <Table
             label="Клиенты"
             columns={['Команда', 'Серия', 'Изделие', 'Контракт до']}
-            rows={data.clients.map((c) => ({ id: c.team, cells: [c.team, c.series, c.product, c.until] }))}
+            rows={data.clients.map((c) => ({
+              id: c.team,
+              cells: [c.team, c.series, c.product, c.until],
+            }))}
           />
         </Panel>
       )}

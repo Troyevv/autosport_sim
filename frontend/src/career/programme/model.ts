@@ -129,3 +129,19 @@ export const leads: Record<string, string> = {
   tyre: 'reliability',
   brakes: 'reliability',
 }
+
+export const deploymentLabels: Record<string, string> = {
+  installed: 'Установлен',
+  allocated: 'Выделен со склада',
+  waiting: 'Ожидает экземпляр',
+  priority: 'Ожидает по приоритету пилотов',
+  incompatible: 'Несовместим',
+  shared: 'Учтено в другом пакете',
+}
+
+export function regulationName(world: import('../api').World, id: string) {
+  const rule = world.engineering.technical_rules?.[id]
+  if (!rule) return 'Редакция регламента не указана'
+  const season = world.engineering.seasons[rule.season]
+  return [rule.category, season?.year, 'ред. ' + rule.version].filter(Boolean).join(' · ')
+}

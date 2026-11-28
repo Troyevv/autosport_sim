@@ -1,3 +1,4 @@
+import { businessTab, BusinessTabs } from '../../pitwall/BusinessTabs'
 import { useState, type FormEvent } from 'react'
 import { Button, Dialog, Facts, Header, Panel } from '../../ui/components'
 import { usePersonnel } from '../staff/model'
@@ -20,7 +21,13 @@ const units: Record<string, string> = {
   cfd_milli_mauh: 'CFD, 0,001 MAUh',
 }
 type Alloc = Record<string, number>
-type Request = { id: string; status: string; reason: string; decision_reason?: string; allocations: Alloc }
+type Request = {
+  id: string
+  status: string
+  reason: string
+  decision_reason?: string
+  allocations: Alloc
+}
 type View = {
   cash_cents: number
   available_cents: number
@@ -49,6 +56,7 @@ type View = {
 }
 type Props = SectionProps & { updateCareer: (c: Career) => void }
 export function Budget({ c, world, updateCareer }: Props) {
+  const tab = businessTab('budget')
   const current = Number(c.date.slice(0, 4)),
     [year, yearTo] = useState(current),
     [edit, setEdit] = useState<Request | 'new' | null>(null)
@@ -60,7 +68,9 @@ export function Budget({ c, world, updateCareer }: Props) {
   async function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
     const f = new FormData(e.currentTarget),
-      amounts = Object.fromEntries(Object.keys(names).map((k) => [k, Math.round(Number(f.get(k)) * 100)])),
+      amounts = Object.fromEntries(
+        Object.keys(names).map((k) => [k, Math.round(Number(f.get(k)) * 100)]),
+      ),
       reason = f.get('reason'),
       response = (e.nativeEvent as SubmitEvent).submitter?.getAttribute('value')
     const ok =
@@ -79,9 +89,10 @@ export function Budget({ c, world, updateCareer }: Props) {
     <section className="screen finance-desk">
       <Header
         section={world.organizations[c.org].name}
-        title="Бюджетирование"
+        title="Бюджет сезона"
         sub="Сезонная смета и решения владельца"
       />
+      <BusinessTabs page="budget" />
       <label>
         Сезон{' '}
         <select value={year} onChange={(e) => yearTo(Number(e.target.value))}>
@@ -95,71 +106,102 @@ export function Budget({ c, world, updateCareer }: Props) {
       {(order.error || req.error) && <p role="alert">{order.error || req.error}</p>}
       {v && (
         <>
-          <Panel title="Полномочия и средства">
-            <Facts
-              items={[
-                ['На счету', money(v.cash_cents)],
-                ['Доступно', money(v.available_cents)],
-                [
-                  'Утверждённая смета',
-                  v.plan
-                    ? money(Object.values(v.plan.allocations).reduce((a, b) => a + b, 0))
-                    : 'На согласовании',
-                ],
-                ['Последнее утверждение', v.plan?.approved ?? '—'],
-              ]}
-            />
-          </Panel>
-          <Panel title="Распределение по направлениям">
-            {Object.entries(names).map(([k, n]) => (
-              <div className="result" key={k}>
-                <span>
-                  <strong>{n}</strong>
-                  <small>
-                    Потрачено {money(v.actual[k] ?? 0)} · обязательства {money(v.reserved[k])}
-                  </small>
-                </span>
-                <span>{money(v.plan?.allocations[k] ?? 0)}</span>
+          {tab === 'plan' && (
+            <>
+              <div className="budget-heading">
+                <div>
+                  <span className="eyebrow">
+                    {v.plan ? 'План утверждён ' + v.plan.approved : 'План не утверждён'}
+                  </span>
+                  <strong>
+                    {v.plan
+                      ? money(Object.values(v.plan.allocations).reduce((a, b) => a + b, 0))
+                      : 'На согласовании'}
+                  </strong>
+                  <p>Распределение бюджета сезона {year}</p>
+                </div>
+                <div className="budget-compare">
+                  <small>Доступно в кассе</small>
+                  <b>{money(v.available_cents)}</b>
+                  <span>На счету {money(v.cash_cents)}</span>
+                </div>
               </div>
-            ))}
-          </Panel>
-          <Panel title="Заявки и решения">
-            {v.requests.map((r) => (
-              <div className="result" key={r.id}>
-                <span>
-                  <strong>{r.reason}</strong>
-                  <small>
-                    {
+              {v.plan && (
+                <div className="allocation-band">
+                  {Object.entries(v.plan.allocations)
+                    .filter(([, n]) => n > 0)
+                    .map(([key, n], i) => (
+                      <span
+                        key={key}
+                        title={names[key as keyof typeof names] + ' · ' + money(n)}
+                        style={{
+                          flex: n,
+                          background: ['#cdbb9b', '#ac9f8d', '#7c8b88', '#97adb1', '#8f8294', '#99968c'][
+                            i % 6
+                          ],
+                        }}
+                      />
+                    ))}
+                </div>
+              )}
+            </>
+          )}
+          {tab === 'plan' && (
+            <Panel title="Распределение по направлениям">
+              {Object.entries(names).map(([k, n]) => (
+                <div className="result" key={k}>
+                  <span>
+                    <strong>{n}</strong>
+                    <small>
+                      Потрачено {money(v.actual[k] ?? 0)} · обязательства {money(v.reserved[k])}
+                    </small>
+                  </span>
+                  <span>{money(v.plan?.allocations[k] ?? 0)}</span>
+                </div>
+              ))}
+            </Panel>
+          )}
+          {tab === 'requests' && (
+            <Panel title="Заявки и решения">
+              {v.requests.map((r) => (
+                <div className="result" key={r.id}>
+                  <span>
+                    <strong>{r.reason}</strong>
+                    <small>
                       {
-                        pending: 'На рассмотрении',
-                        approve: 'Утверждено',
-                        reject: 'Отклонено',
-                        adjust: 'Скорректировано',
-                      }[r.status]
-                    }{' '}
-                    · {r.decision_reason}
-                  </small>
-                </span>
-                {r.status === 'pending' && decide && <Button onClick={() => setEdit(r)}>Рассмотреть</Button>}
-              </div>
-            ))}
-            {year >= current && !v.requests.some((r) => r.status === 'pending') && (
-              <div className="panel-body">
-                {propose ? (
-                  <Button onClick={() => setEdit('new')}>Подать смету</Button>
-                ) : (
-                  year === current && (
-                    <Button
-                      disabled={order.busy}
-                      onClick={() => void order.send('finance-budget-review', {})}
-                    >
-                      Запросить смету менеджера
-                    </Button>
-                  )
-                )}
-              </div>
-            )}
-          </Panel>
+                        {
+                          pending: 'На рассмотрении',
+                          approve: 'Утверждено',
+                          reject: 'Отклонено',
+                          adjust: 'Скорректировано',
+                        }[r.status]
+                      }{' '}
+                      · {r.decision_reason}
+                    </small>
+                  </span>
+                  {r.status === 'pending' && decide && (
+                    <Button onClick={() => setEdit(r)}>Рассмотреть</Button>
+                  )}
+                </div>
+              ))}
+              {year >= current && !v.requests.some((r) => r.status === 'pending') && (
+                <div className="panel-body">
+                  {propose ? (
+                    <Button onClick={() => setEdit('new')}>Подать смету</Button>
+                  ) : (
+                    year === current && (
+                      <Button
+                        disabled={order.busy}
+                        onClick={() => void order.send('finance-budget-review', {})}
+                      >
+                        Запросить смету менеджера
+                      </Button>
+                    )
+                  )}
+                </div>
+              )}
+            </Panel>
+          )}
         </>
       )}
       {edit && (
@@ -177,7 +219,9 @@ export function Budget({ c, world, updateCareer }: Props) {
                   min="0"
                   step=".01"
                   type="number"
-                  defaultValue={((edit === 'new' ? v?.plan?.allocations[k] : edit.allocations[k]) ?? 0) / 100}
+                  defaultValue={
+                    ((edit === 'new' ? v?.plan?.allocations[k] : edit.allocations[k]) ?? 0) / 100
+                  }
                 />
               </label>
             ))}
@@ -206,6 +250,7 @@ export function Budget({ c, world, updateCareer }: Props) {
   )
 }
 export function CostCap({ c, world }: Props) {
+  const tab = businessTab('cap')
   const req = usePersonnel<View>('careers/' + c.id + '/budget', c.revision),
     v = req.data,
     cap = v?.cap,
@@ -214,76 +259,93 @@ export function CostCap({ c, world }: Props) {
     <section className="screen finance-desk">
       <Header
         section={world.organizations[c.org].name}
-        title="Cost Cap и ATR"
+        title="Регламентные лимиты"
         sub="Финансовый период и квоты инженерных ресурсов"
       />
+      <BusinessTabs page="cap" />
       {req.error && <p role="alert">{req.error}</p>}
       {v && (
         <>
-          <Panel title="Финансовый регламент">
-            {cap ? (
-              <>
-                <Facts
-                  items={[
-                    ['Потолок расходов', money(cap.limit_cents)],
-                    ['Учтённые расходы', money(cap.spent_cents)],
-                    ['Обязательства', money(cap.committed_cents)],
-                    ['Доступно до лимита', money(cap.remaining_cents)],
-                    ['Прогноз при текущем темпе', money(cap.forecast_cents)],
-                    ['Этапы', cap.rounds],
-                    ['Индексация', cap.indexation],
-                  ]}
-                />
+          {tab === 'financial' && (
+            <Panel title="Финансовый регламент">
+              {cap ? (
+                <>
+                  <div className="limit-hero">
+                    <span className="eyebrow">{cap.version}</span>
+                    <h2>{money(cap.remaining_cents)}</h2>
+                    <p>Остаток регламентного лимита</p>
+                    <progress
+                      aria-label="Использовано лимита"
+                      value={cap.spent_cents + cap.committed_cents}
+                      max={cap.limit_cents}
+                    />
+                  </div>
+                  <Facts
+                    items={[
+                      ['Потолок расходов', money(cap.limit_cents)],
+                      ['Учтённые расходы', money(cap.spent_cents)],
+                      ['Обязательства', money(cap.committed_cents)],
+                      ['Доступно до лимита', money(cap.remaining_cents)],
+                      ['Прогноз при текущем темпе', money(cap.forecast_cents)],
+                      ['Этапы', cap.rounds],
+                      ['Индексация', cap.indexation],
+                    ]}
+                  />
+                  <p className="panel-body">
+                    Исключения модели F1 включают маркетинг, зарплаты пилотов и трёх самых
+                    высокооплачиваемых сотрудников. <a href={cap.source}>{cap.version}</a>
+                  </p>
+                </>
+              ) : (
                 <p className="panel-body">
-                  Исключения модели F1 включают маркетинг, зарплаты пилотов и трёх самых высокооплачиваемых
-                  сотрудников. <a href={cap.source}>{cap.version}</a>
+                  Для этой организации и сезона потолок расходов не установлен в базе регламентов.
                 </p>
-              </>
-            ) : (
-              <p className="panel-body">
-                Для этой организации и сезона потолок расходов не установлен в базе регламентов.
-              </p>
-            )}
-          </Panel>
-          <Panel title="Аэродинамические испытания">
-            {atr ? (
-              <>
-                <p className="panel-body">
-                  ATP {atr.period.number} · {atr.period.start} — {atr.period.end_exclusive} ·{' '}
-                  {atr.percent === null ? 'Ожидает классификации' : atr.percent + '%'}
-                </p>
-                <Facts
-                  items={Object.entries(units).map(([k, n]) => [
-                    n,
-                    atr.used[k] + ' / ' + (atr.limits?.[k] ?? '—'),
-                  ])}
-                />
-              </>
-            ) : (
-              <p className="panel-body">Для текущего периода нет применимого лимита ATR.</p>
-            )}
-          </Panel>
-          <Panel title="Закрытые периоды">
-            {v.audits.length ? (
-              v.audits.map((a) => (
-                <div className="result" key={a.id}>
-                  {a.year} ·{' '}
-                  {
+              )}
+            </Panel>
+          )}
+          {tab === 'atr' && (
+            <Panel title="Аэродинамические испытания">
+              {atr ? (
+                <>
+                  <p className="panel-body">
+                    ATP {atr.period.number} · {atr.period.start} — {atr.period.end_exclusive} ·{' '}
+                    {atr.percent === null ? 'Ожидает классификации' : atr.percent + '%'}
+                  </p>
+                  <Facts
+                    items={Object.entries(units).map(([k, n]) => [
+                      n,
+                      atr.used[k] + ' / ' + (atr.limits?.[k] ?? '—'),
+                    ])}
+                  />
+                </>
+              ) : (
+                <p className="panel-body">Для текущего периода нет применимого лимита ATR.</p>
+              )}
+            </Panel>
+          )}
+          {tab === 'audits' && (
+            <Panel title="Закрытые периоды">
+              {v.audits.length ? (
+                v.audits.map((a) => (
+                  <div className="result" key={a.id}>
+                    {a.year} ·{' '}
                     {
-                      minor: 'Малое превышение',
-                      material: 'Существенное превышение',
-                      compliant: 'Лимит соблюдён',
-                    }[a.severity]
-                  }{' '}
-                  · {money(a.fine_cents)}
-                </div>
-              ))
-            ) : (
-              <p className="panel-body">
-                Проверки завершённых периодов появятся после закрытия финансового года.
-              </p>
-            )}
-          </Panel>
+                      {
+                        minor: 'Малое превышение',
+                        material: 'Существенное превышение',
+                        compliant: 'Лимит соблюдён',
+                      }[a.severity]
+                    }{' '}
+                    · {money(a.fine_cents)}
+                  </div>
+                ))
+              ) : (
+                <p className="panel-body">
+                  Проверки завершённых периодов появятся после закрытия финансового года.
+                </p>
+              )}
+            </Panel>
+          )}
         </>
       )}
     </section>

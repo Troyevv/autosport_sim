@@ -1,0 +1,1115 @@
+[
+  {
+    "role": "owner",
+    "route": "overview",
+    "key": "owner-000",
+    "portraits": 4,
+    "failures": 0
+  },
+  {
+    "role": "owner",
+    "route": "briefings",
+    "key": "owner-001",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "owner",
+    "route": "briefings?tab=finance",
+    "key": "owner-002",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "owner",
+    "route": "briefings?tab=leadership",
+    "key": "owner-003",
+    "portraits": 3,
+    "failures": 0
+  },
+  {
+    "role": "owner",
+    "route": "briefings?tab=academy",
+    "key": "owner-004",
+    "portraits": 3,
+    "failures": 0
+  },
+  {
+    "role": "owner",
+    "route": "briefings?tab=engineering",
+    "key": "owner-005",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "owner",
+    "route": "briefings?tab=capital",
+    "key": "owner-006",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "owner",
+    "route": "engineering",
+    "key": "owner-007",
+    "portraits": 3,
+    "failures": 0
+  },
+  {
+    "role": "owner",
+    "route": "engineering?tab=plans",
+    "key": "owner-008",
+    "portraits": 3,
+    "failures": 0
+  },
+  {
+    "role": "owner",
+    "route": "inbox",
+    "key": "owner-014",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "owner",
+    "route": "inbox?",
+    "key": "owner-015",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "owner",
+    "route": "leadership",
+    "key": "owner-016",
+    "portraits": 3,
+    "failures": 0
+  },
+  {
+    "role": "owner",
+    "route": "staff",
+    "key": "owner-017",
+    "portraits": 18,
+    "failures": 0
+  },
+  {
+    "role": "owner",
+    "route": "market?tab=scouting",
+    "key": "owner-021",
+    "portraits": 2,
+    "failures": 0
+  },
+  {
+    "role": "owner",
+    "route": "contracts",
+    "key": "owner-022",
+    "portraits": 21,
+    "failures": 0
+  },
+  {
+    "role": "owner",
+    "route": "finance",
+    "key": "owner-025",
+    "portraits": 2,
+    "failures": 0
+  },
+  {
+    "role": "owner",
+    "route": "academy",
+    "key": "owner-030",
+    "portraits": 12,
+    "failures": 0
+  },
+  {
+    "role": "owner",
+    "route": "preparation",
+    "key": "owner-031",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "owner",
+    "route": "agreements",
+    "key": "owner-032",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "owner",
+    "route": "statistics",
+    "key": "owner-033",
+    "portraits": 2,
+    "failures": 0
+  },
+  {
+    "role": "owner",
+    "route": "organization?tab=history",
+    "key": "owner-037",
+    "portraits": 4,
+    "failures": 0
+  },
+  {
+    "role": "owner",
+    "route": "statistics?tab=contracts",
+    "key": "owner-075",
+    "portraits": 2,
+    "failures": 0
+  },
+  {
+    "role": "owner",
+    "route": "statistics?tab=drivers",
+    "key": "owner-076",
+    "portraits": 12,
+    "failures": 0
+  },
+  {
+    "role": "owner",
+    "route": "statistics?tab=staff",
+    "key": "owner-077",
+    "portraits": 12,
+    "failures": 0
+  },
+  {
+    "role": "owner",
+    "route": "statistics?tab=overview",
+    "key": "owner-078",
+    "portraits": 2,
+    "failures": 0
+  },
+  {
+    "role": "owner",
+    "route": "market",
+    "key": "owner-retry-078",
+    "portraits": 18,
+    "failures": 0
+  },
+  {
+    "role": "owner",
+    "route": "organization?tab=people",
+    "key": "owner-035",
+    "portraits": 21,
+    "failures": 0
+  },
+  {
+    "role": "owner",
+    "route": "person?tab=statistics&entity=staff-96e4b22ca925",
+    "key": "owner-040",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "owner",
+    "route": "person?entity=driver-026",
+    "key": "owner-045",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "owner",
+    "route": "person?tab=career&entity=driver-026",
+    "key": "owner-046",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "owner",
+    "route": "person?tab=statistics&entity=driver-026",
+    "key": "owner-047",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "owner",
+    "route": "person?tab=public&entity=driver-026",
+    "key": "owner-048",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "owner",
+    "route": "person?tab=work&entity=driver-026",
+    "key": "owner-049",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "owner",
+    "route": "person?tab=compare&entity=driver-026",
+    "key": "owner-050",
+    "portraits": 3,
+    "failures": 0
+  },
+  {
+    "role": "owner",
+    "route": "person?tab=contract&entity=driver-026",
+    "key": "owner-051",
+    "portraits": 2,
+    "failures": 0
+  },
+  {
+    "role": "owner",
+    "route": "person?tab=support&entity=driver-026",
+    "key": "owner-052",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "owner",
+    "route": "person?entity=market-aramis-vale",
+    "key": "owner-053",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "owner",
+    "route": "person?tab=career&entity=market-aramis-vale",
+    "key": "owner-054",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "owner",
+    "route": "person?tab=statistics&entity=market-aramis-vale",
+    "key": "owner-055",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "owner",
+    "route": "person?tab=public&entity=market-aramis-vale",
+    "key": "owner-056",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "owner",
+    "route": "person?tab=work&entity=market-aramis-vale",
+    "key": "owner-057",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "owner",
+    "route": "person?tab=compare&entity=market-aramis-vale",
+    "key": "owner-058",
+    "portraits": 3,
+    "failures": 0
+  },
+  {
+    "role": "owner",
+    "route": "person?tab=contract&entity=market-aramis-vale",
+    "key": "owner-059",
+    "portraits": 2,
+    "failures": 0
+  },
+  {
+    "role": "owner",
+    "route": "person?tab=support&entity=market-aramis-vale",
+    "key": "owner-060",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "owner",
+    "route": "person?entity=driver-026&tab=profile",
+    "key": "owner-061",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "owner",
+    "route": "person?entity=driver-026&tab=contract",
+    "key": "owner-062",
+    "portraits": 2,
+    "failures": 0
+  },
+  {
+    "role": "owner",
+    "route": "person?entity=driver-026&tab=work",
+    "key": "owner-063",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "owner",
+    "route": "person?entity=driver-026&tab=compare",
+    "key": "owner-064",
+    "portraits": 3,
+    "failures": 0
+  },
+  {
+    "role": "owner",
+    "route": "person?entity=driver-026&tab=career",
+    "key": "owner-065",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "owner",
+    "route": "person?entity=driver-026&tab=public",
+    "key": "owner-066",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "owner",
+    "route": "person?entity=driver-026&tab=statistics",
+    "key": "owner-067",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "owner",
+    "route": "person?entity=staff-96e4b22ca925&tab=profile",
+    "key": "owner-068",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "owner",
+    "route": "person?entity=staff-96e4b22ca925&tab=contract",
+    "key": "owner-069",
+    "portraits": 2,
+    "failures": 0
+  },
+  {
+    "role": "owner",
+    "route": "person?entity=staff-96e4b22ca925&tab=work",
+    "key": "owner-070",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "owner",
+    "route": "person?entity=staff-96e4b22ca925&tab=compare",
+    "key": "owner-071",
+    "portraits": 3,
+    "failures": 0
+  },
+  {
+    "role": "owner",
+    "route": "person?entity=staff-96e4b22ca925&tab=career",
+    "key": "owner-072",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "owner",
+    "route": "person?entity=staff-96e4b22ca925&tab=public",
+    "key": "owner-073",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "owner",
+    "route": "person?entity=staff-96e4b22ca925&tab=statistics",
+    "key": "owner-074",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "owner",
+    "route": "person?entity=staff-96e4b22ca925",
+    "key": "owner-detail-74",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "owner",
+    "route": "person?tab=career&entity=staff-96e4b22ca925",
+    "key": "owner-detail-75",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "owner",
+    "route": "person?tab=public&entity=staff-96e4b22ca925",
+    "key": "owner-detail-76",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "owner",
+    "route": "person?tab=work&entity=staff-96e4b22ca925",
+    "key": "owner-detail-77",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "owner",
+    "route": "person?tab=compare&entity=staff-96e4b22ca925",
+    "key": "owner-detail-78",
+    "portraits": 3,
+    "failures": 0
+  },
+  {
+    "role": "owner",
+    "route": "person?tab=contract&entity=staff-96e4b22ca925",
+    "key": "owner-detail-79",
+    "portraits": 2,
+    "failures": 0
+  },
+  {
+    "role": "manager",
+    "route": "overview",
+    "key": "manager-000",
+    "portraits": 4,
+    "failures": 0
+  },
+  {
+    "role": "manager",
+    "route": "briefings",
+    "key": "manager-001",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "manager",
+    "route": "briefings?tab=finance",
+    "key": "manager-002",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "manager",
+    "route": "briefings?tab=production",
+    "key": "manager-003",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "manager",
+    "route": "briefings?tab=drivers",
+    "key": "manager-004",
+    "portraits": 3,
+    "failures": 0
+  },
+  {
+    "role": "manager",
+    "route": "briefings?tab=staff",
+    "key": "manager-005",
+    "portraits": 3,
+    "failures": 0
+  },
+  {
+    "role": "manager",
+    "route": "briefings?tab=council",
+    "key": "manager-006",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "manager",
+    "route": "inbox",
+    "key": "manager-007",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "manager",
+    "route": "inbox?",
+    "key": "manager-008",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "manager",
+    "route": "preparation",
+    "key": "manager-010",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "manager",
+    "route": "engineering",
+    "key": "manager-011",
+    "portraits": 3,
+    "failures": 0
+  },
+  {
+    "role": "manager",
+    "route": "engineering?tab=plans",
+    "key": "manager-012",
+    "portraits": 3,
+    "failures": 0
+  },
+  {
+    "role": "manager",
+    "route": "council",
+    "key": "manager-018",
+    "portraits": 5,
+    "failures": 0
+  },
+  {
+    "role": "manager",
+    "route": "council?tab=agenda",
+    "key": "manager-019",
+    "portraits": 5,
+    "failures": 0
+  },
+  {
+    "role": "manager",
+    "route": "council?tab=meeting",
+    "key": "manager-020",
+    "portraits": 5,
+    "failures": 0
+  },
+  {
+    "role": "manager",
+    "route": "manufacturer",
+    "key": "manager-023",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "manager",
+    "route": "staff",
+    "key": "manager-029",
+    "portraits": 18,
+    "failures": 0
+  },
+  {
+    "role": "manager",
+    "route": "market?tab=scouting",
+    "key": "manager-033",
+    "portraits": 2,
+    "failures": 0
+  },
+  {
+    "role": "manager",
+    "route": "contracts",
+    "key": "manager-034",
+    "portraits": 21,
+    "failures": 0
+  },
+  {
+    "role": "manager",
+    "route": "academy",
+    "key": "manager-037",
+    "portraits": 13,
+    "failures": 0
+  },
+  {
+    "role": "manager",
+    "route": "leadership",
+    "key": "manager-038",
+    "portraits": 3,
+    "failures": 0
+  },
+  {
+    "role": "manager",
+    "route": "finance",
+    "key": "manager-039",
+    "portraits": 2,
+    "failures": 0
+  },
+  {
+    "role": "manager",
+    "route": "agreements",
+    "key": "manager-044",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "manager",
+    "route": "organization?tab=history",
+    "key": "manager-049",
+    "portraits": 4,
+    "failures": 0
+  },
+  {
+    "role": "manager",
+    "route": "people",
+    "key": "manager-050",
+    "portraits": 11,
+    "failures": 0
+  },
+  {
+    "role": "manager",
+    "route": "statistics?tab=contracts",
+    "key": "manager-065",
+    "portraits": 2,
+    "failures": 0
+  },
+  {
+    "role": "manager",
+    "route": "statistics?tab=drivers",
+    "key": "manager-066",
+    "portraits": 12,
+    "failures": 0
+  },
+  {
+    "role": "manager",
+    "route": "statistics?tab=staff",
+    "key": "manager-067",
+    "portraits": 12,
+    "failures": 0
+  },
+  {
+    "role": "manager",
+    "route": "statistics?tab=overview",
+    "key": "manager-068",
+    "portraits": 2,
+    "failures": 0
+  },
+  {
+    "role": "manager",
+    "route": "drivers",
+    "key": "manager-retry-065",
+    "portraits": 5,
+    "failures": 0
+  },
+  {
+    "role": "manager",
+    "route": "market",
+    "key": "manager-retry-066",
+    "portraits": 18,
+    "failures": 0
+  },
+  {
+    "role": "manager",
+    "route": "organization?tab=people",
+    "key": "manager-047",
+    "portraits": 21,
+    "failures": 0
+  },
+  {
+    "role": "manager",
+    "route": "person?entity=driver-026&tab=public",
+    "key": "manager-056",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "manager",
+    "route": "person?entity=driver-026&tab=statistics",
+    "key": "manager-057",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "manager",
+    "route": "person?entity=staff-96e4b22ca925&tab=profile",
+    "key": "manager-058",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "manager",
+    "route": "person?entity=staff-96e4b22ca925&tab=contract",
+    "key": "manager-059",
+    "portraits": 2,
+    "failures": 0
+  },
+  {
+    "role": "manager",
+    "route": "person?entity=staff-96e4b22ca925&tab=work",
+    "key": "manager-060",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "manager",
+    "route": "person?entity=staff-96e4b22ca925&tab=compare",
+    "key": "manager-061",
+    "portraits": 3,
+    "failures": 0
+  },
+  {
+    "role": "manager",
+    "route": "person?entity=staff-96e4b22ca925&tab=career",
+    "key": "manager-062",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "manager",
+    "route": "person?entity=staff-96e4b22ca925&tab=public",
+    "key": "manager-063",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "manager",
+    "route": "person?entity=staff-96e4b22ca925&tab=statistics",
+    "key": "manager-064",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "manager",
+    "route": "person?entity=driver-026&tab=profile",
+    "key": "manager-detail-64",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "manager",
+    "route": "person?entity=driver-026&tab=contract",
+    "key": "manager-detail-65",
+    "portraits": 2,
+    "failures": 0
+  },
+  {
+    "role": "manager",
+    "route": "person?entity=driver-026&tab=work",
+    "key": "manager-detail-66",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "manager",
+    "route": "person?entity=driver-026&tab=compare",
+    "key": "manager-detail-67",
+    "portraits": 3,
+    "failures": 0
+  },
+  {
+    "role": "manager",
+    "route": "person?entity=driver-026&tab=career",
+    "key": "manager-detail-68",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "manufacturer",
+    "route": "overview?",
+    "key": "manufacturer-001",
+    "portraits": 2,
+    "failures": 0
+  },
+  {
+    "role": "manufacturer",
+    "route": "briefings",
+    "key": "manufacturer-002",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "manufacturer",
+    "route": "briefings?tab=finance",
+    "key": "manufacturer-003",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "manufacturer",
+    "route": "briefings?tab=production",
+    "key": "manufacturer-004",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "manufacturer",
+    "route": "briefings?tab=staff",
+    "key": "manufacturer-005",
+    "portraits": 2,
+    "failures": 0
+  },
+  {
+    "role": "manufacturer",
+    "route": "briefings?tab=manufacturer",
+    "key": "manufacturer-006",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "manufacturer",
+    "route": "manufacturer",
+    "key": "manufacturer-009",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "manufacturer",
+    "route": "manufacturer?tab=catalog",
+    "key": "manufacturer-010",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "manufacturer",
+    "route": "manufacturer?tab=advisors",
+    "key": "manufacturer-016",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "manufacturer",
+    "route": "staff",
+    "key": "manufacturer-020",
+    "portraits": 9,
+    "failures": 0
+  },
+  {
+    "role": "manufacturer",
+    "route": "market?tab=scouting",
+    "key": "manufacturer-024",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "manufacturer",
+    "route": "contracts",
+    "key": "manufacturer-025",
+    "portraits": 8,
+    "failures": 0
+  },
+  {
+    "role": "manufacturer",
+    "route": "preparation",
+    "key": "manufacturer-028",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "manufacturer",
+    "route": "leadership",
+    "key": "manufacturer-029",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "manufacturer",
+    "route": "agreements",
+    "key": "manufacturer-030",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "manufacturer",
+    "route": "finance",
+    "key": "manufacturer-031",
+    "portraits": 2,
+    "failures": 0
+  },
+  {
+    "role": "manufacturer",
+    "route": "statistics?tab=drivers",
+    "key": "manufacturer-067",
+    "portraits": 12,
+    "failures": 0
+  },
+  {
+    "role": "manufacturer",
+    "route": "statistics?tab=staff",
+    "key": "manufacturer-068",
+    "portraits": 12,
+    "failures": 0
+  },
+  {
+    "role": "manufacturer",
+    "route": "overview",
+    "key": "manufacturer-retry-068",
+    "portraits": 2,
+    "failures": 0
+  },
+  {
+    "role": "manufacturer",
+    "route": "person?entity=staff-96e4b22ca925",
+    "key": "manufacturer-037",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "manufacturer",
+    "route": "person?tab=career&entity=staff-96e4b22ca925",
+    "key": "manufacturer-038",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "manufacturer",
+    "route": "person?tab=public&entity=staff-96e4b22ca925",
+    "key": "manufacturer-040",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "manufacturer",
+    "route": "person?tab=work&entity=staff-96e4b22ca925",
+    "key": "manufacturer-041",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "manufacturer",
+    "route": "person?tab=compare&entity=staff-96e4b22ca925",
+    "key": "manufacturer-042",
+    "portraits": 3,
+    "failures": 0
+  },
+  {
+    "role": "manufacturer",
+    "route": "person?tab=contract&entity=staff-96e4b22ca925",
+    "key": "manufacturer-043",
+    "portraits": 2,
+    "failures": 0
+  },
+  {
+    "role": "manufacturer",
+    "route": "person?entity=market-aramis-vale",
+    "key": "manufacturer-044",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "manufacturer",
+    "route": "person?tab=career&entity=market-aramis-vale",
+    "key": "manufacturer-045",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "manufacturer",
+    "route": "person?tab=public&entity=market-aramis-vale",
+    "key": "manufacturer-047",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "manufacturer",
+    "route": "person?tab=work&entity=market-aramis-vale",
+    "key": "manufacturer-048",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "manufacturer",
+    "route": "person?tab=compare&entity=market-aramis-vale",
+    "key": "manufacturer-049",
+    "portraits": 3,
+    "failures": 0
+  },
+  {
+    "role": "manufacturer",
+    "route": "person?tab=contract&entity=market-aramis-vale",
+    "key": "manufacturer-050",
+    "portraits": 2,
+    "failures": 0
+  },
+  {
+    "role": "manufacturer",
+    "route": "person?tab=support&entity=market-aramis-vale",
+    "key": "manufacturer-051",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "manufacturer",
+    "route": "person?entity=driver-026&tab=profile",
+    "key": "manufacturer-052",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "manufacturer",
+    "route": "person?entity=driver-026&tab=contract",
+    "key": "manufacturer-053",
+    "portraits": 2,
+    "failures": 0
+  },
+  {
+    "role": "manufacturer",
+    "route": "person?entity=driver-026&tab=work",
+    "key": "manufacturer-054",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "manufacturer",
+    "route": "person?entity=driver-026&tab=compare",
+    "key": "manufacturer-055",
+    "portraits": 3,
+    "failures": 0
+  },
+  {
+    "role": "manufacturer",
+    "route": "person?entity=driver-026&tab=career",
+    "key": "manufacturer-056",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "manufacturer",
+    "route": "person?entity=driver-026&tab=public",
+    "key": "manufacturer-057",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "manufacturer",
+    "route": "person?entity=staff-96e4b22ca925&tab=profile",
+    "key": "manufacturer-059",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "manufacturer",
+    "route": "person?entity=staff-96e4b22ca925&tab=contract",
+    "key": "manufacturer-060",
+    "portraits": 2,
+    "failures": 0
+  },
+  {
+    "role": "manufacturer",
+    "route": "person?entity=staff-96e4b22ca925&tab=work",
+    "key": "manufacturer-061",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "manufacturer",
+    "route": "person?entity=staff-96e4b22ca925&tab=compare",
+    "key": "manufacturer-062",
+    "portraits": 3,
+    "failures": 0
+  },
+  {
+    "role": "manufacturer",
+    "route": "person?entity=staff-96e4b22ca925&tab=career",
+    "key": "manufacturer-063",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "manufacturer",
+    "route": "person?entity=staff-96e4b22ca925&tab=public",
+    "key": "manufacturer-064",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "manufacturer",
+    "route": "person?tab=statistics&entity=staff-96e4b22ca925",
+    "key": "manufacturer-detail-66",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "manufacturer",
+    "route": "person?tab=statistics&entity=market-aramis-vale",
+    "key": "manufacturer-detail-67",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "manufacturer",
+    "route": "person?entity=driver-026&tab=statistics",
+    "key": "manufacturer-detail-68",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "manufacturer",
+    "route": "person?entity=staff-96e4b22ca925&tab=statistics",
+    "key": "manufacturer-detail-69",
+    "portraits": 1,
+    "failures": 0
+  },
+  {
+    "role": "manufacturer",
+    "route": "organization?tab=people",
+    "key": "manufacturer-detail-70",
+    "portraits": 8,
+    "failures": 0
+  }
+]

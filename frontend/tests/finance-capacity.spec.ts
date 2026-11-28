@@ -11,24 +11,36 @@ test('Аренда мощности и источник многосерийно
   }
 
   await openCareer('team-mclaren-formula-1-team', 'f1', 'facilities')
-  await page.getByRole('button', { name: 'Мощности', exact: true }).click()
-  const research = page.locator('.capacity-card').filter({ hasText: 'Исследования' })
-  await expect(research.locator('dd')).toHaveCount(4)
-  const initial = await research.locator('dd').allTextContents()
-  await research.getByRole('button').click()
-  const center = page.locator('.rights-row').filter({ hasText: 'Исследовательский центр' }).filter({hasText: 'Независимый оператор'})
-  await center.getByRole('button', { name: 'Забронировать' }).click()
-  await page.getByLabel('Единиц мощности').fill('2')
+  const tab = (name: string) => page.getByRole('tab', {name,exact:true})
+  await tab('Мощности').click()
+  const research = page.locator('.capacity-row').filter({hasText:'Исследования'})
+  const capacity = async () => {
+    const value = await research.innerText()
+    const slots = value.match(/(\d+) доступно · (\d+) собственных/)!
+    const work = value.match(/([\d.,]+)\s*эффективных/)!
+    const queue = value.match(/Подтверждённая очередь · (\d+)/)!
+    return [Number(slots[1]), Number(slots[2]), Number(work[1].replace(',', '.')), Number(queue[1])]
+  }
+  await expect(research).toBeVisible()
+  const initial = await capacity()
+  await tab('Аренда').click()
+  await page.getByLabel('Организация или объект').fill('Независимый оператор')
+  const center = page.locator('.facility-row').filter({hasText:'Исследовательский центр'})
+  await center.getByRole('button', {name:'Арендовать'}).click()
+  await page.getByLabel('Слотов').fill('2')
   await page.getByLabel('Дней').fill('7')
-  await page.getByRole('button', { name: 'Подтвердить' }).click()
+  const dialog = page.getByRole('dialog')
+  await dialog.getByRole('button', {name:'Проверить итог'}).click()
+  await dialog.getByRole('button', {name:'Подтвердить резервирование'}).click()
+  await dialog.getByRole('button', {name:'Вернуться к организации'}).click()
   await expect(page.getByRole('dialog')).toBeHidden()
-  await page.getByRole('button', { name: 'Мощности', exact: true }).click()
-  await expect(research.locator('dd')).toHaveText([initial[0], String(Number(initial[1]) + 2), (Number(initial[2].replace(',', '.')) + 8).toLocaleString('ru-RU', {maximumFractionDigits: 2}), initial[3]])
+  await tab('Мощности').click()
+  await expect.poll(capacity).toEqual([initial[0]+2, initial[1], initial[2]+8, initial[3]])
 
   await openCareer('team-dams-lucas-oil', 'f2', 'commercial')
-  await page.getByRole('button', { name: 'Договоры', exact: true }).click()
-  await expect(page.locator('.commercial-row').filter({ hasText: 'OMP Racing' })).toHaveCount(1)
-  await page.locator('.commercial-row').filter({ hasText: 'OMP Racing' }).click()
+  await tab('Контракты').click()
+  await expect(page.locator('.contract-row').filter({ hasText: 'OMP Racing' })).toHaveCount(1)
+  await page.locator('.contract-row').filter({ hasText: 'OMP Racing' }).click()
   await expect(page.getByRole('link', { name: 'Источник партнёрства сезона 2025' })).toHaveAttribute(
     'href',
     /^https:\/\/damslucasoil\.com\//,
@@ -42,9 +54,10 @@ test('Корпоративная доля определяет полномоч�
   expect(response.status()).toBe(201)
   const career = await response.json()
   await page.goto('/?career=' + career.id + '#capital')
-  const shareholders = page.locator('.panel').filter({ has: page.getByRole('heading', { name: 'Собственники' }) })
+  const shareholders = page.locator('.ownership-panel').filter({ has: page.getByRole('heading', { name: 'Структура капитала' }) })
   await expect(shareholders).toContainText('Ferrari')
   await expect(shareholders).toContainText('100%')
-  await expect(shareholders.getByRole('button', { name: 'Внести капитал' })).toBeVisible()
-  await expect(page.getByRole('button', { name: 'Получить кредит' })).toHaveCount(0)
+  await expect(shareholders.getByRole('button', { name: 'Внести средства' })).toBeVisible()
+  await page.getByRole('tab',{name:'Займы',exact:true}).click()
+  await expect(page.getByRole('button', { name: 'Оформить заём' })).toBeDisabled()
 })

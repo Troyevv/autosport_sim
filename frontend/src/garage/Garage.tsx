@@ -1,20 +1,27 @@
+import { initialTab, readRoute, navigate } from '../pitwall/core/route'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Check, Eye, Images, RotateCcw, Save, Undo2 } from 'lucide-react'
-import { api, ApiError, explain, post, type Career, type World } from '../career/api'
-import { Button, Choices, Dialog, Facts, Header, Panel } from '../ui/components'
+import { api, ApiError, explain, post, type Career, type World, type Asset } from '../career/api'
+import { Button, Dialog, Panel } from '../ui/components'
 import { Components } from './Components'
+import { GarageWall } from './GarageWall'
 import { CarView } from './CarView'
 import { DecalPanel } from './DecalPanel'
 import { geometry, partNames, sameLivery, type Catalog, type Livery } from './model'
+import { PageHeading, Badge, Icon, Panel as DeskPanel, Facts as DeskFacts } from '../pitwall/ui'
+import '../pitwall/garage.css'
 import './garage.css'
 
-type Props = { c: Career; world: World; updateCareer: (c: Career) => void }
-type Draft = { current: Livery; past: Livery[] }
+type Props = { c: Career; world: World; media: Asset[]; updateCareer: (c: Career) => void }
+type Draft = { base: Livery; current: Livery; past: Livery[] }
+// Drafts survive navigation within this game session. Only save-livery commits paint to a career.
+const studioDrafts = new Map<string, Record<string, Draft>>()
 const tabs = [
-  ['overview', 'Обзор'],
-  ['livery', 'Ливрея'],
-  ['sponsors', 'Спонсоры'],
+  ['overview', 'Автомобиль'],
   ['parts', 'Компоненты'],
+  ['livery', 'Ливрея'],
+  ['sponsors', 'Размещения'],
+  ['history', 'История сборки'],
 ] as const
 export function SeasonGarage(props: Props) {
   const [catalog, setCatalog] = useState<Catalog>(),
@@ -22,13 +29,13 @@ export function SeasonGarage(props: Props) {
     [attempt, retry] = useState(0)
   useEffect(() => {
     const controller = new AbortController()
-    api<Catalog>('careers/'+props.c.id+'/garage', { signal: controller.signal })
+    api<Catalog>('careers/' + props.c.id + '/garage', { signal: controller.signal })
       .then(setCatalog)
       .catch((err) => {
         if (!controller.signal.aborted) setError(explain(err))
       })
     return () => controller.abort()
-  }, [attempt,props.c.id,props.c.revision])
+  }, [attempt, props.c.id, props.c.revision])
   if (!catalog)
     return (
       <section className="screen">
@@ -52,11 +59,16 @@ export function SeasonGarage(props: Props) {
     )
   return <Studio {...props} catalog={catalog} />
 }
-function Studio({ c, world, catalog, updateCareer }: Props & { catalog: Catalog }) {
+function Studio({ c, world, catalog, media, updateCareer }: Props & { catalog: Catalog }) {
   const entries = Object.values(world.entries)
-  const [series, setSeries] = useState(c.series)
+  const [series, setSeries] = useState(world.entries[readRoute().entity]?.championship || c.series)
   const filtered = entries.filter((e) => e.championship === series)
-  const [entryId, pick] = useState(() => filtered.find((e) => e.org === c.org)?.id || filtered[0].id)
+  const [entryId, pick] = useState(
+    () =>
+      filtered.find((e) => e.id === readRoute().entity)?.id ||
+      filtered.find((e) => e.org === c.org)?.id ||
+      filtered[0].id,
+  )
   const entry = world.entries[entryId],
     car = world.cars[entry.car],
     org = world.organizations[entry.org]
@@ -64,27 +76,48 @@ function Studio({ c, world, catalog, updateCareer }: Props & { catalog: Catalog 
   const configuration = c.garage_configurations[entry.car]
   const model =
     configuration.geometry && geometry[configuration.geometry] ? configuration.geometry : baseModel
-  const [tab, setTab] = useState<(typeof tabs)[number][0]>('overview'),
+  const [tab, setTab] = useState<(typeof tabs)[number][0]>(() =>
+      initialTab(
+        tabs,
+        'overview',
+        readRoute().page === 'livery'
+          ? 'livery'
+          : readRoute().tab === 'components'
+            ? 'parts'
+            : readRoute().tab,
+      ),
+    ),
     [dialog, open] = useState(''),
     [index, select] = useState(0)
-  const [drafts, setDrafts] = useState<Record<string, Draft>>({}),
+  const [showZones, setShowZones] = useState(true)
+  const [drafts, setDrafts] = useState<Record<string, Draft>>(() => studioDrafts.get(c.id) || {}),
     [message, send] = useState(''),
     [error, setError] = useState('')
   const [wing, setWing] = useState('standard'),
     [saving, lock] = useState(false)
   const retry = useRef<{ signature: string; id: string } | null>(null)
   const raw = c.liveries[entryId] || original
-  const saved = {...raw,decals:raw.decals.filter(d=>catalog.entries[entryId].allowed_assets.includes(d.asset))},
-    draft = drafts[entryId],
+  const saved = {
+      ...raw,
+      decals: raw.decals.filter((d) => catalog.entries[entryId].allowed_assets.includes(d.asset)),
+    },
+    draft = drafts[entryId] && sameLivery(drafts[entryId].base, saved) ? drafts[entryId] : undefined,
     livery = draft?.current || saved
   const dirty = !sameLivery(livery, saved),
     own = entry.org === c.org && c.role !== 'manufacturer'
   const selected = livery.decals[index]
+  const editing = tab === 'livery' || tab === 'sponsors'
+  useEffect(() => {
+    studioDrafts.set(c.id, drafts)
+  }, [c.id, drafts])
   function change(next: Livery, drag = false) {
     setDrafts((prev) => {
-      const last = prev[entryId] || { current: saved, past: [] }
+      const last =
+        prev[entryId] && sameLivery(prev[entryId].base, saved)
+          ? prev[entryId]
+          : { base: saved, current: saved, past: [] }
       const past = drag ? last.past : [...last.past.slice(-59), last.current]
-      return { ...prev, [entryId]: { current: next, past } }
+      return { ...prev, [entryId]: { base: saved, current: next, past } }
     })
     send('')
     setError('')
@@ -102,7 +135,7 @@ function Studio({ c, world, catalog, updateCareer }: Props & { catalog: Catalog 
   function undo() {
     if (!draft?.past.length) return
     const current = draft.past[draft.past.length - 1]
-    setDrafts({ ...drafts, [entryId]: { current, past: draft.past.slice(0, -1) } })
+    setDrafts({ ...drafts, [entryId]: { base: saved, current, past: draft.past.slice(0, -1) } })
     select(Math.max(0, Math.min(index, current.decals.length - 1)))
     send('')
   }
@@ -124,6 +157,11 @@ function Studio({ c, world, catalog, updateCareer }: Props & { catalog: Catalog 
         }),
       )
       updateCareer(next)
+      setDrafts((previous) => {
+        const nextDrafts = { ...previous }
+        delete nextDrafts[entryId]
+        return nextDrafts
+      })
       send('Ливрея сохранена в карьере')
       retry.current = null
     } catch (e) {
@@ -142,10 +180,13 @@ function Studio({ c, world, catalog, updateCareer }: Props & { catalog: Catalog 
   }
   const installed = useMemo(
     () =>
-      tab !== 'parts' || wing === 'standard' ? configuration.installed : { ...configuration.installed, 'rear-wing': wing },
+      tab !== 'parts' || wing === 'standard'
+        ? configuration.installed
+        : { ...configuration.installed, 'rear-wing': wing },
     [wing, configuration, tab],
   )
   const viewProps = {
+    wall: <GarageWall org={org} media={media} />,
     model,
     regulation: configuration.regulation,
     livery,
@@ -155,294 +196,500 @@ function Studio({ c, world, catalog, updateCareer }: Props & { catalog: Catalog 
   }
   return (
     <section className="screen season-garage">
-      <Header
-        section={world.championships[series].name + ' / Технический центр'}
-        title="Гараж"
-        sub={org.name + ' · Сезон ' + world.origin.season}
-      >
-        <Button onClick={() => open('gallery')}>
-          <Images size={16} />
-          Стартовая сетка
-        </Button>
-      </Header>
-      <div className="garage-selectors">
-        <label>
-          Чемпионат
-          <select
-            value={series}
-            disabled={saving}
-            onChange={(e) => {
-              const s = e.target.value,
-                grid = entries.filter((v) => v.championship === s)
-              setSeries(s)
-              choose((grid.find((v) => v.org === c.org) || grid[0]).id)
-            }}
+      <PageHeading
+        eyebrow={org.name + ' / ' + world.championships[series].name}
+        title={tab === 'livery' ? 'Ливрея ' + car.name : car.name + ' · №' + livery.number}
+        actions={
+          <div className="garage-selectors">
+            <select
+              aria-label="Чемпионат"
+              value={series}
+              disabled={saving}
+              onChange={(e) => {
+                const s = e.target.value,
+                  grid = entries.filter((v) => v.championship === s)
+                setSeries(s)
+                choose((grid.find((v) => v.org === c.org) || grid[0]).id)
+              }}
+            >
+              {Object.values(world.championships)
+                .filter((s) => s.playable !== false)
+                .map((s) => (
+                  <option key={s.id} value={s.id}>
+                    {s.name}
+                  </option>
+                ))}
+            </select>
+            <select
+              aria-label="Заявка"
+              value={entryId}
+              disabled={saving}
+              onChange={(e) => choose(e.target.value)}
+            >
+              {filtered.map((e) => (
+                <option value={e.id} key={e.id}>
+                  №{catalog.entries[e.id].livery.number} · {e.entrant ?? world.organizations[e.org].name}
+                </option>
+              ))}
+            </select>
+          </div>
+        }
+      />
+      <nav className="tabs" aria-label="Раздел гаража">
+        {tabs.map(([value, label]) => (
+          <button
+            key={value}
+            className={value === tab ? 'active' : ''}
+            aria-current={value === tab ? 'page' : undefined}
+            onClick={() => setTab(value)}
           >
-            {Object.values(world.championships).filter((s) => s.playable !== false).map((s) => (
-              <option key={s.id} value={s.id}>
-                {s.name}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label>
-          Заявка
-          <select value={entryId} disabled={saving} onChange={(e) => choose(e.target.value)}>
-            {filtered.map((e) => (
-              <option value={e.id} key={e.id}>
-                №{catalog.entries[e.id].livery.number} · {e.entrant ?? world.organizations[e.org].name}
-              </option>
-            ))}
-          </select>
-        </label>
-      </div>
-      <Choices label="Раздел гаража" items={tabs} active={tab} onChange={setTab} />
-      <div className={'studio-layout' + (tab === 'parts' && own ? ' with-passport' : '') + (tab === 'livery' || tab === 'sponsors' ? ' editing' : '')}>
-        <section className="studio-panel">
-          <div className="studio-stage">
-            <header>
-              <small>
-                {entry.category.toUpperCase()} / {world.origin.season}
-              </small>
+            {label}
+          </button>
+        ))}
+      </nav>
+      {tab === 'overview' && (
+        <>
+          <section className="garage-hero">
+            <div className="studio-stage legacy-studio-stage" onDoubleClick={() => open('preview')}>
+              <CarView {...viewProps} />
+            </div>
+            <div>
+              <span className="eyebrow">
+                {entry.category} / Сезон {world.origin.season}
+              </span>
               <h2>{car.name}</h2>
-              <span>{org.name}</span>
-            </header>
-            <button
-              className="studio-expand"
-              onClick={() => open('preview')}
-              aria-label="Увеличить предпросмотр"
-            >
-              <Eye size={18} />
-            </button>
-            <div
-              onPointerDownCapture={() => {
-                lastDrag.current = false
-              }}
-              onPointerUpCapture={() => {
-                lastDrag.current = false
-              }}
-            >
-              <CarView
-                key={entryId}
-                {...viewProps}
-                selected={selected}
-                highlight={tab === 'sponsors'}
-                onMove={
-                  tab === 'sponsors' && selected
-                    ? (x, y) => {
-                        const group = lastDrag.current
-                        change(
-                          {
-                            ...livery,
-                            decals: livery.decals.map((d, i) => (i === index ? { ...d, x, y } : d)),
-                          },
-                          group,
-                        )
-                        lastDrag.current = true
-                      }
-                    : undefined
-                }
-              />
+              <p>
+                {org.name} · {org.base}
+              </p>
             </div>
             <footer>
-              <span>{world.championships[series].short_name || world.championships[series].name}</span>
-              <b>№ {livery.number}</b>
+              <span className="studio-status">
+                <Badge tone="good">
+                  {dirty ? 'Черновик' : c.liveries[entryId] ? 'Карьерная ливрея' : 'Стартовая ливрея'}
+                </Badge>
+              </span>
+              <button className="button ghost" onClick={() => open('preview')}>
+                <Eye size={16} />
+                Увеличить предпросмотр
+              </button>
+              <button className="button primary" onClick={() => setTab('livery')}>
+                {own ? 'Редактировать ливрею' : 'Посмотреть ливрею'}
+                <Icon name="ArrowRight" />
+              </button>
             </footer>
-          </div>
-          <div className="studio-status">
-            <span>
-              <i style={{ background: livery.colors[0] }} />
-              {dirty ? 'Черновик' : c.liveries[entryId] ? 'Карьерная ливрея' : 'Стартовая ливрея'}
-            </span>
-            <span>{tab === 'parts' && wing !== 'standard' ? 'Предпросмотр антикрыла' : catalog.patterns[livery.pattern].name}</span>
-          </div>
-          {tab === 'parts' && (
-            <Panel title="Визуальные модули">
-              <div className="garage-fields">
-                <label>
-                  Антикрыло в предпросмотре
-                  <select value={wing} onChange={(e) => setWing(e.target.value)}>
-                    <option value="standard">Установленный профиль</option>
-                    {Object.keys(geometry[model].variants['rear-wing'] || {}).map(key => (
-                      <option key={key} value={key}>Низкий профиль · пример</option>
-                    ))}
-                  </select>
-                </label>
-                <small>Регламент {car.regulation}</small>
-                <div className="garage-parts">
-                  {geometry[model].parts.map(([id]) => (
-                    <span key={id}>
-                      <Check size={12} />
-                      {partNames[id]}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </Panel>
-          )}
-        </section>
-        <aside className="studio-controls">
-          {tab === 'overview' && (
-            <Panel title="Паспорт автомобиля">
-              <Facts
-                items={[
-                  ['Заявка', '№ ' + original.number],
-                  ['Класс', entry.category],
-                  ['Команда', org.name],
-                  ['Экипаж', c.crews[entry.id].map((id) => world.names[id]).join(', ') || 'Вакантно'],
-                ]}
-              />
-              <div className="garage-fields">
-                <Button primary onClick={() => setTab('livery')}>
-                  Открыть редактор
-                </Button>
-              </div>
-            </Panel>
-          )}
-          {tab === 'livery' && (
-            <Panel title="Окраска кузова">
-              <div className="garage-fields">
-                <div className="paint-swatches">
-                  {livery.colors.map((v, i) => (
-                    <label key={i}>
-                      <input
-                        aria-label={['Основной цвет', 'Дополнительный цвет', 'Акцентный цвет'][i]}
-                        type="color"
-                        value={v}
-                        onChange={(e) =>
-                          change({
-                            ...livery,
-                            colors: livery.colors.map((color, j) => (j === i ? e.target.value : color)),
-                          })
-                        }
-                      />
-                      <span>{['Основной', 'Второй', 'Акцент'][i]}</span>
-                      <small>{v.toUpperCase()}</small>
-                    </label>
-                  ))}
-                </div>
-                <label>
-                  Палитра
-                  <select
-                    value={livery.colors.join(' ')}
-                    onChange={(e) => change({ ...livery, colors: e.target.value.split(' ') })}
-                  >
-                    {[
-                      ['Стартовая', original.colors.join(' ')],
-                      ['Графит и кармин', '#292c31 #ba3344 #f1eee4'],
-                      ['Серебро и кобальт', '#bdc6ce #234ca0 #e7b655'],
-                      ...([
-                        original.colors.join(' '),
-                        '#292c31 #ba3344 #f1eee4',
-                        '#bdc6ce #234ca0 #e7b655',
-                      ].includes(livery.colors.join(' '))
-                        ? []
-                        : [['Своя палитра', livery.colors.join(' ')]]),
-                    ].map(([name, colors]) => (
-                      <option value={colors} key={colors}>
-                        {name}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                <label>
-                  Рисунок
-                  <select
-                    value={livery.pattern}
-                    onChange={(e) => change({ ...livery, pattern: e.target.value })}
-                  >
-                    {Object.entries(catalog.patterns).map(([k, v]) => (
-                      <option key={k} value={k}>
-                        {v.name}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                <label>
-                  Гоночный номер
-                  <input
-                    value={livery.number}
-                    inputMode="numeric"
-                    maxLength={3}
-                    pattern="[0-9]{1,3}"
-                    onChange={(e) => {
-                      if (/^\d{0,3}$/.test(e.target.value)) change({ ...livery, number: e.target.value })
-                    }}
-                  />
-                </label>
-                {!livery.number && <p role="alert">Введите от одной до трёх цифр.</p>}
-              </div>
-            </Panel>
-          )}
-          {tab === 'sponsors' && (
-            <Panel title="Декали и слои">
-              <DecalPanel
-                allowed={catalog.entries[entryId].allowed_assets}
-                zones={catalog.entries[entryId].commercial_zones}
-                catalog={catalog}
-                decals={livery.decals}
-                index={index}
-                select={select}
-                change={(decals) => change({ ...livery, decals })}
-              />
-            </Panel>
-          )}
-          {tab === 'parts' && (own
-            ? <Components key={entryId} entry={entryId} c={c} update={(next) => { setWing('standard'); updateCareer(next) }} />
-            : <Panel title="Технический паспорт"><p className="garage-fields">Состав сборки и история эксплуатации доступны сотрудникам команды.</p></Panel>
-          )}
-          {(tab === 'livery' || tab === 'sponsors' || dirty) && (
-            <div className="panel garage-fields">
-              <div className="garage-tools">
-                <Button disabled={!draft?.past.length || saving} onClick={undo}>
-                  <Undo2 size={15} />
-                  Отменить
-                </Button>
-                <Button
-                  disabled={sameLivery(livery, original) || saving}
-                  onClick={() => {
-                    change(original)
-                    select(0)
-                  }}
-                >
-                  <RotateCcw size={15} />
-                  Исходная
-                </Button>
-              </div>
-              {dirty && (
-                <Button
-                  disabled={saving}
-                  onClick={() => {
-                    change(saved)
-                    select(0)
-                  }}
-                >
-                  Сбросить черновик
-                </Button>
-              )}
-              {own ? (
-                <Button primary disabled={!dirty || saving || !livery.number} onClick={save}>
-                  <Save size={16} />
-                  {saving ? 'Сохранение…' : 'Сохранить в карьере'}
-                </Button>
-              ) : (
-                <small>Для чужой команды доступен предпросмотр изменений.</small>
-              )}
+          </section>
+          {dirty && own && (
+            <div className="garage-tools">
+              <button className="button primary" disabled={saving} onClick={save}>
+                Сохранить в карьере
+              </button>
+              <button className="button ghost" disabled={saving} onClick={undo}>
+                Отменить
+              </button>
             </div>
           )}
-          {message && (
-            <p className="garage-feedback" role="status">
-              <Check size={15} />
-              {message}
-            </p>
+          {message && <p role="status">{message}</p>}
+          {error && <p role="alert">{error}</p>}
+          <div className="two-col garage-overview">
+            <DeskPanel title="Экипаж">
+              <div className="garage-crew">
+                {(c.crews[entry.id] || entry.crew).map((id) => (
+                  <button key={id} onClick={() => navigate('person', 'profile', id)}>
+                    <Icon name="UserRound" />
+                    <span>
+                      <strong>
+                        {world.names[id] ||
+                          c.assignments.find((a) => a.occupant?.id === id)?.occupant?.name}
+                      </strong>
+                      <small>Досье и действующий контракт</small>
+                    </span>
+                    <Icon name="ArrowUpRight" />
+                  </button>
+                ))}
+              </div>
+            </DeskPanel>
+            <DeskPanel title="Технические партнёры">
+              <DeskFacts
+                rows={Object.entries(car.suppliers || {}).map(([k, id]) => [
+                  (
+                    {
+                      engine: 'Силовая установка',
+                      gearbox: 'Трансмиссия',
+                      transmission: 'Трансмиссия',
+                      tyres: 'Шины',
+                      tyre: 'Шины',
+                    } as Record<string, string>
+                  )[k] || k,
+                  <button
+                    className="link-button"
+                    onClick={() => navigate('organization', 'overview', id)}
+                  >
+                    {world.organizations[id]?.name || id}
+                  </button>,
+                ])}
+              />
+              <button className="button ghost" onClick={() => navigate('manufacturer', 'clients')}>
+                Договоры и поддержка
+              </button>
+            </DeskPanel>
+          </div>
+        </>
+      )}
+      {tab === 'history' && (
+        <div className="native-screen">
+          {own ? (
+            <Components entry={entryId} c={c} update={updateCareer} historyOnly />
+          ) : (
+            <DeskPanel title="История сборки">
+              <p>История экземпляров доступна сотрудникам команды.</p>
+            </DeskPanel>
           )}
-          {error && (
-            <p className="career-error" role="alert">
-              {error}
-            </p>
-          )}
-        </aside>
-      </div>
+        </div>
+      )}
+      {tab !== 'overview' && tab !== 'history' && (
+        <div className="native-screen" data-garage-tab={tab}>
+          <div
+            className={
+              'studio-layout' +
+              (tab === 'parts' && own ? ' with-passport' : '') +
+              (editing ? ' livery-workspace' + (dirty ? ' dirty' : '') : '')
+            }
+          >
+            <section className={editing ? 'livery-stage' : 'studio-panel'}>
+              {editing && (
+                <header>
+                  <span>
+                    <Icon name="Palette" />
+                    Ателье / №{livery.number}
+                    {dirty && <Badge tone="warning">Не сохранено</Badge>}
+                  </span>
+                  <div>
+                    <button
+                      type="button"
+                      className="icon-button"
+                      aria-label="Развернуть просмотр ливреи"
+                      onClick={() => open('preview')}
+                    >
+                      <Icon name="Maximize" />
+                    </button>
+                    <button
+                      type="button"
+                      className="icon-button"
+                      aria-label="Отменить изменение"
+                      disabled={!draft?.past.length || saving}
+                      onClick={undo}
+                    >
+                      <Undo2 size={16} />
+                    </button>
+                    <button
+                      type="button"
+                      className="icon-button"
+                      aria-label="Показать зоны размещения"
+                      aria-pressed={tab === 'sponsors' && showZones}
+                      onClick={() => {
+                        if (tab === 'sponsors') setShowZones(!showZones)
+                        else {
+                          setShowZones(true)
+                          setTab('sponsors')
+                        }
+                      }}
+                    >
+                      <Eye size={16} />
+                    </button>
+                  </div>
+                </header>
+              )}
+              <div className="studio-stage legacy-studio-stage">
+                {!editing && (
+                  <>
+                    <header>
+                      <small>
+                        {entry.category.toUpperCase()} / {world.origin.season}
+                      </small>
+                      <h2>{car.name}</h2>
+                      <span>{org.name}</span>
+                    </header>
+                    <button
+                      className="studio-expand"
+                      onClick={() => open('preview')}
+                      aria-label="Увеличить предпросмотр"
+                    >
+                      <Eye size={18} />
+                    </button>
+                  </>
+                )}
+                <div
+                  onPointerDownCapture={() => {
+                    lastDrag.current = false
+                  }}
+                  onPointerUpCapture={() => {
+                    lastDrag.current = false
+                  }}
+                >
+                  <CarView
+                    key={entryId}
+                    {...viewProps}
+                    selected={selected}
+                    highlight={tab === 'sponsors' && showZones}
+                    onMove={
+                      tab === 'sponsors' && selected
+                        ? (x, y) => {
+                            const group = lastDrag.current
+                            change(
+                              {
+                                ...livery,
+                                decals: livery.decals.map((d, i) => (i === index ? { ...d, x, y } : d)),
+                              },
+                              group,
+                            )
+                            lastDrag.current = true
+                          }
+                        : undefined
+                    }
+                  />
+                </div>
+                {!editing && (
+                  <footer>
+                    <span>
+                      {world.championships[series].short_name || world.championships[series].name}
+                    </span>
+                    <b>№ {livery.number}</b>
+                  </footer>
+                )}
+              </div>
+              {editing && (
+                <p>
+                  <Icon name="Move" size={16} />
+                  {own
+                    ? 'Перетаскивайте выбранный знак на машине. Точные значения — в свойствах слоя. Черновик сохраняется при переходах.'
+                    : 'Автомобиль другой организации доступен для предпросмотра. Сохранить изменения может её команда.'}
+                </p>
+              )}
+              <div className={'studio-status' + (editing ? ' visually-hidden' : '')}>
+                <span>
+                  <i style={{ background: livery.colors[0] }} />
+                  {dirty ? 'Черновик' : c.liveries[entryId] ? 'Карьерная ливрея' : 'Стартовая ливрея'}
+                </span>
+                <span>
+                  {tab === 'parts' && wing !== 'standard'
+                    ? 'Предпросмотр антикрыла'
+                    : catalog.patterns[livery.pattern].name}
+                </span>
+              </div>
+              {tab === 'parts' && (
+                <Panel title="Визуальные модули">
+                  <div className="garage-fields">
+                    <label>
+                      Антикрыло в предпросмотре
+                      <select value={wing} onChange={(e) => setWing(e.target.value)}>
+                        <option value="standard">Установленный профиль</option>
+                        {Object.keys(geometry[model].variants['rear-wing'] || {}).map((key) => (
+                          <option key={key} value={key}>
+                            Низкий профиль · пример
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                    <small>Регламент {car.regulation}</small>
+                    <div className="garage-parts">
+                      {geometry[model].parts.map(([id]) => (
+                        <span key={id}>
+                          <Check size={12} />
+                          {partNames[id]}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </Panel>
+              )}
+            </section>
+            <aside className={editing ? 'livery-controls' : 'studio-controls'}>
+              {editing && (
+                <nav className="tabs" aria-label="Ателье">
+                  <button
+                    type="button"
+                    aria-pressed={tab === 'livery'}
+                    className={tab === 'livery' ? 'active' : ''}
+                    onClick={() => setTab('livery')}
+                  >
+                    Цвет и рисунок
+                  </button>
+                  <button
+                    type="button"
+                    aria-pressed={tab === 'sponsors'}
+                    className={tab === 'sponsors' ? 'active' : ''}
+                    onClick={() => setTab('sponsors')}
+                  >
+                    Размещения · {livery.decals.length}
+                  </button>
+                </nav>
+              )}
+              {tab === 'livery' && (
+                <fieldset>
+                  <legend>Палитра команды</legend>
+                  <label>
+                    Палитра
+                    <select
+                      value={livery.colors.join(' ')}
+                      onChange={(e) => change({ ...livery, colors: e.target.value.split(' ') })}
+                    >
+                      {[
+                        ['Стартовая', original.colors.join(' ')],
+                        ['Графит и кармин', '#292c31 #ba3344 #f1eee4'],
+                        ['Серебро и кобальт', '#bdc6ce #234ca0 #e7b655'],
+                        ...([
+                          original.colors.join(' '),
+                          '#292c31 #ba3344 #f1eee4',
+                          '#bdc6ce #234ca0 #e7b655',
+                        ].includes(livery.colors.join(' '))
+                          ? []
+                          : [['Своя палитра', livery.colors.join(' ')]]),
+                      ].map(([name, colors]) => (
+                        <option value={colors} key={colors}>
+                          {name}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <>
+                    {livery.colors.map((v, i) => (
+                      <label key={i} className="color-setting">
+                        <span>{['Основной цвет', 'Второй цвет', 'Акцент'][i]}</span>
+                        <input
+                          aria-label={['Основной цвет', 'Дополнительный цвет', 'Акцентный цвет'][i]}
+                          type="color"
+                          value={v}
+                          onChange={(e) =>
+                            change({
+                              ...livery,
+                              colors: livery.colors.map((color, j) =>
+                                j === i ? e.target.value : color,
+                              ),
+                            })
+                          }
+                        />
+                        <code>{v.toUpperCase()}</code>
+                      </label>
+                    ))}
+                  </>
+                  <label>
+                    Рисунок
+                    <select
+                      value={livery.pattern}
+                      onChange={(e) => change({ ...livery, pattern: e.target.value })}
+                    >
+                      {Object.entries(catalog.patterns).map(([k, v]) => (
+                        <option key={k} value={k}>
+                          {v.name}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <label>
+                    Гоночный номер
+                    <input
+                      value={livery.number}
+                      inputMode="numeric"
+                      maxLength={3}
+                      pattern="[0-9]{1,3}"
+                      onChange={(e) => {
+                        if (/^\d{0,3}$/.test(e.target.value))
+                          change({ ...livery, number: e.target.value })
+                      }}
+                    />
+                  </label>
+                  {!livery.number && <p role="alert">Введите от одной до трёх цифр.</p>}
+                </fieldset>
+              )}
+              {tab === 'sponsors' && (
+                <Panel title="Декали и слои">
+                  <DecalPanel
+                    allowed={catalog.entries[entryId].allowed_assets}
+                    zones={catalog.entries[entryId].commercial_zones}
+                    catalog={catalog}
+                    decals={livery.decals}
+                    index={index}
+                    select={select}
+                    change={(decals) => change({ ...livery, decals })}
+                  />
+                </Panel>
+              )}
+              {tab === 'parts' &&
+                (own ? (
+                  <Components
+                    key={entryId}
+                    entry={entryId}
+                    c={c}
+                    update={(next) => {
+                      setWing('standard')
+                      updateCareer(next)
+                    }}
+                  />
+                ) : (
+                  <Panel title="Технический паспорт">
+                    <p className="garage-fields">
+                      Состав сборки и история эксплуатации доступны сотрудникам команды.
+                    </p>
+                  </Panel>
+                ))}
+              {(tab === 'livery' || tab === 'sponsors' || dirty) && (
+                <div className="panel garage-fields">
+                  <div className="garage-tools">
+                    <Button disabled={!draft?.past.length || saving} onClick={undo}>
+                      <Undo2 size={15} />
+                      Отменить
+                    </Button>
+                    <Button
+                      disabled={sameLivery(livery, original) || saving}
+                      onClick={() => {
+                        change(original)
+                        select(0)
+                      }}
+                    >
+                      <RotateCcw size={15} />
+                      Исходная
+                    </Button>
+                  </div>
+                  {dirty && (
+                    <Button
+                      disabled={saving}
+                      onClick={() => {
+                        change(saved)
+                        select(0)
+                      }}
+                    >
+                      Сбросить черновик
+                    </Button>
+                  )}
+                  {own ? (
+                    <Button primary disabled={!dirty || saving || !livery.number} onClick={save}>
+                      <Save size={16} />
+                      {saving ? 'Сохранение…' : 'Сохранить в карьере'}
+                    </Button>
+                  ) : (
+                    <small>Для чужой команды доступен предпросмотр изменений.</small>
+                  )}
+                </div>
+              )}
+              {message && (
+                <p className="garage-feedback" role="status">
+                  <Check size={15} />
+                  {message}
+                </p>
+              )}
+              {error && (
+                <p className="career-error" role="alert">
+                  {error}
+                </p>
+              )}
+            </aside>
+          </div>
+        </div>
+      )}
+      <button className="button ghost" onClick={() => open('gallery')}>
+        <Images size={16} />
+        Стартовая сетка
+      </button>
       <a
         className="garage-credits"
         href="/assets/garage/2025-v1/CREDITS.txt"

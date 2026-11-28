@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState, type PointerEvent } from 'react'
+import { useEffect, useMemo, useRef, useState, type ReactNode, type PointerEvent } from 'react'
 import { areaNames, clamp, geometry, type Catalog, type Decal, type Livery } from './model'
-import { floorPass, measureStudio, concreteResponse, illuminate } from './studio'
+import { floorPass, parkCar, workshop, concreteResponse, illuminate } from './studio'
 import { compose, loadMarks, material } from './render'
 
 type Props = {
@@ -12,6 +12,7 @@ type Props = {
   selected?: Decal
   onMove?: (x: number, y: number) => void
   label: string
+  wall?: ReactNode
   highlight?: boolean
 }
 export function CarView({
@@ -23,6 +24,7 @@ export function CarView({
   selected,
   onMove,
   label,
+  wall,
   highlight,
 }: Props) {
   const ref = useRef<HTMLCanvasElement>(null)
@@ -31,9 +33,9 @@ export function CarView({
     [attempt, retry] = useState(0)
   const [adjusted, setAdjusted] = useState(false)
   const g = geometry[model]
+  const parking = useMemo(() => parkCar(g), [g])
   useEffect(() => {
     let active = true
-    let resize: ResizeObserver | undefined
     Promise.all([
       material({ model, regulation, installed }),
       loadMarks(livery, catalog),
@@ -41,25 +43,10 @@ export function CarView({
     ])
       .then(([src, marks, concrete]) => {
         if (!active || !ref.current) return
-        const car = ref.current,
-          ground = floor.current!,
-          stage = car.closest<HTMLElement>('.studio-stage, .large-car')!
-        const draw = () => {
-          const rig = measureStudio(stage, car)
-          setAdjusted(compose(car, src, model, livery, catalog, marks))
-          illuminate(car, src, geometry[model].contacts, rig.lights)
-          floorPass(ground, car, geometry[model].contacts, rig, src, concrete)
-        }
-        draw()
-        let width = stage.clientWidth,
-          height = stage.clientHeight
-        resize = new ResizeObserver(() => {
-          if (width === stage.clientWidth && height === stage.clientHeight) return
-          width = stage.clientWidth
-          height = stage.clientHeight
-          draw()
-        })
-        resize.observe(stage)
+        const car = ref.current
+        setAdjusted(compose(car, src, model, livery, catalog, marks))
+        illuminate(car, src, g.contacts, parking.lights)
+        floorPass(floor.current!, car, g.contacts, parking, src, concrete)
         setStatus('ready')
       })
       .catch(() => {
@@ -67,9 +54,8 @@ export function CarView({
       })
     return () => {
       active = false
-      resize?.disconnect()
     }
-  }, [model, regulation, installed, livery, catalog, attempt])
+  }, [g, parking, model, regulation, installed, livery, catalog, attempt])
   function move(e: PointerEvent<HTMLCanvasElement>) {
     if (!onMove || !selected || !e.currentTarget.hasPointerCapture(e.pointerId)) return
     const r = e.currentTarget.getBoundingClientRect(),
@@ -78,44 +64,52 @@ export function CarView({
   }
   const zone = selected && highlight ? g.zones[selected.zone] : undefined
   return (
-    <div className="car-stand" data-state={status}>
-      <div
-        className="car-cutout"
-        style={{ width: (g.length / 5.65) * 93 + '%', aspectRatio: g.size.join(' / ') }}
-      >
-        <canvas className="garage-floor" aria-hidden="true" ref={floor} />
-        <canvas
-          className="garage-body"
-          aria-label={label}
-          role="img"
-          ref={ref}
-          width={g.size[0]}
-          height={g.size[1]}
-          style={{ touchAction: onMove ? 'none' : 'pan-y', cursor: onMove ? 'crosshair' : undefined }}
-          onPointerDown={(e) => {
-            if (onMove && selected) {
-              e.currentTarget.setPointerCapture(e.pointerId)
-              move(e)
-            }
+    <div className="car-stand" data-state={status} data-geometry={model}>
+      <div className="workshop-plate">
+        {wall}
+        <div
+          className="car-cutout"
+          style={{
+            width: (parking.width / workshop.width) * 100 + '%',
+            left: (parking.left / workshop.width) * 100 + '%',
+            top: (parking.top / workshop.height) * 100 + '%',
+            aspectRatio: g.size.join(' / '),
           }}
-          onPointerMove={move}
-          onPointerUp={(e) => {
-            if (e.currentTarget.hasPointerCapture(e.pointerId))
-              e.currentTarget.releasePointerCapture(e.pointerId)
-          }}
-        />
-        {zone && (
-          <span
-            className="decal-region"
-            aria-label={areaNames[selected!.zone]}
-            style={{
-              left: zone[0] * 100 + '%',
-              top: zone[1] * 100 + '%',
-              width: zone[2] * 100 + '%',
-              height: zone[3] * 100 + '%',
+        >
+          <canvas className="garage-floor" aria-hidden="true" ref={floor} />
+          <canvas
+            className="garage-body"
+            aria-label={label}
+            role="img"
+            ref={ref}
+            width={g.size[0]}
+            height={g.size[1]}
+            style={{ touchAction: onMove ? 'none' : 'pan-y', cursor: onMove ? 'crosshair' : undefined }}
+            onPointerDown={(e) => {
+              if (onMove && selected) {
+                e.currentTarget.setPointerCapture(e.pointerId)
+                move(e)
+              }
+            }}
+            onPointerMove={move}
+            onPointerUp={(e) => {
+              if (e.currentTarget.hasPointerCapture(e.pointerId))
+                e.currentTarget.releasePointerCapture(e.pointerId)
             }}
           />
-        )}
+          {zone && (
+            <span
+              className="decal-region"
+              aria-label={areaNames[selected!.zone]}
+              style={{
+                left: zone[0] * 100 + '%',
+                top: zone[1] * 100 + '%',
+                width: zone[2] * 100 + '%',
+                height: zone[3] * 100 + '%',
+              }}
+            />
+          )}
+        </div>
       </div>
       {status === 'loading' && (
         <span className="car-message" role="status">

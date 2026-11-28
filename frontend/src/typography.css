@@ -1,0 +1,24 @@
+/* Shared by the career shell, public menu, documents and standalone portrait gallery.
+   A CSS pixel is already device-independent. Respect browser text preferences. */
+:root {
+  --type-unit: clamp(1rem, calc(.94rem + .065vw), 1.125rem);
+  --type-caption: calc(.75 * var(--type-unit));
+  --type-secondary: calc(.8125 * var(--type-unit));
+  --type-label: calc(.875 * var(--type-unit));
+  --type-body: calc(.9375 * var(--type-unit));
+  --type-body-lg: var(--type-unit);
+  --type-card-sm: calc(1.0625 * var(--type-unit));
+  --type-card: calc(1.125 * var(--type-unit));
+  --type-card-lg: calc(1.25 * var(--type-unit));
+  --type-subhead: calc(1.375 * var(--type-unit));
+  --type-section: calc(1.5 * var(--type-unit));
+  --type-section-lg: calc(1.75 * var(--type-unit));
+  --type-page: calc(2 * var(--type-unit));
+  --type-page-lg: calc(2.25 * var(--type-unit));
+  --type-display: clamp(2.25rem, 3.1vw, 3.5rem);
+  --rail-width: clamp(16.5rem, 16vw, 22rem);
+  --page-gutter: clamp(1.25rem, 1.5vw, 3.5rem);
+  --card-inset: clamp(1.125rem, 1.25vw, 2rem);
+  --section-gap: clamp(1rem, 1.2vw, 1.875rem);
+  --control-height: max(2.75rem, 2.7 * var(--type-unit));
+}

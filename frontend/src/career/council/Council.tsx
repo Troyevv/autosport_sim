@@ -1,6 +1,8 @@
+import { EngineeringHeading } from '../../pitwall/EngineeringHeading'
+import { readRoute, sectionTab } from '../../pitwall/core/route'
 import { useState } from 'react'
 import { ClipboardList, SlidersHorizontal, UsersRound } from 'lucide-react'
-import { Button, Choices, Dialog, Facts, Header, Panel } from '../../ui/components'
+import { Button, Choices, Dialog, Facts, Panel } from '../../ui/components'
 import { dateLabel } from '../../game'
 import { units } from '../../garage/quantities'
 import { type Career, money } from '../api'
@@ -198,13 +200,19 @@ function Dossier({
     </Panel>
   )
 }
-export function Council({ c, world, updateCareer }: SectionProps & { updateCareer: (c: Career) => void }) {
+export function Council({
+  c,
+  world,
+  updateCareer,
+}: SectionProps & { updateCareer: (c: Career) => void }) {
   const req = usePersonnel<Desk>('careers/' + c.id + '/council', c.revision)
   const data = req.data
   const { send, busy, error, clear } = useOrder(c, updateCareer, 'council')
-  const [tab, setTab] = useState('agenda'),
-    [selected, setSelected] = useState(''),
-    [settings, setSettings] = useState(false)
+  const [tab, setTab] = useState(() =>
+      sectionTab(['agenda', 'meeting', 'execution', 'archive'], 'agenda'),
+    ),
+    [selected, setSelected] = useState(readRoute().entity),
+    [settings, setSettings] = useState(c.role === 'manager' && readRoute().tab === 'mandate')
   const [decision, setDecision] = useState<keyof typeof decisions>('approve'),
     [alternative, setAlternative] = useState(0)
   const [target, setTarget] = useState<Proposal | null>(null),
@@ -221,11 +229,11 @@ export function Council({ c, world, updateCareer }: SectionProps & { updateCaree
       ? target.investigation
       : target.options[decision === 'delegate' ? target.recommended : alternative])
   return (
-    <section className="screen research-desk council">
-      <Header
-        section={world.organizations[c.org].name}
-        title="Инженерный штаб"
-        sub="Технические заключения, решения по машине и исполнение поручений."
+    <section className="screen engineering-module research-desk council">
+      <EngineeringHeading
+        route="council"
+        organization={world.organizations[c.org].name}
+        maker={c.role === 'manufacturer'}
       >
         {data && manage && (
           <Button
@@ -238,7 +246,7 @@ export function Council({ c, world, updateCareer }: SectionProps & { updateCaree
             Полномочия
           </Button>
         )}
-      </Header>
+      </EngineeringHeading>
       {req.error ? (
         <p role="alert">
           {req.error} <Button onClick={req.retry}>Повторить загрузку</Button>
@@ -274,7 +282,16 @@ export function Council({ c, world, updateCareer }: SectionProps & { updateCaree
                     className="council-topic"
                     aria-pressed={r.id === row?.id}
                     key={r.id}
-                    onClick={() => setSelected(r.id)}
+                    onClick={() => {
+                      setSelected(r.id)
+                      if (window.matchMedia('(max-width: 900px)').matches)
+                        requestAnimationFrame(() =>
+                          document
+                            .querySelector('.council-dossier')
+                            ?.closest('section')
+                            ?.scrollIntoView({ block: 'start' }),
+                        )
+                    }}
                   >
                     <small>
                       {r.occasion} · {statuses[r.status]}
@@ -320,7 +337,9 @@ export function Council({ c, world, updateCareer }: SectionProps & { updateCaree
                       <h3>
                         {r.chosen?.title} · {r.subject}
                       </h3>
-                      <span className="chip">{statuses[r.execution!.status] || r.execution!.status}</span>
+                      <span className="chip">
+                        {statuses[r.execution!.status] || r.execution!.status}
+                      </span>
                     </div>
                     <p>
                       {data.people[r.lead].name} · {r.entry.toUpperCase()}
@@ -354,7 +373,9 @@ export function Council({ c, world, updateCareer }: SectionProps & { updateCaree
           {tab === 'archive' && (
             <Panel title="Протоколы решений">
               {!data.history.length && (
-                <p className="research-empty">Решений пока нет. Рассмотренные предложения появятся здесь.</p>
+                <p className="research-empty">
+                  Решений пока нет. Рассмотренные предложения появятся здесь.
+                </p>
               )}
               {data.history.map((h) => {
                 const r = data.proposals.find((r) => r.id === h.proposal)!
@@ -419,7 +440,9 @@ export function Council({ c, world, updateCareer }: SectionProps & { updateCaree
                   Причина вмешательства
                   <textarea value={reason} maxLength={400} onChange={(e) => setReason(e.target.value)} />
                 </label>
-                {change === 'cancel' && <p>Цех прекратит работу. Понесённые расходы сохранятся в учёте.</p>}
+                {change === 'cancel' && (
+                  <p>Цех прекратит работу. Понесённые расходы сохранятся в учёте.</p>
+                )}
                 {error && <p role="alert">{error}</p>}
                 <Button
                   primary
@@ -479,7 +502,14 @@ export function Council({ c, world, updateCareer }: SectionProps & { updateCaree
                   primary
                   disabled={busy}
                   onClick={async () => {
-                    if (await send('council-decide', { proposal: target.id, decision, alternative, reason }))
+                    if (
+                      await send('council-decide', {
+                        proposal: target.id,
+                        decision,
+                        alternative,
+                        reason,
+                      })
+                    )
                       setTarget(null)
                   }}
                 >

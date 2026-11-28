@@ -33,11 +33,11 @@
   color: #b5b9c1;
 }
 .lineup-heading h3 {
-  font-size: 1.28rem;
+  font-size: var(--type-card-lg);
   margin: 5px 0;
 }
 .lineup-heading b {
-  font-size: 0.85rem;
+  font-size: var(--type-body);
   color: #e1c7b9;
 }
 .lineup-heading svg,
@@ -51,7 +51,7 @@
   grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr);
   gap: 8px 12px;
   margin: 16px 0;
-  font-size: 0.88rem;
+  font-size: var(--type-body-lg);
 }
 .lineup-driver dt {
   color: #b5b9c1;

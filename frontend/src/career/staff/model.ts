@@ -135,7 +135,7 @@ export function seatName(id: string, c: Career, w: World) {
     .join(' · ')
 }
 export function usePersonnel<T>(path: string | null, revision: number) {
-  const [record, setRecord] = useState<{ path: string; data: T }>()
+  const [record, setRecord] = useState<{ path: string; revision:number; data: T }>()
   const [error, setError] = useState(''),
     [attempt, retry] = useState(0)
   useEffect(() => {
@@ -144,12 +144,12 @@ export function usePersonnel<T>(path: string | null, revision: number) {
     if (!path) return
     api<T>(path, { signal: controller.signal })
       .then((data) => {
-        if (!controller.signal.aborted) setRecord({ path, data })
+        if (!controller.signal.aborted) setRecord({ path,revision,data })
       })
       .catch((e) => {
         if (!controller.signal.aborted) setError(explain(e))
       })
     return () => controller.abort()
   }, [path, revision, attempt])
-  return { data: record?.path === path ? record.data : undefined, error, retry: () => retry((n) => n + 1) }
+  return { data: record?.path === path && record?.revision===revision ? record.data : undefined, error, retry: () => retry((n) => n + 1) }
 }

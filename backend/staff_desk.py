@@ -216,10 +216,32 @@ def directory(state, world):
                 fit=fit,
                 rating=profile["rating"],
                 org=seat.get("org"),
+                kit_position=world["assignments"][seat["seat"]]["position"]
+                if seat
+                else None,
+                kit_programs=sorted(
+                    {
+                        series
+                        for r in current
+                        if r["org"] == seat.get("org")
+                        for series in (
+                            [r["series"]]
+                            if r["series"]
+                            else world["organizations"][r["org"]]["programs"]
+                        )
+                    }
+                ),
+                active_entries=[
+                    r["entry"]
+                    for r in current
+                    if r["org"] == seat.get("org") and r.get("entry")
+                ],
                 programs=programs,
                 specialty=p["specialization"],
                 strength=profile["values"][p["specialization"]],
-                tag=profile["traits"][0]["name"] if profile["traits"] else "Без особых черт",
+                tag=profile["traits"][0]["name"]
+                if profile["traits"]
+                else "Без особых черт",
                 end=seat.get("end"),
             )
         )

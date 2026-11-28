@@ -1,0 +1,312 @@
+.pitwall {
+  height: 100dvh;
+  min-width: 0;
+  --accent-ink: var(--org-on-accent);
+  --bg: #111112;
+  --panel: var(--org-panel);
+  --line: #454344;
+  --text: #f0ede8;
+  --muted: #aaa5a0;
+  color: var(--text);
+  background: var(--bg);
+  font:
+    var(--type-body)/1.55 Manrope,
+    Arial,
+    sans-serif;
+}
+.pitwall .workspace {
+  margin-left: 0;
+  min-width: 0;
+  width: auto;
+}
+.pitwall .sidebar {
+  position: relative;
+  inset: auto;
+  height: 100%;
+  min-width: 0;
+}
+.pitwall .topbar {
+  position: static;
+  width: 100%;
+}
+.pitwall .main-inner {
+  min-width: 0;
+}
+.pitwall .native-screen {
+  color: var(--text);
+  min-width: 0;
+}
+.native-screen .screen {
+  padding: 0;
+  margin: 0;
+  max-width: none;
+}
+.native-screen .panel,
+.native-screen .stat-card,
+.native-screen .stats-row > div {
+  background: #1d1d1e;
+  border-color: #454344;
+  border-radius: 3px;
+}
+.native-screen :is(h1, h2, h3) {
+  font-family: Race, 'Arial Narrow', sans-serif;
+  color: var(--text);
+}
+.native-screen h1 {
+  font-size: var(--type-page-lg);
+}
+.native-screen .btn-primary,
+.pitwall + .native-dialog .btn-primary {
+  background: var(--org-accent, #e5c792);
+  color: #191715;
+  border-color: transparent;
+}
+.native-screen :is(.choices, .segmented) .active {
+  color: var(--org-accent);
+  border-color: var(--org-accent);
+}
+.native-screen .workspace-section-label {
+  margin: 20px 0;
+}
+.native-screen .panel-body {
+  min-width: 0;
+}
+.pitwall .save-card input[type='file'] {
+  max-width: 100%;
+}
+@media (max-width: 900px) {
+  .pitwall .sidebar {
+    position: fixed;
+    inset: 0 auto 0 0;
+  }
+  .pitwall .native-screen .staff-summary {
+    display: none;
+  }
+  .native-screen .modal-body {
+    padding: 14px;
+  }
+  .native-screen .form-actions {
+    flex-wrap: wrap;
+  }
+  .native-screen .screen > header {
+    margin-bottom: 12px;
+  }
+}
+@media (max-width: 600px) {
+  .native-screen .section-grid,
+  .native-screen .three-col {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .management-calendar-day .calendar-event {
+    font-size: 0;
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    margin: 1px;
+    padding: 0;
+    background: var(--org-accent, #ddd);
+  }
+  .management-calendar-day {
+    min-height: 44px;
+  }
+  .pitwall .native-screen .native-dialog {
+    width: 100%;
+    max-width: 100%;
+    max-height: 100dvh;
+    margin: auto;
+    padding: 0;
+  }
+}
+.pitwall .sidebar {
+  padding: 0;
+  gap: 0;
+  border-radius: 0;
+}
+.pitwall .sidebar .brand {
+  display: block;
+  margin: 0;
+  gap: 0;
+  width: auto;
+}
+.pitwall .studio-stage:not(.native-screen *) {
+  aspect-ratio: auto;
+}
+.pitwall .person-portrait {
+  display: inline-block;
+  overflow: hidden;
+  flex: none;
+  vertical-align: middle;
+}
+.pitwall .person-portrait svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.pitwall .role-home .studio-stage:before {
+  display: none;
+}
+.pitwall .native-screen :is(.panel, .engineering-summary, .staff-file, .staff-card) {
+  --surface: #1d1d1e;
+  --accent: var(--org-accent);
+}
+.staff-desk[data-dossier='open'] > :not(.staff-dossier) {
+  display: none;
+}
+.staff-dossier {
+  min-width: 0;
+}
+.staff-dossier > h1 {
+  margin: 18px 0 22px;
+}
+.native-screen .source-details {
+  border-block: 1px solid var(--line);
+  margin: 12px 0 16px;
+  padding: 12px;
+}
+.native-screen .source-details summary {
+  cursor: pointer;
+  color: var(--org-accent);
+}
+.native-screen .staff-filter-trigger {
+  display: none;
+}
+.pitwall .main-inner:has(.staff-dossier) > .pw-operational {
+  display: none;
+}
+.staff-release summary {
+  cursor: pointer;
+}
+.staff-release[open] summary {
+  margin-bottom: 12px;
+}
+@media (max-width: 700px) {
+  .native-screen .staff-filter-trigger {
+    display: inline-flex;
+  }
+  .staff-filters[data-expanded='false'] > :not(.staff-search, .staff-filter-trigger) {
+    display: none;
+  }
+  .staff-filters .staff-search {
+    min-width: 0;
+  }
+  .collective-register .data-table,
+  .collective-register tbody {
+    display: block;
+    min-width: 0;
+  }
+  .collective-register thead {
+    position: absolute;
+    clip-path: inset(100%);
+  }
+  .collective-register .data-table tr {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+    padding: 12px;
+    border-bottom: 1px solid var(--line);
+  }
+  .collective-register .data-table td {
+    border: 0;
+    padding: 2px;
+    white-space: normal;
+  }
+  .collective-register .data-table td:first-child {
+    grid-column: 1/-1;
+    font-weight: 700;
+  }
+  .collective-register .data-table td:not(:first-child)::before {
+    content: attr(data-label);
+    display: block;
+    color: var(--muted);
+    font-size: var(--type-label);
+  }
+  .native-screen .research-stats strong {
+    font-size: var(--type-subhead);
+    overflow-wrap: normal;
+  }
+  .pitwall .sidebar-footer {
+    display: grid;
+  }
+}
+.pitwall .season-garage {
+  max-width: none;
+  padding: 0;
+}
+.pitwall .season-garage .tabs button[aria-current='page'] {
+  color: var(--org-accent);
+  border-bottom: 2px solid var(--org-accent);
+}
+@media (max-width: 700px) {
+  .season-garage .heading-actions .garage-selectors {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 5px;
+  }
+  .season-garage .heading-actions .garage-selectors select {
+    width: 100%;
+    min-width: 0;
+  }
+  .season-garage [data-garage-tab='parts'] .studio-layout {
+    display: flex;
+    flex-direction: column;
+  }
+  .season-garage [data-garage-tab='parts'] .studio-controls {
+    order: -1;
+  }
+}
+.pitwall .primary-nav a {
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
+.pitwall .subnav a {
+  display: block;
+}
+.engineering-module .eng-heading h1 {
+  font-family: Race, 'Arial Narrow', sans-serif;
+  font-size: var(--type-page-lg);
+}
+.engineering-module .eng-heading-action {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.engineering-module .eng-summary-details {
+  border-block-end: 1px solid var(--line);
+  padding: 6px 0;
+  margin: 4px 0 12px;
+}
+.engineering-module .eng-summary-details summary {
+  color: var(--muted);
+  cursor: pointer;
+}
+.engineering-module .eng-summary-details[open] .stats-row {
+  margin: 12px 0;
+}
+.pitwall .p-filter-disclosure summary {
+  cursor: pointer;
+  color: var(--muted);
+  padding: 8px 0;
+}
+.pitwall .native-screen .p-dossier-photo .career-portrait {
+  width: 100%;
+  height: 100%;
+}
+.pitwall .native-screen .p-dossier-title h1 {
+  margin: 4px 0;
+}
+@media(max-width:720px){
+  .pitwall .native-dialog form>button[type=submit]:last-child{position:sticky;bottom:0;z-index:1;background:var(--accent);color:var(--accent-ink,#111);box-shadow:0 0 0 3px var(--panel,#fff)}
+}
+.pitwall .rights-coverage{display:flex;gap:16px;align-items:center;flex-wrap:wrap;padding:22px 26px;background:var(--panel,#262626);border:1px solid #444}
+.pitwall .rights-coverage strong{font-size:var(--type-page)}.pitwall .rights-coverage small,.pitwall .rights-coverage span{font-size:var(--type-body)}
+.pitwall .rights-coverage progress,.pitwall .limit-hero progress{accent-color:var(--org-accent);min-width:120px}
+.pitwall .finance-desk .brand-tile{height:auto;text-align:start;color:inherit;cursor:pointer}
+.pitwall .people-module.program-workspace{display:grid;gap:18px;--p-team:var(--org-accent)}
+.pitwall .native-screen .contract-clause>div{display:grid;gap:14px;min-width:0}
+.pitwall .native-screen .contract-clause label{display:grid;gap:5px}
+.pitwall .native-screen .contract-clause label:has(input[type=checkbox]){display:flex;align-items:center}
+.pitwall .native-screen .contract-clause :is(input:not([type=checkbox]),select){width:100%;min-width:0}
+.pitwall .native-dialog:has(.contract-frame){width:min(960px,96vw)}
+.pitwall .native-screen .contract-frame .staff-pair{min-width:0}

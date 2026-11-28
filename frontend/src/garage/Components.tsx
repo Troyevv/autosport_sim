@@ -1,3 +1,4 @@
+import { label as productParameter } from '../career/manufacturer/model'
 import { units, fmt } from './quantities'
 import { useEffect, useState } from 'react'
 import { api, explain, type Career } from '../career/api'
@@ -49,7 +50,7 @@ type Desk = {
   }[]
 }
 function quantities(values: Record<string, number>) {
-  return Object.entries(values).map(([k, v]): [string, string] => [units[k][0], fmt(v) + ' ' + units[k][1]])
+  return Object.entries(values).map(([k, v]): [string, string] => units[k] ? [units[k][0], [fmt(v), units[k][1]].filter(Boolean).join(' ')] : [productParameter(k), fmt(v)])
 }
 const policy = {
   constructor: 'Конструкторская программа',
@@ -64,8 +65,8 @@ const roles: Record<string, string> = {
   performance: 'Интеграция',
   reliability: 'Надёжность',
 }
-type Props = { entry: string; c: Career; update: (c: Career) => void }
-export function Components({ entry, c, update }: Props) {
+type Props = { historyOnly?: boolean; entry: string; c: Career; update: (c: Career) => void }
+export function Components({ entry, c, update, historyOnly = false }: Props) {
   const [data, setData] = useState<Desk>(),
     [error, setError] = useState(''),
     [attempt, retry] = useState(0)
@@ -102,11 +103,13 @@ export function Components({ entry, c, update }: Props) {
       </Panel>
     )
   const current = data.parts[slot] || Object.values(data.parts)[0]
+  if (!current) return <Panel title="Технический паспорт"><p>Для этой заявки ещё нет зарегистрированных узлов.</p></Panel>
   const spares = data.spares.filter((p) => p.slot === current.slot)
   const spare = spares.find((p) => p.instance === spareId) || spares[0]
   const km = (m: number) => fmt(m / 1000) + ' км'
   return (
     <div className="component-desk">
+      {!historyOnly && <>
       <Panel title="Технический паспорт">
         <div className="garage-fields">
           <small>{policy[data.policy]}</small>
@@ -229,6 +232,7 @@ export function Components({ entry, c, update }: Props) {
           </details>
         </div>
       </Panel>
+      </>}
       <Panel title="Журнал сборки">
         <div className="garage-fields">
           {!data.history.length && <p>С начала учёта замен не было.</p>}

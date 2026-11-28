@@ -75,6 +75,10 @@ def new_world(catalog, setup):
         or series not in rec["programs"]
     ):
         raise RuleError("Должность или программа недоступна для этой организации.")
+    if setup.get("brand_palette") and role not in ("owner", "manufacturer"):
+        raise RuleError(
+            "Решение о фирменной палитре принимает руководство организации.", 403
+        )
     if catalog["version"] != "2025-v1" and "player_face" not in setup:
         setup = {**setup, "player_face": player_face(catalog, setup)}
     state = dict(
@@ -101,6 +105,8 @@ def new_world(catalog, setup):
         }
         for cid, car in catalog["cars"].items()
     }
+    if setup.get("brand_palette"):
+        state["organization_palettes"] = {org: setup["brand_palette"]}
     if catalog["version"] == "2025-v1":
         from .legacy_people import populate
 
@@ -422,6 +428,14 @@ def apply(state, catalog, action, payload=None):
         from .finance import command
 
         command(state, catalog, action, payload)
+    elif action == "organization-uniform":
+        from .uniform import update
+
+        update(state, catalog, payload)
+    elif action == "organization-palette":
+        from .branding import update
+
+        update(state, payload)
     elif action == "save-livery" and payload is not None:
         from .livery import install
 

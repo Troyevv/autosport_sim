@@ -53,7 +53,7 @@
 .council-statements small,
 .council-alternatives span {
   color: #b5bfcb;
-  font-size: 0.85rem;
+  font-size: var(--type-body);
 }
 .council-dossier {
   gap: 10px;
@@ -105,7 +105,7 @@
   cursor: pointer;
 }
 .council code {
-  font-size: 0.8rem;
+  font-size: var(--type-body);
   color: #bbc8d8;
 }
 @media (max-width: 800px) {
@@ -122,6 +122,6 @@
     gap: 7px 18px;
   }
   .council-summary span {
-    font-size: 0.85rem;
+    font-size: var(--type-body);
   }
 }

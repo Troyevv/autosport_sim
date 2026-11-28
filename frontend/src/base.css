@@ -1,3 +1,4 @@
+@import './typography.css';
 @font-face {
   font-family: Manrope;
   src: url('/assets/manrope-cyrillic.woff2') format('woff2');
@@ -38,7 +39,7 @@
     BlinkMacSystemFont,
     'Segoe UI',
     sans-serif;
-  font-size: 16px;
+  font-size: 100%;
   font-synthesis: none;
 }
 * {
@@ -48,7 +49,7 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
-  font-size: 14px;
+  font-size: var(--type-body);
   line-height: 1.5;
 }
 button,
@@ -103,22 +104,22 @@ p {
   margin: 0;
 }
 h1 {
-  font-size: 30px;
+  font-size: var(--type-page);
   line-height: 1.2;
   letter-spacing: -1.1px;
   font-weight: 700;
 }
 h2 {
-  font-size: 17px;
+  font-size: var(--type-card-sm);
   letter-spacing: -0.35px;
   font-weight: 700;
 }
 h3 {
-  font-size: 15px;
+  font-size: var(--type-body-lg);
   font-weight: 700;
 }
 small {
-  font-size: 12px;
+  font-size: var(--type-label);
 }
 ::selection {
   background: #75303d;
@@ -167,7 +168,7 @@ small {
   gap: 12px;
 }
 .brand-word {
-  font-size: 32px;
+  font-size: var(--type-page);
   font-weight: 800;
   letter-spacing: 2.4px;
   font-style: italic;
@@ -192,7 +193,7 @@ small {
 .brand small {
   display: block;
   letter-spacing: 2.9px;
-  font-size: 8px;
+  font-size: var(--type-caption);
   font-weight: 700;
   color: var(--dim);
   padding-top: 5px;
@@ -216,19 +217,19 @@ small {
   display: grid;
   place-items: center;
   color: #e7c5cb;
-  font-size: 23px;
+  font-size: var(--type-subhead);
   font-weight: 800;
   font-style: italic;
   flex-shrink: 0;
 }
 .team-switch strong {
   display: block;
-  font-size: 13px;
+  font-size: var(--type-body);
   letter-spacing: 0.3px;
 }
 .team-switch small {
   color: var(--muted);
-  font-size: 11px;
+  font-size: var(--type-secondary);
 }
 .team-switch > svg {
   margin-left: auto;
@@ -237,7 +238,7 @@ small {
 .nav-group {
   padding: 0 12px;
   color: #68717d;
-  font-size: 10px;
+  font-size: var(--type-secondary);
   letter-spacing: 1.8px;
   font-weight: 700;
   margin: 11px 0 8px;
@@ -259,7 +260,7 @@ small {
   text-align: left;
   border-radius: 4px;
   min-height: 41px;
-  font-size: 13px;
+  font-size: var(--type-body);
   font-weight: 550;
   position: relative;
 }
@@ -286,7 +287,7 @@ small {
   color: #e27182;
 }
 .nav-counter {
-  font-size: 10px;
+  font-size: var(--type-secondary);
   background: #313844;
   padding: 1px 6px;
   border-radius: 3px;
@@ -319,15 +320,15 @@ small {
   font-weight: 700;
   display: grid;
   place-items: center;
-  font-size: 11px;
+  font-size: var(--type-secondary);
   color: #c4cbd4;
 }
 .sidebar-footer strong {
-  font-size: 12px;
+  font-size: var(--type-label);
   display: block;
 }
 .sidebar-footer small {
-  font-size: 10px;
+  font-size: var(--type-secondary);
   color: var(--muted);
 }
 .sidebar-footer .icon-btn {
@@ -357,7 +358,7 @@ small {
   gap: 19px;
 }
 .topbar-breadcrumb {
-  font-size: 11px;
+  font-size: var(--type-secondary);
   letter-spacing: 1.3px;
   font-weight: 650;
   color: var(--muted);
@@ -367,7 +368,7 @@ small {
   padding: 0 9px;
 }
 .season-chip {
-  font-size: 10px;
+  font-size: var(--type-secondary);
   border: 1px solid var(--border);
   padding: 3px 6px;
   color: #a4acb8;
@@ -379,12 +380,12 @@ small {
   padding-left: 19px;
 }
 .top-date strong {
-  font-size: 12px;
+  font-size: var(--type-label);
   display: block;
   font-weight: 650;
 }
 .top-date span {
-  font-size: 10px;
+  font-size: var(--type-secondary);
   color: var(--dim);
   display: block;
 }
@@ -411,7 +412,7 @@ small {
   top: 0;
   color: #e8b9c0;
   background: #6d2a37;
-  font-size: 8px;
+  font-size: var(--type-caption);
   border: 2px solid var(--bg);
   min-width: 15px;
   height: 15px;
@@ -426,10 +427,10 @@ small {
   color: var(--dim);
   border: 0;
   background: transparent;
-  font-size: 12px;
+  font-size: var(--type-label);
 }
 .top-search kbd {
-  font-size: 10px;
+  font-size: var(--type-secondary);
   border: 1px solid var(--border);
   padding: 0 4px;
 }
@@ -443,7 +444,7 @@ small {
   border: 1px solid #303844;
   background: #191f27;
   color: #dce0e6;
-  font-size: 12px;
+  font-size: var(--type-label);
   font-weight: 650;
   border-radius: 4px;
   white-space: nowrap;
@@ -471,7 +472,7 @@ small {
 .btn-sm {
   min-height: 30px;
   padding: 5px 10px;
-  font-size: 11px;
+  font-size: var(--type-secondary);
 }
 .screen {
   padding: 29px 30px 40px;
@@ -488,14 +489,14 @@ small {
 }
 .eyebrow {
   color: var(--dim);
-  font-size: 10px;
+  font-size: var(--type-secondary);
   font-weight: 700;
   letter-spacing: 1.9px;
   text-transform: uppercase;
   margin-bottom: 9px;
 }
 .screen-subtitle {
-  font-size: 12px;
+  font-size: var(--type-label);
   color: var(--muted);
   margin-top: 8px;
 }
@@ -519,14 +520,14 @@ small {
   gap: 14px;
 }
 .panel-head h2 {
-  font-size: 14px;
+  font-size: var(--type-body);
 }
 .panel-body {
   padding: 20px;
 }
 .subtle-link {
   color: var(--muted);
-  font-size: 11px;
+  font-size: var(--type-secondary);
   border: 0;
   padding: 0;
   background: none;
@@ -556,7 +557,7 @@ small {
   background: #242b35;
   border: 1px solid #343c48;
   border-radius: 3px;
-  font-size: 10px;
+  font-size: var(--type-secondary);
   font-weight: 650;
   color: #b9c1cd;
   white-space: nowrap;
@@ -578,7 +579,7 @@ small {
   padding: 6px 11px;
   border: 0;
   background: transparent;
-  font-size: 11px;
+  font-size: var(--type-secondary);
   color: var(--muted);
   border-radius: 2px;
   white-space: nowrap;
@@ -600,7 +601,7 @@ small {
   background: transparent;
   color: var(--muted);
   padding: 12px 2px;
-  font-size: 13px;
+  font-size: var(--type-body);
   white-space: nowrap;
 }
 .tab.active {
@@ -614,7 +615,7 @@ small {
   margin-bottom: 16px;
 }
 .field label {
-  font-size: 12px;
+  font-size: var(--type-label);
   color: var(--muted);
 }
 input:not([type='range']):not([type='color']):not([type='checkbox']),
@@ -687,7 +688,7 @@ input::placeholder {
   padding: 18px 20px;
 }
 .kpi-label {
-  font-size: 11px;
+  font-size: var(--type-secondary);
   color: var(--muted);
   display: flex;
   align-items: center;
@@ -695,13 +696,13 @@ input::placeholder {
   margin-bottom: 13px;
 }
 .kpi-value {
-  font-size: 25px;
+  font-size: var(--type-section);
   font-weight: 650;
   letter-spacing: -1px;
   font-variant-numeric: tabular-nums;
 }
 .kpi-note {
-  font-size: 10px;
+  font-size: var(--type-secondary);
   color: var(--dim);
   margin-top: 8px;
   display: flex;
@@ -723,14 +724,14 @@ input::placeholder {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 1px;
-  font-size: 9px;
+  font-size: var(--type-caption);
   padding: 11px 18px;
   border-bottom: 1px solid var(--border);
 }
 .data-table td {
   padding: 14px 18px;
   border-bottom: 1px solid #222831;
-  font-size: 12px;
+  font-size: var(--type-label);
 }
 .data-table tbody tr:last-child td {
   border-bottom: 0;
@@ -798,7 +799,7 @@ input::placeholder {
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 10px;
+  font-size: var(--type-secondary);
   color: #b6bdc7;
   letter-spacing: 1.3px;
   font-weight: 600;
@@ -811,7 +812,7 @@ input::placeholder {
   border-radius: 50%;
 }
 .hero-content h2 {
-  font-size: 32px;
+  font-size: var(--type-page);
   font-weight: 650;
   letter-spacing: -1px;
   line-height: 1.17;
@@ -822,7 +823,7 @@ input::placeholder {
   align-items: center;
   gap: 13px;
   margin-top: 14px;
-  font-size: 11px;
+  font-size: var(--type-secondary);
   color: #a3abb7;
 }
 .hero-meta b {
@@ -838,7 +839,7 @@ input::placeholder {
   gap: 17px;
 }
 .hero-bottom small {
-  font-size: 10px;
+  font-size: var(--type-secondary);
   color: #9aa3b0;
 }
 .hero-car-tag {
@@ -855,12 +856,12 @@ input::placeholder {
   background: var(--accent);
 }
 .hero-car-tag strong {
-  font-size: 12px;
+  font-size: var(--type-label);
   letter-spacing: 2px;
   display: block;
 }
 .hero-car-tag small {
-  font-size: 9px;
+  font-size: var(--type-caption);
   color: #929ba8;
   letter-spacing: 1px;
 }
@@ -918,7 +919,7 @@ input::placeholder {
   left: 0;
   background: #c83b4d;
   padding: 1px 7px;
-  font-size: 15px;
+  font-size: var(--type-body-lg);
   font-weight: 750;
 }
 .driver-mini-info {
@@ -927,21 +928,21 @@ input::placeholder {
   flex: 1;
 }
 .driver-mini-info .car-number {
-  font-size: 10px;
+  font-size: var(--type-secondary);
   color: var(--dim);
 }
 .driver-mini-info h3 {
-  font-size: 14px;
+  font-size: var(--type-body);
   margin: 3px 0 8px;
 }
 .driver-mini-info small {
-  font-size: 10px;
+  font-size: var(--type-secondary);
   color: var(--muted);
   display: block;
   margin-top: 6px;
 }
 .mini-trait {
-  font-size: 9px;
+  font-size: var(--type-caption);
   display: inline-flex;
   color: #9abcae;
   background: #1e2b27;
@@ -980,18 +981,18 @@ input::placeholder {
   border-radius: 4px;
 }
 .inbox-item strong {
-  font-size: 12px;
+  font-size: var(--type-label);
   display: block;
   font-weight: 600;
   margin-bottom: 4px;
 }
 .inbox-item small {
-  font-size: 10px;
+  font-size: var(--type-secondary);
   color: var(--muted);
   display: block;
 }
 .inbox-item time {
-  font-size: 9px;
+  font-size: var(--type-caption);
   color: var(--dim);
 }
 .project-mini {
@@ -1008,12 +1009,12 @@ input::placeholder {
   gap: 10px;
 }
 .project-mini-top strong {
-  font-size: 12px;
+  font-size: var(--type-label);
 }
 .project-mini-bottom {
   display: flex;
   justify-content: space-between;
-  font-size: 10px;
+  font-size: var(--type-secondary);
   color: var(--muted);
   margin-top: 9px;
 }
@@ -1024,7 +1025,7 @@ input::placeholder {
   align-items: center;
   padding: 12px 19px;
   border-bottom: 1px solid #242a33;
-  font-size: 11px;
+  font-size: var(--type-secondary);
 }
 .standing-row:last-child {
   border-bottom: 0;
@@ -1061,25 +1062,25 @@ input::placeholder {
   padding: 4px 8px;
 }
 .calendar-date b {
-  font-size: 17px;
+  font-size: var(--type-card-sm);
   font-weight: 650;
   display: block;
   line-height: 1.2;
 }
 .calendar-date small {
-  font-size: 8px;
+  font-size: var(--type-caption);
   color: var(--muted);
 }
 .calendar-mini strong {
-  font-size: 11px;
+  font-size: var(--type-secondary);
   display: block;
 }
 .calendar-mini small {
-  font-size: 9px;
+  font-size: var(--type-caption);
   color: var(--muted);
 }
 .calendar-mini .chip {
-  font-size: 8px;
+  font-size: var(--type-caption);
 }
 .chart-svg {
   width: 100%;
@@ -1096,7 +1097,7 @@ input::placeholder {
   margin-bottom: 14px;
 }
 .budget-trend-header strong {
-  font-size: 22px;
+  font-size: var(--type-subhead);
   letter-spacing: -0.7px;
 }
 .role-option {
@@ -1120,11 +1121,11 @@ input::placeholder {
   color: #bc8290;
 }
 .role-option strong {
-  font-size: 12px;
+  font-size: var(--type-label);
   display: block;
 }
 .role-option small {
-  font-size: 10px;
+  font-size: var(--type-secondary);
   color: var(--muted);
   display: block;
   margin-top: 3px;
@@ -1152,12 +1153,12 @@ input::placeholder {
   gap: 15px;
 }
 .modal-head h2 {
-  font-size: 18px;
+  font-size: var(--type-card);
 }
 .modal-body {
   padding: 24px;
   overflow: auto;
-  font-size: 13px;
+  font-size: var(--type-body);
   line-height: 1.8;
 }
 .modal-body p + p {
@@ -1189,12 +1190,12 @@ input::placeholder {
 }
 .toggle-row strong {
   display: block;
-  font-size: 13px;
+  font-size: var(--type-body);
 }
 .toggle-row small {
   display: block;
   color: var(--muted);
-  font-size: 11px;
+  font-size: var(--type-secondary);
   margin-top: 4px;
 }
 .toggle {
@@ -1252,11 +1253,11 @@ input::placeholder {
     padding: 32px 17px 18px;
   }
   .nav-link {
-    font-size: 14px;
+    font-size: var(--type-body);
     padding: 12px 13px;
   }
   .team-switch strong {
-    font-size: 14px;
+    font-size: var(--type-body);
   }
   .screen {
     padding: 34px 38px 45px;
@@ -1271,32 +1272,32 @@ input::placeholder {
     padding: 33px;
   }
   .hero-content h2 {
-    font-size: 39px;
+    font-size: var(--type-page-lg);
   }
   .kpi-label {
-    font-size: 12px;
+    font-size: var(--type-label);
   }
   .kpi-value {
-    font-size: 30px;
+    font-size: var(--type-page);
   }
   .kpi-note {
-    font-size: 11px;
+    font-size: var(--type-secondary);
   }
   .panel-head h2 {
-    font-size: 15px;
+    font-size: var(--type-body-lg);
   }
   .driver-mini-info h3 {
-    font-size: 16px;
+    font-size: var(--type-card-sm);
   }
   .driver-mini-photo {
     width: 88px;
     height: 108px;
   }
   .inbox-item strong {
-    font-size: 13px;
+    font-size: var(--type-body);
   }
   .inbox-item small {
-    font-size: 11px;
+    font-size: var(--type-secondary);
   }
 }
 @media (max-width: 1200px) {
@@ -1314,7 +1315,7 @@ input::placeholder {
     gap: 10px;
   }
   .topbar-breadcrumb {
-    font-size: 10px;
+    font-size: var(--type-secondary);
   }
   .top-search span,
   .top-search kbd {
@@ -1335,22 +1336,22 @@ input::placeholder {
     height: 80px;
   }
   .driver-mini-info h3 {
-    font-size: 12px;
+    font-size: var(--type-label);
   }
   .driver-mini-info .car-number {
-    font-size: 9px;
+    font-size: var(--type-caption);
   }
   .mini-trait {
-    font-size: 8px;
+    font-size: var(--type-caption);
   }
   .kpi {
     padding: 16px;
   }
   .kpi-value {
-    font-size: 23px;
+    font-size: var(--type-subhead);
   }
   .hero-content h2 {
-    font-size: 30px;
+    font-size: var(--type-page);
   }
   .hero-content {
     padding: 24px;
@@ -1381,10 +1382,10 @@ input::placeholder {
     height: 94px;
   }
   .driver-mini-info h3 {
-    font-size: 15px;
+    font-size: var(--type-body-lg);
   }
   .mini-trait {
-    font-size: 10px;
+    font-size: var(--type-secondary);
   }
   .section-grid {
     grid-template-columns: 1fr;
@@ -1396,13 +1397,13 @@ input::placeholder {
     padding: 14px;
   }
   .kpi-label {
-    font-size: 10px;
+    font-size: var(--type-secondary);
   }
   .kpi-value {
-    font-size: 22px;
+    font-size: var(--type-subhead);
   }
   .head-actions .btn {
-    font-size: 11px;
+    font-size: var(--type-secondary);
   }
 }
 @media (max-width: 760px) {
@@ -1435,20 +1436,20 @@ input::placeholder {
   }
   .topbar-left,
   .topbar-right {
-    gap: 8px;
+    gap: clamp(2px, 1vw, 8px);
   }
   .top-date {
     border-left: 0;
     padding-left: 0;
   }
   .top-date strong {
-    font-size: 10px;
+    font-size: var(--type-secondary);
   }
   .top-date span {
-    font-size: 9px;
+    font-size: var(--type-caption);
   }
   .topbar .btn-primary {
-    font-size: 11px;
+    font-size: var(--type-secondary);
     min-height: 33px;
     padding: 7px 11px;
   }
@@ -1459,7 +1460,7 @@ input::placeholder {
     font-weight: 800;
     font-style: italic;
     letter-spacing: 1px;
-    font-size: 20px;
+    font-size: var(--type-card-lg);
   }
   .screen {
     padding: 23px 16px 95px;
@@ -1471,20 +1472,20 @@ input::placeholder {
     flex-wrap: wrap;
   }
   h1 {
-    font-size: 27px;
+    font-size: var(--type-section-lg);
   }
   .screen-subtitle {
-    font-size: 11px;
+    font-size: var(--type-secondary);
     line-height: 1.7;
   }
   .eyebrow {
-    font-size: 9px;
+    font-size: var(--type-caption);
   }
   .head-actions {
     gap: 7px;
   }
   .head-actions .segmented button {
-    font-size: 10px;
+    font-size: var(--type-secondary);
     padding: 5px 9px;
   }
   .dashboard-hero {
@@ -1502,22 +1503,22 @@ input::placeholder {
     padding: 22px;
   }
   .hero-content h2 {
-    font-size: 29px;
+    font-size: var(--type-section-lg);
     max-width: 290px;
   }
   .hero-round {
-    font-size: 8px;
+    font-size: var(--type-caption);
     margin-bottom: 13px;
   }
   .hero-meta {
     gap: 8px;
-    font-size: 10px;
+    font-size: var(--type-secondary);
   }
   .hero-bottom {
     gap: 13px;
   }
   .hero-bottom small {
-    font-size: 9px;
+    font-size: var(--type-caption);
   }
   .hero-car-tag {
     display: none;
@@ -1530,14 +1531,14 @@ input::placeholder {
     padding: 15px;
   }
   .kpi-label {
-    font-size: 10px;
+    font-size: var(--type-secondary);
     margin-bottom: 10px;
   }
   .kpi-value {
-    font-size: 24px;
+    font-size: var(--type-section);
   }
   .kpi-note {
-    font-size: 9px;
+    font-size: var(--type-caption);
   }
   .dashboard-main {
     margin-top: 18px;
@@ -1565,7 +1566,7 @@ input::placeholder {
     height: 79px;
   }
   .driver-mini-info h3 {
-    font-size: 15px;
+    font-size: var(--type-body-lg);
   }
   .driver-mini-info small {
     display: inline-block;
@@ -1583,13 +1584,13 @@ input::placeholder {
     grid-template-columns: 28px minmax(0, 1fr) auto;
   }
   .inbox-item strong {
-    font-size: 11px;
+    font-size: var(--type-secondary);
   }
   .inbox-item small {
-    font-size: 9px;
+    font-size: var(--type-caption);
   }
   .inbox-item time {
-    font-size: 8px;
+    font-size: var(--type-caption);
   }
   .mobile-bottom {
     display: grid;
@@ -1613,7 +1614,7 @@ input::placeholder {
     align-items: center;
     gap: 5px;
     padding: 5px 2px;
-    font-size: 9px;
+    font-size: var(--type-caption);
   }
   .mobile-bottom button.active {
     color: #e993a2;
@@ -1630,7 +1631,7 @@ input::placeholder {
     padding: 16px 18px;
   }
   .modal-head h2 {
-    font-size: 16px;
+    font-size: var(--type-card-sm);
   }
   .modal-body {
     padding: 18px;
@@ -1651,7 +1652,7 @@ input::placeholder {
     gap: 19px;
   }
   .tab {
-    font-size: 12px;
+    font-size: var(--type-label);
   }
   .topbar .icon-btn {
     width: 30px;
@@ -1722,7 +1723,7 @@ body.reduce-motion *:after {
   position: absolute;
   right: 52px;
   top: 6px;
-  font-size: 208px;
+  font-size: var(--type-display);
   font-weight: 750;
   line-height: 1.25;
   font-style: italic;
@@ -1750,19 +1751,19 @@ body.reduce-motion *:after {
 }
 .program-person strong {
   display: block;
-  font-size: 14px;
+  font-size: var(--type-body);
   font-weight: 600;
 }
 .program-person small {
   display: block;
   margin-top: 5px;
   color: var(--muted);
-  font-size: 12px;
+  font-size: var(--type-label);
 }
 @media (max-width: 900px) {
   .program-hero-mark {
     right: 12px;
-    font-size: 170px;
+    font-size: var(--type-display);
     top: 40px;
   }
 }
@@ -1771,7 +1772,7 @@ body.reduce-motion *:after {
     padding: 23px 20px;
   }
   .program-hero .hero-content h2 {
-    font-size: 29px;
+    font-size: var(--type-section-lg);
   }
   .program-hero .hero-bottom {
     gap: 12px;
@@ -1779,7 +1780,7 @@ body.reduce-motion *:after {
     flex-direction: column;
   }
   .program-hero .hero-bottom small {
-    font-size: 11px;
+    font-size: var(--type-secondary);
   }
   .program-hero .hero-bottom small br {
     display: none;
@@ -1788,13 +1789,13 @@ body.reduce-motion *:after {
     margin-left: 5px;
   }
   .program-hero .hero-meta {
-    font-size: 11px;
+    font-size: var(--type-secondary);
     gap: 8px;
   }
   .program-hero-mark {
     right: 10px;
     top: 60px;
-    font-size: 144px;
+    font-size: var(--type-display);
     letter-spacing: -8px;
   }
   .program-roster {

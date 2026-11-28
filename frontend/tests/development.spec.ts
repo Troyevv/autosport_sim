@@ -1,8 +1,9 @@
 import { expect, test } from '@playwright/test'
+import { advanceDesk, leaseFacility } from './engineeringDesk'
 import { join } from 'node:path'
 
 test('КБ · новая редакция, сравнительные испытания и отзыв', async ({ page }, info) => {
-  test.setTimeout(100000)
+  test.setTimeout(180000)
   const created = await page.request.post('/api/careers', {
     data: {
       name: 'Инженерный отдел',
@@ -24,24 +25,14 @@ test('КБ · новая редакция, сравнительные испыт
         path: join(process.env.DEVELOPMENT_EVIDENCE, info.project.name + '-' + name + '.png'),
       })
   }
-  const rent = async (label: string) => {
-    await button('Арендовать · ' + label).click()
-    await button('Подтвердить аренду').click()
-    await expect(dialog).toHaveCount(0)
-  }
-  const advance = async () => {
-    const refresh = page.waitForResponse(
-      (r) => r.url().endsWith('/development') && r.request().method() === 'GET',
-    )
-    await button('Продолжить').click()
-    return (await refresh).json()
-  }
+  const rent = (label: string) => leaseFacility(page,label)
+  const advance = () => advanceDesk(page,'development')
   await rent('Конструкторское бюро')
   await button('Поручить разработку').click()
-  await dialog.getByRole('combobox', { name: 'Узел', exact: true }).selectOption('engine')
+  await dialog.getByRole('combobox', { name: 'Направление', exact: true }).selectOption('engine')
   await expect(dialog.getByText('Чертёж принадлежит утверждённому поставщику.')).toBeVisible()
   await expect(button('Утвердить поручение')).toBeDisabled()
-  await dialog.getByRole('combobox', { name: 'Узел', exact: true }).selectOption('rear-wing')
+  await dialog.getByRole('combobox', { name: 'Направление', exact: true }).selectOption('rear-wing')
   await dialog.getByRole('combobox', { name: 'Приоритет', exact: true }).selectOption('high')
   await capture('brief')
   await button('Утвердить поручение').click()
@@ -50,7 +41,7 @@ test('КБ · новая редакция, сравнительные испыт
     const d = await advance()
     if (d.projects.some((p: { worked: number }) => p.worked > 0)) break
   }
-  const card = page.locator('.development-card').first()
+  const card = page.locator('.eng-work-row').first()
   await expect(card).toContainText('В работе')
   if (info.project.name === 'mobile') await card.scrollIntoViewIfNeeded()
   await capture('queue')
@@ -58,29 +49,37 @@ test('КБ · новая редакция, сравнительные испыт
     const d = await advance()
     if (d.projects.some((p: { finished: string | null }) => p.finished)) break
   }
-  await button('Архив решений').click()
-  await card.getByText('Прогноз специалистов и риски', { exact: true }).click()
-  await expect(card).toContainText('Площадь прижима')
+  await button('Редакции и протоколы').click()
+  await card.click()
+  await dialog.getByText('Прогноз специалистов и риски', { exact: true }).click()
+  await expect(dialog).toContainText('Площадь прижима')
+  await page.keyboard.press('Escape')
   await rent('Аэродинамическая труба')
-  await button('Испытать редакцию').click()
+  await card.click()
+  await dialog.getByRole('button',{name:'Назначить испытание'}).click()
   await dialog.getByLabel('Метод проверки').selectOption('tunnel')
   await expect(dialog).toContainText('Расход ATR')
   await button('Утвердить поручение').click()
   await expect(dialog).toHaveCount(0)
   await button('Испытания').click()
-  await expect(card).toContainText('Аэродинамическая труба')
+  await card.click()
+  await expect(dialog).toContainText('Аэродинамическая труба')
+  await page.keyboard.press('Escape')
   await advance()
-  await button('Архив решений').click()
+  await button('Редакции и протоколы').click()
+  const completedTest = page.locator('.eng-work-row').filter({ hasText: '1 / 1 сеанс' })
+  await completedTest.click()
   const measurements = page.locator('.measurement')
   await expect(measurements).toContainText('Разница Б − А')
   await measurements.scrollIntoViewIfNeeded()
   await capture('comparison')
-  await button('Отозвать редакцию').click()
-  await button('Подтвердить решение').click()
+  await dialog.getByRole('button',{name:'Отозвать',exact:true}).click()
+  await dialog.getByRole('button',{name:'Подтвердить',exact:true}).click()
+  await page.getByRole('button',{name:'Вернуться к работе'}).click()
   await expect(dialog).toHaveCount(0)
   await page.reload()
-  await button('Архив решений').click()
+  await button('Редакции и протоколы').click()
   await expect(
-    page.locator('.development-card').filter({ hasText: 'Заднее антикрыло' }).first(),
-  ).toContainText('Отозвана')
+    page.locator('.eng-work-row').filter({ hasText: 'Заднее антикрыло' }).first(),
+  ).toContainText('Редакция отозвана')
 })

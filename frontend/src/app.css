@@ -16,7 +16,7 @@
   margin-top: 18px;
 }
 .demo-chip {
-  font-size: 10px;
+  font-size: var(--type-secondary);
   font-weight: 700;
   letter-spacing: 0.6px;
   text-transform: uppercase;
@@ -92,7 +92,7 @@
   gap: 12px;
   padding: 8px 0;
   border-bottom: 1px solid var(--border);
-  font-size: 12px;
+  font-size: var(--type-label);
 }
 .facts dt {
   color: var(--muted);
@@ -114,7 +114,7 @@
   width: 100%;
   background: transparent;
   color: var(--text);
-  font-size: 12px;
+  font-size: var(--type-label);
 }
 .result small,
 .result span > strong,
@@ -124,7 +124,7 @@
 .result small,
 .candidate small {
   color: var(--muted);
-  font-size: 11px;
+  font-size: var(--type-secondary);
 }
 button.result:hover {
   background: var(--surface-2);
@@ -164,7 +164,7 @@ button.result:hover {
   font-weight: 700;
 }
 .candidate label {
-  font-size: 11px;
+  font-size: var(--type-secondary);
   color: var(--muted);
 }
 .contract-warning {
@@ -175,7 +175,7 @@ button.result:hover {
   justify-content: space-between;
   align-items: center;
   gap: 6px;
-  font-size: 11px;
+  font-size: var(--type-secondary);
 }
 .card-grid {
   display: grid;
@@ -205,7 +205,7 @@ button.result:hover {
   gap: 12px;
   margin-bottom: 8px;
   color: var(--muted);
-  font-size: 12px;
+  font-size: var(--type-label);
 }
 .metric b {
   color: var(--text);
@@ -224,10 +224,10 @@ button.result:hover {
 .series-banner p,
 .series-banner small {
   color: var(--muted);
-  font-size: 12px;
+  font-size: var(--type-label);
 }
 .series-banner h2 {
-  font-size: 24px;
+  font-size: var(--type-section);
 }
 .series-banner > div + div {
   padding-left: 20px;
@@ -244,7 +244,7 @@ button.result:hover {
   display: block;
   background: #30212a;
   border-left: 2px solid #c15669;
-  font-size: 10px;
+  font-size: var(--type-secondary);
   line-height: 1.5;
   padding: 4px;
   max-width: 100%;
@@ -278,7 +278,7 @@ button.result:hover {
   background: #a84e60;
 }
 .spending-chart small {
-  font-size: 10px;
+  font-size: var(--type-secondary);
   color: var(--muted);
 }
 .garage-layout {
@@ -298,14 +298,14 @@ button.result:hover {
   position: relative;
 }
 .garage-scene h2 {
-  font-size: 48px;
+  font-size: var(--type-page-lg);
   font-weight: 550;
   letter-spacing: -3px;
   line-height: 1.1;
 }
 .garage-scene header p,
 .garage-scene footer {
-  font-size: 10px;
+  font-size: var(--type-secondary);
   color: #a4aeb9;
   letter-spacing: 1.5px;
 }
@@ -346,13 +346,13 @@ button.result:hover {
   margin-bottom: 16px;
 }
 .car-rating b {
-  font-size: 44px;
+  font-size: var(--type-display);
   line-height: 1.1;
 }
 .car-rating small {
   display: block;
   color: var(--muted);
-  font-size: 11px;
+  font-size: var(--type-secondary);
 }
 .checkline {
   display: flex;
@@ -360,7 +360,7 @@ button.result:hover {
   gap: 8px;
   color: var(--muted);
   margin: 9px 0;
-  font-size: 12px;
+  font-size: var(--type-label);
 }
 .checkline svg {
   color: var(--green);
@@ -372,7 +372,7 @@ button.result:hover {
 }
 .swatches span {
   flex: 1;
-  font-size: 11px;
+  font-size: var(--type-secondary);
 }
 .swatches i {
   display: block;
@@ -396,11 +396,11 @@ button.result:hover {
 .race-driver-actions label {
   display: grid;
   gap: 4px;
-  font-size: 11px;
+  font-size: var(--type-secondary);
   color: var(--muted);
 }
 .race-driver-actions select {
-  font-size: 12px;
+  font-size: var(--type-label);
 }
 .race-driver .facts {
   margin-top: 10px;
@@ -415,7 +415,7 @@ button.result:hover {
   border-top: 3px solid #c7aa68;
   background: #25241e;
   flex: 1;
-  font-size: 11px;
+  font-size: var(--type-secondary);
 }
 .stints span + span {
   border-color: #b6becb;
@@ -455,7 +455,7 @@ button.result:hover {
     display: block;
   }
   .demo-chip {
-    font-size: 9px;
+    font-size: var(--type-caption);
   }
   .screen .section-grid,
   .garage-layout {
@@ -492,7 +492,7 @@ button.result:hover {
     padding-left: 12px;
   }
   .calendar-event {
-    font-size: 9px;
+    font-size: var(--type-caption);
     padding: 1px 2px;
     line-height: 1.25;
     overflow: hidden;
@@ -518,10 +518,10 @@ button.result:hover {
   }
   .garage-scene footer {
     padding: 12px;
-    font-size: 9px;
+    font-size: var(--type-caption);
   }
   .garage-scene h2 {
-    font-size: 36px;
+    font-size: var(--type-page-lg);
   }
   .race-driver-grid,
   .race-bottom-grid {
@@ -592,6 +592,31 @@ button.result:hover {
   }
   .people-toolbar select {
     width: 100%;
-    font-size: 12px;
+    font-size: var(--type-label);
   }
 }
+
+.app-shell {
+  --bg:#111;
+  --sidebar:#191919;
+  --surface:#222;
+  --surface-2:#2b2b2b;
+  --border:#393939;
+  --text:#f1efec;
+  --muted:#b3afaa;
+  --dim:#95928d;
+  --accent:#d87282;
+  --accent-hover:#e497a3;
+  background:var(--bg);
+  color:var(--text);
+}
+.app-shell .demo-brand { display:flex; flex-direction:column; align-items:flex-start; gap:4px; }
+.app-shell .demo-brand strong { font-family:Race,'Arial Narrow',sans-serif;font-size:var(--type-section-lg);font-style:italic;letter-spacing:-1.4px;line-height:1 }
+.app-shell .demo-brand strong span {font-family:Manrope,sans-serif;font-size:var(--type-body);color:var(--muted);margin-left:2px}
+.app-shell .demo-brand small {letter-spacing:2px;color:var(--muted);padding:0}
+.app-shell .team-switch,.app-shell .kpi,.app-shell .panel {background:var(--surface);border-color:var(--border)}
+.app-shell .team-switch {border-bottom:2px solid var(--accent)}
+.app-shell .nav-link.active {color:var(--text);background:#333;border-left-color:var(--accent)}
+.app-shell .topbar,.app-shell .mobile-bottom {background:#191919;border-color:var(--border)}
+.app-shell .screen h1,.app-shell .kpi-value {font-family:Race,'Arial Narrow',Manrope,sans-serif}
+.app-shell .btn-primary {background:var(--accent);color:#141414;border-color:var(--accent)}

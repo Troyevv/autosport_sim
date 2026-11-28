@@ -1,6 +1,8 @@
+import { sectionTab } from '../../pitwall/core/route'
+import { EngineeringHeading, EngineeringMetrics } from '../../pitwall/EngineeringHeading'
 import { useState } from 'react'
 import { BookOpen, CalendarDays, Fingerprint, FlaskConical, Layers, Plus } from 'lucide-react'
-import { Button, Choices, Dialog, Facts, Header, Panel, Progress, Stats } from '../../ui/components'
+import { Button, Choices, Dialog, Facts, Panel, Progress } from '../../ui/components'
 import { dateLabel } from '../../game'
 import { money, type Career } from '../api'
 import type { SectionProps } from '../Sections'
@@ -213,7 +215,9 @@ function Memory({ data, order, manage }: { data: Desk; order: Order; manage: boo
                     ['Дата поручения', dateLabel(project.commissioned)],
                     ['Стоимость работы', money(project.cost_cents)],
                     ['Регистрационный номер', r.id],
-                    ...(r.citations.length ? [['Использовано в инженерных делах', r.citations.join(', ')] as [string,string]] : []),
+                    ...(r.citations.length
+                      ? [['Использовано в инженерных делах', r.citations.join(', ')] as [string, string]]
+                      : []),
                     ...Object.values(r.participants).map((c): [string, string] => [
                       c.name,
                       c.skill + ' · ' + c.hours + ' чел.-ч',
@@ -247,13 +251,23 @@ function Memory({ data, order, manage }: { data: Desk; order: Order; manage: boo
           )
         })}
       </Panel>
-      {data.inspections.length > 0 && <Panel title="Протоколы контроля качества">
-        {data.inspections.map(h => <article key={h.id} className="research-card">
-          <small>{dateLabel(h.date)} · {h.person}</small>
-          <strong>{workshopLabels[h.code]} · {h.serial}</strong>
-          <p>{h.batch || 'Начальный парк'} · {h.version}</p>
-        </article>)}
-      </Panel>}
+      {data.inspections.length > 0 && (
+        <Panel title="Протоколы контроля качества">
+          {data.inspections.map((h) => (
+            <article key={h.id} className="research-card">
+              <small>
+                {dateLabel(h.date)} · {h.person}
+              </small>
+              <strong>
+                {workshopLabels[h.code]} · {h.serial}
+              </strong>
+              <p>
+                {h.batch || 'Начальный парк'} · {h.version}
+              </p>
+            </article>
+          ))}
+        </Panel>
+      )}
       {transfer && (
         <Dialog title="Передача инженерного опыта" onClose={() => setTransfer(null)}>
           <form
@@ -308,37 +322,35 @@ function Memory({ data, order, manage }: { data: Desk; order: Order; manage: boo
   )
 }
 
-export function Research({ c, world, updateCareer }: SectionProps & { updateCareer: (c: Career) => void }) {
+export function Research({
+  c,
+  world,
+  updateCareer,
+}: SectionProps & { updateCareer: (c: Career) => void }) {
   const req = usePersonnel<Desk>('careers/' + c.id + '/research', c.revision),
     data = req.error ? undefined : req.data
   const order = useOrder(c, updateCareer, 'research'),
     rental = useOrder(c, updateCareer)
-  const [tab, setTab] = useState('queue'),
+  const [tab, setTab] = useState(() => sectionTab(['queue', 'memory'], 'queue')),
     [dialog, open] = useState(''),
     [priority, setPriority] = useState<Priority>('normal')
   const manage = c.role === 'manager',
     pending = data?.projects.filter((p) => !p.finished) || []
+  const [query, setQuery] = useState('')
+  const filtered = pending.filter((p) =>
+    [p.hypothesis, p.source.label, p.axis, p.lead && data?.staff[p.lead]]
+      .join(' ')
+      .toLocaleLowerCase()
+      .includes(query.toLocaleLowerCase().trim()),
+  )
   const selected = pending.find((p) => p.id === dialog)
   return (
-    <section className="screen research-desk">
-      <Header
-        section={world.organizations[c.org].name + ' / Технический центр'}
-        title="Исследования"
-        sub="Работа специалистов и техническая память организации."
-      >
-        {manage && !!data?.entries.length && (
-          <Button
-            primary
-            onClick={() => {
-              order.clear()
-              open('commission')
-            }}
-          >
-            <Plus size={16} />
-            Поручить исследование
-          </Button>
-        )}
-      </Header>
+    <section className="screen engineering-module research-desk">
+      <EngineeringHeading
+        route="research"
+        organization={world.organizations[c.org].name}
+        maker={c.role === 'manufacturer'}
+      />
       {req.error && (
         <div role="alert">
           {req.error} <Button onClick={req.retry}>Повторить загрузку</Button>
@@ -347,7 +359,37 @@ export function Research({ c, world, updateCareer }: SectionProps & { updateCare
       {!data && !req.error && <p role="status">Загрузка исследовательского центра…</p>}
       {data && (
         <>
-          <Stats
+          <Choices
+            label="Исследовательский центр"
+            items={[
+              ['queue', 'Очередь исследований'],
+              ['memory', 'Техническая память'],
+            ]}
+            active={tab}
+            onChange={setTab}
+          />
+          <div className="eng-section-lead">
+            <div>
+              <h2>{'Исследовательский центр'}</h2>
+              <p>{'Проверьте гипотезу до того, как вкладывать ресурсы в новую редакцию.'}</p>
+            </div>
+            <div className="eng-inline-actions">
+              {manage && !!data?.entries.length && (
+                <Button
+                  primary
+                  onClick={() => {
+                    order.clear()
+                    open('commission')
+                  }}
+                >
+                  <Plus size={16} />
+                  Поручить исследование
+                </Button>
+              )}
+            </div>
+          </div>
+
+          <EngineeringMetrics
             items={[
               [
                 'Доступные слоты',
@@ -362,23 +404,31 @@ export function Research({ c, world, updateCareer }: SectionProps & { updateCare
                 'Оплаченные поручения',
                 <CalendarDays size={16} />,
               ],
-              ['Заключения', String(data.reports.length), 'В технической памяти', <BookOpen size={16} />],
+              [
+                'Заключения',
+                String(data.reports.length),
+                'В технической памяти',
+                <BookOpen size={16} />,
+              ],
             ]}
           />
-          <Choices
-            label="Исследовательский центр"
-            items={[
-              ['queue', 'Очередь исследований'],
-              ['memory', 'Техническая память'],
-            ]}
-            active={tab}
-            onChange={setTab}
-          />
+
           {tab === 'memory' ? (
             <Memory data={data} order={order} manage={manage} />
           ) : (
             <div className="research-layout">
-              <Panel title="Очередь исследований">
+              <Panel
+                title="Рабочая очередь"
+                action={
+                  <input
+                    type="search"
+                    aria-label="Поиск исследования"
+                    placeholder="Поиск исследования"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                  />
+                }
+              >
                 {!pending.length && (
                   <div className="research-empty">
                     <FlaskConical size={28} />
@@ -390,7 +440,10 @@ export function Research({ c, world, updateCareer }: SectionProps & { updateCare
                     </p>
                   </div>
                 )}
-                {pending.map((p) => (
+                {query && !filtered.length && (
+                  <p className="panel-body">По выбранному запросу работы не найдены.</p>
+                )}
+                {filtered.map((p) => (
                   <article className="research-card" key={p.id}>
                     <div className="research-heading">
                       <div>
@@ -424,7 +477,9 @@ export function Research({ c, world, updateCareer }: SectionProps & { updateCare
                           ['Начало работ', p.started ? dateLabel(p.started) : 'Ожидается'],
                           [
                             'Осталось при текущем темпе',
-                            p.remaining_days ? p.remaining_days + ' раб. дн.' : 'Оценка после начала работ',
+                            p.remaining_days
+                              ? p.remaining_days + ' раб. дн.'
+                              : 'Оценка после начала работ',
                           ],
                           ['Источник', p.source.label],
                           ...Object.values(p.participants).map((v): [string, string] => [
@@ -528,7 +583,8 @@ export function Research({ c, world, updateCareer }: SectionProps & { updateCare
                   primary
                   disabled={order.busy || priority === selected.priority}
                   onClick={async () => {
-                    if (await order.send('research-priority', { project: selected.id, priority })) open('')
+                    if (await order.send('research-priority', { project: selected.id, priority }))
+                      open('')
                   }}
                 >
                   Сохранить приоритет

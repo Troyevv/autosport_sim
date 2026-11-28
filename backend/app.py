@@ -37,7 +37,10 @@ def world(career: str | None = None):
     catalog = SEASON_LINEUP
     if career:
         with storage.transaction() as db:
-            catalog = lineup_for(storage.checkpoint(db, career))
+            from .branding import world_view
+
+            state = storage.checkpoint(db, career)
+            catalog = world_view(lineup_for(state), state)
     return {
         **{
             k: v
@@ -83,6 +86,14 @@ async def import_career(request: Request):
 @app.get("/api/careers/{cid}")
 def load(cid: str):
     return service.load(cid)
+
+
+@app.get("/api/careers/{cid}/pit-wall")
+def pit_wall(cid: str, topics: list[str] = Query(min_length=1, max_length=16)):
+    from . import pitwall
+
+    with storage.transaction() as db:
+        return pitwall.read(db, cid, storage.checkpoint(db, cid), topics)
 
 
 @app.get("/api/careers/{cid}/personnel")

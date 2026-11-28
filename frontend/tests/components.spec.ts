@@ -15,8 +15,9 @@ test('Гараж · установка по наряду и паспорт по�
   const career = await response.json()
   await page.route('**/components/f1-4', route => route.abort(), { times: 1 })
   await page.goto('/?career=' + career.id + '#garage')
-  await page.getByRole('button', { name: 'Компоненты', exact: true }).click()
-  await page.getByRole('button', {name:'Повторить загрузку'}).click()
+  await page.getByRole('tab', { name: 'Компоненты', exact: true }).click()
+  await page.getByRole('button', {name:'Повторить', exact:true}).click()
+  await page.getByText('Управление физическими экземплярами', {exact:true}).click()
   const select = page.getByLabel('Доступные экземпляры')
   await select.selectOption({ label: 'Низкое сопротивление · v2 · запас' })
   const originalSerial = await page.locator('.component-id').innerText()
@@ -27,7 +28,7 @@ test('Гараж · установка по наряду и паспорт по�
   await page.getByRole('button', { name: 'Подтвердить установку' }).click()
   await expect(page.locator('.component-desk strong').first()).toHaveText('Низкое сопротивление · v2')
   await page.reload()
-  await page.getByRole('button', { name: 'Компоненты', exact: true }).click()
+  await page.getByText('Управление физическими экземплярами', {exact:true}).click()
   await expect(page.locator('.component-desk strong').first()).toHaveText('Низкое сопротивление · v2')
   await expect(page.locator('.car-stand')).toHaveAttribute('data-state', 'ready')
   const capture = async (name: string) => {
@@ -50,9 +51,9 @@ test('Гараж · установка по наряду и паспорт по�
   await expect(page.getByText('Снят', { exact: false }).filter({ has: page.locator('code') })).toContainText(
     'f1-4/rear-wing/01',
   )
-  await page.getByRole('combobox', { name: 'Заявка', exact: true }).selectOption('f1-81')
+  await page.getByRole('combobox', { name: 'Автомобиль', exact: true }).selectOption('f1-81')
   await expect(page.locator('.component-desk strong').first()).toHaveText('Базовая спецификация · v1')
-  await page.getByRole('combobox', { name: 'Чемпионат', exact: true }).selectOption('f2')
+  await page.getByRole('combobox', { name: 'Чемпионат гаража', exact: true }).selectOption('f2')
   await expect(
     page.getByText('Состав сборки и история эксплуатации доступны сотрудникам команды.'),
   ).toBeVisible()

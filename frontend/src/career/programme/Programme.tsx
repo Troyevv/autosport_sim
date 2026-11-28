@@ -1,6 +1,9 @@
+import { RaceCar } from '../../pitwall/visuals'
+import { navigate, sectionTab } from '../../pitwall/core/route'
+import { EngineeringHeading } from '../../pitwall/EngineeringHeading'
 import { useState } from 'react'
 import { CalendarDays, Layers3, SlidersHorizontal } from 'lucide-react'
-import { Button, Choices, Dialog, Facts, Header, Panel, Progress } from '../../ui/components'
+import { Button, Choices, Dialog, Facts, Panel, Progress } from '../../ui/components'
 import { dateLabel } from '../../game'
 import { fmt, units } from '../../garage/quantities'
 import { type Career, money } from '../api'
@@ -8,14 +11,8 @@ import type { SectionProps } from '../Sections'
 import { usePersonnel } from '../staff/model'
 import { useOrder } from '../finance/useOrder'
 import { modes } from '../council/model'
-import { type Desk, type Plan, type Proposal, priorities, strategies, kinds, leads } from './model'
+import { type Desk, type Plan, type Proposal, deploymentLabels, regulationName, priorities, strategies, kinds, leads } from './model'
 import './programme.css'
-
-const deploymentLabels: Record<string, string> = {
-  installed: 'Установлен', allocated: 'Выделен со склада', waiting: 'Ожидает экземпляр',
-  priority: 'Ожидает по приоритету пилотов', incompatible: 'Несовместим',
-  shared: 'Учтено в другом пакете',
-}
 
 function Packages({
   plan,
@@ -47,7 +44,9 @@ function Packages({
             <p className="programme-meta">
               <CalendarDays size={15} /> {dateLabel(pkg.due, true)} · {pkg.stage}
             </p>
-            <p>{pkg.advice} Установлено {pkg.installed} из {pkg.required} экземпляров.</p>
+            <p>
+              {pkg.advice} Установлено {pkg.installed} из {pkg.required} экземпляров.
+            </p>
             <div className="programme-parts">
               {pkg.parts.map((part) => (
                 <article key={part.axis}>
@@ -79,11 +78,18 @@ function Packages({
                     ))}
                     {part.targets.length > 0 && (
                       <>
-                        {part.targets.map((t) => <p key={t.entry}>№{t.number} · {deploymentLabels[t.status]}</p>)}
+                        {part.targets.map((t) => (
+                          <p key={t.entry}>
+                            №{t.number} · {deploymentLabels[t.status]}
+                          </p>
+                        ))}
                         <p>Выделено со склада для пакета · {part.serials.length}</p>
-                        <p>По этой спецификации в организации: на складе · {part.inventory.stock || 0},
-                          установлено · {part.inventory.installed || 0}, на контроле · {part.inventory.inspection || 0},
-                          в ремонте · {part.inventory.repair || 0}, списано · {part.inventory.scrapped || 0}.</p>
+                        <p>
+                          По этой спецификации в организации: на складе · {part.inventory.stock || 0},
+                          установлено · {part.inventory.installed || 0}, на контроле ·{' '}
+                          {part.inventory.inspection || 0}, в ремонте · {part.inventory.repair || 0},
+                          списано · {part.inventory.scrapped || 0}.
+                        </p>
                         <a href="#production">Экземпляры и распределение по заявкам</a>
                       </>
                     )}
@@ -169,8 +175,7 @@ function Resources({ data, c }: { data: Desk; c: Career }) {
                 {plan.year} · {plan.category} · {plan.name}
               </strong>
               <p>
-                Оплачено {money(plan.spent_cents)} · резерв{' '}
-                {money(plan.reserved_cents)}
+                Оплачено {money(plan.spent_cents)} · резерв {money(plan.reserved_cents)}
               </p>
             </div>
           ))}
@@ -199,13 +204,19 @@ function Resources({ data, c }: { data: Desk; c: Career }) {
   )
 }
 
-export function Programme({ c, world, updateCareer }: SectionProps & { updateCareer: (c: Career) => void }) {
+export function Programme({
+  c,
+  world,
+  updateCareer,
+}: SectionProps & { updateCareer: (c: Career) => void }) {
   const req = usePersonnel<Desk>('careers/' + c.id + '/programme', c.revision),
     data = req.data
   const orders = useOrder(c, updateCareer, 'programme'),
     council = useOrder(c, updateCareer, 'council'),
     fit = useOrder(c, updateCareer, 'engineering')
-  const [tab, setTab] = useState('plans'),
+  const [tab, setTab] = useState(() =>
+      sectionTab(['plans', 'resources', 'calendar', 'concept', 'rules', 'history'], 'plans'),
+    ),
     [selected, select] = useState(''),
     [modal, open] = useState(''),
     [value, setValue] = useState(''),
@@ -224,7 +235,8 @@ export function Programme({ c, world, updateCareer }: SectionProps & { updateCar
   async function confirm() {
     if (!plan) return
     if (modal === 'install') {
-      if (await fit.send('component-install', { entry: serial.entry, instance: serial.instance })) open('')
+      if (await fit.send('component-install', { entry: serial.entry, instance: serial.instance }))
+        open('')
       return
     }
     if (modal === 'deployment') {
@@ -244,16 +256,21 @@ export function Programme({ c, world, updateCareer }: SectionProps & { updateCar
       modal === 'priority'
         ? await orders.send('programme-priority', { allocation: value })
         : modal === 'concept'
-          ? await orders.send('programme-concept', { entry: plan.entry, year: plan.year, strategy: value })
-          : proposal && (await council.send('council-decide', { proposal: proposal.id, decision: value }))
+          ? await orders.send('programme-concept', {
+              entry: plan.entry,
+              year: plan.year,
+              strategy: value,
+            })
+          : proposal &&
+            (await council.send('council-decide', { proposal: proposal.id, decision: value }))
     if (ok) open('')
   }
   return (
-    <section className="screen season-programme">
-      <Header
-        section={world.organizations[c.org].name}
-        title="Техническая программа"
-        sub="Решения инженерного штаба по машинам текущего и следующего сезонов."
+    <section className="screen engineering-module season-programme">
+      <EngineeringHeading
+        route="engineering"
+        organization={world.organizations[c.org].name}
+        maker={c.role === 'manufacturer'}
       >
         {manage && data && plan && (
           <Button onClick={() => settings('priority', data.priority)}>
@@ -261,7 +278,7 @@ export function Programme({ c, world, updateCareer }: SectionProps & { updateCar
             Изменить приоритет
           </Button>
         )}
-      </Header>
+      </EngineeringHeading>
       {req.error ? (
         <p role="alert">
           {req.error} <Button onClick={req.retry}>Повторить загрузку</Button>
@@ -276,14 +293,6 @@ export function Programme({ c, world, updateCareer }: SectionProps & { updateCar
         </Panel>
       ) : (
         <>
-          <div className="programme-ribbon">
-            <span>
-              <Layers3 size={16} />
-              {priorities[data.priority]}
-            </span>
-            <span>Делегирование · {modes[data.mandate.mode as keyof typeof modes]}</span>
-            <a href="#council">Инженерный штаб</a>
-          </div>
           <div className="programme-cars" role="group" aria-label="Поколения машин">
             {data.plans.map((p) => (
               <button aria-pressed={p.id === plan.id} key={p.id} onClick={() => select(p.id)}>
@@ -310,6 +319,50 @@ export function Programme({ c, world, updateCareer }: SectionProps & { updateCar
               ['history', 'Решения'],
             ]}
           />
+          {tab === 'plans' && (
+            <div className="eng-program-hero">
+              <div className="eng-blueprint-lines" />
+              <div className="eng-program-copy">
+                <small>
+                  {plan.series.toUpperCase()} / {plan.category}
+                </small>
+                <h2>{plan.name}</h2>
+                <p>
+                  {{
+                    performance: 'Развивать рабочий диапазон и готовность машины.',
+                    balanced: 'Согласовать темп развития, надёжность и затраты.',
+                    reliability: 'Укрепить надёжность программы.',
+                  }[data.goal] || 'Согласовать развитие автомобиля и готовность команды к сезону.'}
+                </p>
+                <div className="eng-hero-badges">
+                  <span className="chip">{strategies[plan.strategy]}</span>
+                </div>
+              </div>
+              <div className="eng-car-stage">
+                <RaceCar entryId={plan.entry} />
+                <span>
+                  {plan.year} · {plan.name}
+                </span>
+              </div>
+              <div className="eng-program-hero-footer">
+                <span>
+                  {Object.values(plan.staff)
+                    .map((id) => data.people[id])
+                    .filter(Boolean)
+                    .join(' · ')}
+                </span>
+                <Button onClick={() => navigate('garage', 'parts', plan.entry)}>Открыть машину</Button>
+              </div>
+            </div>
+          )}
+          <div className="programme-ribbon">
+            <span>
+              <Layers3 size={16} />
+              {priorities[data.priority]}
+            </span>
+            <span>Делегирование · {modes[data.mandate.mode as keyof typeof modes]}</span>
+            <a href="#council">Инженерный штаб</a>
+          </div>
           {tab === 'plans' && (
             <div className="programme-grid">
               <div className="programme-stack">
@@ -388,13 +441,15 @@ export function Programme({ c, world, updateCareer }: SectionProps & { updateCar
                 <div className="programme-body">
                   <h3>{strategies[plan.strategy]}</h3>
                   <p>{plan.name}</p>
-                  <p className="programme-id">{plan.concept}</p>
+                  <p className="programme-id">{world.engineering.concepts?.[plan.concept]?.name || plan.name}</p>
                   <p>
-                    Штаб оценивает совместную работу узлов по чертежам и протоколам. Пересмотр требует двух
-                    исследований и проверки сборки.
+                    Штаб оценивает совместную работу узлов по чертежам и протоколам. Пересмотр требует
+                    двух исследований и проверки сборки.
                   </p>
                   {manage && (
-                    <Button onClick={() => settings('concept', plan.strategy)}>Выбрать направление</Button>
+                    <Button onClick={() => settings('concept', plan.strategy)}>
+                      Выбрать направление
+                    </Button>
                   )}
                 </div>
               </Panel>
@@ -405,7 +460,8 @@ export function Programme({ c, world, updateCareer }: SectionProps & { updateCar
                       <summary>Документация стартовой машины · {plan.documents.length}</summary>
                       {plan.documents.map((doc) => (
                         <p key={doc.reference}>
-                          {doc.component} · {doc.issuer} · {doc.design ? 'конструкторская документация' : 'монтажная документация'}
+                          {doc.component} · {doc.issuer} ·{' '}
+                          {doc.design ? 'конструкторская документация' : 'монтажная документация'}
                         </p>
                       ))}
                     </details>
@@ -431,10 +487,12 @@ export function Programme({ c, world, updateCareer }: SectionProps & { updateCar
               <Panel title={plan.rule.origin}>
                 <Facts
                   items={[
-                    ['Редакция', plan.regulation],
+                    ['Редакция', regulationName(world, plan.regulation)],
                     ['Объявлен', dateLabel(plan.rule.announced, true)],
                     ['Действует с', dateLabel(plan.rule.effective, true)],
-                    ...(plan.rule.freeze ? [['Заморозка', dateLabel(plan.rule.freeze, true)] as const] : []),
+                    ...(plan.rule.freeze
+                      ? [['Заморозка', dateLabel(plan.rule.freeze, true)] as const]
+                      : []),
                   ]}
                 />
                 <div className="programme-body">
@@ -565,8 +623,9 @@ export function Programme({ c, world, updateCareer }: SectionProps & { updateCar
                 )}
                 {modal === 'priority' && (
                   <p>
-                    Первый выбор свободных специалистов и площадок получит приоритетное поколение. Остановка
-                    приостанавливает развитие текущей машины. Оплаченные обязательства сохраняются.
+                    Первый выбор свободных специалистов и площадок получит приоритетное поколение.
+                    Остановка приостанавливает развитие текущей машины. Оплаченные обязательства
+                    сохраняются.
                   </p>
                 )}
                 {modal === 'concept' && (
@@ -579,7 +638,11 @@ export function Programme({ c, world, updateCareer }: SectionProps & { updateCar
                 {(orders.error || council.error || fit.error) && (
                   <p role="alert">{orders.error || council.error || fit.error}</p>
                 )}
-                <Button type="submit" primary disabled={!manage || orders.busy || council.busy || fit.busy}>
+                <Button
+                  type="submit"
+                  primary
+                  disabled={!manage || orders.busy || council.busy || fit.busy}
+                >
                   Подтвердить решение
                 </Button>
               </form>

@@ -112,14 +112,14 @@ def options(state):
     ]
 
 
-def reserve(state, world, kind, *, participant=None):
-    from .employment import post, HORIZON
+def _participants(state, world, kind, participant=None):
+    from .employment import HORIZON
 
     org = state["setup"]["org"]
     start = state["date"]
     if kind not in {o["id"] for o in options(state)}:
         raise RuleError("Программа вне полномочий.", 403)
-    _, facility, days, cost, load = PROGRAMS[kind]
+    _, facility, days, _, _ = PROGRAMS[kind]
     end = shifted(start, days)
     if end > HORIZON:
         raise RuleError("Слот выходит за календарь сезона.")
@@ -257,6 +257,32 @@ def reserve(state, world, kind, *, participant=None):
         )
 
     pid = min(candidates, key=priority)
+    return pid, mentor, prior
+
+
+def available_programs(state, world):
+    rows = options(state)
+    for row in rows:
+        try:
+            person, mentor, _ = _participants(state, world, row["id"])
+            row["participants"] = [
+                (state["people"].get(pid) or state["collectives"][pid])["name"]
+                for pid in (person, mentor)
+                if pid
+            ]
+        except RuleError as error:
+            row["unavailable"] = str(error)
+    return rows
+
+
+def reserve(state, world, kind, *, participant=None):
+    from .employment import post
+
+    pid, mentor, prior = _participants(state, world, kind, participant)
+    org = state["setup"]["org"]
+    start = state["date"]
+    _, facility, days, cost, load = PROGRAMS[kind]
+    end = shifted(start, days)
     key = f"prep-{state['revision'] + 1}"
     facility_id = None
     recipient = None

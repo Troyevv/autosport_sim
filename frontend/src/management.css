@@ -16,10 +16,10 @@
   margin-bottom: 17px;
 }
 .management-section-label h2 {
-  font-size: 16px;
+  font-size: var(--type-card-sm);
 }
 .management-section-label > span {
-  font-size: 12px;
+  font-size: var(--type-label);
 }
 .management-projects {
   display: flex;
@@ -53,14 +53,14 @@
   gap: 15px;
 }
 .management-project-heading .eyebrow {
-  font-size: 9px;
+  font-size: var(--type-caption);
 }
 .management-project-heading h2 {
-  font-size: 17px;
+  font-size: var(--type-card-sm);
   margin-top: 4px;
 }
 .management-project-info > p {
-  font-size: 12px;
+  font-size: var(--type-label);
   color: var(--muted);
   margin: 13px 0 18px;
   line-height: 1.7;
@@ -70,7 +70,7 @@
   gap: 17px;
   align-items: center;
   margin-top: 13px;
-  font-size: 11px;
+  font-size: var(--type-secondary);
   color: var(--muted);
 }
 .management-project-details > span {
@@ -93,7 +93,7 @@
   gap: 12px;
 }
 .management-project-bottom > span {
-  font-size: 10px;
+  font-size: var(--type-secondary);
 }
 .management-radar-wrap {
   padding: 22px 12px;
@@ -113,23 +113,23 @@
   border-radius: 4px;
 }
 .management-advisor-head strong {
-  font-size: 12px;
+  font-size: var(--type-label);
   display: block;
 }
 .management-advisor-head small {
-  font-size: 10px;
+  font-size: var(--type-secondary);
   color: var(--muted);
   display: block;
   margin-top: 4px;
 }
 .management-advisor blockquote {
   margin: 19px 0;
-  font-size: 13px;
+  font-size: var(--type-body);
   line-height: 1.8;
   color: #c5cbd4;
 }
 .management-advisor > p {
-  font-size: 10px;
+  font-size: var(--type-secondary);
   color: var(--muted);
   margin-top: 8px;
 }
@@ -152,10 +152,10 @@
   min-width: 118px;
   text-align: center;
   text-transform: capitalize;
-  font-size: 17px;
+  font-size: var(--type-card-sm);
 }
 .management-calendar-toolbar select {
-  font-size: 12px;
+  font-size: var(--type-label);
 }
 .management-calendar-layout {
   display: grid;
@@ -168,7 +168,7 @@
   grid-template-columns: repeat(7, 1fr);
   padding: 13px 0;
   border-bottom: 1px solid var(--border);
-  font-size: 10px;
+  font-size: var(--type-secondary);
   color: var(--dim);
   text-align: center;
   letter-spacing: 1px;
@@ -197,7 +197,7 @@
   border-right: 0;
 }
 .management-calendar-day > span {
-  font-size: 12px;
+  font-size: var(--type-label);
   color: #adb5c0;
   width: 23px;
   height: 23px;
@@ -242,10 +242,10 @@
   border-radius: 4px;
 }
 .management-role-banner strong {
-  font-size: 14px;
+  font-size: var(--type-body);
 }
 .management-role-banner p {
-  font-size: 12px;
+  font-size: var(--type-label);
   color: #a39eaa;
   margin-top: 5px;
 }
@@ -277,11 +277,11 @@
   color: var(--program-color);
 }
 .management-program h2 {
-  font-size: 23px;
+  font-size: var(--type-subhead);
   margin-top: 7px;
 }
 .management-program .eyebrow {
-  font-size: 9px;
+  font-size: var(--type-caption);
   letter-spacing: 1.1px;
 }
 .management-program-rank {
@@ -291,13 +291,13 @@
   margin: 23px 0;
 }
 .management-program-rank > strong {
-  font-size: 51px;
+  font-size: var(--type-display);
   font-weight: 550;
   line-height: 1;
   letter-spacing: -2px;
 }
 .management-program-rank > span {
-  font-size: 11px;
+  font-size: var(--type-secondary);
   color: var(--dim);
   line-height: 1.7;
 }
@@ -336,7 +336,7 @@
   position: absolute;
   right: 23px;
   bottom: 8px;
-  font-size: 82px;
+  font-size: var(--type-display);
   font-weight: 800;
   font-style: italic;
   letter-spacing: -7px;
@@ -346,11 +346,11 @@
   padding: 24px;
 }
 .management-product-body h2 {
-  font-size: 25px;
+  font-size: var(--type-section);
   margin: 7px 0;
 }
 .management-product-body > p {
-  font-size: 12px;
+  font-size: var(--type-label);
 }
 .management-product-stats {
   display: grid;
@@ -359,17 +359,17 @@
   margin: 26px 0;
 }
 .management-product-stats span {
-  font-size: 10px;
+  font-size: var(--type-secondary);
   color: var(--muted);
   display: block;
   margin-bottom: 8px;
 }
 .management-product-stats strong {
-  font-size: 24px;
+  font-size: var(--type-section);
   font-weight: 600;
 }
 .management-product-stats strong small {
-  font-size: 10px;
+  font-size: var(--type-secondary);
   color: var(--dim);
   margin-left: 2px;
 }
@@ -386,12 +386,12 @@
   padding-top: 18px;
 }
 .management-product-price > span {
-  font-size: 10px;
+  font-size: var(--type-secondary);
   color: var(--muted);
 }
 .management-product-price strong {
   display: block;
-  font-size: 20px;
+  font-size: var(--type-card-lg);
   color: var(--text);
   margin-top: 5px;
 }
@@ -413,7 +413,7 @@
     padding: 19px;
   }
   .management-program h2 {
-    font-size: 19px;
+    font-size: var(--type-card);
   }
   .management-calendar-layout {
     grid-template-columns: minmax(0, 1fr) 255px;
@@ -482,15 +482,15 @@
     padding: 18px;
   }
   .management-project-heading h2 {
-    font-size: 16px;
+    font-size: var(--type-card-sm);
   }
   .management-project-info > p {
-    font-size: 12px;
+    font-size: var(--type-label);
   }
   .management-project-details {
     flex-wrap: wrap;
     gap: 10px;
-    font-size: 10px;
+    font-size: var(--type-secondary);
   }
   .management-project-details strong {
     margin-left: 0;
@@ -499,7 +499,7 @@
     gap: 8px;
   }
   .management-project-bottom > span {
-    font-size: 10px;
+    font-size: var(--type-secondary);
   }
   .management-dev-layout > aside {
     display: flex;
@@ -513,11 +513,11 @@
     justify-content: space-between;
   }
   .management-month h2 {
-    font-size: 16px;
+    font-size: var(--type-card-sm);
     min-width: 120px;
   }
   .management-month .btn {
-    font-size: 10px;
+    font-size: var(--type-secondary);
     padding: 5px 8px;
     min-height: 30px;
   }
@@ -533,12 +533,12 @@
     gap: 3px;
   }
   .management-calendar-day > span {
-    font-size: 11px;
+    font-size: var(--type-secondary);
     width: 19px;
     height: 19px;
   }
   .management-weekdays {
-    font-size: 9px;
+    font-size: var(--type-caption);
     padding: 11px 0;
   }
   .management-role-banner {
@@ -547,11 +547,11 @@
     gap: 13px;
   }
   .management-role-banner p {
-    font-size: 11px;
+    font-size: var(--type-secondary);
     line-height: 1.8;
   }
   .management-role-banner strong {
-    font-size: 13px;
+    font-size: var(--type-body);
   }
   .management-role-icon {
     width: 37px;
@@ -562,13 +562,13 @@
     gap: 0 20px;
   }
   .management-program h2 {
-    font-size: 19px;
+    font-size: var(--type-card);
   }
   .management-program-rank > strong {
-    font-size: 47px;
+    font-size: var(--type-display);
   }
   .management-program .eyebrow {
-    font-size: 8px;
+    font-size: var(--type-caption);
   }
   .management-product-grid {
     grid-template-columns: 1fr;
@@ -581,15 +581,15 @@
     padding: 22px;
   }
   .management-product-body h2 {
-    font-size: 24px;
+    font-size: var(--type-section);
   }
   .management-product-stats {
     gap: 11px;
   }
   .management-product-stats span {
-    font-size: 9px;
+    font-size: var(--type-caption);
   }
   .management-product-stats strong {
-    font-size: 23px;
+    font-size: var(--type-subhead);
   }
 }

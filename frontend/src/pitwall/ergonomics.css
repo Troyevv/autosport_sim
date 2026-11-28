@@ -1,0 +1,76 @@
+.pitwall .main-inner,
+.pitwall .workspace,
+.pitwall .modal,
+.pitwall .menu-content {
+  min-inline-size: 0;
+}
+
+.pitwall :is(.page-heading, .panel > header, .heading-actions, .dialog-actions) {
+  row-gap: .75rem;
+}
+
+.pitwall :is(.page-heading, .panel > header, .heading-actions, .dialog-actions) > * {
+  min-inline-size: 0;
+}
+
+.pitwall :is(.panel > header, .heading-actions, .dialog-actions) {
+  flex-wrap: wrap;
+}
+
+.pitwall :is(.panel-body, .eng-card-body) {
+  padding: var(--card-inset);
+}
+
+.pitwall :is(.button, .eng-button, .btn, .continue-button, .tabs button, .eng-tabs button),
+.pitwall :is(select, textarea, input:not([type=checkbox],[type=radio],[type=range],[type=color],[type=file],[type=hidden])) {
+  min-block-size: var(--control-height);
+  max-inline-size: 100%;
+  line-height: 1.4;
+}
+
+.pitwall :is(.button, .eng-button, .btn, .continue-button) {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.pitwall :is(.tabs, .eng-tabs, [role=tablist]) {
+  max-inline-size: 100%;
+  min-inline-size: 0;
+}
+
+.pitwall .nav-item > svg,
+.pitwall .topbar button > svg {
+  inline-size: 1.25rem;
+  block-size: 1.25rem;
+  flex: none;
+}
+
+.pitwall .nav-item span,
+.pitwall .panel :is(h2,h3),
+.pitwall .modal :is(label,h2,h3) {
+  overflow-wrap: anywhere;
+}
+
+.pitwall :is(.data-table, .eng-table) :is(th, td) {
+  padding-block: .75rem;
+  line-height: 1.45;
+}
+
+.pitwall .data-table td .person-portrait,
+.pitwall .staff-signature .person-portrait {
+  min-inline-size: 2.5rem;
+  min-block-size: 2.9rem;
+}
+
+@media (min-width: 901px) {
+  .pitwall .sidebar { width: var(--rail-width); }
+  .pitwall .main-inner { width: 100%; max-width: 144rem; margin-inline: auto; padding-inline: var(--page-gutter); }
+  .pitwall .nav-item { min-height: 3.25rem; font-size: var(--type-body); }
+  .pitwall .topbar { min-height: 4.25rem; padding-inline: var(--page-gutter); }
+}
+
+@media (max-width: 900px) {
+  .pitwall .sidebar { max-inline-size: min(22rem, 92vw); }
+  .pitwall .modal :is(input, select, textarea) { font-size: max(1rem, var(--type-body)); }
+  .pitwall .content-footer { flex-wrap: wrap; }
+}

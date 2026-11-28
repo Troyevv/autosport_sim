@@ -43,12 +43,14 @@ class PaintOrder(StrictModel):
 
 def garage_catalog():
     designs = json.loads((DATA / "designs.json").read_text(encoding="utf-8"))
-    with (DATA / "grid.csv").open(encoding="utf-8", newline="") as file:
-        rows = list(csv.DictReader(file))
+    rows = []
+    for grid in (DATA / "grid.csv", DATA.parents[1] / "2025-v4/junior-garage-grid.csv"):
+        with grid.open(encoding="utf-8", newline="") as file:
+            rows.extend(csv.DictReader(file))
     marks = json.loads((DATA / "decals.json").read_text(encoding="utf-8"))
     entries = {}
     for row in rows:
-        layers = marks[row["entry"]]
+        layers = marks.get(row["entry"], [])
         entries[row["entry"]] = dict(
             geometry=row["geometry"],
             allowed_assets=sorted(
@@ -64,28 +66,6 @@ def garage_catalog():
                     dict(asset=a, zone=z, x=x, y=y, scale=s, angle=t)
                     for a, z, x, y, s, t in layers
                 ],
-            ),
-        )
-    from .catalog import WORLD
-
-    for e in WORLD["entries"].values():
-        series = e["championship"]
-        if e["id"] in entries or not WORLD["championships"][series].get(
-            "playable", True
-        ):
-            continue
-        model = "tatuus-t318" if series == "freca" else "tatuus-t421"
-        org = WORLD["organizations"][e["org"]]
-        entries[e["id"]] = dict(
-            geometry=model,
-            allowed_assets=["axis", "bars", "relay"],
-            livery=dict(
-                version=1,
-                template=f"2025-v4/{series}/{model}",
-                pattern="rb",
-                number=e["number"],
-                colors=[org["color"], "#e9e9e1", "#232933"],
-                decals=[],
             ),
         )
     return dict(version="2025-v4", entries=entries, **designs)

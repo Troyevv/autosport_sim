@@ -1,6 +1,7 @@
 import type { Livery } from '../garage/model'
 import type { Role } from '../game'
-export type Organization = { registration?: {legal_name:string; country:string; headquarters:string; source:string}; affiliations?: {label: string; source: string}[]; country?: string; base_country?: string; base_source?: string; base_estimated?: boolean; domicile?: string; base?: string; playable?: boolean; color: string; id: string; name: string; kind: string; programs: string[]; lines: string[] }
+export type BrandPalette = { primary: string; secondary: string; accent?: string }
+export type Organization = { logo_asset?: string; brand_palette: BrandPalette; registration?: {legal_name:string; country:string; headquarters:string; source:string}; affiliations?: {label: string; source: string}[]; country?: string; base_country?: string; base_source?: string; base_estimated?: boolean; domicile?: string; base?: string; playable?: boolean; color: string; id: string; name: string; kind: string; programs: string[]; lines: string[] }
 export type Championship = {
   id: string
   name: string
@@ -37,6 +38,8 @@ export type World = {
   engineering: {
     seasons: Record<string, { year: number; status: string; championship: string }>
     generations: Record<string, { category: string }>
+    concepts: Record<string, { name: string }>
+    technical_rules: Record<string, { season: string; category: string; version: number }>
     cost_cap: { base_cents: number; currency: string; reference_rounds: number; start: string }
   }
   version: string
@@ -51,6 +54,7 @@ export type World = {
       org: string
       championship: string
       number: string
+      entrant_id?:string
       entrant?: string
       crew: string[]
       car: string
@@ -64,6 +68,7 @@ export type World = {
   events: Event[]
 }
 export type Save = {
+  brand_palette?: BrandPalette | null
   id: string
   name: string
   role: Role
@@ -103,7 +108,7 @@ export type Career = Save & {
   mandate: import('./staff/pathModel').Mandate | null
   academies: import('./staff/pathModel').Academy[]
   scholarships: import('./staff/pathModel').Scholarship[]
-  preparation_options: {id:string;name:string;facility:string;days:number;cost:number;load:number}[]
+  preparation_options: {id:string;name:string;facility:string;days:number;cost:number;load:number;participants?:string[];unavailable?:string}[]
   preparations:{id:string;kind:string;names:string[];start:string;end:string;status:string}[]
   crews: Record<string, string[]>
   offers: import("./staff/model").Offer[]
@@ -135,6 +140,10 @@ export type Career = Save & {
   ledger: { key: string; date: string; delta_cents: number; source: string }[]
   player_cash_cents: number
   assignments: Seat[]
+  organization_uniforms: Record<string,Partial<Record<import("./uniform").Category,import("./uniform").Pattern>>>
+  clothing_rights: import("./uniform").ClothingRight[]
+  can_edit_uniform: boolean
+  can_edit_palette: boolean
   team_color: string
   pending: string[]
   next_date: string | null
@@ -159,9 +168,10 @@ export type Career = Save & {
     payroll_cents: number
   }[]
 }
-export type Anatomy = { camera: number[]; body: number[][]; nativeWidth: number }
+export type Anatomy = { anchor?:number[]; matte?:[string, number]; fringe?:boolean; neck?:number; breadth?:number; keyLight?:number; camera: number[]; body: number[][]; nativeWidth: number }
 export type Garment = { rig: { span: number; collar: number[]; seat: number[] }; outline: number[][] }
 export type Asset = {
+  template?: {width:number;height:number;collar:number[];lip:number[];drop:number;chest:number}
   anatomy?: Anatomy
   garment?: Garment
   kind: string
