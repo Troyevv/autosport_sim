@@ -147,6 +147,22 @@ export type Career = Save & {
   team_color: string
   pending: string[]
   next_date: string | null
+  engineering_briefing?: {
+    entry: string
+    engineer: string | null
+    principal: string | null
+    drivers: string[]
+    feedback: { person: string; decision: string; reports: string[] }[]
+    consultants: {
+      person: string
+      maker: string
+      principal: string | null
+      temporary: boolean
+      products: string[]
+      cases: string[]
+      review_quality?: number
+    }[]
+  }[]
   briefing_action: string
   collectives: {
     development: import("./staff/Development").DevelopmentRecord

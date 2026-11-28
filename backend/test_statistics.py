@@ -296,6 +296,14 @@ def test_raw_ranges_retention_and_portable_archive():
     with storage.transaction(True) as db:
         channels(db, after["id"], block())
         assert read(db, after["id"])["blocks"] == []
+    # Resuming the historical career activates personnel on its current revision.
+    with storage.transaction() as db:
+        original_blocks = read(db, clone)["blocks"]
+    assert client.get(f"/api/careers/{clone}").status_code == 200
+    with storage.transaction() as db:
+        state = storage.checkpoint(db, clone)
+        assert state["engineering_service"]["duty_since"] == state["revision"]
+        assert read(db, clone)["blocks"] == original_blocks
     # Recomputed outer checksum cannot bless invalid channel bytes.
     doc = service.export_save(clone)
     next(r for r in doc["payload"]["statistics_v1"] if r[0] == "channel")[4] = "AAAA"

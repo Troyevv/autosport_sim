@@ -330,6 +330,8 @@ export function PersonnelDirectory() {
     const e = world.entries?.[s.entry]
     return [
       s.duty ? dutyNames[s.duty] || s.duty : positionName(s.position),
+      s.client && orgName(s.client),
+      (s.engineering_reserve || (s.position === 'technical-advisor' && !s.client)) && 'Резерв',
       s.series && seriesName(s.series),
       e && '№ ' + e.number,
     ]
@@ -3841,7 +3843,7 @@ function PersonContract({ person, data }) {
   function release() {
     if (current.buyout_cents == null)
       return g.notify('Компенсация не раскрыта — сначала требуется расчёт.', 'warning')
-    if (rows(data?.support).some((x) => x.end > c.date))
+    if (rows(data?.support).some((x) => x.advisor === person.id && !x.seat && x.end > c.date))
       return g.notify('Назначение консультантом препятствует расторжению.', 'warning')
     if (future.length) return g.notify('У сотрудника уже подписано будущее назначение.', 'warning')
     g.confirm({
@@ -3915,6 +3917,15 @@ function PersonContract({ person, data }) {
         .map((o) => (
           <OfferCard key={o.id} offer={o} />
         ))}
+      {data?.engineering_entries?.map((r) => <Section key={r.entry}
+        title={p.seriesName(p.world.entries[r.entry].championship) + ' · № ' + p.world.entries[r.entry].number}>
+        <p>Гоночный инженер · {r.engineer ? p.world.names[r.engineer] : r.principal ? 'Временно недоступен' : 'Вакансия'}</p>
+        {r.principal !== r.engineer && (
+          <p>Штатный инженер · {r.principal ? p.world.names[r.principal] : 'Вакансия'}</p>
+        )}
+        <p>{r.drivers.map((id) => p.world.names[id]).join(' · ') || 'Основной состав вакантен'}</p>
+      </Section>)}
+      {person.position === 'race-engineer' && <EngineerCover data={data} />}
       {data?.person?.position === 'technical-advisor' && (
         <AdvisorAssignments person={person} data={data} />
       )}
@@ -3974,6 +3985,42 @@ function PersonSupport({ person, data }) {
     </>
   )
 }
+function EngineerCover({data}) {
+  const p = usePeople(), {g, c} = p
+  const [error, setError] = useState('')
+  const current = data?.current
+  const reserve = current && p.world.assignments[current.seat]?.engineering_reserve
+  const history = data?.engineering_covers || []
+  if (!reserve && !history.length) return null
+  const entries = Object.values(p.world.entries).filter((e) => e.org === c.org)
+  return <Section title="Замещение гоночного инженера">
+    {history.map((r) => (
+      <article className="p-advisor-assignment" key={r.entry + r.start}>
+        <Icon name="CalendarClock" />
+        <div>
+          <h3>№ {p.world.entries[r.entry].number} · {p.world.names[r.person]}</h3>
+          <p>Временное замещение · {date(r.start)} — {date(r.end)}</p>
+          <small>Штатный инженер · {p.world.names[r.principal] || 'Вакансия'}</small>
+        </div>
+      </article>
+    ))}
+    {reserve && current.org === c.org && g.role === 'manager' &&
+      <form className="p-form" onSubmit={(e) => {
+        e.preventDefault()
+        const v = Object.fromEntries(new FormData(e.currentTarget))
+        const problem = checkDateRange(v.start, v.end, c.date)
+        if (problem) return setError(problem)
+        p.commit('engineer-cover', {...v, seat: current.seat}, setError)
+      }}>
+        <Field label="Заявка"><select aria-label="Заявка" name="entry">{entries.map((e) => <option key={e.id} value={e.id}>{p.seriesName(e.championship)} · № {e.number}</option>)}</select></Field>
+        <div className="p-form-grid">
+          <Field label="Начало замещения"><input type="date" name="start" min={c.date} defaultValue={c.date} required /></Field>
+          <Field label="Окончание (исключая)"><input type="date" name="end" defaultValue={addDays(c.date,7)} required /></Field>
+        </div>
+        <FormError error={error}/><Button type="submit">Назначить на замену</Button>
+      </form>}
+  </Section>
+}
 function AdvisorAssignments({ person, data }) {
   const p = usePeople(),
     { g, state, update, openForm, c, notify } = p
@@ -3982,7 +4029,7 @@ function AdvisorAssignments({ person, data }) {
   return (
     <Section
       title="Назначения технического консультанта"
-      sub="Клиент, конкретная заявка, продукт и непересекающийся период."
+      sub="Один специалист сопровождает команду по договорам своего производителя."
       action={
         managed && (
           <Button
@@ -4005,9 +4052,12 @@ function AdvisorAssignments({ person, data }) {
             <h3>{p.orgName(r.client || r.org)}</h3>
             <p>
               {date(r.start)} — {date(r.end)}
-              {r.entry && ' · №' + p.world.entries?.[r.entry]?.number}
+              {!r.pair && r.entry && ' · №' + p.world.entries?.[r.entry]?.number}
             </p>
-            {r.product && <small>{p.world.products?.[r.product]?.name || r.product}</small>}
+            {r.temporary && (
+              <p>Временно · {p.world.names[r.advisor]} · штатный консультант {p.world.names[r.principal] || 'не назначен'}</p>
+            )}
+            {!r.pair && r.product && <small>{p.world.products?.[r.product]?.name || r.product}</small>}
           </div>
           <Status
             value={
@@ -4028,36 +4078,33 @@ function AdvisorAssignments({ person, data }) {
 }
 function AdvisorForm({ person, data }) {
   const p = usePeople(),
-    { g, c, clients, state, update, notify } = p
+    { g, c } = p
+  const clients = (data.assignment_choices || []).map((row) => ({
+    ...row,
+    productName: p.world.products?.[row.product]?.name || row.product,
+  }))
   const [query, setQuery] = useState(''),
     [series, setSeries] = useState(''),
     [selected, select] = useState(''),
     [error, setError] = useState('')
-  const advisorClients = clients.filter((client) => client.terms.support === true)
-  const choice = advisorClients.find((x) => x.entry + ':' + x.product === selected),
-    allAssignments = rows(data?.support),
-    busyUntil = allAssignments
-      .filter((x) => x.end > c.date)
-      .map((x) => x.end)
-      .sort()
-      .at(-1),
-    choices = advisorClients.filter(
-      (x) =>
-        (!series || x.series === series) &&
-        (x.label + ' ' + x.productName).toLocaleLowerCase().includes(query.toLocaleLowerCase()),
-    )
+  const matching = clients.filter((x) => (!series || x.series === series) &&
+    (p.orgName(x.org) + ' ' + x.productName).toLocaleLowerCase().includes(query.toLocaleLowerCase()))
+  const choices = [...new Map(matching.map((x) => [x.org, x])).values()]
+  const choice = choices.find((x) => x.org === selected)
+  const busyUntil = rows(data?.support).find(
+    (x) => x.advisor === person.id && x.start <= c.date && c.date < x.end,
+  )?.end
   function submit(e) {
     e.preventDefault()
     const v = Object.fromEntries(new FormData(e.currentTarget)),
       problem = checkDateRange(v.start, v.end, c.date)
-    if (!choice) return setError('Выберите конкретную заявку и продукт клиента.')
+    if (!choice) return setError('Выберите клиентскую команду.')
     if (problem) return setError(problem)
     p.commit(
       'advisor-assign',
       {
         seat: data.current.seat,
-        entry: choice.entry,
-        product: choice.product,
+        client: choice.org,
         start: v.start,
         end: v.end,
       },
@@ -4079,13 +4126,13 @@ function AdvisorForm({ person, data }) {
         <SearchField
           value={query}
           onChange={setQuery}
-          label="Найти клиентскую заявку"
-          placeholder="Команда, номер, продукт"
+          label="Найти клиентскую команду"
+          placeholder="Команда или продукт"
         />
         <Field label="Чемпионат">
           <select value={series} onChange={(e) => setSeries(e.target.value)}>
             <option value="">Все чемпионаты</option>
-            {[...new Set(advisorClients.map((x) => x.series))].map((id) => (
+            {[...new Set(clients.map((x) => x.series))].map((id) => (
               <option key={id} value={id}>
                 {p.seriesName(id)}
               </option>
@@ -4093,34 +4140,14 @@ function AdvisorForm({ person, data }) {
           </select>
         </Field>
       </div>
-      <div className="p-client-picker" role="radiogroup" aria-label="Клиентская заявка">
-        {choices.map((x) => (
-          <button
-            key={x.entry + x.product}
-            type="button"
-            role="radio"
-            aria-checked={selected === x.entry + ':' + x.product}
-            className={selected === x.entry + ':' + x.product ? 'selected' : ''}
-            onClick={() => select(x.entry + ':' + x.product)}
-          >
-            <span className="p-client-number">{x.number}</span>
-            <span>
-              <b>{p.orgName(x.org)}</b>
-              <small>
-                {p.seriesName(x.series)} · {x.productName}
-              </small>
-            </span>
-            <Icon name={selected === x.entry + ':' + x.product ? 'CircleCheck' : 'Circle'} />
-          </button>
-        ))}
+      <div className="p-client-picker p-client-teams" role="radiogroup" aria-label="Клиентская команда">
+        {choices.map((x) => <button key={x.org} type="button" role="radio" aria-checked={selected === x.org}
+          className={selected === x.org ? 'selected' : ''} onClick={() => select(x.org)}>
+          <span><b>{p.orgName(x.org)}</b><small>{[...new Set(clients.filter((r) => r.org === x.org).map((r) => r.productName))].join(' · ')}</small></span>
+          <Icon name={selected === x.org ? 'CircleCheck' : 'Circle'} />
+        </button>)}
       </div>
-      {!choices.length && <p>Нет заявок с действующим правом технической поддержки по этим условиям.</p>}
-      {choice && (
-        <p className="p-selected-client">
-          Выбрано: {choice.label} · {choice.productName}
-          {choice.terms?.end && ' · договор до ' + date(choice.terms.end)}
-        </p>
-      )}
+      {!choices.length && <p>Нет клиентских команд по этим условиям.</p>}
       <div className="p-form-grid">
         <Field label="Начало поддержки">
           <input type="date" name="start" required min={c.date} defaultValue={busyUntil || c.date} />

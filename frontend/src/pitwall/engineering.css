@@ -1473,3 +1473,14 @@
 @media(max-width:760px){.eng-money-stat>strong{font-size:var(--type-card-sm);white-space:nowrap;letter-spacing:-.35px}}
 
 }
+
+.eng-advisor-picker {
+  display: grid;
+  gap: 7px;
+  margin-bottom: 16px;
+  color: var(--eng-muted);
+}
+.eng-advisor-picker select {
+  width: 100%;
+  min-width: 0;
+}

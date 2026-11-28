@@ -99,7 +99,30 @@ def dossier(state, world, pid, wet=False):
             licences=sorted(licences_on(credentials, state["date"])),
             points=points_on(credentials, state["date"]),
         )
+    from .personal_engineering import duty_history
+
+    from .personal_engineering import (
+        entry_partners,
+        service_deals,
+        engineer_cover_history,
+    )
+
     return dict(
+        assignment_choices=[
+            dict(org=c, series=series, product=axis)
+            for c, series, axis in sorted(
+                {
+                    (d["org"], d["series"], d["product"])
+                    for d in service_deals(state, world, maker=org)
+                    if d["status"] == "signed" and d["end"] > state["date"]
+                }
+            )
+        ]
+        if p["position"] == "technical-advisor" and seat and seat["org"] == org
+        else [],
+        engineering_entries=entry_partners(state, world, pid)
+        if p["position"] in ("driver", "race-engineer")
+        else [],
         person=profile,
         results=[
             dict(
@@ -140,14 +163,22 @@ def dossier(state, world, pid, wet=False):
             )
         ),
         development=projection(state, world, pid),
+        engineering_covers=engineer_cover_history(state, world, pid)
+        if p["position"] == "race-engineer"
+        else [],
         current=seat,
         history=sorted(history, key=lambda r: r["start"]),
         age=people.age_on(p, state["date"]),
         options=options,
         support=[
-            r
-            for r in state["support"]
-            if r["advisor"] == pid and r["employer"] == state["setup"]["org"]
+            {k: v for k, v in r.items() if k != "salary_cents" or org == r["employer"]}
+            for r in (
+                duty_history(state, world)
+                if p["position"] == "technical-advisor"
+                else ()
+            )
+            if pid in (r["advisor"], r["principal"])
+            and org in (r["employer"], r["client"])
         ],
         profile=people.evaluate(
             p, world, state["date"], discipline=discipline, wet=wet

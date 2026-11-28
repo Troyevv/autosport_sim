@@ -4715,3 +4715,12 @@
     }
   }
 }
+
+.p-client-picker.p-client-teams > button {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+.p-client-teams > button > span {
+  display: grid;
+  gap: 4px;
+  text-align: left;
+}

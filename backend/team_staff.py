@@ -2,6 +2,7 @@
 
 from .domain import RuleError, occupant_on
 from .personnel import evaluate
+from .personal_engineering import working_contract
 from .development_path import eligibility
 from .media_profile import context as audience_context
 
@@ -31,24 +32,20 @@ def assigned_profiles(state, world, org, series, *, entry=None, wet=False):
     for aid, seat in world["assignments"].items():
         if (
             seat.get("academy")
+            or seat.get("engineering_reserve")
             or seat["org"] != org
             or seat["series"] not in (None, series)
             or seat["entry"] not in (None, entry)
         ):
             continue
-        pid = occupant_on(state["seats"][aid], state["date"])
-        if pid:
+        contract = working_contract(state, seat, state["date"])
+        if contract:
+            pid = contract["person"]
             person = state["people"][pid]
             roster[aid] = dict(
                 person=pid,
                 position=seat["position"],
-                remit=next(
-                    r.get("remit", "standard")
-                    for r in state["seats"][aid]
-                    if r["person"] == pid
-                    and r["start"] <= state["date"]
-                    and (not r["end"] or state["date"] < r["end"])
-                ),
+                remit=contract.get("remit", "standard"),
                 experience=person["experience"],
                 adaptability=person["adaptability"],
                 reaction=person.get("reaction"),

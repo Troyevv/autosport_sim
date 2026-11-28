@@ -220,6 +220,17 @@ def list_careers():
         ]
 
 
+def engineering_briefing(state, world):
+    from .personal_engineering import briefing
+
+    if "engineering_service" not in state:
+        return []
+    if state["pending"]:
+        return briefing(state, world, state["pending"][0])
+    reports = state["engineering_service"]["briefings"]
+    return reports.get(state["checkpoint"].removeprefix("briefing:"), [])
+
+
 def project(db, cid, state):
     from . import teamwork
 
@@ -334,6 +345,7 @@ def project(db, cid, state):
         pending=state["pending"],
         next_date=domain.next_date(state, world),
         checkpoint=state["checkpoint"],
+        engineering_briefing=engineering_briefing(state, world),
         briefing_action=domain.BRIEFINGS[state["setup"]["role"]],
     )
 
@@ -359,6 +371,9 @@ def create(spec, *, catalog=SEASON):
         from .opening.population import populate
 
         populate(state, lineup_for(state))
+        from .personal_engineering import activate
+
+        activate(state)
     cid = str(uuid4())
     with storage.transaction(True) as db:
         storage.store(db, cid, state, create=True)
@@ -366,9 +381,22 @@ def create(spec, *, catalog=SEASON):
         return project(db, cid, state)
 
 
-def load(cid):
+def load(cid, *, resume=False):
     with storage.transaction() as db:
-        return project(db, cid, storage.checkpoint(db, cid))
+        state = storage.checkpoint(db, cid)
+        if not resume or "engineering_service" in state:
+            return project(db, cid, state)
+    # Pre-opening editions retain their historical checkpoint for archive replay.
+    # Opening one for play starts the new posts on its actual game date.
+    with storage.transaction(True) as db:
+        state = storage.checkpoint(db, cid)
+        if "engineering_service" not in state:
+            from .personal_engineering import activate
+
+            activate(state)
+            storage.store(db, cid, state)
+            statistics_personnel.refresh(db, cid, state)
+        return project(db, cid, state)
 
 
 def command_applied(db, cid, command, stored_args, revision):
@@ -505,7 +533,7 @@ def export_save(cid):
         return doc
 
 
-def import_save(document, *, statistics_records=None):
+def import_save(document, *, statistics_records=None, resume=False):
     if (
         not isinstance(document, dict)
         or document.get("format") != "autosport-career"
@@ -603,6 +631,16 @@ def import_save(document, *, statistics_records=None):
         seen = set()
         receipts = []
 
+        office = saved.get("engineering_service", {})
+        if not isinstance(office, dict):
+            raise ValueError
+        duty_since = office.get("duty_since")
+        if duty_since is not None and (
+            type(duty_since) is not int
+            or not office["since"] <= duty_since <= saved["revision"]
+        ):
+            raise ValueError
+
         def apply_migrations():
             nonlocal catalog
             if not native and modern and activation == state["revision"]:
@@ -656,6 +694,15 @@ def import_save(document, *, statistics_records=None):
                     from .opening.population import populate
 
                     populate(state, lineup_for(state))
+
+            if office.get("since") == state["revision"]:
+                from .personal_engineering import activate as activate_engineering
+
+                activate_engineering(state)
+                if duty_since != state["revision"]:
+                    state["engineering_service"].pop("duty_since")
+            if duty_since == state["revision"]:
+                state["engineering_service"]["duty_since"] = duty_since
 
         for original in commands:
             item = original
@@ -722,6 +769,11 @@ def import_save(document, *, statistics_records=None):
         council.initialize(state)
         programme.initialize(state)
         manufacturer.initialize(state)
+        if resume or state.get("opening"):
+            from .personal_engineering import activate as activate_engineering
+
+            activate_engineering(state)
+            state["engineering_service"].setdefault("duty_since", state["revision"])
     except (KeyError, TypeError, ValueError, RecursionError, ValidationError):
         raise domain.RuleError("Файл повреждён или нарушает правила мира.") from None
     cid = str(uuid4())

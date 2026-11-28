@@ -60,7 +60,39 @@ def assign_advisor(state, world, request):
     from ..employment import assign_support
 
     day = state["date"]
-    if assigned(state, request, day):
+    if "engineering_service" in state:
+        from ..personal_engineering import check_capacity, cover
+
+        end = facilities.later(day, 1)
+        try:
+            plan = check_capacity(
+                state, world, request["supplier"], request["client"], day, end
+            )
+            if plan:
+                pid = plan[0]["advisor"]
+                for key, seat in state["engineering_service"]["posts"].items():
+                    if (
+                        seat["org"] != request["supplier"]
+                        or seat["position"] != "technical-advisor"
+                    ):
+                        continue
+                    for booking in state["seats"][key]:
+                        if booking["person"] == pid and booking["start"] <= day < (
+                            booking["end"] or end
+                        ):
+                            cover(
+                                state,
+                                world,
+                                seat,
+                                booking,
+                                dict(client=request["client"], start=day, end=end),
+                            )
+                            return
+        except RuleError:
+            # An unmet request stays visible when no employee can take the duty.
+            pass
+        return
+    if assigned(state, request, day, world):
         return
     org = request["supplier"]
     seat = world["assignments"].get(org + ":technical-advisor")

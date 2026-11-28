@@ -449,6 +449,7 @@ def apply(state, catalog, action, payload=None):
             "staff-release",
             "staff-train",
             "advisor-assign",
+            "engineer-cover",
             "scout-driver",
             "manager-mandate",
             "academy-enroll",
@@ -492,7 +493,12 @@ def apply(state, catalog, action, payload=None):
     elif action == BRIEFINGS[setup["role"]]:
         if not state["pending"]:
             raise RuleError("Нет ожидающего брифинга.", 409)
-        state["checkpoint"] = "briefing:" + state["pending"].pop(0)
+        event = state["pending"].pop(0)
+        if "engineering_service" in state:
+            from .personal_engineering import confirm_briefing
+
+            confirm_briefing(state, catalog, event)
+        state["checkpoint"] = "briefing:" + event
     else:
         raise RuleError("У этой должности нет полномочий на команду.", 403)
     state["revision"] += 1

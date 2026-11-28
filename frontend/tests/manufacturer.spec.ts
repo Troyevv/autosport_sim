@@ -33,12 +33,15 @@ test('Производитель поручает работу КБ и назн�
   await expect(page.locator('.eng-work-row').first()).toBeVisible()
   await capture('design')
   await button('Консультанты').click()
+  await expect(page.getByLabel('Сотрудник')).toBeVisible()
+  await capture('advisors')
   await button('Назначения специалиста').click()
   await button('Новое назначение').click()
   const dialog = page.getByRole('dialog')
   await dialog.getByRole('radio').first().click()
   await dialog.getByLabel('Начало поддержки').fill('2025-02-15')
   await dialog.getByLabel('Окончание (исключая)').fill('2025-03-01')
+  await capture('appointment')
   await button('Назначить консультанта').click()
   await expect(dialog).toHaveCount(0)
   await page.goto('/?career=' + career.id + '#manufacturer?tab=advisors')
@@ -50,6 +53,8 @@ test('Производитель поручает работу КБ и назн�
   expect(assignment.channels.length).toBeGreaterThan(0)
   const support = page.locator('.eng-assignment').filter({hasText:/15 фев.*1 мар/}).first()
   await expect(support).toBeVisible()
+  await support.locator('summary').click()
+  await capture('rights')
   await expect(support.getByRole('progressbar')).toHaveAttribute('aria-valuenow',String(assignment.load))
 })
 
@@ -73,4 +78,30 @@ test('Менеджер передаёт требование о тепловыд
   await page.getByLabel('Что требуется от инженеров').fill(message)
   await page.getByRole('dialog').getByRole('button', { name: 'Подтвердить',exact:true }).click()
   await expect(page.getByText(message, { exact: true })).toBeVisible()
+})
+
+test('Штатный инженер и его заместитель видны в досье одной заявки', async ({page}, info) => {
+  const created = await page.request.post('/api/careers', {data: {
+    name:'Руководитель AIX', role:'manager', org:'team-aix-racing', series:'f2', seed:64,
+  }})
+  await expect(created).toBeOK()
+  const career = await created.json()
+  type Post = {position:string; engineering_reserve?:boolean; series?:string; entry?:string; occupant:{id:string; name:string}}
+  const posts = career.assignments as Post[]
+  const regular = posts.find(p => p.position === 'race-engineer' && p.series === 'f2')!
+  const reserve = posts.find(p => p.engineering_reserve)!
+  const dossier = (p:Post) => '/?career=' + career.id + '#person?tab=contract&entity=' + p.occupant.id
+  await page.goto(dossier(reserve))
+  await page.getByLabel('Заявка', {exact:true}).selectOption(regular.entry!)
+  const submit = page.waitForResponse(r => r.url().endsWith('/commands') && r.request().postDataJSON()?.action === 'engineer-cover')
+  await page.getByRole('button', {name:'Назначить на замену'}).click()
+  expect((await submit).ok()).toBe(true)
+  await page.goto(dossier(regular))
+  const history = page.locator('.p-advisor-assignment').filter({hasText:'Временное замещение'})
+  await expect(history).toContainText(reserve.occupant.name)
+  await expect(history).toContainText('Штатный инженер · ' + regular.occupant.name)
+  await history.scrollIntoViewIfNeeded()
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(page.viewportSize()!.width)
+  if (process.env.MAKER_EVIDENCE)
+    await page.screenshot({path:join(process.env.MAKER_EVIDENCE, info.project.name + '-crew-cover.png')})
 })
