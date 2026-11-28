@@ -1,5 +1,6 @@
 import { configureCareer, submitCareer } from './createCareer'
 import { expect, test, type Page } from '@playwright/test'
+import { createHash } from 'node:crypto'
 import { join } from 'node:path'
 
 async function screen(page: Page, route: string) {
@@ -28,7 +29,15 @@ test('Рынок, сравнение и переход пилота GT на св
     name = world.names[pid]
   const incumbent = world.names[world.entries['f1-4'].crew[0]]
   const dialog = file(page)
-  const artist = dialog.locator('image[data-layer="appearance"]').first()
+  const portrait = dialog.locator('.p-dossier-photo .career-portrait')
+  const artist = portrait.locator('image[data-layer="appearance"]')
+  const originalEmployer = world.entries['dtm-1'].org
+  async function uniformSignature(employer: string) {
+    const fitted = portrait.locator('image[data-layer="fitted-fabric"][href^="data:image/"]')
+    await expect(portrait).toHaveAttribute('data-employer', employer)
+    const image = await fitted.getAttribute('href')
+    return createHash('sha256').update(image!).digest('hex')
+  }
   async function advance() {
     const resume = page.getByRole('button', { name: 'Вернуться к работе' })
     if (await resume.isVisible()) await resume.click()
@@ -92,7 +101,7 @@ test('Рынок, сравнение и переход пилота GT на св
   await page.getByRole('button', { name: 'Открыть досье ' + name }).click()
   await expect(artist).toHaveAttribute('href', new RegExp(world.faces[pid]))
   const before = await artist.getAttribute('href')
-  const oldKit = await dialog.locator('image[data-layer="fitted-fabric"]').getAttribute('href')
+  const oldKit = await uniformSignature(originalEmployer)
   await tab(page, 'Взаимодействие')
   const initialDays = parseInt(
     await dialog
@@ -141,7 +150,7 @@ test('Рынок, сравнение и переход пилота GT на св
   await cards(page)
   await page.getByLabel('Поиск людей').fill(name)
   await page.getByRole('button', { name: 'Открыть досье ' + name }).click()
-  await expect(dialog.locator('image[data-layer="fitted-fabric"]')).toHaveAttribute('href', oldKit!)
+  expect(await uniformSignature(originalEmployer)).toBe(oldKit)
   await expect(dialog).toContainText('ABT Sportsline')
   await page.keyboard.press('Escape')
   await advance()
@@ -153,7 +162,7 @@ test('Рынок, сравнение и переход пилота GT на св
   await page.getByLabel('Поиск людей').fill(name)
   await page.getByRole('button', { name: 'Открыть досье ' + name }).click()
   await expect(artist).toHaveAttribute('href', before!)
-  await expect(dialog.locator('image[data-layer="fitted-fabric"]')).not.toHaveAttribute('href', oldKit!)
+  expect(await uniformSignature(org)).not.toBe(oldKit)
   await expect(dialog).toContainText('McLaren Formula 1 Team')
   await tab(page, 'Взаимодействие')
   await expect(dialog.getByText('Архив', { exact: true }).first()).toBeVisible()
