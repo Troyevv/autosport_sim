@@ -11,17 +11,18 @@ namespace race {
 struct Vec {
     double x{}, y{}, z{};
 };
+enum class Surface { asphalt, kerb, runoff, outside };
 struct Station {
     Vec point;
     double left, right, crossfall, roughness;
     double kerb_left, kerb_right, runoff_left, runoff_right;
+    Surface surface(double offset) const;
 };
 struct Frame {
     Vec point, forward;
     double curvature, grade;
     Station section;
 };
-enum class Surface { asphalt, kerb, runoff, outside };
 enum class Road { circuit, pit };
 struct Cursor {
     Road road{};

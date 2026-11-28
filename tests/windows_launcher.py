@@ -145,6 +145,9 @@ def run_smoke(tmp):
                 )
                 print(f"Browser rendered the title screen at {visit['url']} ({agent})", flush=True)
                 return visit["url"]
+            # Preserve the compiler stage if CI times out inside CMake/MSBuild.
+            for detail in root.glob(".autosport/native/*/CMakeFiles/CMakeConfigureLog.yaml"):
+                print(detail.read_text(encoding="utf-8", errors="replace")[-4000:], flush=True)
             raise AssertionError(log.read_text(encoding="utf-8", errors="replace"))
 
         def ports_and_pid(log):

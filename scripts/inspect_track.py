@@ -19,8 +19,12 @@ from backend.race.layouts import (  # noqa: E402
 )
 
 
-def drawing(layout_id, vehicle_class, series, samples, detail_at=None):
-    view = geometry_snapshot(layout_id, VERSION, series, vehicle_class, samples)
+def drawing(layout_id, vehicle_class, series, samples, detail_at=None, grid_count=None):
+    if grid_count is None:
+        grid_count = 34 if vehicle_class == "kart" else 20
+    view = geometry_snapshot(
+        layout_id, VERSION, series, vehicle_class, samples, grid_count
+    )
     layout = load_layout(layout_id)
     road, pit = (layout.track.ribbon(r) for r in (Road.circuit, Road.pit))
     main, branch = view["circuit"], view["pit"]
@@ -84,7 +88,7 @@ def drawing(layout_id, vehicle_class, series, samples, detail_at=None):
         out.append(
             f'<rect x="{x:.2f}" y="{y:.2f}" width="2" height="2" fill="#183e2e"/>'
         )
-    for s, d in layout.grid(20 if vehicle_class != "kart" else 34):
+    for s, d in view["grid_coordinates_m"]:
         x, y = xy(road.sample([(s, d)])[0])
         out.append(f'<circle cx="{x:.2f}" cy="{y:.2f}" r="1.1"/>')
     for i, s in enumerate([0, *view["sector_gates_m"]]):
@@ -181,10 +185,18 @@ if __name__ == "__main__":
     parser.add_argument(
         "--detail-at", type=float, help="Центр увеличенного участка в метрах от старта"
     )
+    parser.add_argument(
+        "--grid-count", type=int, help="Число стартовых позиций на чертеже"
+    )
     args = parser.parse_args()
     args.output.write_text(
         drawing(
-            args.layout, args.vehicle_class, args.series, args.samples, args.detail_at
+            args.layout,
+            args.vehicle_class,
+            args.series,
+            args.samples,
+            args.detail_at,
+            args.grid_count,
         ),
         encoding="utf-8",
     )

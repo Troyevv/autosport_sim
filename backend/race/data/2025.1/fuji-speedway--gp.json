@@ -7,16 +7,17 @@
   "sources": {
     "centreline": "https://github.com/tobi/track-atlas/blob/8c12ac414ea74ffe4a3ef74b294a2eafab7ee60d/tracks/fuji/raw/layers/gp.geojson",
     "surface_geometry": "https://github.com/chendo/opentrackdata/blob/31dda5f6cb9bad2de52c81af9b91796e7ee6f7f8/data/tracks/fuji.geojson",
-    "length": "https://www.fiawec.com/en/race/6-hours-of-fuji-2025"
+    "length": "https://www.fiawec.com/en/race/6-hours-of-fuji-2025",
+    "timing_plan": "https://www.fsw.tv/freeinfo/pdf-cms/54dcc2b0d22984499fdd616b3cb3d54a2edc80aa.pdf"
   },
   "quality": {
     "plan": "OSM",
     "elevation": "terrain model; smoothed over 16 m",
     "width": "mapped width where available, estimated elsewhere",
     "surface": "estimated kerbs, runoff, roughness and banking",
-    "sectors": "mapped sector fractions",
+    "sectors": "venue control-line timing plan, split loops at 1305 and 2828 m",
     "pit": "mapped lane; estimated junction tapers and timing gate",
-    "grid_boxes": "estimated spacing and usable apron",
+    "grid_boxes": "published start line (307 m after finish) and grid row pitch (16.1 m); individual centres and service bays estimated",
     "drs": "no DRS intervals in this configuration"
   },
   "origin_lon_lat": [
@@ -24,17 +25,18 @@
     35.372405
   ],
   "sectors": [
-    0.41,
-    0.66
+    0.28599606,
+    0.6197677
   ],
   "drs": [],
   "pit_entry": 0.86007127,
   "pit_exit": 0.14652606,
   "pit_timing": 0.49055866,
   "grid": {
-    "first_m": -8,
-    "pitch_m": 8,
-    "offset_m": 2.6
+    "first_m": 303,
+    "pitch_m": 8.05,
+    "offset_m": 2.6,
+    "start_line_m": 307
   },
   "boxes": {
     "start_fraction": 0.25,

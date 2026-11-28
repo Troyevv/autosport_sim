@@ -96,8 +96,13 @@ class Layout:
         box = self.info["boxes"]
         start = box["start_fraction"] * road.length
         end = box["end_fraction"] * road.length
-        count = int((end - start) / box["spacing_m"])
-        centres = [start + (i + 0.5) * box["spacing_m"] for i in range(count)]
+        if "count" in box:
+            count = box["count"]
+            spacing = (end - start) / count
+        else:
+            spacing = box["spacing_m"]
+            count = int((end - start) / spacing)
+        centres = [start + (i + 0.5) * spacing for i in range(count)]
         sections = road.sample([(s, 0) for s in centres])
         return [
             (s, box["side"] * (row[7] if box["side"] > 0 else row[8]) * 0.72)

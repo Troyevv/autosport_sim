@@ -71,6 +71,11 @@ def test_configurations(layout_id):
         == Surface.outside
     )
     assert layout.boxes() and len(layout.grid(32)) == 32
+    if layout_id == "circuit-de-la-sarthe:24h":
+        assert len(layout.boxes()) == 62
+        assert 1150 < pit.length < 1300
+    if layout_id == "fuji-speedway:gp":
+        assert layout.grid(3)[0][0] - layout.grid(3)[2][0] == pytest.approx(16.1)
     assert all(
         row[15] == 0
         for row in pit.sample(layout.boxes()) + road.sample(layout.grid(32))

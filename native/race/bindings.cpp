@@ -63,7 +63,7 @@ PYBIND11_MODULE(_race_space, m) {
                     out.push_back({f.point.x, f.point.y, f.point.z, f.forward.x, f.forward.y,
                                    f.curvature, f.grade, a.left, a.right, a.crossfall, a.roughness,
                                    a.kerb_left, a.kerb_right, a.runoff_left, a.runoff_right,
-                                   static_cast<double>(r.surface(p[0], p[1]))});
+                                   static_cast<double>(a.surface(p[1]))});
                 }
                 return out;
             },

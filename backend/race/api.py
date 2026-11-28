@@ -13,6 +13,7 @@ EVENTS = {e["id"]: e for e in SEASON_LINEUP["events"] if event_layout(e)}
 def geometry(
     event_id: str,
     samples: int = Query(default=512, ge=32, le=8192),
+    grid_count: int = Query(default=20, ge=0, le=128),
     vehicle_class: Literal["formula", "junior", "gt", "prototype", "kart"]
     | None = None,
 ):
@@ -28,5 +29,10 @@ def geometry(
         "kart-okj": "kart",
     }.get(series, "junior")
     return geometry_snapshot(
-        event_layout(event), VERSION, series, vehicle_class or default, samples
+        event_layout(event),
+        VERSION,
+        series,
+        vehicle_class or default,
+        samples,
+        grid_count,
     )

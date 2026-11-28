@@ -125,16 +125,19 @@ Frame Ribbon::frame(double s, double offset) const {
     return {point, direction, std::lerp(a.curvature, b.curvature, t), direction.z, section};
 }
 Surface Ribbon::surface(double s, double offset) const {
-    auto a = frame(s, offset).section;
-    double edge = offset >= 0 ? a.left : a.right;
+    return frame(s, offset).section.surface(offset);
+}
+
+Surface Station::surface(double offset) const {
+    double edge = offset >= 0 ? left : right;
     double beyond = std::abs(offset) - edge;
     if (beyond <= 0)
         return Surface::asphalt;
-    double kerb = offset >= 0 ? a.kerb_left : a.kerb_right;
+    double kerb = offset >= 0 ? kerb_left : kerb_right;
     if (beyond <= kerb)
         return Surface::kerb;
-    return beyond <= kerb + (offset >= 0 ? a.runoff_left : a.runoff_right) ? Surface::runoff
-                                                                           : Surface::outside;
+    return beyond <= kerb + (offset >= 0 ? runoff_left : runoff_right) ? Surface::runoff
+                                                                       : Surface::outside;
 }
 
 size_t Ribbon::build_box(size_t begin, size_t end) {

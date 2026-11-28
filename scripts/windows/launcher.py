@@ -69,7 +69,12 @@ def prepare():
         check=True,
     )
     say("Проверка и сборка пространственного ядра C++20…")
-    subprocess.run([PYTHON, ROOT / "scripts/build_race.py"], cwd=ROOT, check=True)
+    # The worker's stdin is the supervisor's lifetime pipe. Tools must never
+    # inherit it: a console probe can block until the supervisor shuts down.
+    subprocess.run(
+        [PYTHON, ROOT / "scripts/build_race.py"],
+        cwd=ROOT, stdin=subprocess.DEVNULL, check=True,
+    )
     modules = FRONT / "node_modules"
     stamp = modules / ".autosport-install"
     digest = hashlib.sha256()

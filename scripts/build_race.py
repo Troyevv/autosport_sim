@@ -48,6 +48,7 @@ def build(test=False):
     folder = ROOT / ".autosport" / "native" / key
     dest = Path(sysconfig.get_path("platlib"))
     try:
+        print(f"CMake {cmake.__version__} · {folder}", flush=True)
         subprocess.run([cmake_bin, "-S", SOURCE, "-B", folder, *options], check=True)
         subprocess.run(
             [cmake_bin, "--build", folder, "--config", "Release", "--parallel"],
