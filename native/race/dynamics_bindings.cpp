@@ -13,6 +13,109 @@ double number(py::handle obj) {
         throw std::invalid_argument("invalid physical scalar");
     return n;
 }
+Driver driver(const py::dict &data, const std::string &category) {
+    Driver x;
+    x.id = data["id"].cast<std::string>();
+    if (x.id.empty())
+        throw std::invalid_argument("missing driver identity");
+    x.category = category;
+    auto fraction = [&](const char *name) {
+        double v = number(data[name]);
+        if (v < 0 || v > 1)
+            throw std::invalid_argument("driver parameter outside 0..1");
+        return v;
+    };
+    x.pace = fraction("pace");
+    x.braking = fraction("braking");
+    x.cornering = fraction("cornering");
+    x.attack = fraction("attack");
+    x.defence = fraction("defence");
+    x.consistency = fraction("consistency");
+    x.tyres = fraction("tyres");
+    x.rain = fraction("rain");
+    x.feedback = fraction("feedback");
+    x.endurance = fraction("endurance");
+    x.trail = fraction("trail");
+    x.balance = fraction("balance");
+    x.exit = fraction("exit");
+    x.kerb = fraction("kerb");
+    x.care = fraction("care");
+    x.risk = fraction("risk");
+    x.smooth = fraction("smooth");
+    x.fast_bends = fraction("fast_bends");
+    x.resolve = fraction("resolve");
+    x.ambition = fraction("ambition");
+    x.adaptability = fraction("adaptability");
+    x.experience = fraction("experience");
+    x.familiarity = fraction("familiarity");
+    x.confidence = fraction("confidence");
+    x.fatigue = fraction("fatigue");
+    x.launch = fraction("launch");
+    x.fuel_use = fraction("fuel_use");
+    x.pressure = fraction("pressure");
+    x.judgement = fraction("judgement");
+    return x;
+}
+
+template <class M, class Visitor> void mind_fields(M &x, Visitor visit) {
+    visit("rng", x.rng);
+    visit("roll_speed", x.roll_speed);
+    visit("crawl_speed", x.crawl_speed);
+    visit("crawl_steer", x.crawl_steer);
+    visit("brake_ceiling", x.brake_ceiling);
+    visit("wheelspin", x.wheelspin);
+    visit("radio_line", x.radio_line);
+    visit("radio_deploy", x.radio_deploy);
+    visit("target_d", x.target_d);
+    visit("defence_line", x.defence_line);
+    visit("defended", x.defended);
+    visit("crossed", x.crossed);
+    visit("switching", x.switching);
+    visit("launch_pending", x.launch_pending);
+    visit("neutralised", x.neutralised);
+    visit("target", x.target);
+    visit("rival", x.rival);
+    visit("position", x.position);
+    visit("tactic", x.tactic);
+    visit("next_scan", x.next_scan);
+    visit("attack_ticks", x.attack_ticks);
+    visit("retry_tick", x.retry_tick);
+    visit("rival_until", x.rival_until);
+    visit("release_tick", x.release_tick);
+    visit("error_until", x.error_until);
+    visit("blocked_ticks", x.blocked_ticks);
+    visit("green_tick", x.green_tick);
+    visit("wake", x.wake);
+    visit("lock", x.lock);
+    visit("last_brake", x.last_brake);
+    visit("lane", x.lane);
+    visit("blend", x.blend);
+    visit("speed_limit", x.speed_limit);
+    visit("brake_preview", x.brake_preview);
+    visit("pedal_limit", x.pedal_limit);
+    visit("deploy", x.deploy);
+    visit("gap", x.gap);
+    visit("lead_v", x.lead_v);
+    visit("sense_time", x.sense_time);
+    visit("grip_estimate", x.grip_estimate);
+    visit("attention", x.attention);
+    visit("confidence", x.confidence);
+    visit("fatigue", x.fatigue);
+    visit("tension", x.tension);
+    visit("composure", x.composure);
+    visit("familiarity", x.familiarity);
+    visit("previous_throttle", x.previous_throttle);
+    visit("side", x.side);
+    visit("miss", x.miss);
+    visit("launch_slip", x.launch_slip);
+    visit("rolling", x.rolling);
+    visit("jam", x.jam);
+    visit("started", x.started);
+    visit("formation_done", x.formation_done);
+    visit("stalled", x.stalled);
+    visit("error_active", x.error_active);
+}
+
 Spec specification(const py::dict &data) {
     Spec x{};
     x.id = data["id"].cast<std::string>();
@@ -101,6 +204,14 @@ Spec specification(const py::dict &data) {
 }
 Control command(const py::dict &data) {
     Control x;
+    if (data.contains("flag"))
+        READ(flag);
+    if (data.contains("clutch"))
+        READ(clutch);
+    if (data.contains("push"))
+        READ(push);
+    if (data.contains("reverse"))
+        READ(reverse);
     READ(automatic);
     READ(gear);
     READ(throttle);
@@ -114,6 +225,10 @@ Control command(const py::dict &data) {
 #define WRITE(key) data[#key] = x.key
 py::dict encode(const Control &x) {
     py::dict data;
+    WRITE(flag);
+    WRITE(clutch);
+    WRITE(push);
+    WRITE(reverse);
     WRITE(automatic);
     WRITE(gear);
     WRITE(throttle);
@@ -185,10 +300,14 @@ py::dict encode(const State &x) {
     WRITE(last_gate);
     WRITE(gear);
     WRITE(contacted);
+    WRITE(reversing);
     WRITE(detection_time);
     WRITE(split_times);
     WRITE(eligible);
     WRITE(contact_peers);
+    py::dict mind;
+    mind_fields(x.mind, [&](auto name, const auto &value) { mind[name] = value; });
+    data["driver_state"] = mind;
     data["s"] = x.cursor.s;
     data["lap"] = x.cursor.lap;
     data["command"] = encode(x.command);
@@ -198,7 +317,7 @@ py::dict encode(const State &x) {
     data["tyres"] = wheels;
     return data;
 }
-State decode(const py::dict &data) {
+State decode(const py::dict &data, const Mind &initial, bool legacy) {
     State x;
     READ(d);
     READ(v);
@@ -218,10 +337,24 @@ State decode(const py::dict &data) {
     READ(last_gate);
     READ(gear);
     READ(contacted);
+    if (!legacy)
+        READ(reversing);
     READ(detection_time);
     READ(split_times);
     READ(eligible);
     READ(contact_peers);
+    x.mind = initial;
+    if (!legacy) {
+        auto mind = data["driver_state"].cast<py::dict>();
+        mind_fields(x.mind, [&](auto name, auto &value) {
+            value = mind[name].template cast<std::decay_t<decltype(value)>>();
+            if constexpr (std::is_floating_point_v<std::decay_t<decltype(value)>>)
+                if (!std::isfinite(value))
+                    throw std::invalid_argument("non-finite driver state");
+        });
+    }
+    if (legacy && x.distance > 0)
+        x.mind.started = true;
     x.cursor = {Road::circuit, data["s"].cast<double>(), data["lap"].cast<std::int64_t>()};
     x.command = command(data["command"].cast<py::dict>());
     x.tyres = tyres(data);
@@ -240,10 +373,20 @@ void bind_dynamics(py::module_ &m) {
                                 conditions["unrestricted_drs"].cast<bool>(),
                                 conditions["zones"].cast<std::vector<std::array<double, 2>>>(),
                                 conditions["sectors"].cast<std::vector<double>>()};
+                 env.seed =
+                     conditions.contains("seed") ? conditions["seed"].cast<std::uint64_t>() : 0;
+                 env.race_start =
+                     conditions.contains("race_start") && conditions["race_start"].cast<bool>();
+                 env.formation =
+                     conditions.contains("formation") && conditions["formation"].cast<bool>();
                  std::vector<std::pair<Spec, Start>> entries;
                  for (auto item : field) {
                      auto row = item.cast<py::dict>(), start = row["start"].cast<py::dict>();
-                     entries.emplace_back(specification(row["spec"].cast<py::dict>()),
+                     auto spec = specification(row["spec"].cast<py::dict>());
+                     if (row.contains("driver"))
+                         spec.driver = driver(row["driver"].cast<py::dict>(),
+                                              row["category"].cast<std::string>());
+                     entries.emplace_back(std::move(spec),
                                           Start{number(start["s"]), number(start["d"]),
                                                 number(start["v"]), number(start["fuel"]),
                                                 number(start["energy"]), number(start["heading"]),
@@ -271,6 +414,8 @@ void bind_dynamics(py::module_ &m) {
                      event["elapsed_s"] = e.elapsed;
                      event["lap"] = e.lap;
                      event["split_times_s"] = e.split_times;
+                     if (e.position)
+                         event["position"] = e.position;
                      events.append(event);
                  }
                  py::dict result;
@@ -291,21 +436,23 @@ void bind_dynamics(py::module_ &m) {
                      row["command"] = encode(o.command);
                      orders.append(row);
                  }
-                 data["version"] = 1;
+                 data["version"] = 2;
                  data["tick"] = d.tick();
                  data["states"] = states;
                  data["queue"] = orders;
                  return data;
              })
         .def("restore", [](Dynamics &d, const py::dict &checkpoint) {
-            if (checkpoint["version"].cast<int>() != 1)
+            int version = checkpoint["version"].cast<int>();
+            if (version != 1 && version != 2)
                 throw std::invalid_argument("unsupported dynamics checkpoint");
             std::vector<State> states;
             auto saved = checkpoint["states"].cast<py::dict>();
             if (saved.size() != d.cars().size())
                 throw std::invalid_argument("checkpoint field mismatch");
             for (const auto &c : d.cars())
-                states.push_back(decode(saved[py::str(c.spec.id)].cast<py::dict>()));
+                states.push_back(
+                    decode(saved[py::str(c.spec.id)].cast<py::dict>(), c.state.mind, version == 1));
             d.restore(checkpoint["tick"].cast<std::int64_t>(), std::move(states),
                       queue(checkpoint["queue"].cast<py::list>()));
         });

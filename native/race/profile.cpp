@@ -147,9 +147,24 @@ void plan(const Track &track, Vehicle &car, const Conditions &env, GeometryCache
     const auto &p = car.spec;
     const auto &s = car.state;
     double mu = 0, mass = p.dry_mass + p.driver_mass + s.fuel;
-    for (size_t i = 0; i < s.tyres.size(); ++i)
-        mu += .25 * tyre_mu(p, s.tyres[i], mass * gravity / 4, pressure_kpa(p, s.tyres[i], i),
-                            env.water_mm, 30.);
+    // The engineering envelope uses onboard temperature and pressure readings
+    // and an estimate of tyre condition. Internal carcass damage is unavailable.
+    for (size_t i = 0; i < s.tyres.size(); ++i) {
+        const auto &actual = s.tyres[i];
+        Tyre estimated{};
+        estimated.surface = 2 * std::round(actual.surface / 2);
+        estimated.wear = .05 * std::round(actual.wear / .05);
+        double pressure = std::round(pressure_kpa(p, actual, i));
+        estimated.punctured = pressure < 35;
+        // Coarse condition bands inferred from tyre vibration and infrared
+        // readings, as opposed to exact continuous per-wheel internal state.
+        estimated.flat = .2 * std::round(actual.flat * 5);
+        estimated.blister = .25 * std::round(actual.blister * 4);
+        estimated.grain = .25 * std::round(actual.grain * 4);
+        estimated.degradation = .25 * std::round(actual.degradation * 4);
+        mu += .25 * tyre_mu(p, estimated, mass * gravity / 4, pressure,
+                            .1 * std::round(env.water_mm * 10), 30.);
+    }
     int grip_bin = std::clamp(int(std::floor(mu * 10)), 1, 35);
     int mass_bin = int(std::floor(mass / 10));
     if (grip_bin == profile.grip_bin && mass_bin == profile.mass_bin)
@@ -248,12 +263,18 @@ Control control(const Track &track, const Vehicle &car, double gap, double leade
     double blend = std::min(1., s.distance / (p.kart ? 60. : 8 * p.length));
     double curvature;
     const double u = s.cursor.s / profile.step;
-    if (input.preference == 0 && blend == 1 &&
+    const auto &mind = s.mind;
+    const auto &driver = p.driver;
+    double apex =
+        (driver.balance - .5) * .25 + (driver.fast_bends - .5) * .12 * std::min(1., s.v / 55.);
+    apex += mind.miss * (driver.balance > .5 ? 1. : -1.);
+    input.preference = mind.radio_line;
+    if (mind.blend == 0 && input.preference == 0 && blend == 1 &&
         std::abs(s.d - interp(profile.offset, u)) < p.width && std::abs(s.heading) < 1.2) {
         // Follow the tangent and signed curvature at the car, including when
         // the chord to a distant pursuit point would cut across a chicane.
         const double tangent = interp(profile.tangent, u);
-        const double error = (interp(profile.offset, u) - s.d) * std::cos(tangent);
+        const double error = (interp(profile.offset, u) + apex - s.d) * std::cos(tangent);
         curvature = interp(profile.curvature, u) + 2 * std::sin(tangent - s.heading) / look +
                     2 * error / (look * look);
     } else {
@@ -262,8 +283,10 @@ Control control(const Track &track, const Vehicle &car, double gap, double leade
         double offset = interp(profile.offset, ahead / profile.step);
         double edge = input.preference > 0 ? destination.section.left - p.width / 2 - .25
                                            : -destination.section.right + p.width / 2 + .25;
+        offset = std::lerp(offset + apex, mind.lane, mind.blend);
         offset = std::lerp(offset, edge, std::abs(input.preference));
-        offset = std::lerp(car.grid_offset, offset, blend * blend * (3 - 2 * blend));
+        if (!mind.blend)
+            offset = std::lerp(car.grid_offset, offset, blend * blend * (3 - 2 * blend));
         offset = std::clamp(offset, -destination.section.right + p.width / 2,
                             destination.section.left - p.width / 2);
         auto target = road.frame(ahead, offset).point;
@@ -272,6 +295,10 @@ Control control(const Track &track, const Vehicle &car, double gap, double leade
         curvature = 2 * (-std::sin(here.yaw) * dx + std::cos(here.yaw) * dy) /
                     std::max(.2, dx * dx + dy * dy);
     }
+    curvature -=
+        std::clamp(s.lateral_v, -3., 3.) * (.25 + .6 * driver.cornering) / std::max(4., s.v * look);
+    if (std::abs(s.heading) > 1.5 && s.v < 12)
+        curvature = -std::copysign(.58 / p.wheelbase, s.heading);
     input.steer = std::clamp(std::atan(p.wheelbase * curvature), -.6, .6);
     const auto &frame = car.frame;
     double mass = p.dry_mass + p.driver_mass + s.fuel;
@@ -281,15 +308,16 @@ Control control(const Track &track, const Vehicle &car, double gap, double leade
     // Capture a displaced car on the actually requested arc. Brake early
     // enough to enter a tighter turn with a free lateral force budget.
     double preview =
-        interp(profile.speed, std::fmod(s.cursor.s + .12 * s.v, road.length()) / profile.step);
+        interp(profile.speed,
+               std::fmod(s.cursor.s + mind.brake_preview * s.v, road.length()) / profile.step);
     target_speed = std::min(target_speed, preview);
     double lateral_limit = mu * (gravity + aero.lift / mass);
     if (frame.section.surface(s.d) == Surface::outside)
         lateral_limit *= .43;
     target_speed =
         std::min(target_speed, std::sqrt(lateral_limit / std::max(.0001, std::abs(curvature))));
-    double goal = target_speed;
-    // Basic actuator following-distance guard. No tactical line selection.
+    double goal = std::min(target_speed, mind.speed_limit);
+    // Feedback guard for the occupied corridor in the last driver scan.
     if (gap < 100) {
         // Both cars can brake. Keep a reaction distance plus the difference
         // of stopping distances, including at rolling-grid speed.
@@ -297,8 +325,11 @@ Control control(const Track &track, const Vehicle &car, double gap, double leade
                                       p.mu * gravity * (p.kart ? .42 : .70));
         double launch = std::clamp(s.distance / (30 * p.length), 0., 1.);
         double headway = p.kart ? std::lerp(.10, .82, launch) : std::lerp(.24, .62, launch);
+        headway *= .80 + .25 * (1 - driver.risk) + .20 * (1 - mind.attention);
         double reaction = decel * headway;
-        double clear = p.kart ? .22 : .72;
+        double clear = p.kart ? .50 : .85;
+        if (leader_v < 2 && s.v > 3)
+            clear += p.wheelbase;
         double safe = std::sqrt(std::max(0., reaction * reaction + leader_v * leader_v +
                                                  2 * decel * (gap - clear))) -
                       reaction;
@@ -318,11 +349,41 @@ Control control(const Track &track, const Vehicle &car, double gap, double leade
     input.brake = 0;
     if (demand < 0) {
         double lateral = s.v * s.v * curvature + gravity * frame.section.crossfall;
+        if (mind.blend > 0 && s.v > goal + 1) {
+            // Understeering on a tight requested arc can consume the entire
+            // friction circle. Unwind the wheel while slowing to regain the line.
+            double reserve = .62 * lateral_limit;
+            lateral = std::clamp(lateral, -reserve, reserve);
+            input.steer = std::atan(p.wheelbase * (lateral - gravity * frame.section.crossfall) /
+                                    std::max(1., s.v * s.v));
+        }
         double hydraulic = braking_force(p, mass, (profile.grip_bin + .3) / 10., aero, lateral);
         input.brake = std::min(-demand, hydraulic) * p.radius / std::max(1., p.brake_nm);
     }
+    double opening = (2.5 + 4 * driver.pace + 2 * driver.exit) * (1 - .28 * driver.smooth);
+    if (s.distance < 3 * p.length && !mind.rolling)
+        opening *= .30 + driver.pace * .65 + mind.launch_slip;
+    input.throttle =
+        std::min({input.throttle, mind.pedal_limit, mind.previous_throttle + opening * dt});
+    input.brake = std::min(input.brake, mind.brake_ceiling) * (1 - mind.miss);
+    input.deploy = mind.deploy;
+    if (!p.kart && !mind.rolling && s.v < 12 && s.distance < 4 * p.length) {
+        input.clutch = std::clamp(.38 + .24 * driver.launch + .045 * s.v + mind.launch_slip -
+                                      .28 * mind.wheelspin,
+                                  .1, 1.);
+    }
+    if (mind.lock > .04)
+        input.brake *= 1 - std::min(.65, mind.lock * (.5 + driver.braking));
     if (goal <= .05)
         input.throttle = 0;
+    if (mind.jam && mind.crawl_speed != 0 && s.command.flag == 0) {
+        double target = std::abs(mind.crawl_speed);
+        input.reverse = mind.crawl_speed < 0;
+        input.steer = mind.crawl_steer;
+        input.throttle = std::clamp((target - s.v) * .45, 0., .55);
+        input.brake = std::clamp((s.v - target) * .45, 0., .45);
+        input.push = p.kart && s.v < target && s.v < 2.4;
+    }
     return input;
 }
 } // namespace race
