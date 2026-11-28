@@ -17,9 +17,9 @@ from .test_personal_engineering import MERCEDES, WILLIAMS, engineering_career
 make_career = pytest.fixture(name="career")(engineering_career)
 
 
-def sign(state, world, key, client, start, end, axis="engine"):
+def sign(state, world, key, client, start, end, axis="engine", maker=MERCEDES):
     bid = market.Bid(
-        terms=terms(org=client, sponsor=MERCEDES, start=start, end=end),
+        terms=terms(org=client, sponsor=maker, start=start, end=end),
         supply=dict(
             product=axis,
             price_cents=10000,
@@ -243,7 +243,12 @@ def test_product_grants_replacement_expiry_and_new_supplier(career):
     s["date"] = "2025-02-04"
     assert not access(MERCEDES, during)
     assert not access(MERCEDES, engine)
+    s["date"] = "2025-02-05"
     market.end_supply(s, MERCEDES, deals["engine"]["id"])
+    assert (
+        staff.grant(s, w, e, "engine", "2025-02-04", deals["engine"])["end"]
+        == s["date"]
+    )
     assert not staff.grant(s, w, e, "engine", s["date"], deals["engine"])
     sign(s, w, "renew-data", WILLIAMS, s["date"], "2025-03-01")
     assert not access(MERCEDES, during)
@@ -259,23 +264,27 @@ def test_product_grants_replacement_expiry_and_new_supplier(career):
         ),
     )
     competitor = "supplier-ferrari"
-    new = dict(
-        s["market"]["supplies"]["renew-data"],
-        id="competitor",
-        sponsor=competitor,
-        start=s["date"],
-        end="2025-04-01",
+    outgoing = next(
+        r["client"]
+        for r in staff.appointments(s, w, competitor)
+        if r["start"] <= s["date"] < r["end"] and r.get("seat")
     )
-    s["market"]["supplies"][new["id"]] = new
+    for d in list(s["market"]["supplies"].values()):
+        if (d["sponsor"], d["org"], d["status"]) == (competitor, outgoing, "signed"):
+            market.end_supply(s, competitor, d["id"])
     s["market"]["homologations"]["march"] = dict(
         entry=e["id"],
         provider=competitor,
         product="engine",
         start=s["date"],
-        end=new["end"],
+        end="2025-04-01",
         works=False,
     )
-    assert agreement(s, w, e, "engine")["maker"] == competitor
+    sign(s, w, "competitor", WILLIAMS, s["date"], "2025-04-01", maker=competitor)
+    fresh = agreement(s, w, e, "engine")
+    assert fresh["maker"] == competitor
+    new_channel = header("engine", "temperature", s["date"], fresh)
+    assert access(competitor, new_channel) and not access(MERCEDES, new_channel)
     assert not access(MERCEDES, engine) and not access(competitor, engine)
 
 

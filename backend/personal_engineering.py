@@ -412,6 +412,17 @@ def grant(state, world, entry, axis, day, terms, rows=None):
         return None
     terms = actual
     maker, client = terms["maker"], entry["org"]
+    deal = state["market"]["supplies"].get(terms["id"])
+    if not deal and not state.get("opening"):
+        deal = next(
+            (
+                d
+                for d in service_deals(state, world, maker, client)
+                if d["id"] == terms["id"]
+            ),
+            None,
+        )
+    end = (deal.get("ended") or deal["end"]) if deal else terms.get("end")
     for r in rows if rows is not None else appointments(state, world, maker, client):
         if (r["employer"], r["client"]) != (maker, client) or not r["start"] <= day < r[
             "end"
@@ -429,14 +440,14 @@ def grant(state, world, entry, axis, day, terms, rows=None):
                 channels=sorted(channels),
                 allocation_percent=load,
                 start=max(r["start"], terms.get("start") or r["start"]),
-                end=min(r["end"], terms.get("end") or r["end"]),
+                end=min(r["end"], end or r["end"]),
             )
         if (
             r["agreement"] == terms["id"]
             and r["product"] == axis
             and r.get("entry", entry["id"]) == entry["id"]
         ):
-            return r
+            return dict(r, end=min(r["end"], end or r["end"]))
     return None
 
 

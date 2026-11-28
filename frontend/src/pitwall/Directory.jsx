@@ -4012,7 +4012,7 @@ function EngineerCover({data}) {
         if (problem) return setError(problem)
         p.commit('engineer-cover', {...v, seat: current.seat}, setError)
       }}>
-        <Field label="Заявка"><select name="entry">{entries.map((e) => <option key={e.id} value={e.id}>{p.seriesName(e.championship)} · № {e.number}</option>)}</select></Field>
+        <Field label="Заявка"><select aria-label="Заявка" name="entry">{entries.map((e) => <option key={e.id} value={e.id}>{p.seriesName(e.championship)} · № {e.number}</option>)}</select></Field>
         <div className="p-form-grid">
           <Field label="Начало замещения"><input type="date" name="start" min={c.date} defaultValue={c.date} required /></Field>
           <Field label="Окончание (исключая)"><input type="date" name="end" defaultValue={addDays(c.date,7)} required /></Field>
