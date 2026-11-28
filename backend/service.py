@@ -676,7 +676,7 @@ def import_save(document, *, statistics_records=None, resume=False):
                 lineup.terms.initialize(state, lineup_for(state))
 
             if saved.get("components", {}).get("since") == state["revision"]:
-                components.initialize(state)
+                components.initialize(state, catalog=saved["components"]["catalog"])
 
             if saved.get("research", {}).get("since") == state["revision"]:
                 research.initialize(state)
