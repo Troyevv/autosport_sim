@@ -1,7 +1,16 @@
 import { expectCarFits } from './carBounds'
-import { test, expect } from '@playwright/test'
+import { test, expect, type Locator } from '@playwright/test'
 import { join } from 'node:path'
 import type { Catalog } from '../src/garage/model'
+
+async function pixelSignature(canvas: Locator) {
+  return canvas.evaluate(async (el: HTMLCanvasElement) => {
+    const pixels = el.getContext('2d')!.getImageData(0, 0, el.width, el.height).data
+    const digest = await crypto.subtle.digest('SHA-256', pixels.buffer)
+    const hash = Array.from(new Uint8Array(digest), byte => byte.toString(16).padStart(2, '0')).join('')
+    return [el.width, el.height, hash].join(':')
+  })
+}
 
 test('Гараж · две заявки, детали, декали и сохранение', async ({ page }) => {
   const errors: string[] = []
@@ -14,8 +23,12 @@ test('Гараж · две заявки, детали, декали и сохр�
   const career = await response.json(),
     catalog: Catalog = await (await page.request.get('/api/garage')).json()
   await page.goto('/?career=' + career.id + '#garage')
-  const view = page.locator('.studio-stage .garage-body')
-  const picture = () => view.evaluate((el) => (el as HTMLCanvasElement).toDataURL())
+  const showroom = page.locator('.garage-hero .car-stand')
+  const components = page.locator('.components-car .car-stand')
+  const paintStudio = page.locator('.livery-stage .car-stand')
+  const view = paintStudio.locator('.garage-body')
+  const body = (stage: Locator) => pixelSignature(stage.locator('.garage-body'))
+  const floor = (stage: Locator) => pixelSignature(stage.locator('.garage-floor'))
   const evidence = async (name: string) => {
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(page.viewportSize()!.width)
     if (process.env.GARAGE_EVIDENCE)
@@ -32,25 +45,26 @@ test('Гараж · две заявки, детали, декали и сохр�
     expect((await sent).ok()).toBeTruthy()
     await expect(page.getByText('Не сохранено', { exact: true })).toHaveCount(0)
   }
-  await expect(page.locator('.studio-stage .car-stand')).toHaveAttribute('data-state', 'ready')
-  const initial = await picture()
-  const floor = () =>
-    page.locator('.studio-stage .garage-floor').evaluate((el) => (el as HTMLCanvasElement).toDataURL())
-  const initialFloor = await floor()
+  await expect(showroom).toHaveAttribute('data-state', 'ready')
+  const initial = await body(showroom)
+  const initialFloor = await floor(showroom)
   await evidence('factory')
   await tab('Компоненты')
-  await expect(page.locator('.studio-stage .car-stand')).toHaveAttribute('data-state','ready')
-  const originalWing = await picture()
+  await expect(components).toHaveAttribute('data-state', 'ready')
+  const originalWing = await body(components)
   await page.getByLabel('Антикрыло в предпросмотре').selectOption({ label: 'Низкий профиль · пример' })
-  await expect.poll(picture).not.toBe(originalWing)
+  await expect.poll(() => body(components)).not.toBe(originalWing)
   await page.getByLabel('Антикрыло в предпросмотре').selectOption('standard')
-  await expect.poll(picture).toBe(originalWing)
+  await expect.poll(() => body(components)).toBe(originalWing)
   await tab('Ливрея')
+  await expect(paintStudio).toHaveAttribute('data-state', 'ready')
+  const originalPaint = await body(paintStudio)
+  const originalReflection = await floor(paintStudio)
   await page.getByLabel('Основной цвет').fill('#ed2459')
   await page.getByRole('combobox', { name: 'Рисунок', exact: true }).selectOption('weave')
   await page.getByLabel('Бортовой номер').fill('047')
-  await expect.poll(picture).not.toBe(initial)
-  await expect.poll(floor).not.toBe(initialFloor)
+  await expect.poll(() => body(paintStudio)).not.toBe(originalPaint)
+  await expect.poll(() => floor(paintStudio)).not.toBe(originalReflection)
   await evidence('paint')
   await page.locator('.livery-controls').getByRole('tab', { name: /Размещения/ }).click()
   await action('Добавить знак')
@@ -113,8 +127,8 @@ test('Гараж · две заявки, детали, декали и сохр�
   await page.getByRole('dialog').getByRole('button', { name: 'Подтвердить' }).click()
   await save()
   await tab('Автомобиль')
-  await expect.poll(picture).toBe(initial)
-  await expect.poll(floor).toBe(initialFloor)
+  await expect.poll(() => body(showroom)).toBe(initial)
+  await expect.poll(() => floor(showroom)).toBe(initialFloor)
   await tab('Ливрея')
   await page.locator('.livery-controls').getByRole('tab', { name: /Размещения/ }).click()
   if (mobile) await page.getByLabel('Поворот', { exact: true }).scrollIntoViewIfNeeded()
@@ -129,7 +143,7 @@ test('Гараж · резервный профиль и повторная за
   const career = await response.json()
   const url = '/?career=' + career.id + '#garage'
   const body = page.locator('.studio-stage .garage-body')
-  const snapshot = () => body.evaluate((el) => (el as HTMLCanvasElement).toDataURL())
+  const snapshot = () => pixelSignature(body)
   const ready = () =>
     expect(page.locator('.studio-stage .car-stand')).toHaveAttribute('data-state', 'ready')
   await page.goto(url)
