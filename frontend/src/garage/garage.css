@@ -44,7 +44,7 @@
 .large-car {
   position: relative;
   isolation: isolate;
-  background: #222831 url('/assets/garage/2025-v1/workshop.webp') center center/cover no-repeat;
+  background-color: #17191c;
 }
 .legacy-studio-stage {
   aspect-ratio: 1.65;
@@ -56,6 +56,10 @@
   inset: 0;
   pointer-events: none;
   background: linear-gradient(180deg, #0e1118b0, transparent 47%, transparent 78%, #0e1118b8);
+}
+.studio-stage header,
+.studio-stage footer {
+  z-index: 1;
 }
 .studio-stage header {
   position: absolute;
@@ -112,16 +116,42 @@
   letter-spacing: 0.02em;
 }
 .car-stand {
-  container-type: size;
-  display: flex;
-  align-items: end;
-  justify-content: center;
   position: absolute;
-  inset: 0 0 15%;
+  inset: 0;
+  overflow: hidden;
+  container-type: size;
   pointer-events: none;
+  background: #17191c;
+}
+.workshop-plate {
+  position: absolute;
+  left: 50%;
+  top: 62%;
+  /* Fill the viewport until the crop would cut into the parking bay or
+     the sign. Outside that camera range the dark stage frames the plate. */
+  width: min(max(100cqw, 300.19cqh), 138cqw, 360cqh);
+  aspect-ratio: 1600 / 533;
+  transform: translate(-50%, -62%);
+  background: url('/assets/garage/2025-v1/workshop.webp') center / 100% 100% no-repeat;
+  isolation: isolate;
+  /* Blend the photographic borders into the surround only on letterboxed axes. */
+  --side-fade: clamp(0px, calc(100cqw - 100%), 5%);
+  --vertical-fade: clamp(0px, calc(100cqh - 100%), 10%);
+  mask-image:
+    linear-gradient(to right, transparent, black var(--side-fade), black calc(100% - var(--side-fade)), transparent),
+    linear-gradient(to bottom, transparent, black var(--vertical-fade), black calc(100% - var(--vertical-fade)), transparent);
+  mask-composite: intersect;
+}
+.transparent-stage .car-stand,
+.transparent-stage .workshop-plate {
+  background: none;
+}
+.transparent-stage .workshop-plate {
+  width: min(150cqw, 360cqh);
+  mask-image: none;
 }
 .car-cutout {
-  position: relative;
+  position: absolute;
   pointer-events: auto;
 }
 .car-cutout .garage-floor {

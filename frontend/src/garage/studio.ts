@@ -1,20 +1,20 @@
-// The garage photograph has three equal strip lights. Project their positions through
-// the same centred "cover" crop as the room, including on a narrow phone screen.
-export function measureStudio(stage: HTMLElement, car: HTMLCanvasElement) {
-  const room = stage.getBoundingClientRect()
-  const body = car.getBoundingClientRect()
-  const roomWidth = Math.max(room.width, room.height * 3)
-  const left = room.left + (room.width - roomWidth) / 2
-  const scale = car.width / body.width
-  const height = roomWidth / 3
+import type { Geometry } from './model'
+
+// The workshop plate is 1600 × 533. Its rear wall meets the floor at y ≈ 394.
+// At the parked axle plane the visible bay spans 9.6 metres. All coordinates
+// below are in photograph pixels, before the viewport crops the photograph.
+export const workshop = { width: 1600, height: 533, widthMetres: 9.6, wheelLine: 458 }
+
+export function parkCar(g: Geometry) {
+  const scale = (workshop.width * g.length) / (workshop.widthMetres * g.size[0])
+  const width = g.size[0] * scale
+  const left = (workshop.width - width) / 2
+  const contactY = (g.contacts[0][1] + g.contacts[1][1]) / 2
+  const top = workshop.wheelLine - contactY * scale
   return {
-    lights: [0.195, 0.5, 0.804].map((x) => (left + x * roomWidth - body.left) / body.width),
-    room: [
-      (left - body.left) * scale,
-      (room.top + (room.height - height) / 2 - body.top) * scale,
-      roomWidth * scale,
-      height * scale,
-    ] as const,
+    width, left, top,
+    lights: [0.195, 0.5, 0.804].map(x => (workshop.width * x - left) / width),
+    room: [-left / scale, -top / scale, workshop.width / scale, workshop.height / scale] as const,
   }
 }
 
@@ -134,7 +134,7 @@ export function floorPass(
   floor: HTMLCanvasElement,
   car: HTMLCanvasElement,
   contacts: Axle[],
-  rig: ReturnType<typeof measureStudio>,
+  rig: ReturnType<typeof parkCar>,
   source: ImageData,
   concrete?: HTMLImageElement,
 ) {

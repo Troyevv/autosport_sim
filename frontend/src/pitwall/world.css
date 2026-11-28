@@ -324,9 +324,6 @@
   .championship-hero > .studio-stage {
     height: 320px;
   }
-  .championship-hero .car-stand {
-    inset: 0 0 15% 30%;
-  }
   .championship-facts {
     position: absolute;
     left: 30px;
@@ -579,9 +576,6 @@
       right: 18px;
       font-size: var(--type-caption);
     }
-    .hq-hero .car-stand {
-      inset: 25px 0 13%;
-    }
     .hq-hero > footer {
       padding: 16px 20px;
     }
@@ -693,9 +687,6 @@
     .championship-hero p {
       font-size: var(--type-caption);
       max-width: 230px;
-    }
-    .championship-hero .car-stand {
-      inset: 40px 0 23%;
     }
     .championship-facts {
       left: 15px;
@@ -836,9 +827,6 @@
     .overview-screen .hq-hero .studio-stage {
       height: 180px;
     }
-    .overview-screen .hq-hero .car-stand {
-      inset: 34px 0 5%;
-    }
     .overview-screen .hq-caption h2 {
       font-size: var(--type-section);
     }
@@ -896,9 +884,6 @@
     .championship-hero:not(.compact-hero) > .studio-stage {
       height: 220px;
     }
-    .championship-hero:not(.compact-hero) .car-stand {
-      inset: 0 0 10% 33%;
-    }
     .championship-hero:not(.compact-hero) h2 {
       font-size: var(--type-page);
     }
@@ -925,9 +910,6 @@
     }
     .championship-hero:not(.compact-hero) > .studio-stage {
       height: 225px;
-    }
-    .championship-hero:not(.compact-hero) .car-stand {
-      inset: 36px 0 18%;
     }
     .championship-hero:not(.compact-hero) > div:first-child {
       top: 18px;

@@ -38,10 +38,9 @@ export function RaceCar({
   const colors = livery || g.game.career.liveries?.[id] || preset.livery
   return (
     <div className={'studio-stage ' + (!studio ? 'transparent-stage ' : '') + className}>
-      {studio && ['garage', 'livery'].includes(g.route) && (
-        <GarageWall org={g.world.organizations[e.org]} media={g.data.media} />
-      )}
       <CarView
+        key={model}
+        wall={studio && <GarageWall org={g.world.organizations[e.org]} media={g.data.media} />}
         model={model}
         regulation={cfg?.regulation || car.regulation}
         installed={installedOverride || cfg?.installed || {}}

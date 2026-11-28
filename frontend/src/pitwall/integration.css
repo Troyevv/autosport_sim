@@ -74,9 +74,6 @@
 .pitwall .save-card input[type='file'] {
   max-width: 100%;
 }
-.pitwall .role-home .studio-stage canvas {
-  max-width: 100%;
-}
 @media (max-width: 900px) {
   .pitwall .sidebar {
     position: fixed;

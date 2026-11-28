@@ -1,4 +1,4 @@
-import records from './geometry.json'
+import records from './geometry.json' with { type: 'json' }
 
 export type Zone = 'flank' | 'upper' | 'nose' | 'sill' | 'shoulder' | 'wing'
 export type Decal = { asset: string; zone: Zone; x: number; y: number; scale: number; angle: number }

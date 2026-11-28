@@ -1,9 +1,10 @@
 import { initialTab, readRoute, navigate } from '../pitwall/core/route'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Check, Eye, Images, RotateCcw, Save, Undo2 } from 'lucide-react'
-import { api, ApiError, explain, post, type Career, type World } from '../career/api'
+import { api, ApiError, explain, post, type Career, type World, type Asset } from '../career/api'
 import { Button, Dialog, Panel } from '../ui/components'
 import { Components } from './Components'
+import { GarageWall } from './GarageWall'
 import { CarView } from './CarView'
 import { DecalPanel } from './DecalPanel'
 import { geometry, partNames, sameLivery, type Catalog, type Livery } from './model'
@@ -11,7 +12,7 @@ import { PageHeading, Badge, Icon, Panel as DeskPanel, Facts as DeskFacts } from
 import '../pitwall/garage.css'
 import './garage.css'
 
-type Props = { c: Career; world: World; updateCareer: (c: Career) => void }
+type Props = { c: Career; world: World; media: Asset[]; updateCareer: (c: Career) => void }
 type Draft = { base: Livery; current: Livery; past: Livery[] }
 // Drafts survive navigation within this game session. Only save-livery commits paint to a career.
 const studioDrafts = new Map<string, Record<string, Draft>>()
@@ -58,7 +59,7 @@ export function SeasonGarage(props: Props) {
     )
   return <Studio {...props} catalog={catalog} />
 }
-function Studio({ c, world, catalog, updateCareer }: Props & { catalog: Catalog }) {
+function Studio({ c, world, catalog, media, updateCareer }: Props & { catalog: Catalog }) {
   const entries = Object.values(world.entries)
   const [series, setSeries] = useState(world.entries[readRoute().entity]?.championship || c.series)
   const filtered = entries.filter((e) => e.championship === series)
@@ -185,6 +186,7 @@ function Studio({ c, world, catalog, updateCareer }: Props & { catalog: Catalog 
     [wing, configuration, tab],
   )
   const viewProps = {
+    wall: <GarageWall org={org} media={media} />,
     model,
     regulation: configuration.regulation,
     livery,

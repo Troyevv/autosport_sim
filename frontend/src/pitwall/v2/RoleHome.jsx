@@ -135,7 +135,7 @@ function ManagerHome() {
               {org.base} <Icon name="ArrowUpRight" size={15} />
             </button>
           </header>
-          {entry && <RaceCar entryId={entry.id} studio={false} />}
+          {entry && <RaceCar entryId={entry.id} />}
           <div className="car-selector" aria-label="Автомобиль команды">
             {entries.map((e) => (
               <button

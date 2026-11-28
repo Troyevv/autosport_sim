@@ -1,4 +1,4 @@
-import { expectCarFits } from './carBounds'
+import { expectCarFits, expectCarParked } from './carBounds'
 import { expect, test } from '@playwright/test'
 
 test('Ширина рабочего места, масштаб подписей и диалог инженерного штаба', async ({ page }, info) => {
@@ -48,7 +48,9 @@ test('Ширина рабочего места, масштаб подписей 
     expect(metrics.width).toBeLessThanOrEqual(metrics.usable + 2)
     expect(metrics.width).toBeGreaterThanOrEqual(Math.min(metrics.usable, 1360) - 2)
     if (width === 3840) expect(metrics.width).toBeLessThan(metrics.usable * 0.85)
-    await expectCarFits(main.locator('.eng-car-stage .studio-stage').first())
+    const stage = main.locator('.eng-car-stage .studio-stage').first()
+    await expectCarFits(stage)
+    await expectCarParked(stage)
     expect(metrics.scroll).toBe(width)
     await delegation.click()
     const dialog = page.getByRole('dialog')

@@ -8,7 +8,7 @@ export function GarageWall({ org, media }: { org: Organization; media: Asset[] }
     <svg
       className="garage-wall"
       viewBox="0 0 1530 510"
-      preserveAspectRatio="xMidYMid slice"
+      preserveAspectRatio="xMidYMid meet"
       aria-label={'Оформление гаража · ' + org.name}
       role="img"
       style={identityVars(org) as CSSProperties}
@@ -33,9 +33,9 @@ export function GarageWall({ org, media }: { org: Organization; media: Asset[] }
           data-layer="garage-logo"
           href={logo}
           x="572"
-          y="76"
+          y="78"
           width="386"
-          height="145"
+          height="100"
           preserveAspectRatio="xMidYMid meet"
         />
       ) : (

@@ -1,4 +1,4 @@
-import { expectCarFits } from './carBounds'
+import { expectCarFits, expectCarParked } from './carBounds'
 import { test, expect, type Locator } from '@playwright/test'
 import { join } from 'node:path'
 import type { Catalog } from '../src/garage/model'
@@ -163,4 +163,24 @@ test('Гараж · резервный профиль и повторная за
   await retry.click()
   await ready()
   expect(await snapshot()).toBe(factory)
+})
+
+test('Парковка относительно пола, вывески и оборудования для всего каталога кузовов', async ({page}) => {
+  test.setTimeout(120000)
+  const response = await page.request.post('/api/careers', {
+    data: { name: 'Положение на полу', role: 'manager', org: 'team-oracle-red-bull-racing', series: 'f1', seed: 51 },
+  })
+  await expect(response).toBeOK()
+  const career = await response.json()
+  const catalog: Catalog = await (await page.request.get('/api/garage')).json()
+  const entries = new Map(Object.entries(catalog.entries).map(([id, preset]) => [preset.geometry, id]))
+  for (const [model, id] of entries) {
+    await test.step(model, async () => {
+      await page.goto('/?career=' + career.id + '#garage?entity=' + id)
+      const stage = page.locator('.garage-hero .studio-stage')
+      await expect(stage.locator('.car-stand')).toHaveAttribute('data-geometry', model)
+      await expectCarFits(stage)
+      await expectCarParked(stage)
+    })
+  }
 })

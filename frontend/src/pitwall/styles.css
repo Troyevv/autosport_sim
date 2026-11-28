@@ -543,37 +543,10 @@
     isolation: isolate;
     height: 340px;
     overflow: hidden;
-    background: #272727 url('/assets/garage/2025-v1/workshop.webp') center/cover no-repeat;
+    background-color: #17191c;
   }
   .transparent-stage {
     background: none;
-  }
-  .car-stand {
-    container-type: size;
-    display: flex;
-    align-items: end;
-    justify-content: center;
-    position: absolute;
-    inset: 0 0 15%;
-    pointer-events: none;
-  }
-  .car-cutout {
-    position: relative;
-    pointer-events: auto;
-  }
-  .car-cutout .garage-floor {
-    position: absolute;
-    left: -6%;
-    top: 0;
-    width: 112%;
-    height: 158%;
-    pointer-events: none;
-  }
-  .car-cutout .garage-body {
-    display: block;
-    position: relative;
-    width: 100%;
-    height: 100%;
   }
   .car-message {
     position: absolute;

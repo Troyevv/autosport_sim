@@ -1,3 +1,4 @@
+import { geometry } from '../src/garage/model'
 import { expect, type Locator } from '@playwright/test'
 
 export async function expectCarFits(stage: Locator) {
@@ -51,4 +52,58 @@ export async function expectCarFits(stage: Locator) {
   expect(result.painted).toBeGreaterThan(0.4)
   expect(result.proportion).toBeCloseTo(1, 2)
   expect(result.clearance).toBeGreaterThanOrEqual(-1)
+}
+
+// Measure painted wheel pixels and the shadow pass in the rendered room. The
+// cabinet feet in workshop.webp are at 74–76% of its height, behind the car.
+export async function expectCarParked(stage: Locator) {
+  const stand = stage.locator('.car-stand')
+  await expect(stand).toHaveAttribute('data-state', 'ready')
+  const model = geometry[(await stand.getAttribute('data-geometry'))!]
+  const metrics = await stand.evaluate((node, g) => {
+    const bounds = (selector: string) => node.querySelector(selector)!.getBoundingClientRect()
+    const room = bounds('.workshop-plate'), body = bounds('.garage-body')
+    const frame = node.getBoundingClientRect()
+    const car = node.querySelector<HTMLCanvasElement>('.garage-body')!
+    const floor = node.querySelector<HTMLCanvasElement>('.garage-floor')!
+    const shadow = floor.getContext('2d')!
+    const floorBox = floor.getBoundingClientRect()
+    const painted = car.getContext('2d')!.getImageData(0, 0, car.width, car.height).data
+    const patches = g.contacts.map(([x, y, r]) => {
+      let tread = 0
+      for (let row = car.height - 1; row >= 0; row--) {
+        if (painted[(row * car.width + x) * 4 + 3] > 170) {
+          tread = row
+          break
+        }
+      }
+      const screenX = body.left + body.width * x / car.width
+      const screenY = body.top + body.height * y / car.height
+      const alphaBelowTyre = shadow.getImageData(
+        Math.round((screenX - floorBox.left) * floor.width / floorBox.width),
+        Math.round((screenY - floorBox.top) * floor.height / floorBox.height) + 1, 1, 1,
+      ).data[3]
+      return { depth: (screenY - room.top) / room.height, treadOffset: Math.abs(y - tread) / r, alphaBelowTyre }
+    })
+    const sign = bounds('.garage-wall image, .garage-wall text')
+    return {
+      patches,
+      metres: g.length * room.width / body.width,
+      sideSpace: Math.min(body.left - frame.left, frame.right - body.right) / frame.width,
+      foreground: (frame.bottom - body.bottom) / frame.height,
+      signSpace: (body.top - sign.bottom) / room.height,
+      signVisible: sign.top >= frame.top - 1 && sign.left >= frame.left - 1 && sign.right <= frame.right + 1,
+    }
+  }, model)
+  expect(metrics.metres).toBeCloseTo(9.6, 1)
+  expect(metrics.sideSpace).toBeGreaterThan(0.07)
+  expect(metrics.foreground).toBeGreaterThan(0.06)
+  expect(metrics.signVisible).toBe(true)
+  expect(metrics.signSpace).toBeGreaterThan(0.015)
+  for (const patch of metrics.patches) {
+    expect(patch.depth).toBeGreaterThan(0.84)
+    expect(patch.depth).toBeLessThan(0.88)
+    expect(patch.treadOffset).toBeLessThan(0.085)
+    expect(patch.alphaBelowTyre).toBeGreaterThan(150)
+  }
 }
