@@ -402,10 +402,12 @@ void think(const Track &track, const Conditions &env, std::vector<Vehicle> &fiel
     m.next_scan = tick + 5 + int(5 * (1 - m.attention) + 2 * draw(m));
     if (!m.started && m.formation_done && tick >= m.release_tick) {
         if (m.stalled) {
+            m.cranking = true;
             event(b, car, tick, "engine-stall");
             m.release_tick = tick + 45 + int(55 * (1 - p.pace));
             m.stalled = false;
         } else {
+            m.cranking = false;
             m.started = true;
             m.launch_pending = true;
         }

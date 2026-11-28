@@ -45,6 +45,7 @@ struct Start {
 struct Control {
     bool automatic = true;
     double clutch = 1;
+    bool ignition = true;
     bool reverse = false;
     bool push = false; // driver pushing a stalled direct-drive kart
     double throttle{}, brake{}, steer{}, deploy = 1, preference = 0;

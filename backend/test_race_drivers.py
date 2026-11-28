@@ -196,6 +196,12 @@ def test_launch_error_evidence(seed, error):
             > 0.01
         )
     else:
+        stopped = b["rows"]["f1-1"][
+            round(e["time_s"] * 50) : round(e["time_s"] * 50) + 35
+        ]
+        assert all(
+            row[INDEX["rpm"]] == row[INDEX["combustion_kw"]] == 0 for row in stopped
+        )
         assert (
             next(e["time_s"] for e in b["events"] if e["kind"] == "standing-start")
             > e["time_s"] + 0.8
@@ -326,7 +332,9 @@ def test_full_grid_tactics_and_progress(series, track):
     ]
     sim = Session(track, field, kind="race", seed=1808)
     counts = Counter()
-    for _ in range(60):
+    for block in range(60):
+        if block == 54:
+            prior = sim.checkpoint()["native"]["states"]
         counts.update(e["kind"] for e in sim.advance(500, sample_every=0)["events"])
     states = sim.checkpoint()["native"]["states"]
     assert all(v["completed_laps"] >= 1 for v in states.values())
@@ -336,7 +344,10 @@ def test_full_grid_tactics_and_progress(series, track):
         and counts["counterattack"]
     )
     assert counts["defence"] and counts["crossover"]
-    assert counts["blocked"] == counts["recovered"]
+    assert counts["blocked"] - counts["recovered"] == sum(
+        v["driver_state"]["jam"] for v in states.values()
+    )
+    assert all(v["distance"] > prior[eid]["distance"] + 1 for eid, v in states.items())
     pending = sum(bool(v["driver_state"]["target"]) for v in states.values())
     assert (
         counts["attack"] + counts["counterattack"]

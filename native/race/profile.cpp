@@ -268,6 +268,7 @@ Control control(const Track &track, const Vehicle &car, double gap, double leade
     double apex =
         (driver.balance - .5) * .25 + (driver.fast_bends - .5) * .12 * std::min(1., s.v / 55.);
     apex += mind.miss * (driver.balance > .5 ? 1. : -1.);
+    input.ignition = input.ignition && !mind.cranking;
     input.preference = mind.radio_line;
     if (mind.blend == 0 && input.preference == 0 && blend == 1 &&
         std::abs(s.d - interp(profile.offset, u)) < p.width && std::abs(s.heading) < 1.2) {

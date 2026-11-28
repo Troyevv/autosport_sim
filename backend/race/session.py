@@ -91,6 +91,7 @@ class Command:
     clutch: float = 1.0
     push: bool = False
     reverse: bool = False
+    ignition: bool = True
 
 
 class Session:

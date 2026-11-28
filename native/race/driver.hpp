@@ -45,6 +45,6 @@ struct Mind {
            familiarity = .8, previous_throttle = 0, side = 0, miss = 0, launch_slip = 0;
     bool crossed = false, switching = false, launch_pending = false, neutralised = false,
          rolling = false, jam = false, started = false, formation_done = false, stalled = false,
-         error_active = false;
+         cranking = false, error_active = false;
 };
 } // namespace race

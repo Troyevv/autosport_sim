@@ -113,6 +113,7 @@ template <class M, class Visitor> void mind_fields(M &x, Visitor visit) {
     visit("started", x.started);
     visit("formation_done", x.formation_done);
     visit("stalled", x.stalled);
+    visit("cranking", x.cranking);
     visit("error_active", x.error_active);
 }
 
@@ -212,6 +213,7 @@ Control command(const py::dict &data) {
         READ(push);
     if (data.contains("reverse"))
         READ(reverse);
+    if (data.contains("ignition")) READ(ignition);
     READ(automatic);
     READ(gear);
     READ(throttle);
@@ -228,6 +230,7 @@ py::dict encode(const Control &x) {
     WRITE(flag);
     WRITE(clutch);
     WRITE(push);
+    WRITE(ignition);
     WRITE(reverse);
     WRITE(automatic);
     WRITE(gear);

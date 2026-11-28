@@ -157,6 +157,11 @@ void integrate(const Track &track, Vehicle &car, const Conditions &env, double w
     }
     // Launch clutch for cars; direct drive karts require a rolling start.
     rpm = p.kart ? rpm : std::max(rpm, .37 * p.redline);
+    if (!input.ignition) {
+        rpm = 0;
+        input.deploy = 0;
+        input.clutch = 0;
+    }
     const double omega = std::max(1., rpm * radians_per_rpm);
     const double torque_shape = std::clamp(1 - .95 * square(rpm / p.redline - .67), .15, 1.);
     double throttle = (s.shift_left > 0 || rpm > p.redline || s.fuel <= 0 || (p.kart && rpm < 600))
