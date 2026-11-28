@@ -229,7 +229,8 @@ def develop(state, catalog, target):
     teamwork.work(state, catalog, start, target)
     employed = set()
     practiced = set()
-    if "engineering_service" in state:
+    actual_duties = "duty_since" in state.get("engineering_service", {})
+    if actual_duties:
         from .personal_engineering import practice_by_duty
 
         for pid, disciplines_worked in practice_by_duty(state, catalog, start).items():
@@ -241,7 +242,7 @@ def develop(state, catalog, target):
             if not active(r, start):
                 continue
             pid = r["person"]
-            if "engineering_service" in state and seat["position"] in (
+            if actual_duties and seat["position"] in (
                 "race-engineer",
                 "technical-advisor",
             ):

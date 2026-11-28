@@ -94,7 +94,11 @@ def activate(state):
 
     world = lineup_for(state)
     office = state["engineering_service"] = dict(
-        since=state["revision"], start=state["date"], posts={}, briefings={}
+        since=state["revision"],
+        duty_since=state["revision"],
+        start=state["date"],
+        posts={},
+        briefings={},
     )
     posts = office["posts"]
     people = iter(roster())
@@ -484,7 +488,6 @@ def cover(state, world, seat, booking, args):
         raise RuleError("Консультант или клиент занят в этот период.", 409)
     row = dict(
         id=f"support-{state['revision']}/{seat['id']}/{start}",
-        duty="cover",
         advisor=booking["person"],
         employer=maker,
         client=client,
@@ -493,7 +496,7 @@ def cover(state, world, seat, booking, args):
         pair=True,
         salary_cents=booking["salary_cents"],
     )
-    state["support"].append(row)
+    record_assignment(state, row, "cover")
 
 
 def telemetry_grants(state, world, maker):
@@ -567,18 +570,23 @@ def check_capacity(state, world, maker, client, start, end):
     return plan
 
 
+def record_assignment(state, row, duty):
+    # Earlier archives distinguish commercial and voluntary duty by the source ID.
+    if "duty_since" in state["engineering_service"]:
+        row["duty"] = duty
+    state["support"].append(row)
+
+
 def allocate(state, key, terms, plan):
     for assignment in plan:
-        state["support"].append(
-            dict(
-                id=f"{key}/{assignment['start']}",
-                employer=terms.sponsor,
-                client=terms.org,
-                pair=True,
-                duty="service",
-                **assignment,
-            )
+        row = dict(
+            id=f"{key}/{assignment['start']}",
+            employer=terms.sponsor,
+            client=terms.org,
+            pair=True,
+            **assignment,
         )
+        record_assignment(state, row, "service")
 
     # A growing client portfolio can recruit a permanent successor and further relief.
     # Publish new positions through the same employment catalogue as the opening posts.
@@ -875,7 +883,15 @@ def confirm_briefing(state, world, event):
                     else "unclear-feedback"
                 )
                 record_event(state, world, actor, peer, outcome, source, state["date"])
-    state["engineering_service"]["briefings"][event] = rows
+    office = state["engineering_service"]
+    if "duty_since" not in office:
+        # Archived minutes retain the exact fields recorded before dated duties.
+        for row in rows:
+            row.pop("principal")
+            for consultant in row["consultants"]:
+                consultant.pop("principal")
+                consultant.pop("temporary")
+    office["briefings"][event] = rows
 
 
 def desk(state, world, org, maker):

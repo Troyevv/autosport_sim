@@ -631,6 +631,16 @@ def import_save(document, *, statistics_records=None, resume=False):
         seen = set()
         receipts = []
 
+        office = saved.get("engineering_service", {})
+        if not isinstance(office, dict):
+            raise ValueError
+        duty_since = office.get("duty_since")
+        if duty_since is not None and (
+            type(duty_since) is not int
+            or not office["since"] <= duty_since <= saved["revision"]
+        ):
+            raise ValueError
+
         def apply_migrations():
             nonlocal catalog
             if not native and modern and activation == state["revision"]:
@@ -685,10 +695,14 @@ def import_save(document, *, statistics_records=None, resume=False):
 
                     populate(state, lineup_for(state))
 
-            if saved.get("engineering_service", {}).get("since") == state["revision"]:
+            if office.get("since") == state["revision"]:
                 from .personal_engineering import activate as activate_engineering
 
                 activate_engineering(state)
+                if duty_since != state["revision"]:
+                    state["engineering_service"].pop("duty_since")
+            if duty_since == state["revision"]:
+                state["engineering_service"]["duty_since"] = duty_since
 
         for original in commands:
             item = original
@@ -759,6 +773,7 @@ def import_save(document, *, statistics_records=None, resume=False):
             from .personal_engineering import activate as activate_engineering
 
             activate_engineering(state)
+            state["engineering_service"].setdefault("duty_since", state["revision"])
     except (KeyError, TypeError, ValueError, RecursionError, ValidationError):
         raise domain.RuleError("Файл повреждён или нарушает правила мира.") from None
     cid = str(uuid4())

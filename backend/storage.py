@@ -61,6 +61,7 @@ MIGRATIONS = [
     [],  # Open the two season portfolios at the saved revision.
     [],  # Start supplier operations at the current checkpoint.
     [],  # Activate exclusive engineering posts without rewriting earlier contracts.
+    [],  # Track actual engineering duties from this checkpoint forward.
 ]
 
 
@@ -295,6 +296,12 @@ def transaction(write=False):
                     activate(state)
                     store(db, row["id"], state)
                     refresh(db, row["id"], state)
+            if idx == 27:
+                db.execute(
+                    "UPDATE career SET state=json_set(state, '$.engineering_service.duty_since', "
+                    "json_extract(state, '$.revision')) WHERE json_type(state, '$.engineering_service') = 'object' "
+                    "AND json_type(state, '$.engineering_service.duty_since') IS NULL"
+                )
             db.execute(f"PRAGMA user_version={idx + 1}")
         yield db
         db.commit()

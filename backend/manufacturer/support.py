@@ -209,7 +209,7 @@ def evidence(state, world, row):
 
 
 def diagnosis(state, world, row):
-    if row.get("closed") and "engineering_service" in state:
+    if row.get("closed") and "duty_since" in state.get("engineering_service", {}):
         # The signed conclusion belongs to the organization. Raw measurements
         # are still read through the current worker's contract and channel grant.
         causes = row.get("grounds", {})
@@ -487,7 +487,7 @@ def resolve(state, world, org, order):
                     row["id"],
                     state["date"],
                 )
-    if "engineering_service" in state:
+    if "duty_since" in state.get("engineering_service", {}):
         row["reviewed_references"] = [o["reference"] for o in report["observations"]]
     row["proposal"] = brief["id"]
     row.update(

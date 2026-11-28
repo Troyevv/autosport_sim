@@ -436,3 +436,51 @@ def test_npc_manager_uses_its_contracted_relief(career):
     )
     assert engineering.working_person(state, seat, "2025-02-04") is None
     assert state["seats"][seat["id"]] == [previous]
+
+
+def test_reviewed_checkpoint_replays_before_and_after_rules_upgrade(
+    tmp_path, monkeypatch
+):
+    """Digest of the actual archive produced by 6c573dc after its first advance."""
+    monkeypatch.setenv("AUTOSPORT_DATA_DIR", str(tmp_path))
+    original_activate = engineering.activate
+
+    def reviewed_activation(state):
+        original_activate(state)
+        state["engineering_service"].pop("duty_since", None)
+
+    with monkeypatch.context() as old:
+        old.setattr(engineering, "activate", reviewed_activation)
+        c = service.create(
+            service.CareerInput(
+                name="Предварительная версия",
+                org=MERCEDES,
+                role="manufacturer",
+                series="f1",
+                seed=64,
+            )
+        )
+        service.execute(
+            c["id"], service.Command(command_id="day", revision=0, action="advance")
+        )
+        archive = service.export_save(c["id"])
+    assert (
+        archive["sha256"]
+        == "67d7284e1f3c69e78dbecb9f7539d1c73a7006e26d68eabe35a3936c2acc6543"
+    )
+    upgraded = service.import_save(archive, resume=True)
+    migrated = service.export_save(upgraded["id"])
+    with storage.transaction(True) as db:
+        db.execute("PRAGMA user_version=27")
+    assert service.export_save(c["id"]) == migrated
+    assert migrated["payload"]["state"]["engineering_service"]["duty_since"] == 1
+    service.execute(
+        upgraded["id"],
+        service.Command(
+            command_id="next",
+            revision=1,
+            action=upgraded["briefing_action"] if upgraded["pending"] else "advance",
+        ),
+    )
+    continued = service.export_save(upgraded["id"])
+    assert service.export_save(service.import_save(continued)["id"]) == continued
